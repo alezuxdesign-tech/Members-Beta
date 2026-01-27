@@ -54,10 +54,11 @@
     flex-shrink: 0;
 }
 
-width: 100%;
-height: 100%;
-object-fit: cover;
-/* Border is now handled by Elementor control */
+.alezux-config-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Border is now handled by Elementor control */
 }
 
 /* Toggle Icon */
@@ -86,6 +87,18 @@ object-fit: cover;
     display: none;
     /* Hidden by default */
     flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    width: max-content;
+    background-color: var(--alezux-bg-card, #fff);
+    border: 1px solid var(--alezux-border-color, #eee);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    /* Slight offset from header */
 }
 
 /* When open, JS handles display: block, but we can also use class based if we prefer CSS transitions for height */

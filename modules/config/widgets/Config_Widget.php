@@ -179,6 +179,15 @@ class Config_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'container_border',
+				'label' => esc_html__( 'Border', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-config-card',
+			]
+		);
+
 		$this->add_control(
 			'container_border_radius',
 			[
@@ -333,6 +342,25 @@ class Config_Widget extends Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-config-menu-item + .alezux-config-menu-item' => 'margin-top: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'menu_min_width',
+			[
+				'label' => esc_html__( 'Min Width', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range' => [
+					'px' => [ 'min' => 100, 'max' => 500 ],
+				],
+				'default' => [
+					'size' => 220,
+					'unit' => 'px',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu' => 'min-width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
