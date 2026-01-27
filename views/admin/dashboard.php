@@ -72,15 +72,47 @@ if ( ! defined( 'ABSPATH' ) ) {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px;
-		border-bottom: 1px solid var(--alezux-border-color);
+		padding: 20px;
+		background: #252525;
+		border-radius: 12px;
+		margin-bottom: 15px;
+		border: 1px solid var(--alezux-border-color);
+		transition: transform 0.2s ease, border-color 0.2s ease;
+	}
+	.alezux-shortcode-item:hover {
+		transform: translateY(-2px);
+		border-color: var(--alezux-primary);
 	}
 	.alezux-shortcode-tag {
-		font-family: monospace;
-		background: #333;
-		padding: 5px 10px;
-		border-radius: 5px;
+		font-family: 'Courier New', monospace;
+		background: #151515;
 		color: #fab1a0;
+		padding: 8px 12px;
+		border-radius: 6px;
+		font-size: 15px;
+		border: 1px solid #444;
+		display: inline-block;
+		margin-bottom: 5px;
+	}
+	.alezux-copy-btn {
+		background: #333;
+		color: white;
+		border: none;
+		padding: 8px 15px;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 13px;
+		transition: all 0.2s ease;
+		display: flex;
+		align-items: center;
+		gap: 5px;
+	}
+	.alezux-copy-btn:hover {
+		background: var(--alezux-primary);
+	}
+	.alezux-copy-btn.copied {
+		background: #00b894;
+		color: black;
 	}
 </style>
 
@@ -173,14 +205,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="alezux-shortcodes-list">
 					<?php foreach ( $shortcodes as $sc ) : ?>
 						<div class="alezux-shortcode-item">
-							<div>
-								<span class="alezux-shortcode-tag">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
-								<p class="alezux-text" style="margin: 5px 0 0 0; font-size: 14px;"><?php echo esc_html( $sc['description'] ); ?></p>
+							<div style="flex: 1; padding-right: 20px;">
+								<div class="alezux-shortcode-header" style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+									<span class="alezux-shortcode-tag">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
+									<span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.5; border: 1px solid #555; padding: 2px 6px; border-radius: 4px;"><?php echo esc_html( $sc['module'] ); ?></span>
+								</div>
+								<p class="alezux-text" style="margin: 0; font-size: 14px; opacity: 0.8;"><?php echo esc_html( $sc['description'] ); ?></p>
 							</div>
-							<span style="font-size: 12px; opacity: 0.5;"><?php echo esc_html( $sc['module'] ); ?></span>
+							
+							<button class="alezux-copy-btn" data-clipboard-text="[<?php echo esc_attr( $sc['tag'] ); ?>]">
+								<span class="dashicons dashicons-admin-page" style="font-size: 16px; width: 16px; height: 16px;"></span>
+								<span class="btn-text">Copiar</span>
+							</button>
 						</div>
 					<?php endforeach; ?>
 				</div>
+                
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const copyBtns = document.querySelectorAll('.alezux-copy-btn');
+                    
+                    copyBtns.forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const textToCopy = this.getAttribute('data-clipboard-text');
+                            const originalText = this.querySelector('.btn-text').textContent;
+                            
+                            navigator.clipboard.writeText(textToCopy).then(() => {
+                                // Feedback visual
+                                this.classList.add('copied');
+                                this.querySelector('.btn-text').textContent = '¡Copiado!';
+                                
+                                setTimeout(() => {
+                                    this.classList.remove('copied');
+                                    this.querySelector('.btn-text').textContent = originalText;
+                                }, 2000);
+                            }).catch(err => {
+                                console.error('Error al copiar:', err);
+                            });
+                        });
+                    });
+                });
+                </script>
 			<?php endif; ?>
 		</div>
 	</div>
