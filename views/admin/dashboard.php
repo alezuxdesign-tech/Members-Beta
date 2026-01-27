@@ -110,6 +110,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 		background: #00b894;
 		color: black;
 	}
+	/* Estilos faltantes asegurados */
+	.alezux-card {
+		background: var(--alezux-bg-card, #1a1a1a);
+		padding: 25px;
+		border-radius: 20px;
+		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+		border: 1px solid var(--alezux-border-color, #333);
+		margin-bottom: 20px;
+	}
+	.alezux-title {
+		color: #ffffff; /* Forzar blanco */
+		margin-top: 0;
+		margin-bottom: 15px;
+		font-weight: 700;
+	}
+	.alezux-text {
+		color: #cccccc; /* Gris claro */
+		margin-bottom: 15px;
+		line-height: 1.6;
+	}
+	/* Asegurar visibilidad de paneles */
+	.alezux-tab-panel {
+		display: none;
+		width: 100%;
+	}
+	.alezux-tab-panel.active {
+		display: block !important;
+	}
 </style>
 
 <div class="alezux-dashboard-wrapper">
