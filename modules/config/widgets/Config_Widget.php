@@ -58,6 +58,18 @@ class Config_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'show_user_info',
+			[
+				'label' => esc_html__( 'Show Name & Email', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Show', 'alezux-members' ),
+				'label_off' => esc_html__( 'Hide', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- Section: Menu Items ---
@@ -452,10 +464,12 @@ class Config_Widget extends Widget_Base {
 		?>
 		<div class="alezux-config-card">
 			<div class="alezux-config-header">
-				<div class="alezux-config-info">
-					<h3 class="alezux-config-name"><?php echo esc_html( $user_name ); ?></h3>
-					<p class="alezux-config-email"><?php echo esc_html( $user_email ); ?></p>
-				</div>
+				<?php if ( 'yes' === $settings['show_user_info'] ) : ?>
+					<div class="alezux-config-info">
+						<h3 class="alezux-config-name"><?php echo esc_html( $user_name ); ?></h3>
+						<p class="alezux-config-email"><?php echo esc_html( $user_email ); ?></p>
+					</div>
+				<?php endif; ?>
 				<div class="alezux-config-avatar">
 					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_name ); ?>">
 				</div>
