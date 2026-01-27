@@ -59,8 +59,7 @@
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--alezux-primary, #6c5ce7);
-    padding: 2px;
+    /* Border is now handled by Elementor control */
 }
 
 /* Toggle Icon */

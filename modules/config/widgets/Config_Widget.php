@@ -227,6 +227,15 @@ class Config_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'header_avatar_border',
+				'label' => esc_html__( 'Avatar Border', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-config-avatar img',
+			]
+		);
+
 		$this->add_control(
 			'header_name_color',
 			[
@@ -289,6 +298,21 @@ class Config_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'menu_gap',
+			[
+				'label' => esc_html__( 'Item Spacing (Gap)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->add_control(
 			'menu_item_icon_size',
 			[
@@ -313,6 +337,8 @@ class Config_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-config-menu-icon' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-config-menu-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-config-menu-icon svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
