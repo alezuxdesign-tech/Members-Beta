@@ -2,9 +2,8 @@
     position: relative;
     width: 100%;
     padding: 20px 0;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    /* Quitamos flex/gap del contenedor porque las flechas serán absolutas */
+    display: block;
 }
 
 .alezux-slide-wrapper {
@@ -12,14 +11,12 @@
     gap: 20px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding-bottom: 20px;
-    /* Space for scrollbar if visible on some browsers */
-    padding: 10px;
-    /* Space for hover */
+    padding: 20px 10px;
+    /* Padding para que la sombra no se corte y espacio para flechas si están dentro */
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     /* Firefox */
-    flex: 1;
+    width: 100%;
 }
 
 .alezux-slide-wrapper::-webkit-scrollbar {
@@ -96,18 +93,40 @@
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
+
+    /* Flex para centrar icono */
+    display: flex;
     align-items: center;
     justify-content: center;
+
     transition: all 0.3s ease;
-    z-index: 10;
-    flex-shrink: 0;
-    display: flex;
-    /* Ensure centering works */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+    /* Absolute Positioning Default */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+/* Default positions (can be overridden by Elementor) */
+.alezux-slide-nav-prev {
+    left: 10px;
+}
+
+.alezux-slide-nav-next {
+    right: 10px;
 }
 
 .alezux-slide-nav:hover {
     background: var(--alezux-primary, #6c5ce7);
     border-color: var(--alezux-primary, #6c5ce7);
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
+    /* Mantener translateY */
+}
+
+.alezux-slide-nav i,
+.alezux-slide-nav svg {
+    font-size: inherit;
+    /* Heredar tamaño calculado en Elementor */
 }

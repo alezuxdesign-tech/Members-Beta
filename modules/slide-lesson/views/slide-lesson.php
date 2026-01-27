@@ -2,16 +2,34 @@
 /**
  * Vista: Slide Lesson
  * @var array $lessons Lista de lecciones con 'title', 'permalink', 'image_url'.
+ * @var array $settings Configuración de Elementor (opcional).
  */
 
 if ( empty( $lessons ) ) {
 	echo '<p>No se encontraron lecciones.</p>';
 	return;
 }
+
+// Valores por defecto para Shortcode
+$show_arrows = isset( $settings['show_arrows'] ) ? $settings['show_arrows'] : 'yes';
+
+// Helpers para renderizar iconos de Elementor o fallback
+$render_icon = function( $setting_key, $default_class ) use ( $settings ) {
+	if ( isset( $settings[ $setting_key ] ) && ! empty( $settings[ $setting_key ]['value'] ) ) {
+		\Elementor\Icons_Manager::render_icon( $settings[ $setting_key ], [ 'aria-hidden' => 'true' ] );
+	} else {
+		echo '<i class="' . esc_attr( $default_class ) . '"></i>';
+	}
+};
 ?>
 
 <div class="alezux-slide-lesson-container">
-	<button class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">&lt;</button>
+	
+	<?php if ( 'yes' === $show_arrows ) : ?>
+		<div class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">
+			<?php $render_icon( 'prev_arrow_icon', 'fas fa-chevron-left' ); ?>
+		</div>
+	<?php endif; ?>
 	
 	<div class="alezux-slide-wrapper">
 		<?php foreach ( $lessons as $lesson ) : ?>
@@ -28,5 +46,9 @@ if ( empty( $lessons ) ) {
 		<?php endforeach; ?>
 	</div>
 
-	<button class="alezux-slide-nav alezux-slide-nav-next" aria-label="Siguiente">&gt;</button>
+	<?php if ( 'yes' === $show_arrows ) : ?>
+		<div class="alezux-slide-nav alezux-slide-nav-next" aria-label="Siguiente">
+			<?php $render_icon( 'next_arrow_icon', 'fas fa-chevron-right' ); ?>
+		</div>
+	<?php endif; ?>
 </div>

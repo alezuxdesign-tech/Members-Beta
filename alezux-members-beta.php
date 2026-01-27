@@ -115,4 +115,17 @@ add_action( 'admin_enqueue_scripts', function() {
 	}
 });
 
+/**
+ * Registrar categoría personalizada en Elementor
+ */
+add_action( 'elementor/elements/categories_registered', function( $elements_manager ) {
+	$elements_manager->add_category(
+		'alezux-members',
+		[
+			'title' => esc_html__( 'Alezux Members', 'alezux-members' ),
+			'icon'  => 'fa fa-plug',
+		]
+	);
+} );
+
 

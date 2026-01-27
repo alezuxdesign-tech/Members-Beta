@@ -1,12 +1,14 @@
 <?php
 namespace Alezux_Members\Modules\Slide_Lesson\Widgets;
 
+
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Background;
+use Elementor\Icons_Manager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,15 +29,15 @@ class Slide_Lesson_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'basic' ]; // O crear una categoría propia 'alezux-members'
+		return [ 'alezux-members' ];
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-slide-lesson-js' ]; // Asegúrate de registrar este script primero
+		return [ 'alezux-slide-lesson-js' ];
 	}
 
 	public function get_style_depends() {
-		return [ 'alezux-slide-lesson-css' ]; // Asegúrate de registrar este estilo primero
+		return [ 'alezux-slide-lesson-css' ];
 	}
 
 	protected function register_controls() {
@@ -214,50 +216,364 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// --- Sección de Estilo: Botones de Navegación ---
+		// --- Sección de Estilo: Navegación Avanzada ---
 		$this->start_controls_section(
 			'section_style_nav',
 			[
-				'label' => esc_html__( 'Botones de Navegación', 'alezux-members' ),
+				'label' => esc_html__( 'Navegación', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
 
 		$this->add_control(
-			'nav_color',
+			'show_arrows',
 			[
-				'label' => esc_html__( 'Color del Icono', 'alezux-members' ),
+				'label' => esc_html__( 'Mostrar Flechas', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'default' => 'yes',
+			]
+		);
+
+		// --- Configuración Flecha Anterior ---
+		$this->add_control(
+			'heading_prev_arrow',
+			[
+				'label' => esc_html__( 'Flecha Anterior', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'prev_arrow_icon',
+			[
+				'label' => esc_html__( 'Icono', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-chevron-left',
+					'library' => 'fa-solid',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_prev_arrow_style', [ 'condition' => [ 'show_arrows' => 'yes' ] ] );
+
+		$this->start_controls_tab(
+			'tab_prev_arrow_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'prev_arrow_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => 'color: {{VALUE}};',
 				],
 			]
 		);
 
 		$this->add_control(
-			'nav_bg_color',
+			'prev_arrow_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
-		
-		$this->add_control(
-			'nav_border_radius',
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_prev_arrow_hover',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
-				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
+				'label' => esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'prev_arrow_color_hover',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => 'color: {{VALUE}};',
 				],
 			]
 		);
-		
+
 		$this->add_control(
+			'prev_arrow_bg_color_hover',
+			[
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// Posicionamiento Previous
+		$this->add_control(
+			'prev_horizontal_orientation',
+			[
+				'label' => esc_html__( 'Posición Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-h-align-left',
+					],
+					'right' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-h-align-right',
+					],
+				],
+				'default' => 'left',
+				'toggle' => false,
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'prev_horizontal_offset',
+			[
+				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '{{prev_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'prev_vertical_orientation',
+			[
+				'label' => esc_html__( 'Posición Vertical', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'top' => [
+						'title' => esc_html__( 'Arriba', 'alezux-members' ),
+						'icon' => 'eicon-v-align-top',
+					],
+					'bottom' => [
+						'title' => esc_html__( 'Abajo', 'alezux-members' ),
+						'icon' => 'eicon-v-align-bottom',
+					],
+				],
+				'default' => 'top', // Usaremos top 50% como base en CSS normalmente
+				'toggle' => false,
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'prev_vertical_offset',
+			[
+				'label' => esc_html__( 'Desplazamiento Vertical', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '{{prev_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		// --- Configuración Flecha Siguiente ---
+		$this->add_control(
+			'heading_next_arrow',
+			[
+				'label' => esc_html__( 'Flecha Siguiente', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'next_arrow_icon',
+			[
+				'label' => esc_html__( 'Icono', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-chevron-right',
+					'library' => 'fa-solid',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_next_arrow_style', [ 'condition' => [ 'show_arrows' => 'yes' ] ] );
+
+		$this->start_controls_tab(
+			'tab_next_arrow_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'next_arrow_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'next_arrow_bg_color',
+			[
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_next_arrow_hover',
+			[
+				'label' => esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'next_arrow_color_hover',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'next_arrow_bg_color_hover',
+			[
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// Posicionamiento Next
+		$this->add_control(
+			'next_horizontal_orientation',
+			[
+				'label' => esc_html__( 'Posición Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-h-align-left',
+					],
+					'right' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-h-align-right',
+					],
+				],
+				'default' => 'right',
+				'toggle' => false,
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'next_horizontal_offset',
+			[
+				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => '{{next_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'next_vertical_orientation',
+			[
+				'label' => esc_html__( 'Posición Vertical', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'top' => [
+						'title' => esc_html__( 'Arriba', 'alezux-members' ),
+						'icon' => 'eicon-v-align-top',
+					],
+					'bottom' => [
+						'title' => esc_html__( 'Abajo', 'alezux-members' ),
+						'icon' => 'eicon-v-align-bottom',
+					],
+				],
+				'default' => 'top',
+				'toggle' => false,
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
+			'next_vertical_offset',
+			[
+				'label' => esc_html__( 'Desplazamiento Vertical', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => '{{next_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+		
+		// Estilos comunes para las flechas (tamaño, borde)
+		$this->add_control(
+			'heading_nav_style',
+			[
+				'label' => esc_html__( 'Estilo General de Flechas', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_responsive_control(
 			'nav_size',
 			[
 				'label' => esc_html__( 'Tamaño del Botón', 'alezux-members' ),
@@ -269,8 +585,22 @@ class Slide_Lesson_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; font-size: calc({{SIZE}}{{UNIT}} * 0.4);',
 				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
+			'nav_border_radius',
+			[
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
 			]
 		);
 
