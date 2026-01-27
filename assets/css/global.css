@@ -33,7 +33,7 @@
     border-radius: var(--alezux-border-radius);
     padding: var(--alezux-spacing-lg);
     border: 1px solid var(--alezux-border-color);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--alezux-box-shadow);
     color: var(--alezux-text-main);
     font-family: var(--alezux-font-family);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -41,7 +41,7 @@
 
 .alezux-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(108, 92, 231, 0.1);
+    box-shadow: var(--alezux-box-shadow);
     border-color: var(--alezux-primary);
 }
 
@@ -63,7 +63,7 @@
     background-color: var(--alezux-primary);
     color: #fff;
     padding: 12px 30px;
-    border-radius: 50px;
+    border-radius: var(--alezux-border-radius);
     /* Pill shape */
     text-decoration: none;
     font-weight: 600;

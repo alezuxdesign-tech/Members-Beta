@@ -69,8 +69,12 @@ class Admin_Dashboard {
 		// Obtener opciones guardadas
 		$settings = [
 			'primary_color' => get_option( 'alezux_primary_color', '#6c5ce7' ),
+			'primary_hover' => get_option( 'alezux_primary_hover', '#5649c0' ),
 			'bg_base'       => get_option( 'alezux_bg_base', '#0f0f0f' ),
 			'bg_card'       => get_option( 'alezux_bg_card', '#1a1a1a' ),
+			'border_radius' => get_option( 'alezux_border_radius', '50px' ),
+			'border_color'  => get_option( 'alezux_border_color', '#333333' ),
+			'box_shadow'    => get_option( 'alezux_box_shadow', '0 10px 30px rgba(0, 0, 0, 0.3)' ),
 		];
 
 		// Obtener shortcodes registrados desde Module_Base
@@ -86,15 +90,27 @@ class Admin_Dashboard {
 
 		check_admin_referer( 'alezux_save_settings_action', 'alezux_settings_nonce' );
 
-		// Guardar colores
+		// Guardar colores y estilos
 		if ( isset( $_POST['alezux_primary_color'] ) ) {
 			update_option( 'alezux_primary_color', sanitize_hex_color( $_POST['alezux_primary_color'] ) );
+		}
+		if ( isset( $_POST['alezux_primary_hover'] ) ) {
+			update_option( 'alezux_primary_hover', sanitize_hex_color( $_POST['alezux_primary_hover'] ) );
 		}
 		if ( isset( $_POST['alezux_bg_base'] ) ) {
 			update_option( 'alezux_bg_base', sanitize_hex_color( $_POST['alezux_bg_base'] ) );
 		}
 		if ( isset( $_POST['alezux_bg_card'] ) ) {
 			update_option( 'alezux_bg_card', sanitize_hex_color( $_POST['alezux_bg_card'] ) );
+		}
+		if ( isset( $_POST['alezux_border_radius'] ) ) {
+			update_option( 'alezux_border_radius', sanitize_text_field( $_POST['alezux_border_radius'] ) );
+		}
+		if ( isset( $_POST['alezux_border_color'] ) ) {
+			update_option( 'alezux_border_color', sanitize_hex_color( $_POST['alezux_border_color'] ) );
+		}
+		if ( isset( $_POST['alezux_box_shadow'] ) ) {
+			update_option( 'alezux_box_shadow', sanitize_text_field( $_POST['alezux_box_shadow'] ) );
 		}
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );

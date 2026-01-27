@@ -112,8 +112,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 				
 				<div class="alezux-form-group">
 					<label class="alezux-form-label">Color Primario (Acento)</label>
-					<input type="color" name="alezux_primary_color" class="alezux-color-input" value="<?php echo esc_attr( $settings['primary_color'] ); ?>">
+					<div style="display: flex; gap: 10px; align-items: center;">
+						<input type="color" name="alezux_primary_color" class="alezux-color-input" value="<?php echo esc_attr( $settings['primary_color'] ); ?>">
+						<!-- Hover Variant -->
+						<div style="margin-left: 20px;">
+							<label class="alezux-form-label" style="display:inline; margin-right:10px;">Color Hover:</label>
+							<input type="color" name="alezux_primary_hover" class="alezux-color-input" value="<?php echo esc_attr( $settings['primary_hover'] ); ?>">
+						</div>
+					</div>
 				</div>
+
+				<div class="alezux-form-group">
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 15px;">📐 Bordes y Sombras</h3>
+					
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+						<div>
+							<label class="alezux-form-label">Radio del Borde (px o %)</label>
+							<input type="text" name="alezux_border_radius" class="alezux-input" 
+								   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; width: 100%;"
+								   value="<?php echo esc_attr( $settings['border_radius'] ); ?>" placeholder="50px">
+						</div>
+						
+						<div>
+							<label class="alezux-form-label">Color del Borde</label>
+							<input type="color" name="alezux_border_color" class="alezux-color-input" value="<?php echo esc_attr( $settings['border_color'] ); ?>">
+						</div>
+					</div>
+
+					<div style="margin-top: 15px;">
+						<label class="alezux-form-label">Sombra de Cajas (CSS Box Shadow)</label>
+						<input type="text" name="alezux_box_shadow" class="alezux-input" 
+							   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; width: 100%;"
+							   value="<?php echo esc_attr( $settings['box_shadow'] ); ?>" placeholder="0 10px 30px rgba(0, 0, 0, 0.3)">
+					</div>
 
 				<div class="alezux-form-group">
 					<label class="alezux-form-label">Fondo Base (Modo Oscuro)</label>
