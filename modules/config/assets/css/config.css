@@ -1,0 +1,106 @@
+.alezux-config-card {
+    background-color: var(--alezux-bg-card, #fff);
+    border-radius: var(--alezux-border-radius, 20px);
+    box-shadow: var(--alezux-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
+    padding: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--alezux-border-color, #eee);
+}
+
+/* Header Section */
+.alezux-config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--alezux-border-color, #eee);
+}
+
+.alezux-config-info {
+    flex: 1;
+    padding-right: 15px;
+}
+
+.alezux-config-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.alezux-config-email {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.alezux-config-avatar {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.alezux-config-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--alezux-primary, #6c5ce7);
+    /* Colorful ring emulation */
+    padding: 2px;
+    /* Space between border and image */
+}
+
+/* Menu Section */
+.alezux-config-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alezux-config-menu-item {
+    transition: background-color 0.2s ease;
+    border-radius: 10px;
+    padding: 0;
+}
+
+.alezux-config-menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.alezux-config-menu-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: color 0.2s ease;
+    width: 100%;
+}
+
+.alezux-config-menu-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.alezux-config-menu-text {
+    font-weight: 500;
+    flex: 1;
+}
+
+/* Specific styling for the "Pro" badge if added via custom HTML later, 
+   but for now just standard menu items */
+
+/* Dark Mode Support (if global variable handles it, mostly auto, but good to ensure text colors) */
+@media (prefers-color-scheme: dark) {
+    /* If variables are correct, this should be automatic, 
+      but enforcing some defaults if vars fail */
+}
