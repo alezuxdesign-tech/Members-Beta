@@ -64,6 +64,38 @@
     transform: scale(1.05);
 }
 
+/* Efecto Resplandor (Shine) personalizado */
+.alezux-slide-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 20%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 10%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 90%);
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+    transform: skewX(-20deg);
+    transition: all 0.5s ease-in-out;
+    pointer-events: none;
+    /* Asegurar que no interfiera con clicks */
+    z-index: 5;
+}
+
+.alezux-slide-item:hover::after {
+    animation: alezux-shine 3s infinite linear;
+}
+
+@keyframes alezux-shine {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 200%;
+    }
+}
+
 /* Contenido del Item */
 .alezux-slide-content {
     position: absolute;
