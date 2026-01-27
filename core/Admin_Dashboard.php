@@ -63,6 +63,21 @@ class Admin_Dashboard {
 				});
 			});
 		' );
+
+		// Estilos para corregir el tamaño del ícono del menú
+		wp_add_inline_style( 'alezux-members-global', '
+			#adminmenu #toplevel_page_alezux-members .wp-menu-image img {
+				max-width: 20px;
+				max-height: 20px;
+				width: 20px;
+				height: auto;
+				padding-top: 8px; /* Alineación vertical estándar WP */
+				opacity: 0.9;
+			}
+			#adminmenu #toplevel_page_alezux-members:hover .wp-menu-image img {
+				opacity: 1;
+			}
+		' );
 	}
 
 	public function render_dashboard() {
