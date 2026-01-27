@@ -786,7 +786,9 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		// Reutilizar la vista existente
 		// Usar __FILE__ para evitar ambigüedades con __DIR__
-		$view_path = plugin_dir_path( __FILE__ ) . '../../views/slide-lesson.php';
+		// plugin_dir_path( __FILE__ ) devuelve .../widgets/
+		// Subimos un nivel para llegar a .../modules/slide-lesson/
+		$view_path = plugin_dir_path( __FILE__ ) . '../views/slide-lesson.php';
 		
 		if ( file_exists( $view_path ) ) {
 			// Wrapper específico para estilo y aislamiento
@@ -794,7 +796,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 			include $view_path;
 			echo '</div>';
 		} else {
-			echo 'View definition not found';
+			echo 'View definition not found: ' . esc_html( $view_path );
 		}
 	}
 }
