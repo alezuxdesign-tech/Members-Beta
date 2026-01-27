@@ -11,16 +11,22 @@ if ( empty( $lessons ) ) {
 ?>
 
 <div class="alezux-slide-lesson-container">
+	<button class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">&lt;</button>
+	
 	<div class="alezux-slide-wrapper">
 		<?php foreach ( $lessons as $lesson ) : ?>
 			<?php if ( ! empty( $lesson['image_url'] ) ) : ?>
 				<div class="alezux-slide-item">
 					<a href="<?php echo esc_url( $lesson['permalink'] ); ?>" class="alezux-slide-link" title="<?php echo esc_attr( $lesson['title'] ); ?>">
 						<img src="<?php echo esc_url( $lesson['image_url'] ); ?>" alt="<?php echo esc_attr( $lesson['title'] ); ?>" loading="lazy" />
-						<span class="alezux-slide-title"><?php echo esc_html( $lesson['title'] ); ?></span>
+						<div class="alezux-slide-content">
+							<span class="alezux-slide-title"><?php echo esc_html( $lesson['title'] ); ?></span>
+						</div>
 					</a>
 				</div>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	</div>
+
+	<button class="alezux-slide-nav alezux-slide-nav-next" aria-label="Siguiente">&gt;</button>
 </div>
