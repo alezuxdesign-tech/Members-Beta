@@ -59,7 +59,7 @@ class Config_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'show_user_info',
+			'user_info_visibility',
 			[
 				'label' => esc_html__( 'Show Name & Email', 'alezux-members' ),
 				'type' => Controls_Manager::SWITCHER,
@@ -67,6 +67,19 @@ class Config_Widget extends Widget_Base {
 				'label_off' => esc_html__( 'Hide', 'alezux-members' ),
 				'return_value' => 'yes',
 				'default' => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'avatar_position',
+			[
+				'label' => esc_html__( 'Avatar Position', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'right',
+				'options' => [
+					'left' => esc_html__( 'Left', 'alezux-members' ),
+					'right' => esc_html__( 'Right', 'alezux-members' ),
+				],
 			]
 		);
 
@@ -365,6 +378,61 @@ class Config_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'menu_offset',
+			[
+				'label' => esc_html__( 'Vertical Offset', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => -50, 'max' => 100 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu' => 'top: calc(100% + {{SIZE}}{{UNIT}});',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'menu_background',
+				'label' => esc_html__( 'Menu Background', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-config-menu',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'menu_border',
+				'label' => esc_html__( 'Menu Border', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-config-menu',
+			]
+		);
+
+		$this->add_control(
+			'menu_border_radius',
+			[
+				'label' => esc_html__( 'Menu Radius', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'menu_box_shadow',
+				'label' => esc_html__( 'Menu Shadow', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-config-menu',
+			]
+		);
+
 		$this->add_control(
 			'menu_item_icon_size',
 			[
@@ -485,22 +553,26 @@ class Config_Widget extends Widget_Base {
 			$user_email = 'guest@example.com';
 			$avatar_url = get_avatar_url( 0 ); // Default avatar
 		} else {
-			$user_name = $current_user->display_name;
-			$user_email = $current_user->user_email;
-			$avatar_url = get_avatar_url( $current_user->ID );
-		}
+			$user_id = get_current_user_id();
+		$user_info = get_userdata($user_id);
+		$avatar_url = get_avatar_url($user_id);
+
+		// Determine Layout Class
+		$layout_class = 'alezux-layout-' . $settings['avatar_position'];
 		?>
 		<div class="alezux-config-card">
-			<div class="alezux-config-header">
-				<?php if ( 'yes' === $settings['show_user_info'] ) : ?>
+			<div class="alezux-config-header <?php echo esc_attr( $layout_class ); ?>">
+				<?php if ( 'yes' === $settings['user_info_visibility'] ) : ?>
 					<div class="alezux-config-info">
-						<h3 class="alezux-config-name"><?php echo esc_html( $user_name ); ?></h3>
-						<p class="alezux-config-email"><?php echo esc_html( $user_email ); ?></p>
+						<h3 class="alezux-config-name"><?php echo esc_html( $user_info->display_name ); ?></h3>
+						<p class="alezux-config-email"><?php echo esc_html( $user_info->user_email ); ?></p>
 					</div>
 				<?php endif; ?>
+				
 				<div class="alezux-config-avatar">
-					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_name ); ?>">
+					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_info->display_name ); ?>">
 				</div>
+				
 				<div class="alezux-config-toggle">
 					<i class="fas fa-chevron-down alezux-config-toggle-icon"></i>
 				</div>
