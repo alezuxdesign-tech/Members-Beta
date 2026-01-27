@@ -249,4 +249,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Alezux Members: Dashboard View Script Loaded");
+    
+    const tabs = document.querySelectorAll(".alezux-tab-link");
+    const panels = document.querySelectorAll(".alezux-tab-panel");
+    
+    function switchTab(targetId) {
+        // 1. Ocultar todos
+        tabs.forEach(t => t.classList.remove("active"));
+        panels.forEach(p => {
+            p.classList.remove("active");
+            p.style.display = "none";
+        });
+        
+        // 2. Mostrar target
+        const activeTab = document.querySelector(`.alezux-tab-link[data-target="${targetId}"]`);
+        const activePanel = document.getElementById(targetId);
+        
+        if(activeTab && activePanel) {
+            activeTab.classList.add("active");
+            activePanel.classList.add("active");
+            activePanel.style.display = "block";
+        }
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target'); // Usar getAttribute para mayor compatibilidad
+            if(targetId) {
+                switchTab(targetId);
+            }
+        });
+    });
+
+    // Inicializar estado: forzar display block al activo
+    const defaultActive = document.querySelector(".alezux-tab-panel.active");
+    if(defaultActive) {
+        defaultActive.style.display = "block";
+    }
+});
+</script>
 </div>
