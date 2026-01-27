@@ -216,6 +216,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+
 		// --- Sección de Estilo: Navegación Avanzada ---
 		$this->start_controls_section(
 			'section_style_nav',
@@ -275,7 +276,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-color: {{VALUE}};',
 				],
 			]
 		);
@@ -286,7 +287,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-bg: {{VALUE}};',
 				],
 			]
 		);
@@ -306,7 +307,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => '--alezux-nav-color-hover: {{VALUE}};',
 				],
 			]
 		);
@@ -317,7 +318,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev:hover' => '--alezux-nav-bg-hover: {{VALUE}};',
 				],
 			]
 		);
@@ -342,7 +343,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 						'icon' => 'eicon-h-align-right',
 					],
 				],
-				'default' => 'left',
+				'default' => 'right',
 				'toggle' => false,
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -354,10 +355,10 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
-					'px' => [ 'min' => -200, 'max' => 200 ],
+					'px' => [ 'min' => -200, 'max' => 500 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => '{{prev_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-{{prev_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -378,7 +379,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 						'icon' => 'eicon-v-align-bottom',
 					],
 				],
-				'default' => 'top', // Usaremos top 50% como base en CSS normalmente
+				'default' => 'top',
 				'toggle' => false,
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -393,7 +394,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 					'px' => [ 'min' => -200, 'max' => 200 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => '{{prev_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-{{prev_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -438,7 +439,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-color: {{VALUE}};',
 				],
 			]
 		);
@@ -449,7 +450,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-bg: {{VALUE}};',
 				],
 			]
 		);
@@ -469,7 +470,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-next:hover' => '--alezux-nav-color-hover: {{VALUE}};',
 				],
 			]
 		);
@@ -480,7 +481,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next:hover' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-slide-nav-next:hover' => '--alezux-nav-bg-hover: {{VALUE}};',
 				],
 			]
 		);
@@ -517,10 +518,10 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
-					'px' => [ 'min' => -200, 'max' => 200 ],
+					'px' => [ 'min' => -200, 'max' => 500 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => '{{next_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-{{next_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -556,7 +557,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 					'px' => [ 'min' => -200, 'max' => 200 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => '{{next_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-{{next_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -585,7 +586,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; font-size: calc({{SIZE}}{{UNIT}} * 0.4);',
+					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-size: {{SIZE}}{{UNIT}}; font-size: calc({{SIZE}}{{UNIT}} * 0.4);',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
@@ -598,7 +599,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]

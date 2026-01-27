@@ -86,12 +86,14 @@
 
 /* Botones de Navegación */
 .alezux-slide-nav {
-    background: var(--alezux-bg-card, #1a1a1a);
-    color: #fff;
-    border: 1px solid var(--alezux-border-color, #333);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    /* Estilos Base Visuales (Referencia: Amarillo, Circular) */
+    background-color: var(--alezux-nav-bg, #f1c40f);
+    /* Default Yellow */
+    color: var(--alezux-nav-color, #333);
+    border: 1px solid var(--alezux-nav-border-color, transparent);
+    width: var(--alezux-nav-size, 40px);
+    height: var(--alezux-nav-size, 40px);
+    border-radius: var(--alezux-nav-radius, 50%);
     cursor: pointer;
 
     /* Flex para centrar icono */
@@ -102,27 +104,44 @@
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
-    /* Absolute Positioning Default */
+    /* Posicionamiento Absoluto Dinámico */
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     z-index: 10;
+
+    /* Variables de control de posición (valores por defecto) */
+    top: var(--alezux-nav-top, auto);
+    bottom: var(--alezux-nav-bottom, auto);
+    left: var(--alezux-nav-left, auto);
+    right: var(--alezux-nav-right, auto);
+    transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0));
 }
 
-/* Default positions (can be overridden by Elementor) */
+/* Default positions: Arriba Derecha (como en la imagen de referencia) */
 .alezux-slide-nav-prev {
-    left: 10px;
+    --alezux-nav-top: 0px;
+    --alezux-nav-right: 60px;
+    /* A la izquierda del botón next */
+    --alezux-nav-left: auto;
+    --alezux-nav-bottom: auto;
+    --alezux-nav-y: -120%;
+    /* Mover hacia arriba fuera del contenedor */
 }
 
 .alezux-slide-nav-next {
-    right: 10px;
+    --alezux-nav-top: 0;
+    --alezux-nav-right: 10px;
+    /* A la derecha */
+    --alezux-nav-left: auto;
+    --alezux-nav-bottom: auto;
+    --alezux-nav-y: -120%;
+    /* Mover hacia arriba fuera del contenedor */
 }
 
 .alezux-slide-nav:hover {
-    background: var(--alezux-primary, #6c5ce7);
-    border-color: var(--alezux-primary, #6c5ce7);
-    transform: translateY(-50%) scale(1.1);
-    /* Mantener translateY */
+    /* Efecto Hover */
+    background-color: var(--alezux-nav-bg-hover, #f39c12);
+    color: var(--alezux-nav-color-hover, #000);
+    transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0)) scale(1.1);
 }
 
 .alezux-slide-nav i,
