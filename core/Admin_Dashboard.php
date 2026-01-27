@@ -11,6 +11,26 @@ class Admin_Dashboard {
 		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_post_alezux_save_settings', [ $this, 'save_settings' ] );
+		// Fix Icono Globalmente
+		add_action( 'admin_head', [ $this, 'print_menu_icon_styles' ] );
+	}
+
+	public function print_menu_icon_styles() {
+		?>
+		<style>
+			#adminmenu #toplevel_page_alezux-members .wp-menu-image img {
+				max-width: 20px;
+				max-height: 20px;
+				width: 20px;
+				height: auto;
+				padding-top: 8px;
+				opacity: 0.9;
+			}
+			#adminmenu #toplevel_page_alezux-members:hover .wp-menu-image img {
+				opacity: 1;
+			}
+		</style>
+		<?php
 	}
 
 	public function add_admin_menu() {
@@ -26,22 +46,7 @@ class Admin_Dashboard {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		// 1. CSS Global para el Icono del Menú (Debe cargarse en TODO el admin)
-		wp_add_inline_style( 'admin-bar', '
-			#adminmenu #toplevel_page_alezux-members .wp-menu-image img {
-				max-width: 20px;
-				max-height: 20px;
-				width: 20px;
-				height: auto;
-				padding-top: 8px;
-				opacity: 0.9;
-			}
-			#adminmenu #toplevel_page_alezux-members:hover .wp-menu-image img {
-				opacity: 1;
-			}
-		' );
-
-		// 2. Assets específicos SOLO para nuestra página de Dashboard
+		// Assets específicos SOLO para nuestra página de Dashboard
 		if ( 'toplevel_page_alezux-members' !== $hook ) {
 			return;
 		}
@@ -80,6 +85,7 @@ class Admin_Dashboard {
 			});
 		' );
 	}
+
 
 
 	public function render_dashboard() {
