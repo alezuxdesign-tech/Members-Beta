@@ -703,6 +703,24 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'nav_icon_size',
+			[
+				'label' => esc_html__( 'Tamaño del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-icon-size: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
 		$this->add_control(
 			'nav_border_radius',
 			[
@@ -712,6 +730,26 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'nav_border',
+				'label' => esc_html__( 'Borde', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-slide-nav',
+				'condition' => [ 'show_arrows' => 'yes' ],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'nav_box_shadow',
+				'label' => esc_html__( 'Sombra de Caja', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-slide-nav',
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
 		);

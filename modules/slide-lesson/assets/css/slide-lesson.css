@@ -86,20 +86,21 @@
 
 /* Botones de Navegación */
 .alezux-slide-nav {
-    /* Estilos Base Visuales (Referencia: Amarillo, Circular) */
+    /* Estilos Base Visuales */
     background-color: var(--alezux-nav-bg, #f1c40f);
-    /* Default Yellow */
     color: var(--alezux-nav-color, #333);
-    border: 1px solid var(--alezux-nav-border-color, transparent);
+
+    /* Permitir que Elementor controle el borde */
+    /* border se maneja via control de Elementor */
 
     /* TAMAÑO ESTRICTO DEL CONTENEDOR */
-    width: var(--alezux-nav-size, 40px) !important;
-    height: var(--alezux-nav-size, 40px) !important;
-    min-width: var(--alezux-nav-size, 40px) !important;
-    min-height: var(--alezux-nav-size, 40px) !important;
+    width: var(--alezux-nav-size, 40px);
+    height: var(--alezux-nav-size, 40px);
+    min-width: var(--alezux-nav-size, 40px);
+    min-height: var(--alezux-nav-size, 40px);
 
-    /* FUENTE RELATIVA AL TAMAÑO */
-    font-size: calc(var(--alezux-nav-size, 40px) * 0.4) !important;
+    /* FUENTE RELATIVA AL TAMAÑO O PERSONALIZADA */
+    font-size: var(--alezux-nav-icon-size, calc(var(--alezux-nav-size, 40px) * 0.4)) !important;
     line-height: 1 !important;
 
     border-radius: var(--alezux-nav-radius, 50%);
