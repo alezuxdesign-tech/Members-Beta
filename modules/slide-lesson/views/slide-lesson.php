@@ -10,7 +10,12 @@ if ( empty( $lessons ) ) {
 	return;
 }
 
-// Valores por defecto para Shortcode
+// Asegurar que $settings existe (para Shortcode)
+if ( ! isset( $settings ) || ! is_array( $settings ) ) {
+	$settings = [];
+}
+
+// Valores por defecto
 $show_arrows = isset( $settings['show_arrows'] ) ? $settings['show_arrows'] : 'yes';
 
 // Helpers para renderizar iconos de Elementor o fallback

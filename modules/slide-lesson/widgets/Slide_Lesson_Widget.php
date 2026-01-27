@@ -785,13 +785,14 @@ class Slide_Lesson_Widget extends Widget_Base {
 		}
 
 		// Reutilizar la vista existente
-		// Necesitamos la ruta absoluta a la vista. 
-		// Como estamos en modules/slide-lesson/widgets/Slide_Lesson_Widget.php
-		// La vista está en ../views/slide-lesson.php
-		$view_path = plugin_dir_path( __DIR__ ) . 'views/slide-lesson.php';
+		// Usar __FILE__ para evitar ambigüedades con __DIR__
+		$view_path = plugin_dir_path( __FILE__ ) . '../../views/slide-lesson.php';
 		
 		if ( file_exists( $view_path ) ) {
+			// Wrapper específico para estilo y aislamiento
+			echo '<div class="alezux-widget-wrapper">';
 			include $view_path;
+			echo '</div>';
 		} else {
 			echo 'View definition not found';
 		}
