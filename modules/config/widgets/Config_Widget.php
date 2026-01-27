@@ -547,30 +547,33 @@ class Config_Widget extends Widget_Base {
 		$settings = $this->get_settings_for_display();
 		$current_user = wp_get_current_user();
 
-		if ( ! $current_user->exists() ) {
-			// Fallback for non-logged in users or builder view
-			$user_name = 'Guest User';
-			$user_email = 'guest@example.com';
-			$avatar_url = get_avatar_url( 0 ); // Default avatar
-		} else {
-			$user_id = get_current_user_id();
-		$user_info = get_userdata($user_id);
-		$avatar_url = get_avatar_url($user_id);
+		// Defaults
+		$user_name = 'Guest User';
+		$user_email = 'guest@example.com';
+		$avatar_url = get_avatar_url( 0 ); // Default
+		$layout_class = 'alezux-layout-' . ( isset($settings['avatar_position']) ? $settings['avatar_position'] : 'right' );
 
-		// Determine Layout Class
-		$layout_class = 'alezux-layout-' . $settings['avatar_position'];
+		if ( $current_user->exists() ) {
+			$user_id = $current_user->ID;
+			$user_info = get_userdata($user_id);
+			if ( $user_info ) {
+				$user_name = $user_info->display_name;
+				$user_email = $user_info->user_email;
+			}
+			$avatar_url = get_avatar_url($user_id);
+		}
 		?>
 		<div class="alezux-config-card">
 			<div class="alezux-config-header <?php echo esc_attr( $layout_class ); ?>">
 				<?php if ( 'yes' === $settings['user_info_visibility'] ) : ?>
 					<div class="alezux-config-info">
-						<h3 class="alezux-config-name"><?php echo esc_html( $user_info->display_name ); ?></h3>
-						<p class="alezux-config-email"><?php echo esc_html( $user_info->user_email ); ?></p>
+						<h3 class="alezux-config-name"><?php echo esc_html( $user_name ); ?></h3>
+						<p class="alezux-config-email"><?php echo esc_html( $user_email ); ?></p>
 					</div>
 				<?php endif; ?>
 				
 				<div class="alezux-config-avatar">
-					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_info->display_name ); ?>">
+					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_name ); ?>">
 				</div>
 				
 				<div class="alezux-config-toggle">
