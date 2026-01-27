@@ -1,13 +1,5 @@
-.alezux-demo-block {
-	border: 2px solid #6c5ce7;
-	padding: 20px;
-	border-radius: 10px;
-	background-color: #f9f9f9;
-	text-align: center;
-}
-
-.alezux-demo-title {
-	color: #2d3436;
-	font-weight: bold;
-	margin-bottom: 10px;
+/* El CSS específico del módulo es mínimo ahora, ya que usamos clases globales */
+.alezux-demo-block-wrapper {
+	/* Podemos añadir espaciado u overrides específicos aquí si fuera necesario */
+	margin: 20px 0;
 }

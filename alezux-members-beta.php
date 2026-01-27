@@ -44,3 +44,19 @@ function alezux_members_init() {
 	}
 }
 add_action( 'plugins_loaded', 'alezux_members_init' );
+
+/**
+ * Encolar estilos globales del plugin.
+ */
+function alezux_members_enqueue_global_assets() {
+	wp_enqueue_style( 
+		'alezux-members-global', 
+		ALEZUX_MEMBERS_URL . 'assets/css/global.css', 
+		[], 
+		ALEZUX_MEMBERS_VERSION 
+	);
+}
+add_action( 'wp_enqueue_scripts', 'alezux_members_enqueue_global_assets' );
+// Encolar también en el editor de Elementor para que se vea bien mientras se edita
+add_action( 'elementor/frontend/after_enqueue_styles', 'alezux_members_enqueue_global_assets' );
+
