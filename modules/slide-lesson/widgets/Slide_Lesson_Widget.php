@@ -261,6 +261,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		// Estilos Normal/Hover (Color/Bg)
 		$this->start_controls_tabs( 'tabs_prev_arrow_style', [ 'condition' => [ 'show_arrows' => 'yes' ] ] );
 
 		$this->start_controls_tab(
@@ -327,7 +328,8 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		$this->end_controls_tabs();
 
-		// Posicionamiento Previous
+		// Posicionamiento Previous - Lógica Robusta
+		// Selector de Orientación
 		$this->add_control(
 			'prev_horizontal_orientation',
 			[
@@ -349,18 +351,45 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		// Offset Izquierda (Solo visible si left)
 		$this->add_responsive_control(
-			'prev_horizontal_offset',
+			'prev_offset_left',
 			[
-				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
+				'label' => esc_html__( 'Offset Izquierda', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [ 'min' => -200, 'max' => 500 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-{{prev_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-left: {{SIZE}}{{UNIT}}; --alezux-nav-right: auto;',
 				],
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'prev_horizontal_orientation' => 'left',
+				],
+			]
+		);
+
+		// Offset Derecha (Solo visible si right)
+		$this->add_responsive_control(
+			'prev_offset_right',
+			[
+				'label' => esc_html__( 'Offset Derecha', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 60,
+					'unit' => 'px',
+				],
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 500 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-right: {{SIZE}}{{UNIT}}; --alezux-nav-left: auto;',
+				],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'prev_horizontal_orientation' => 'right',
+				],
 			]
 		);
 
@@ -385,20 +414,48 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		// Offset Arriba
 		$this->add_responsive_control(
-			'prev_vertical_offset',
+			'prev_offset_top',
 			[
-				'label' => esc_html__( 'Desplazamiento Vertical', 'alezux-members' ),
+				'label' => esc_html__( 'Offset Arriba', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => -60,
+					'unit' => 'px',
+				],
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-top: {{SIZE}}{{UNIT}}; --alezux-nav-bottom: auto;',
+				],
+				'condition' => [
+					'show_arrows' => 'yes',
+					'prev_vertical_orientation' => 'top',
+				],
+			]
+		);
+
+		// Offset Abajo
+		$this->add_responsive_control(
+			'prev_offset_bottom',
+			[
+				'label' => esc_html__( 'Offset Abajo', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [ 'min' => -200, 'max' => 200 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-{{prev_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-prev' => '--alezux-nav-bottom: {{SIZE}}{{UNIT}}; --alezux-nav-top: auto;',
 				],
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [
+					'show_arrows' => 'yes',
+					'prev_vertical_orientation' => 'bottom',
+				],
 			]
 		);
+
 
 		// --- Configuración Flecha Siguiente ---
 		$this->add_control(
@@ -490,7 +547,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		$this->end_controls_tabs();
 
-		// Posicionamiento Next
+		// Posicionamiento Next - Lógica Robusta
 		$this->add_control(
 			'next_horizontal_orientation',
 			[
@@ -512,18 +569,45 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		// Offset Izquierda Next
 		$this->add_responsive_control(
-			'next_horizontal_offset',
+			'next_offset_left',
 			[
-				'label' => esc_html__( 'Desplazamiento Horizontal', 'alezux-members' ),
+				'label' => esc_html__( 'Offset Izquierda', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [ 'min' => -200, 'max' => 500 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-{{next_horizontal_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-left: {{SIZE}}{{UNIT}}; --alezux-nav-right: auto;',
 				],
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'next_horizontal_orientation' => 'left',
+				],
+			]
+		);
+
+		// Offset Derecha Next
+		$this->add_responsive_control(
+			'next_offset_right',
+			[
+				'label' => esc_html__( 'Offset Derecha', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 10,
+					'unit' => 'px',
+				],
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 500 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-right: {{SIZE}}{{UNIT}}; --alezux-nav-left: auto;',
+				],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'next_horizontal_orientation' => 'right',
+				],
 			]
 		);
 
@@ -548,18 +632,45 @@ class Slide_Lesson_Widget extends Widget_Base {
 			]
 		);
 
+		// Offset Arriba Next
 		$this->add_responsive_control(
-			'next_vertical_offset',
+			'next_offset_top',
 			[
-				'label' => esc_html__( 'Desplazamiento Vertical', 'alezux-members' ),
+				'label' => esc_html__( 'Offset Arriba', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => -60,
+					'unit' => 'px',
+				],
+				'range' => [
+					'px' => [ 'min' => -200, 'max' => 200 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-top: {{SIZE}}{{UNIT}}; --alezux-nav-bottom: auto;',
+				],
+				'condition' => [
+					'show_arrows' => 'yes',
+					'next_vertical_orientation' => 'top',
+				],
+			]
+		);
+
+		// Offset Abajo Next
+		$this->add_responsive_control(
+			'next_offset_bottom',
+			[
+				'label' => esc_html__( 'Offset Abajo', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [ 'min' => -200, 'max' => 200 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-{{next_vertical_orientation.VALUE}}: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-bottom: {{SIZE}}{{UNIT}}; --alezux-nav-top: auto;',
 				],
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [
+					'show_arrows' => 'yes',
+					'next_vertical_orientation' => 'bottom',
+				],
 			]
 		);
 		
@@ -586,7 +697,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-size: {{SIZE}}{{UNIT}}; font-size: calc({{SIZE}}{{UNIT}} * 0.4);',
+					'{{WRAPPER}} .alezux-slide-nav' => '--alezux-nav-size: {{SIZE}}{{UNIT}};',
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]

@@ -92,18 +92,20 @@
     color: var(--alezux-nav-color, #333);
     border: 1px solid var(--alezux-nav-border-color, transparent);
 
-    /* TAMAÑO CRUDO PARA EVITAR HERENCIA GIGANTE */
+    /* TAMAÑO ESTRICTO DEL CONTENEDOR */
     width: var(--alezux-nav-size, 40px) !important;
     height: var(--alezux-nav-size, 40px) !important;
-    /* El tamaño de fuente será proporcional al tamaño del botón */
+    min-width: var(--alezux-nav-size, 40px) !important;
+    min-height: var(--alezux-nav-size, 40px) !important;
+
+    /* FUENTE RELATIVA AL TAMAÑO */
     font-size: calc(var(--alezux-nav-size, 40px) * 0.4) !important;
     line-height: 1 !important;
-    /* Evitar que line-height del tema expanda el botón */
 
     border-radius: var(--alezux-nav-radius, 50%);
     cursor: pointer;
 
-    /* Flex para centrar icono */
+    /* FLEXBOX PARA CENTRADO PERFECTO */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -111,40 +113,47 @@
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
-    /* Posicionamiento Absoluto Dinámico */
+    /* POSICIONAMIENTO ABSOLUTO */
     position: absolute !important;
     z-index: 10;
 
-    /* Variables de control de posición (valores por defecto) */
-    /* Usamos !important para asegurar que el tema no interfiera */
+    /* VARIABLE CONTROL DE POSICION */
     top: var(--alezux-nav-top, auto) !important;
     bottom: var(--alezux-nav-bottom, auto) !important;
     left: var(--alezux-nav-left, auto) !important;
     right: var(--alezux-nav-right, auto) !important;
+
+    /* TRANSFORM PARA OFFSETS FINOS (X/Y) */
     transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0));
 }
 
-/* Default positions: Arriba Derecha (como en la imagen de referencia) */
+/* REGLAS PARA EVITAR SVG GIGANTE */
+.alezux-slide-nav i,
+.alezux-slide-nav svg {
+    width: 1em !important;
+    height: 1em !important;
+    font-size: inherit !important;
+    line-height: 1 !important;
+    display: block !important;
+    fill: currentColor !important;
+    /* Para SVGs inline */
+}
+
+/* Default positions: Arriba Derecha */
 .alezux-slide-nav-prev {
     --alezux-nav-top: -60px;
-    /* Fuera del contenedor, arriba */
     --alezux-nav-right: 60px;
-    /* A la izquierda del botón next */
     --alezux-nav-left: auto;
     --alezux-nav-bottom: auto;
-    --alezux-nav-y: -120%;
-    /* Mover hacia arriba fuera del contenedor */
+    --alezux-nav-y: -50%;
 }
 
 .alezux-slide-nav-next {
     --alezux-nav-top: -60px;
-    /* Fuera del contenedor, arriba */
-    --alezux-nav-right: 0;
-    /* A la derecha del todo */
+    --alezux-nav-right: 0px;
     --alezux-nav-left: auto;
     --alezux-nav-bottom: auto;
-    --alezux-nav-y: -120%;
-    /* Mover hacia arriba fuera del contenedor */
+    --alezux-nav-y: -50%;
 }
 
 .alezux-slide-nav:hover {
@@ -152,15 +161,4 @@
     background-color: var(--alezux-nav-bg-hover, #f39c12);
     color: var(--alezux-nav-color-hover, #000);
     transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0)) scale(1.1);
-}
-
-.alezux-slide-nav i,
-.alezux-slide-nav svg {
-    font-size: inherit !important;
-    /* Heredar el tamaño calculado (40% del botón) */
-    width: auto !important;
-    height: auto !important;
-    line-height: 1 !important;
-    display: inline-block !important;
-    /* Evitar problemas de SVG */
 }
