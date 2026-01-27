@@ -237,6 +237,18 @@ class Config_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'header_avatar_border_radius',
+			[
+				'label' => esc_html__( 'Avatar Border Radius', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-avatar img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
 			'header_name_color',
 			[
 				'label' => esc_html__( 'Name Color', 'alezux-members' ),
@@ -305,10 +317,10 @@ class Config_Widget extends Widget_Base {
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em' ],
 				'range' => [
-					'px' => [ 'min' => 0, 'max' => 100 ],
+					'px' => [ 'min' => 0, 'max' => 50 ],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-config-menu' => 'gap: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-config-menu-item + .alezux-config-menu-item' => 'margin-top: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);

@@ -54,12 +54,10 @@
     flex-shrink: 0;
 }
 
-.alezux-config-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    /* Border is now handled by Elementor control */
+width: 100%;
+height: 100%;
+object-fit: cover;
+/* Border is now handled by Elementor control */
 }
 
 /* Toggle Icon */
@@ -88,7 +86,6 @@
     display: none;
     /* Hidden by default */
     flex-direction: column;
-    gap: 10px;
 }
 
 /* When open, JS handles display: block, but we can also use class based if we prefer CSS transitions for height */
