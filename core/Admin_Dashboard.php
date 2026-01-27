@@ -20,7 +20,7 @@ class Admin_Dashboard {
 			'manage_options',
 			'alezux-members',
 			[ $this, 'render_dashboard' ],
-			'dashicons-rocket',
+			ALEZUX_MEMBERS_URL . 'modules/demo-block/assets/css/img/LOGO.svg',
 			2
 		);
 	}
