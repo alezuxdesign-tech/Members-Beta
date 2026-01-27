@@ -83,7 +83,7 @@
 }
 
 .alezux-slide-item:hover::after {
-    animation: alezux-shine 3s infinite linear;
+    animation: alezux-shine 1.5s infinite linear;
 }
 
 @keyframes alezux-shine {
