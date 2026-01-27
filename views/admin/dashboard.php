@@ -199,6 +199,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h2 class="alezux-title">🧩 Librería de Bloques (Shortcodes)</h2>
 			<p class="alezux-text">Lista de todos los shortcodes disponibles generados por tus módulos Lego.</p>
 			
+			<!-- DEBUG -->
+			<div style="background: #333; padding: 10px; margin-bottom: 10px; border: 1px solid red;">
+				DEBUG: <?php var_dump($shortcodes); ?>
+			</div>
+			<!-- END DEBUG -->
+
 			<?php if ( empty( $shortcodes ) ) : ?>
 				<p class="alezux-text">No hay shortcodes registrados aún.</p>
 			<?php else : ?>
