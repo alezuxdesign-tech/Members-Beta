@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	/* Estilos específicos para el Dashboard que sobrescriben WP Admin */
 	#wpcontent {
 		padding-left: 0 !important;
+		background-color: #0f0f0f !important; /* Fallback */
+		background-color: var(--alezux-bg-base, #0f0f0f) !important;
 	}
 	.alezux-dashboard-wrapper {
 		margin: 20px;
