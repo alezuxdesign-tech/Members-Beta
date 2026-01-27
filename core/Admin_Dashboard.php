@@ -59,32 +59,55 @@ class Admin_Dashboard {
 			ALEZUX_MEMBERS_VERSION 
 		);
 
-		// Pequeño script para manejar tabs y copiar shortcodes
+		// Script robusto para Tabs
 		wp_add_inline_script( 'common', '
 			document.addEventListener("DOMContentLoaded", function() {
-				// Tabs Logic
+				console.log("Alezux Members: Dashboard Script Loaded");
+				
 				const tabs = document.querySelectorAll(".alezux-tab-link");
 				const panels = document.querySelectorAll(".alezux-tab-panel");
 				
+				function switchTab(targetId) {
+					console.log("Switching to:", targetId);
+					
+					// 1. Hide all
+					tabs.forEach(t => t.classList.remove("active"));
+					panels.forEach(p => {
+						p.classList.remove("active");
+						p.style.display = "none";
+					});
+					
+					// 2. Show target
+					const activeTab = document.querySelector(`.alezux-tab-link[data-target="${targetId}"]`);
+					const activePanel = document.getElementById(targetId);
+					
+					if(activeTab && activePanel) {
+						activeTab.classList.add("active");
+						activePanel.classList.add("active");
+						activePanel.style.display = "block";
+						console.log("Success: Tab activated");
+					} else {
+						console.error("Error: Target not found", targetId);
+					}
+				}
+
 				tabs.forEach(tab => {
 					tab.addEventListener("click", function(e) {
 						e.preventDefault();
-						
-						// Remove active class
-						tabs.forEach(t => t.classList.remove("active"));
-						panels.forEach(p => p.classList.remove("active"));
-						panels.forEach(p => p.style.display = "none");
-						
-						// Add active class
-						this.classList.add("active");
-						const target = document.getElementById(this.dataset.target);
-						target.classList.add("active");
-						target.style.display = "block";
+						const targetId = this.dataset.target;
+						switchTab(targetId);
 					});
 				});
+
+				// Inicializar estado (asegurar que el tab activo por defecto se muestre)
+				const defaultActive = document.querySelector(".alezux-tab-panel.active");
+				if(defaultActive) {
+					defaultActive.style.display = "block";
+				}
 			});
 		' );
 	}
+
 
 
 
