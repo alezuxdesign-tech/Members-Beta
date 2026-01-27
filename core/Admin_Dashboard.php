@@ -26,7 +26,22 @@ class Admin_Dashboard {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		// Solo cargar scripts en nuestra página
+		// 1. CSS Global para el Icono del Menú (Debe cargarse en TODO el admin)
+		wp_add_inline_style( 'admin-bar', '
+			#adminmenu #toplevel_page_alezux-members .wp-menu-image img {
+				max-width: 20px;
+				max-height: 20px;
+				width: 20px;
+				height: auto;
+				padding-top: 8px;
+				opacity: 0.9;
+			}
+			#adminmenu #toplevel_page_alezux-members:hover .wp-menu-image img {
+				opacity: 1;
+			}
+		' );
+
+		// 2. Assets específicos SOLO para nuestra página de Dashboard
 		if ( 'toplevel_page_alezux-members' !== $hook ) {
 			return;
 		}
@@ -39,9 +54,10 @@ class Admin_Dashboard {
 			ALEZUX_MEMBERS_VERSION 
 		);
 
-		// Pequeño script para manejar tabs
+		// Pequeño script para manejar tabs y copiar shortcodes
 		wp_add_inline_script( 'common', '
 			document.addEventListener("DOMContentLoaded", function() {
+				// Tabs Logic
 				const tabs = document.querySelectorAll(".alezux-tab-link");
 				const panels = document.querySelectorAll(".alezux-tab-panel");
 				
@@ -63,22 +79,8 @@ class Admin_Dashboard {
 				});
 			});
 		' );
-
-		// Estilos para corregir el tamaño del ícono del menú
-		wp_add_inline_style( 'alezux-members-global', '
-			#adminmenu #toplevel_page_alezux-members .wp-menu-image img {
-				max-width: 20px;
-				max-height: 20px;
-				width: 20px;
-				height: auto;
-				padding-top: 8px; /* Alineación vertical estándar WP */
-				opacity: 0.9;
-			}
-			#adminmenu #toplevel_page_alezux-members:hover .wp-menu-image img {
-				opacity: 1;
-			}
-		' );
 	}
+
 
 	public function render_dashboard() {
 		// Obtener opciones guardadas
