@@ -127,16 +127,24 @@
     transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0));
 }
 
-/* REGLAS PARA EVITAR SVG GIGANTE */
+/* REGLAS PARA EVITAR SVG GIGANTE - AGRESIVO */
 .alezux-slide-nav i,
-.alezux-slide-nav svg {
+.alezux-slide-nav svg,
+.alezux-slide-nav svg path {
+    /* Tamaño máximo relativo al contenedor, no al viewport ni al documento */
     width: 1em !important;
     height: 1em !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+
     font-size: inherit !important;
     line-height: 1 !important;
     display: block !important;
+
+    /* Color Fix */
     fill: currentColor !important;
-    /* Para SVGs inline */
+    color: inherit !important;
+    stroke: currentColor !important;
 }
 
 /* Default positions: Arriba Derecha */
