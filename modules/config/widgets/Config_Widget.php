@@ -35,6 +35,10 @@ class Config_Widget extends Widget_Base {
 		return [ 'alezux-config-css' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'alezux-config-js' ];
+	}
+
 	protected function register_controls() {
 		// --- Section: User Data (Preview Purpose) ---
 		$this->start_controls_section(
@@ -218,6 +222,7 @@ class Config_Widget extends Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-config-avatar img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-config-avatar' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -261,6 +266,17 @@ class Config_Widget extends Widget_Base {
 				'selector' => '{{WRAPPER}} .alezux-config-email',
 			]
 		);
+		
+		$this->add_control(
+			'header_toggle_color',
+			[
+				'label' => esc_html__( 'Toggle Icon Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-toggle' => 'color: {{VALUE}};',
+				],
+			]
+		);
 
 		$this->end_controls_section();
 
@@ -270,6 +286,34 @@ class Config_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Menu Items', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'menu_item_icon_size',
+			[
+				'label' => esc_html__( 'Icon Size', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 10, 'max' => 100 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu-icon' => '--alezux-icon-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-config-menu-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-config-menu-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'menu_item_icon_color',
+			[
+				'label' => esc_html__( 'Icon Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-config-menu-icon' => 'color: {{VALUE}};',
+				],
 			]
 		);
 
@@ -327,17 +371,6 @@ class Config_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'menu_item_icon_color',
-			[
-				'label' => esc_html__( 'Icon Color', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-config-menu-icon' => 'color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_control(
 			'menu_item_padding',
 			[
 				'label' => esc_html__( 'Item Padding', 'alezux-members' ),
@@ -387,6 +420,9 @@ class Config_Widget extends Widget_Base {
 				</div>
 				<div class="alezux-config-avatar">
 					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_name ); ?>">
+				</div>
+				<div class="alezux-config-toggle">
+					<i class="fas fa-chevron-down alezux-config-toggle-icon"></i>
 				</div>
 			</div>
 

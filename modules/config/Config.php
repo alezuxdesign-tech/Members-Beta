@@ -25,6 +25,18 @@ class Config extends Module_Base {
 			[], 
 			time() // Development mode: force reload
 		);
+
+		// JS
+		wp_register_script(
+			'alezux-config-js',
+			$this->get_asset_url( 'assets/js/config.js' ),
+			[ 'jquery' ],
+			time(),
+			true
+		);
+
+		// Enqueue JS for Elementor
+		wp_enqueue_script( 'alezux-config-js' );
 	}
 
 	public function register_elementor_widgets( $widgets_manager ) {

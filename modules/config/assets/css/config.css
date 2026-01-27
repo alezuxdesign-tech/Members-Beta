@@ -3,9 +3,13 @@
     border-radius: var(--alezux-border-radius, 20px);
     box-shadow: var(--alezux-box-shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
     padding: 20px;
+    /* Padding for the closed state mainly */
     overflow: hidden;
     transition: all 0.3s ease;
     border: 1px solid var(--alezux-border-color, #eee);
+    cursor: pointer;
+    /* Indicate it's clickable */
+    position: relative;
 }
 
 /* Header Section */
@@ -13,9 +17,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    /* Remove bottom margin/border in closed state if desired, or keep it */
+    padding-bottom: 0;
+    border-bottom: none;
+    transition: all 0.3s ease;
+}
+
+.alezux-config-card.is-open .alezux-config-header {
     padding-bottom: 20px;
     border-bottom: 1px solid var(--alezux-border-color, #eee);
+    margin-bottom: 20px;
 }
 
 .alezux-config-info {
@@ -40,6 +51,7 @@
     position: relative;
     width: 60px;
     height: 60px;
+    flex-shrink: 0;
 }
 
 .alezux-config-avatar img {
@@ -48,17 +60,40 @@
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid var(--alezux-primary, #6c5ce7);
-    /* Colorful ring emulation */
     padding: 2px;
-    /* Space between border and image */
 }
+
+/* Toggle Icon */
+.alezux-config-toggle {
+    margin-left: 15px;
+    color: var(--alezux-primary, #6c5ce7);
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+    display: none;
+    /* Hidden by default, shown via PHP logic or always show? User asked for "input-select" style */
+}
+
+/* If we want a specific toggle icon, we can add it in PHP and style here. 
+   Assuming we add a chevron. */
+.alezux-config-toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.alezux-config-card.is-open .alezux-config-toggle-icon {
+    transform: rotate(180deg);
+}
+
 
 /* Menu Section */
 .alezux-config-menu {
-    display: flex;
+    display: none;
+    /* Hidden by default */
     flex-direction: column;
     gap: 10px;
 }
+
+/* When open, JS handles display: block, but we can also use class based if we prefer CSS transitions for height */
+/* .alezux-config-card.is-open .alezux-config-menu { display: flex; } - JS slideToggle uses inline styles */
 
 .alezux-config-menu-item {
     transition: background-color 0.2s ease;
@@ -81,26 +116,36 @@
 }
 
 .alezux-config-menu-icon {
-    width: 24px;
-    height: 24px;
+    width: var(--alezux-icon-size, 24px);
+    /* Dynamic size */
+    height: var(--alezux-icon-size, 24px);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 15px;
     color: #555;
+    /* Default color */
     font-size: 1.1rem;
+    /* Adjust font size relative to container? */
 }
+
+/* Ensure icon svg or font scales */
+.alezux-config-menu-icon i,
+.alezux-config-menu-icon svg {
+    width: 100%;
+    height: 100%;
+    font-size: inherit;
+}
+
 
 .alezux-config-menu-text {
     font-weight: 500;
     flex: 1;
 }
 
-/* Specific styling for the "Pro" badge if added via custom HTML later, 
-   but for now just standard menu items */
-
-/* Dark Mode Support (if global variable handles it, mostly auto, but good to ensure text colors) */
-@media (prefers-color-scheme: dark) {
-    /* If variables are correct, this should be automatic, 
-      but enforcing some defaults if vars fail */
+/* Styling for the header hover to indicate interactivity */
+.alezux-config-card:hover {
+    background-color: var(--alezux-bg-card-hover, var(--alezux-bg-card, #fff));
+    /* Can add a subtle hover effect if desired */
+    box-shadow: var(--alezux-box-shadow-hover, 0 6px 15px rgba(0, 0, 0, 0.15));
 }
