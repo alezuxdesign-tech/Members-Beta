@@ -1,0 +1,78 @@
+.alezux-slide-lesson-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.alezux-slide-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 20px;
+    /* Space for scrollbar if visible on some browsers */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.alezux-slide-wrapper::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.alezux-slide-item {
+    flex: 0 0 auto;
+    width: 300px;
+    /* Fixed width for cards */
+    scroll-snap-align: center;
+    border-radius: var(--alezux-border-radius, 20px);
+    overflow: hidden;
+    background: var(--alezux-bg-card, #1a1a1a);
+    box-shadow: var(--alezux-box-shadow, 0 4px 15px rgba(0, 0, 0, 0.3));
+    border: 1px solid var(--alezux-border-color, #333);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.alezux-slide-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: var(--alezux-primary, #6c5ce7);
+}
+
+.alezux-slide-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.alezux-slide-item img {
+    width: 100%;
+    height: 180px;
+    /* Aspect ratio */
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.alezux-slide-item:hover img {
+    transform: scale(1.05);
+}
+
+.alezux-slide-title {
+    display: block;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    /* Force white text */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
