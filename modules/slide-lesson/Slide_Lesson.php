@@ -30,7 +30,7 @@ class Slide_Lesson extends Module_Base {
 			'alezux-slide-lesson-css', 
 			$this->get_asset_url( 'assets/css/slide-lesson.css' ), 
 			[], 
-			ALEZUX_MEMBERS_VERSION 
+			time() // Forzar recarga para debugging
 		);
 
 		// JS
@@ -38,7 +38,7 @@ class Slide_Lesson extends Module_Base {
 			'alezux-slide-lesson-js', 
 			$this->get_asset_url( 'assets/js/slide-lesson.js' ), 
 			[], 
-			ALEZUX_MEMBERS_VERSION,
+			time(), // Forzar recarga para debugging
 			true 
 		);
 		// Encolar siempre para el shortcode (Elementor lo requiere por dependencia)
