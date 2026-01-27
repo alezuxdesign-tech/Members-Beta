@@ -34,51 +34,46 @@
 
 /* Layout Variations */
 .alezux-config-header.alezux-layout-left {
-    flex-direction: row-reverse;
-}
-
-.alezux-config-header.alezux-layout-left .alezux-config-info {
-    padding-right: 0;
-    padding-left: 15px;
-    text-align: right;
-    /* Often expected if avatar is on left, or keep left aligned? User didn't specify, but let's align text to flow with image */
-    text-align: left;
-    /* Actually, if avatar is left, text should be left. Wait. 
-        Structure: [Info] [Avatar] [Toggle] 
-        Row-reverse: [Toggle] [Avatar] [Info] -> This might mess up the toggle position.
-        
-        Let's rethink: We want [Avatar] [Info] [Toggle] or [Info] [Avatar] [Toggle].
-        Current HTML: [Info] [Avatar] [Toggle]
-        
-        If we want Avatar Left: [Avatar] [Info] [Toggle]
-        We should probably just change the order using flexbox 'order'.
-    */
+    /* Avatar Left: [Avatar] [Info] [Toggle] */
     flex-direction: row;
 }
 
-/* 
-   Structure is:
-   1. Info (flex: 1)
-   2. Avatar
-   3. Toggle
-   
-   Default (Right): Info(1) - Avatar(2) - Toggle(3)
-   Left: Avatar(1) - Info(2) - Toggle(3)
-*/
-
 .alezux-config-header.alezux-layout-left .alezux-config-avatar {
     order: -1;
+    /* Move to start */
     margin-right: 15px;
+    /* Spacing between avatar and name */
+    margin-left: 0;
 }
 
 .alezux-config-header.alezux-layout-left .alezux-config-info {
-    padding-right: 0;
+    order: 0;
     text-align: left;
+    margin-right: auto;
+    /* Push toggle to the end if desired, or keep spaced */
+    flex: 1;
+    /* Take up space */
 }
 
-/* Right layout default */
+.alezux-config-header.alezux-layout-left .alezux-config-toggle {
+    order: 1;
+    /* Keep at end */
+    margin-left: 15px;
+}
+
+/* Default (Right) Layout: [Info] [Avatar] [Toggle] is current HTML flow */
 .alezux-config-header.alezux-layout-right .alezux-config-info {
     text-align: right;
+    order: 0;
+}
+
+.alezux-config-header.alezux-layout-right .alezux-config-avatar {
+    order: 1;
+    margin-left: 15px;
+}
+
+.alezux-config-header.alezux-layout-right .alezux-config-toggle {
+    order: 2;
 }
 
 .alezux-config-info {
