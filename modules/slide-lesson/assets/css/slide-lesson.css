@@ -91,34 +91,43 @@
     /* Default Yellow */
     color: var(--alezux-nav-color, #333);
     border: 1px solid var(--alezux-nav-border-color, transparent);
-    width: var(--alezux-nav-size, 40px);
-    height: var(--alezux-nav-size, 40px);
+
+    /* TAMAÑO CRUDO PARA EVITAR HERENCIA GIGANTE */
+    width: var(--alezux-nav-size, 40px) !important;
+    height: var(--alezux-nav-size, 40px) !important;
+    /* El tamaño de fuente será proporcional al tamaño del botón */
+    font-size: calc(var(--alezux-nav-size, 40px) * 0.4) !important;
+    line-height: 1 !important;
+    /* Evitar que line-height del tema expanda el botón */
+
     border-radius: var(--alezux-nav-radius, 50%);
     cursor: pointer;
 
     /* Flex para centrar icono */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 
     /* Posicionamiento Absoluto Dinámico */
-    position: absolute;
+    position: absolute !important;
     z-index: 10;
 
     /* Variables de control de posición (valores por defecto) */
-    top: var(--alezux-nav-top, auto);
-    bottom: var(--alezux-nav-bottom, auto);
-    left: var(--alezux-nav-left, auto);
-    right: var(--alezux-nav-right, auto);
+    /* Usamos !important para asegurar que el tema no interfiera */
+    top: var(--alezux-nav-top, auto) !important;
+    bottom: var(--alezux-nav-bottom, auto) !important;
+    left: var(--alezux-nav-left, auto) !important;
+    right: var(--alezux-nav-right, auto) !important;
     transform: translate(var(--alezux-nav-x, 0), var(--alezux-nav-y, 0));
 }
 
 /* Default positions: Arriba Derecha (como en la imagen de referencia) */
 .alezux-slide-nav-prev {
-    --alezux-nav-top: 0px;
+    --alezux-nav-top: -60px;
+    /* Fuera del contenedor, arriba */
     --alezux-nav-right: 60px;
     /* A la izquierda del botón next */
     --alezux-nav-left: auto;
@@ -128,9 +137,10 @@
 }
 
 .alezux-slide-nav-next {
-    --alezux-nav-top: 0;
-    --alezux-nav-right: 10px;
-    /* A la derecha */
+    --alezux-nav-top: -60px;
+    /* Fuera del contenedor, arriba */
+    --alezux-nav-right: 0;
+    /* A la derecha del todo */
     --alezux-nav-left: auto;
     --alezux-nav-bottom: auto;
     --alezux-nav-y: -120%;
@@ -146,6 +156,11 @@
 
 .alezux-slide-nav i,
 .alezux-slide-nav svg {
-    font-size: inherit;
-    /* Heredar tamaño calculado en Elementor */
+    font-size: inherit !important;
+    /* Heredar el tamaño calculado (40% del botón) */
+    width: auto !important;
+    height: auto !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    /* Evitar problemas de SVG */
 }
