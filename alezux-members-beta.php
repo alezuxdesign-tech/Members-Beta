@@ -37,16 +37,22 @@ spl_autoload_register( function ( $class ) {
 
 // Inicializar el plugin
 function alezux_members_init() {
-	// Asegurarse de que el cargador existe antes de usarlo
+	// Inicializar el plugin
 	if ( class_exists( 'Alezux_Members\\Core\\Plugin_Loader' ) ) {
 		$loader = new \Alezux_Members\Core\Plugin_Loader();
 		$loader->run();
+	}
+
+	// Inicializar Dashboard si estamos en admin
+	if ( is_admin() && class_exists( 'Alezux_Members\\Core\\Admin_Dashboard' ) ) {
+		$dashboard = new \Alezux_Members\Core\Admin_Dashboard();
+		$dashboard->init();
 	}
 }
 add_action( 'plugins_loaded', 'alezux_members_init' );
 
 /**
- * Encolar estilos globales del plugin.
+ * Encolar estilos globales del plugin e inyectar variables dinámicas.
  */
 function alezux_members_enqueue_global_assets() {
 	wp_enqueue_style( 
@@ -55,8 +61,38 @@ function alezux_members_enqueue_global_assets() {
 		[], 
 		ALEZUX_MEMBERS_VERSION 
 	);
+
+	// Obtener colores personalizados
+	$primary = get_option( 'alezux_primary_color', '#6c5ce7' );
+	$bg_base = get_option( 'alezux_bg_base', '#0f0f0f' );
+	$bg_card = get_option( 'alezux_bg_card', '#1a1a1a' );
+
+	// CSS Dinámico para sobrescribir variables
+	$custom_css = "
+		:root {
+			--alezux-primary: {$primary};
+			--alezux-bg-base: {$bg_base};
+			--alezux-bg-card: {$bg_card};
+		}
+	";
+	
+	wp_add_inline_style( 'alezux-members-global', $custom_css );
 }
 add_action( 'wp_enqueue_scripts', 'alezux_members_enqueue_global_assets' );
-// Encolar también en el editor de Elementor para que se vea bien mientras se edita
+// Encolar también en el editor de Elementor
 add_action( 'elementor/frontend/after_enqueue_styles', 'alezux_members_enqueue_global_assets' );
+// Inyectar en admin también para que el dashboard se vea bien
+add_action( 'admin_enqueue_scripts', function() {
+	// Solo inyectar las variables si el estilo global no está presente (aunque el dashboard.php lo encola)
+	// Esta es una medida de seguridad para que el CSS dinámico esté disponible globalmente si se necesita
+	if ( wp_style_is( 'alezux-members-global', 'enqueued' ) ) {
+		$primary = get_option( 'alezux_primary_color', '#6c5ce7' );
+		$bg_base = get_option( 'alezux_bg_base', '#0f0f0f' );
+		$bg_card = get_option( 'alezux_bg_card', '#1a1a1a' );
+		
+		$custom_css = ":root { --alezux-primary: {$primary}; --alezux-bg-base: {$bg_base}; --alezux-bg-card: {$bg_card}; }";
+		wp_add_inline_style( 'alezux-members-global', $custom_css );
+	}
+});
+
 

@@ -10,10 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Demo_Block extends Module_Base {
 
 	public function init() {
-		// Registrar Shortcodes
-		add_shortcode( 'alezux_demo_block', [ $this, 'render_shortcode' ] );
+		// Registrar Shortcodes usando el nuevo método auto-documentado
+		$this->register_shortcode( 
+			'alezux_demo_block', 
+			[ $this, 'render_shortcode' ], 
+			'Muestra un bloque de demostración con estilos Lego.' 
+		);
 
 		// Encolar estilos/scripts específicos del módulo
+
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		
 		// Registrar Widgets de Elementor

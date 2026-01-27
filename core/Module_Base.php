@@ -57,4 +57,30 @@ abstract class Module_Base {
 			echo "<!-- Vista no encontrada: {$view_name} -->";
 		}
 	}
+
+	/**
+	 * Almacén estático de shortcodes para documentación.
+	 */
+	protected static $registered_shortcodes = [];
+
+	/**
+	 * Registrar un shortcode y documentarlo.
+	 * 
+	 * @param string $tag El tag del shortcode.
+	 * @param callable $callback La función callback.
+	 * @param string $description Descripción para el dashboard.
+	 */
+	protected function register_shortcode( $tag, $callback, $description = '' ) {
+		add_shortcode( $tag, $callback );
+		self::$registered_shortcodes[] = [
+			'tag'         => $tag,
+			'description' => $description,
+			'module'      => ( new \ReflectionClass( $this ) )->getShortName(),
+		];
+	}
+
+	public static function get_registered_shortcodes() {
+		return self::$registered_shortcodes;
+	}
 }
+
