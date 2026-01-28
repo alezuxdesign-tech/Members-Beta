@@ -432,6 +432,261 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		);
 		
 		$this->end_controls_section();
+
+		// --- Sección de Estilo: Botón ---
+		$this->start_controls_section(
+			'section_style_button',
+			[
+				'label' => __( 'Botón', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_align',
+			[
+				'label' => __( 'Alineación', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'flex-start' => [
+						'title' => __( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => __( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'flex-end' => [
+						'title' => __( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'stretch' => [
+						'title' => __( 'Justificado', 'alezux-members' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+				],
+				'default' => 'flex-start',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-footer' => 'justify-content: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formacion-button' => 'width: {{VALUE}} == "stretch" ? "100%" : "auto";',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-formacion-button',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Text_Shadow::get_type(),
+			[
+				'name' => 'button_text_shadow',
+				'selector' => '{{WRAPPER}} .alezux-formacion-button',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_button_style' );
+
+		// Tab Normal
+		$this->start_controls_tab(
+			'tab_button_normal',
+			[
+				'label' => __( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => __( 'Color de Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formacion-button svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'button_background',
+				'label' => __( 'Fondo', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'exclude' => [ 'image' ],
+				'selector' => '{{WRAPPER}} .alezux-formacion-button',
+				'fields_options' => [
+					'background' => [
+						'default' => 'classic',
+					],
+					'color' => [
+						'default' => '#6c5ce7',
+					],
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'button_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-formacion-button',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Tab Hover
+		$this->start_controls_tab(
+			'tab_button_hover',
+			[
+				'label' => __( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_hover_text_color',
+			[
+				'label' => __( 'Color de Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formacion-button:hover svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'button_hover_background',
+				'label' => __( 'Fondo', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'exclude' => [ 'image' ],
+				'selector' => '{{WRAPPER}} .alezux-formacion-button:hover',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'button_hover_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-formacion-button:hover',
+			]
+		);
+
+		$this->add_control(
+			'button_hover_border_color',
+			[
+				'label' => __( 'Color de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button:hover' => 'border-color: {{VALUE}}; text-decoration: none;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_control(
+			'button_border_type',
+			[
+				'label' => __( 'Tipo de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'solid',
+				'options' => [
+					'none' => __( 'Ninguno', 'alezux-members' ),
+					'solid' => __( 'Sólido', 'alezux-members' ),
+					'double' => __( 'Doble', 'alezux-members' ),
+					'dotted' => __( 'Punteado', 'alezux-members' ),
+					'dashed' => __( 'Discontinuo', 'alezux-members' ),
+					'groove' => __( 'Groove', 'alezux-members' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'border-style: {{VALUE}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_border_width',
+			[
+				'label' => __( 'Ancho de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'border-width: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [
+					'button_border_type!' => 'none',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_border_color',
+			[
+				'label' => __( 'Color de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'border-color: {{VALUE}};',
+				],
+				'condition' => [
+					'button_border_type!' => 'none',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_border_radius',
+			[
+				'label' => __( 'Radio de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'default' => [
+					'top' => 50,
+					'right' => 50,
+					'bottom' => 50,
+					'left' => 50,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label' => __( 'Relleno', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'default' => [
+					'top' => 10,
+					'right' => 20,
+					'bottom' => 10,
+					'left' => 20,
+					'unit' => 'px',
+					'isLinked' => false,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {

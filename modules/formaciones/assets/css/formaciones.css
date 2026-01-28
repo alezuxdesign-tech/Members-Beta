@@ -182,3 +182,27 @@
 .alezux-formacion-button:hover {
     text-decoration: none;
 }
+
+.alezux-formacion-button .alezux-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alezux-formacion-button .alezux-btn-icon svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.alezux-formacion-button .alezux-btn-icon i {
+    font-size: 1.1em;
+}
+
+.alezux-btn-icon-left {
+    margin-right: 8px;
+}
+
+.alezux-btn-icon-right {
+    margin-left: 8px;
+}
