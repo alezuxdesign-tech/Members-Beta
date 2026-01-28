@@ -10,7 +10,12 @@
     font-size: 24px;
     cursor: pointer;
     position: relative;
-    color: #333;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Slight background for visibility */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
