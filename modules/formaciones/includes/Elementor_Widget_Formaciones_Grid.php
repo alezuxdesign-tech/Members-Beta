@@ -71,13 +71,23 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'mentors_label_text',
+			[
+				'label' => __( 'Etiqueta Mentores', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'MENTORES', 'alezux-members' ),
+				'placeholder' => __( 'Escribe aquí...', 'alezux-members' ),
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- Sección de Estilo: Grid ---
 		$this->start_controls_section(
 			'section_style_grid',
 			[
-				'label' => __( 'Grid', 'alezux-members' ),
+				'label' => __( 'Grid & Layout', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -139,7 +149,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			[
 				'label' => __( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#1a1a1a', // Color base del sistema Alezux
+				'default' => '#1a1a1a',
 				'selectors' => [
 					'{{WRAPPER}} .alezux-formacion-card' => 'background-color: {{VALUE}};',
 				],
@@ -165,6 +175,26 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				],
 			]
 		);
+		
+		$this->add_control(
+			'card_padding',
+			[
+				'label' => __( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'default' => [
+					'top' => 0, 
+					'right' => 0, 
+					'bottom' => 25, 
+					'left' => 0,
+					'unit' => 'px', 
+					'isLinked' => false,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
 
 		$this->add_group_control(
 			Group_Control_Box_Shadow::get_type(),
@@ -176,12 +206,66 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 
 		$this->end_controls_section();
 
+		// --- Sección de Estilo: Imagen ---
+		$this->start_controls_section(
+			'section_style_image',
+			[
+				'label' => __( 'Imagen', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Image_Size::get_type(),
+			[
+				'name' => 'image_size',
+				'default' => 'large',
+				'separator' => 'none',
+			]
+		);
+
+		$this->add_responsive_control(
+			'image_border_radius',
+			[
+				'label' => __( 'Borde Radio Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-image img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'image_margin',
+			[
+				'label' => __( 'Margen Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-image' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
 		// --- Sección de Estilo: Tipografía ---
 		$this->start_controls_section(
 			'section_style_typography',
 			[
-				'label' => __( 'Tipografía y Colores', 'alezux-members' ),
+				'label' => __( 'Textos y Colores', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		// Título
+		$this->add_control(
+			'heading_title',
+			[
+				'label' => __( 'Título', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
 			]
 		);
 
@@ -201,8 +285,17 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'title_typography',
-				'label' => __( 'Tipografía Título', 'alezux-members' ),
 				'selector' => '{{WRAPPER}} .alezux-formacion-title',
+			]
+		);
+		
+		// Precio
+		$this->add_control(
+			'heading_price',
+			[
+				'label' => __( 'Precio', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
 			]
 		);
 
@@ -211,10 +304,70 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			[
 				'label' => __( 'Color Precio', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#6c5ce7', // Acento Alezux
+				'default' => '#6c5ce7', 
 				'selectors' => [
 					'{{WRAPPER}} .alezux-formacion-price' => 'color: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'price_typography',
+				'selector' => '{{WRAPPER}} .alezux-formacion-price',
+			]
+		);
+		
+		// Mentores
+		$this->add_control(
+			'heading_mentors',
+			[
+				'label' => __( 'Mentores', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'mentors_label_color',
+			[
+				'label' => __( 'Color Etiqueta', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#6d7688',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-mentors-label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'mentors_label_typography',
+				'label' => __( 'Tipografía Etiqueta', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-mentors-label',
+			]
+		);
+
+		$this->add_control(
+			'mentors_names_color',
+			[
+				'label' => __( 'Color Nombres', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-mentors-names' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'mentors_names_typography',
+				'label' => __( 'Tipografía Nombres', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-mentors-names',
 			]
 		);
 		
@@ -243,7 +396,9 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				// Obtener datos
 				$price = get_post_meta( $post_id, '_alezux_course_price', true );
 				$mentors = get_post_meta( $post_id, '_alezux_course_mentors', true );
-				$image_url = get_the_post_thumbnail_url( $post_id, 'large' );
+				// Usar tamaño de imagen configurado por el usuario (o 'large' por defecto)
+				$img_size = !empty($settings['image_size']) ? $settings['image_size'] : 'large';
+				$image_url = get_the_post_thumbnail_url( $post_id, $img_size );
 				$description = get_the_excerpt();
 
 				// Renderizar Tarjeta
@@ -273,7 +428,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 								</div>
 								
 								<div class="alezux-mentors-info">
-									<span class="alezux-mentors-label"><?php _e( 'MENTORES', 'alezux-members' ); ?></span>
+									<span class="alezux-mentors-label"><?php echo esc_html( $settings['mentors_label_text'] ); ?></span>
 									<span class="alezux-mentors-names">
 										<?php 
 										$names = array_map( function( $m ) { return $m['name']; }, $mentors );
