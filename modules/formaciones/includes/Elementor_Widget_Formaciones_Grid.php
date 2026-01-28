@@ -57,6 +57,51 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		);
 
 		$this->add_control(
+			'selected_icon',
+			[
+				'label' => __( 'Icono', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'fa4compatibility' => 'icon',
+			]
+		);
+
+		$this->add_control(
+			'icon_align',
+			[
+				'label' => __( 'Posición del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'left',
+				'options' => [
+					'left' => __( 'Antes', 'alezux-members' ),
+					'right' => __( 'Después', 'alezux-members' ),
+				],
+				'condition' => [
+					'selected_icon[value]!' => '',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_indent',
+			[
+				'label' => __( 'Espaciado del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-btn-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'selected_icon[value]!' => '',
+				],
+			]
+		);
+
+		$this->add_control(
 			'orderby',
 			[
 				'label' => __( 'Ordenar por', 'alezux-members' ),
@@ -464,7 +509,19 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 								<?php echo esc_html( $price ); ?>
 							</div>
 							<a href="<?php the_permalink(); ?>" class="alezux-formacion-button">
-								<?php echo esc_html( $settings['button_text'] ); ?>
+								<?php if ( ! empty( $settings['selected_icon']['value'] ) && 'left' === $settings['icon_align'] ) : ?>
+									<span class="alezux-btn-icon alezux-btn-icon-left">
+										<?php Icons_Manager::render_icon( $settings['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+									</span>
+								<?php endif; ?>
+								
+								<span class="alezux-btn-text"><?php echo esc_html( $settings['button_text'] ); ?></span>
+
+								<?php if ( ! empty( $settings['selected_icon']['value'] ) && 'right' === $settings['icon_align'] ) : ?>
+									<span class="alezux-btn-icon alezux-btn-icon-right">
+										<?php Icons_Manager::render_icon( $settings['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+									</span>
+								<?php endif; ?>
 							</a>
 						</div>
 					</div>
