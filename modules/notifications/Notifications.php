@@ -164,9 +164,9 @@ class Notifications extends Module_Base {
 		$link = get_permalink( $post->ID );
 		
 		// Try to get course featured image
-		$avatar_url = '';
+		$avatar_url = 'icon:course'; // Default to course icon
 		if ( has_post_thumbnail( $post->ID ) ) {
-			$avatar_url = get_the_post_thumbnail_url( $post->ID, 'thumbnail' ); // or 'medium'
+			$avatar_url = get_the_post_thumbnail_url( $post->ID, 'thumbnail' ); 
 		}
 
 		// Send to ALL users

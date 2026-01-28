@@ -109,16 +109,27 @@ jQuery(document).ready(function ($) {
 
         notifications.forEach(notif => {
             const isUnread = notif.is_read == '0' ? 'unread' : '';
-            // Si hay avatar_url usamos img, si no, un icono por defecto
-            const bellIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
+            // Mapa de Iconos
+            const icons = {
+                'bell': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`,
+                'course': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`
+            };
 
-            const avatar = notif.avatar_url
-                ? `<img src="${notif.avatar_url}" class="notif-avatar">`
-                : `<div class="notif-avatar">${bellIcon}</div>`;
+            let avatarHtml = '';
+
+            if (notif.avatar_url && notif.avatar_url.startsWith('icon:')) {
+                const iconName = notif.avatar_url.split(':')[1];
+                const svg = icons[iconName] || icons['bell'];
+                avatarHtml = `<div class="notif-avatar">${svg}</div>`;
+            } else if (notif.avatar_url) {
+                avatarHtml = `<img src="${notif.avatar_url}" class="notif-avatar">`;
+            } else {
+                avatarHtml = `<div class="notif-avatar">${icons['bell']}</div>`;
+            }
 
             const html = `
                 <div class="alezux-notification-item ${isUnread}" data-id="${notif.id}" data-link="${notif.link}">
-                    ${avatar}
+                    ${avatarHtml}
                     <div class="notif-content">
                         <div class="notif-title">${notif.title}</div>
                         <div class="notif-message">${notif.message}</div>
