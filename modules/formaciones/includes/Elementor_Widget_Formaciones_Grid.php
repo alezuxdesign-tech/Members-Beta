@@ -442,36 +442,8 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			]
 		);
 
-		$this->add_responsive_control(
-			'button_align',
-			[
-				'label' => __( 'Alineación', 'alezux-members' ),
-				'type' => Controls_Manager::CHOOSE,
-				'options' => [
-					'flex-start' => [
-						'title' => __( 'Izquierda', 'alezux-members' ),
-						'icon' => 'eicon-text-align-left',
-					],
-					'center' => [
-						'title' => __( 'Centro', 'alezux-members' ),
-						'icon' => 'eicon-text-align-center',
-					],
-					'flex-end' => [
-						'title' => __( 'Derecha', 'alezux-members' ),
-						'icon' => 'eicon-text-align-right',
-					],
-					'stretch' => [
-						'title' => __( 'Justificado', 'alezux-members' ),
-						'icon' => 'eicon-text-align-justify',
-					],
-				],
-				'default' => 'flex-start',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-formacion-footer' => 'justify-content: {{VALUE}};',
-					'{{WRAPPER}} .alezux-formacion-button' => 'width: {{VALUE}} == "stretch" ? "100%" : "auto";',
-				],
-			]
-		);
+        // Alignment moved to Footer / Layout section
+
 
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
@@ -682,6 +654,94 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-formacion-button' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->add_responsive_control(
+			'button_icon_size',
+			[
+				'label' => __( 'Tamaño del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-button .alezux-btn-icon' => 'font-size: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'selected_icon[value]!' => '',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Sección de Estilo: Footer (Layout) ---
+		$this->start_controls_section(
+			'section_style_footer',
+			[
+				'label' => __( 'Footer / Layout', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'footer_layout_justify',
+			[
+				'label' => __( 'Alineación Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'flex-start' => [
+						'title' => __( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => __( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'flex-end' => [
+						'title' => __( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'space-between' => [
+						'title' => __( 'Espacio entre', 'alezux-members' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+					'stretch' => [
+						'title' => __( 'Estirar Botón', 'alezux-members' ), // Clearer label
+						'icon' => 'eicon-arrow-expand',
+					],
+				],
+				'default' => 'space-between',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-footer' => 'justify-content: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formacion-button' => 'width: {{VALUE}} == "stretch" ? "100%" : "auto";',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'footer_gap',
+			[
+				'label' => __( 'Espacio entre Elementos (Gap)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 10,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-footer' => 'gap: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
