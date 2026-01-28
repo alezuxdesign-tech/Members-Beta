@@ -144,12 +144,26 @@
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    margin-top: 10px;
-    /* Slight offset from header */
+    margin-top: 15px;
+    animation: alezuxFadeInUp 0.2s ease-out forwards;
 }
 
-/* When open, JS handles display: block, but we can also use class based if we prefer CSS transitions for height */
-/* .alezux-config-card.is-open .alezux-config-menu { display: flex; } - JS slideToggle uses inline styles */
+@keyframes alezuxFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alezux-config-card.is-open .alezux-config-menu {
+    display: block;
+}
+
 
 .alezux-config-menu-item {
     transition: background-color 0.2s ease;

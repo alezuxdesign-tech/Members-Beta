@@ -1,14 +1,20 @@
 jQuery(document).ready(function ($) {
     // Escuchar clic en el encabezado del widget de configuración
-    $(document).on('click', '.alezux-config-header', function () {
+    $(document).on('click', '.alezux-config-header', function (e) {
+        e.stopPropagation();
         var $wrapper = $(this).closest('.alezux-config-card');
-        var $menu = $wrapper.find('.alezux-config-menu');
-        var $toggleIcon = $(this).find('.alezux-config-toggle-icon');
 
-        // Toggle de la clase para estilos (rotación de icono, etc)
+        // Toggle state
         $wrapper.toggleClass('is-open');
 
-        // Animación slideToggle para el menú
-        $menu.slideToggle(300);
+        // Close other open widgets if any
+        $('.alezux-config-card').not($wrapper).removeClass('is-open');
+    });
+
+    // Close on click outside
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.alezux-config-card').length) {
+            $('.alezux-config-card').removeClass('is-open');
+        }
     });
 });
