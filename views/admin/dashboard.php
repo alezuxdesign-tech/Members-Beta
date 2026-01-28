@@ -165,10 +165,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	<?php endif; ?>
 
+	<?php if ( isset( $_GET['status'] ) && 'notification_sent' === $_GET['status'] ) : ?>
+		<div class="alezux-notice" style="background: rgba(0, 184, 148, 0.1); border: 1px solid #00b894; color: #00b894; padding: 15px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+			<span class="dashicons dashicons-megaphone"></span>
+			<strong>¡Notificación de prueba enviada correctamente!</strong>
+		</div>
+	<?php endif; ?>
+
 	<!-- TABS NAVIGATION -->
 	<div class="alezux-tabs">
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-settings')" class="alezux-tab-link active" id="link-tab-settings">Configuración Global</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-shortcodes')" class="alezux-tab-link" id="link-tab-shortcodes">Shortcodes</a>
+		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-notifications')" class="alezux-tab-link" id="link-tab-notifications">Notificaciones</a>
 	</div>
 
 	<!-- TAB 1: CONFIGURACION -->

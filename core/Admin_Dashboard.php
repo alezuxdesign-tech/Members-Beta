@@ -1,6 +1,8 @@
 <?php
 namespace Alezux_Members\Core;
 
+use Alezux_Members\Modules\Notifications\Notifications;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -11,6 +13,7 @@ class Admin_Dashboard {
 		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_post_alezux_save_settings', [ $this, 'save_settings' ] );
+		add_action( 'admin_post_alezux_send_test_notification', [ $this, 'send_test_notification' ] );
 		// Fix Icono Globalmente
 		add_action( 'admin_head', [ $this, 'print_menu_icon_styles' ] );
 	}
@@ -114,6 +117,36 @@ class Admin_Dashboard {
 		}
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );
+		exit;
+	}
+
+	public function send_test_notification() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'No tienes permisos.' );
+		}
+
+		check_admin_referer( 'alezux_send_test_notification_action', 'alezux_notification_nonce' );
+
+		$title      = isset( $_POST['notification_title'] ) ? sanitize_text_field( $_POST['notification_title'] ) : 'Notificación de Prueba';
+		$message    = isset( $_POST['notification_message'] ) ? sanitize_textarea_field( $_POST['notification_message'] ) : 'Este es un mensaje de prueba.';
+		$target_user_id = isset( $_POST['target_user_id'] ) ? intval( $_POST['target_user_id'] ) : 0;
+		
+		// Si no se especifica usuario, enviamos al actual para la prueba (o a todos si se implementara logicamente así, pero por seguridad en prueba mejor al actual si está vacío)
+		if ( empty( $target_user_id ) ) {
+			$target_user_id = get_current_user_id();
+		}
+
+		// Usar la clase Notifications para enviar
+		// Nota: add_notification espera $target_users como 'all', ID o array de IDs.
+		Notifications::add_notification( 
+			$title, 
+			$message, 
+			'#', 
+			'', 
+			$target_user_id 
+		);
+
+		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=notification_sent' ) );
 		exit;
 	}
 }
