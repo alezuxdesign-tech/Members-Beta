@@ -1,14 +1,21 @@
 .alezux-formaciones-grid {
-    display: grid;
+    display: grid !important;
+    height: auto !important;
+    /* Override Masonry height */
 }
 
 .alezux-formacion-card {
-    /* break-inside: avoid; - Removed as we are using Grid now */
+    /* Hard override against Masonry JS */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    transform: none;
+    /* Reset transform for hover later */
+
     background-color: #1a1a1a;
     border-radius: 50px;
-    margin-bottom: 20px;
     overflow: hidden;
-    position: relative;
     transition: transform 0.3s ease;
 }
 
