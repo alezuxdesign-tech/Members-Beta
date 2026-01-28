@@ -10,10 +10,9 @@
     font-size: 24px;
     cursor: pointer;
     position: relative;
-    color: #000 !important;
-    /* Force black for visibility */
-    background-color: #f0f0f0 !important;
-    /* Light grey background */
+    color: #fff;
+    /* Default to white for dark mode */
+    background-color: transparent;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -21,9 +20,6 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    border: 2px solid #6c5ce7;
-    /* Debug border */
-    z-index: 10;
 }
 
 .alezux-notification-badge {

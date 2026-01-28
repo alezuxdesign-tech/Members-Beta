@@ -19,7 +19,7 @@ class Notifications_Widget extends Widget_Base {
 	}
 
 	public function get_icon() {
-		return 'eicon-comment';
+		return 'eicon-bell';
 	}
 
 	public function get_categories() {
