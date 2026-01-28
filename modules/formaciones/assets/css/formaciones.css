@@ -1,7 +1,7 @@
 .alezux-formaciones-grid {
     display: grid !important;
-    grid-template-columns: repeat(var(--alezux-grid-columns, 3), 1fr);
-    gap: var(--alezux-grid-gap, 30px);
+    grid-template-columns: repeat(var(--alezux-grid-columns, 3), 1fr) !important;
+    gap: var(--alezux-grid-gap, 30px) !important;
     width: 100%;
     /* Override Masonry height if present */
     height: auto !important;
