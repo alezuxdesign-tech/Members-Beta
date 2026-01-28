@@ -30,6 +30,9 @@ class Notifications extends Module_Base {
 		add_action( 'wp_ajax_alezux_get_notifications', [ $this, 'ajax_get_notifications' ] );
 		add_action( 'wp_ajax_alezux_mark_read', [ $this, 'ajax_mark_read' ] );
 		add_action( 'wp_ajax_alezux_mark_all_read', [ $this, 'ajax_mark_all_read' ] );
+
+		// LearnDash Hooks
+		add_action( 'transition_post_status', [ $this, 'on_course_publish' ], 10, 3 );
 	}
 
 	public function enqueue_assets() {
@@ -131,5 +134,42 @@ class Notifications extends Module_Base {
 
 		Notifications_DB::mark_all_as_read( $user_id );
 		wp_send_json_success();
+	}
+
+	/**
+	 * Hook: New Course Published
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param \WP_Post $post
+	 */
+	public function on_course_publish( $new_status, $old_status, $post ) {
+		// Verify if it's a course and strictly publishing for the first time (or scheduled to publish)
+		// Usually old_status != publish implies it's new to the public.
+		if ( 'sfwd-courses' !== $post->post_type ) {
+			return;
+		}
+
+		if ( 'publish' !== $new_status || 'publish' === $old_status ) {
+			return;
+		}
+
+		// Avoid notifying if it's an autosave or revision just in case
+        if ( wp_is_post_revision( $post->ID ) || wp_is_post_autosave( $post->ID ) ) {
+            return;
+        }
+
+		// Prepare Notification Data
+		$title = '¡Nuevo Curso Disponible!';
+		$message = 'Se ha publicado el curso: ' . $post->post_title;
+		$link = get_permalink( $post->ID );
+		
+		// Try to get course featured image
+		$avatar_url = '';
+		if ( has_post_thumbnail( $post->ID ) ) {
+			$avatar_url = get_the_post_thumbnail_url( $post->ID, 'thumbnail' ); // or 'medium'
+		}
+
+		// Send to ALL users
+		self::add_notification( $title, $message, $link, $avatar_url, 'all' );
 	}
 }
