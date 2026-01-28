@@ -47,16 +47,17 @@
 .alezux-formacion-mentors {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0;
+    /* Controlamos el espacio con margin-right en avatars */
     margin-bottom: 20px;
 }
 
 .alezux-mentors-avatars {
-    display: flex;
-    /* Para que el primero quede encima si usamos margin-left negativo en siguientes, el orden natural es: siguiente tapa a anterior.
-       Para Avatar Group estilo "primero encima", usamos z-index manual o flex-direction: row-reverse visual hack.
-       Vamos a mantener el estándar "último tapa a primero" que es el default web, pero puliendo el borde. */
+    display: inline-flex;
     align-items: center;
+    margin-right: 15px;
+    /* Espacio garantizado contra el texto */
+    vertical-align: middle;
 }
 
 .alezux-mentor-avatar {
@@ -67,11 +68,12 @@
     border: 3px solid #1a1a1a;
     /* Borde más grueso para separar visualmente */
     margin-left: -15px;
-    /* Más overlap */
+    /* Overlap */
     position: relative;
     z-index: 1;
-    transition: transform 0.2s, z-index 0s, margin 0.2s;
-    /* Animaciones suaves */
+    flex-shrink: 0;
+    /* IMPRESCINDIBLE: Evita que se aplasten */
+    transition: transform 0.2s, z-index 0s, margin 0.2s, border-color 0.2s;
     background-color: #2a2a2a;
     /* Placeholder bg */
 }
@@ -83,9 +85,11 @@
 .alezux-mentor-avatar:hover {
     z-index: 10;
     /* Elevar al hacer hover para ver completo */
-    transform: translateY(-3px);
-    margin-right: 5px;
-    /* Dar un poco de espacio */
+    transform: translateY(-3px) scale(1.1);
+    margin-right: 10px;
+    /* Abrir espacio a la derecha */
+    border-color: #6c5ce7;
+    /* Highlight border */
 }
 
 .alezux-mentors-info {
@@ -93,26 +97,31 @@
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
+    flex: 1;
+    /* Ocupar espacio restante */
+    min-width: 0;
+    /* Permitir text-overflow ellipsis */
 }
 
 .alezux-mentors-label {
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     color: #6d7688;
     /* Un gris azulado similar a la imagen */
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 2px;
+    letter-spacing: 0.8px;
+    margin-bottom: 3px;
+    line-height: 1;
 }
 
 .alezux-mentors-names {
     font-size: 13px;
+    font-weight: 500;
     color: #ffffff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
-    display: block;
+    line-height: 1.2;
 }
 
 .alezux-mentor-avatar img {
