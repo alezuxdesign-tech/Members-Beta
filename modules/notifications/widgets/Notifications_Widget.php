@@ -38,7 +38,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => __( 'Content', 'alezux-members' ),
+				'label' => __( 'Contenido', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -46,16 +46,16 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'title',
 			[
-				'label' => __( 'Title', 'alezux-members' ),
+				'label' => __( 'Título', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Notifications', 'alezux-members' ),
+				'default' => __( 'Notificaciones', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'notification_icon',
 			[
-				'label' => __( 'Icon', 'alezux-members' ),
+				'label' => __( 'Ícono', 'alezux-members' ),
 				'type' => Controls_Manager::ICONS,
 				'default' => [
 					'value' => 'fas fa-bell',
@@ -70,7 +70,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_labels',
 			[
-				'label' => __( 'Labels', 'alezux-members' ),
+				'label' => __( 'Etiquetas', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -78,9 +78,9 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'label_mark_all_read',
 			[
-				'label' => __( 'Mark all read', 'alezux-members' ),
+				'label' => __( 'Marcar todo como leído', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Mark all as read', 'alezux-members' ),
+				'default' => __( 'Marcar todo como leído', 'alezux-members' ),
 			]
 		);
 
@@ -89,18 +89,18 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'label_loading',
 			[
-				'label' => __( 'Loading Text', 'alezux-members' ),
+				'label' => __( 'Texto Cargando', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Loading...', 'alezux-members' ),
+				'default' => __( 'Cargando...', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'label_no_notifications',
 			[
-				'label' => __( 'No Notifications Text', 'alezux-members' ),
+				'label' => __( 'Texto Sin Notificaciones', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'No notifications', 'alezux-members' ),
+				'default' => __( 'Sin notificaciones', 'alezux-members' ),
 			]
 		);
 
@@ -110,7 +110,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_icon',
 			[
-				'label' => __( 'Icon', 'alezux-members' ),
+				'label' => __( 'Ícono', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -130,7 +130,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'icon_bg_color',
 			[
-				'label'     => __( 'Background Color', 'alezux-members' ),
+				'label'     => __( 'Color de Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-bell-icon' => 'background-color: {{VALUE}}',
@@ -141,7 +141,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_size',
 			[
-				'label'      => __( 'Size', 'alezux-members' ),
+				'label'      => __( 'Tamaño', 'alezux-members' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', 'em' ],
 				'range'      => [
@@ -161,7 +161,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'icon_padding',
 			[
-				'label'      => __( 'Padding', 'alezux-members' ),
+				'label'      => __( 'Relleno (Padding)', 'alezux-members' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors'  => [
@@ -173,7 +173,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'icon_border_radius',
 			[
-				'label'      => __( 'Border Radius', 'alezux-members' ),
+				'label'      => __( 'Radio del Borde', 'alezux-members' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
@@ -185,7 +185,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'badge_bg_color',
 			[
-				'label'     => __( 'Badge Background Color', 'alezux-members' ),
+				'label'     => __( 'Color Fondo de Alerta', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-notification-badge' => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
@@ -199,7 +199,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'badge_text_color',
 			[
-				'label'     => __( 'Badge Text Color', 'alezux-members' ),
+				'label'     => __( 'Color Texto de Alerta', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-notification-badge' => 'color: {{VALUE}}',
@@ -221,9 +221,9 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'dropdown_bg_color',
 			[
-				'label'     => __( 'Background Color', 'alezux-members' ),
+				'label'     => __( 'Color de Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-			'selectors' => [
+				'selectors' => [
 					'{{WRAPPER}} .alezux-notifications-dropdown' => 'background-color: {{VALUE}};',
 					'{{WRAPPER}} .alezux-dropdown-header' => 'background-color: {{VALUE}};',
 					'{{WRAPPER}} .alezux-tabs' => 'background-color: {{VALUE}};',
@@ -235,7 +235,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'accordion_accent_color',
 			[
-				'label'     => __( 'Accent Color', 'alezux-members' ),
+				'label'     => __( 'Color de Acento', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-tab.active' => 'color: {{VALUE}}; border-bottom-color: {{VALUE}};',
@@ -250,7 +250,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_typography',
 			[
-				'label' => __( 'Typography & Colors', 'alezux-members' ),
+				'label' => __( 'Tipografía y Colores', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -259,7 +259,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_title_style',
 			[
-				'label' => __( 'Title', 'alezux-members' ),
+				'label' => __( 'Título', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 			]
 		);
@@ -287,7 +287,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_mark_read_style',
 			[
-				'label' => __( 'Mark All Read', 'alezux-members' ),
+				'label' => __( 'Marcar todo como leído', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -316,7 +316,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_notif_text_style',
 			[
-				'label' => __( 'Notification Text', 'alezux-members' ),
+				'label' => __( 'Texto de Notificación', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -345,7 +345,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_notif_meta_style',
 			[
-				'label' => __( 'Notification Date/Meta', 'alezux-members' ),
+				'label' => __( 'Fecha/Meta de Notificación', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -374,7 +374,7 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_status_text_style',
 			[
-				'label' => __( 'Status Text (Loading/Empty)', 'alezux-members' ),
+				'label' => __( 'Textos de Estado (Cargando/Vacío)', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
