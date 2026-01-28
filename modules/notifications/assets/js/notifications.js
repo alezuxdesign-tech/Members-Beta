@@ -31,7 +31,14 @@ jQuery(document).ready(function ($) {
             nonce: alezux_notifications_obj.nonce
         }, function (response) {
             if (response.success) {
-                $('.alezux-notification-item').removeClass('unread');
+                // Al marcar todo como leído, vaciamos la lista visualmente (Inbox Zero)
+                $list.empty();
+                $list.html(`
+                    <div class="alezux-no-notifications">
+                        <i class="eicon-bell-o alezux-no-notifications-icon"></i>
+                        <div>No hay notificaciones nuevas</div>
+                    </div>
+                `);
                 updateBadge(0);
             }
         });
@@ -49,7 +56,25 @@ jQuery(document).ready(function ($) {
                 id: id,
                 nonce: alezux_notifications_obj.nonce
             });
-            $item.removeClass('unread');
+
+            // Remover visualmente la notificación al hacer click (marcar como leída)
+            // Si quieres que solo desaparezca al hacer click, descomenta la siguiente línea:
+            $item.slideUp(200, function () {
+                $(this).remove();
+                // Check if list empty
+                if ($list.children('.alezux-notification-item').length === 0) {
+                    $list.html(`
+                        <div class="alezux-no-notifications">
+                            <i class="eicon-bell-o alezux-no-notifications-icon"></i>
+                            <div>No hay notificaciones nuevas</div>
+                        </div>
+                    `);
+                }
+            });
+
+            // Actualizar badge decrementando 1
+            var currentCount = parseInt($badge.text()) || 0;
+            updateBadge(Math.max(0, currentCount - 1));
         }
 
         if (link && link !== '#') {

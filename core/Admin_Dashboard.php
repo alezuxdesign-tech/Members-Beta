@@ -129,6 +129,7 @@ class Admin_Dashboard {
 
 		$title      = isset( $_POST['notification_title'] ) ? sanitize_text_field( $_POST['notification_title'] ) : 'Notificación de Prueba';
 		$message    = isset( $_POST['notification_message'] ) ? sanitize_textarea_field( $_POST['notification_message'] ) : 'Este es un mensaje de prueba.';
+		$avatar_url = isset( $_POST['notification_avatar'] ) ? esc_url_raw( $_POST['notification_avatar'] ) : '';
 		$target_user_id = isset( $_POST['target_user_id'] ) ? intval( $_POST['target_user_id'] ) : 0;
 		
 		// Si no se especifica usuario, enviamos al actual para la prueba (o a todos si se implementara logicamente así, pero por seguridad en prueba mejor al actual si está vacío)
@@ -142,7 +143,7 @@ class Admin_Dashboard {
 			$title, 
 			$message, 
 			'#', 
-			'', 
+			$avatar_url, 
 			$target_user_id 
 		);
 
