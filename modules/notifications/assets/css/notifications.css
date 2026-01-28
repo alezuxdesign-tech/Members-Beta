@@ -1,0 +1,206 @@
+.alezux-notifications-widget {
+    position: relative;
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    /* Adjust font as needed */
+}
+
+/* Bell Icon */
+.alezux-bell-icon {
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+    color: #333;
+}
+
+.alezux-notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white;
+}
+
+/* Dropdown Container */
+.alezux-notifications-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 360px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    /* Hidden by default */
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.alezux-notifications-widget.active .alezux-notifications-dropdown {
+    display: block;
+}
+
+/* Header */
+.alezux-dropdown-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.alezux-dropdown-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.alezux-mark-all-read {
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+}
+
+.alezux-mark-all-read:hover {
+    color: #333;
+}
+
+/* Tabs */
+.alezux-tabs {
+    display: flex;
+    padding: 10px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+}
+
+.alezux-tab {
+    margin-right: 15px;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.alezux-tab.active {
+    color: #000;
+    border-bottom: 2px solid #000;
+}
+
+.alezux-tab .badge-count {
+    background: #000;
+    color: #fff;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    margin-left: 5px;
+}
+
+.alezux-settings-icon {
+    margin-left: auto;
+    color: #999;
+    cursor: pointer;
+}
+
+/* List */
+.alezux-notifications-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.alezux-notification-item {
+    padding: 15px 20px;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #f9f9f9;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.alezux-notification-item:hover {
+    background: #f9f9f9;
+}
+
+.alezux-notification-item.unread {
+    background: #fff;
+    /* Could differ slightly */
+}
+
+/* Unread Indicator Dot */
+.alezux-notification-item.unread::after {
+    content: '';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: #6c5ce7;
+    /* Purple dot */
+    border-radius: 50%;
+}
+
+.notif-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.notif-content {
+    flex: 1;
+}
+
+.notif-text {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.notif-text span {
+    font-weight: 600;
+}
+
+.notif-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+.notif-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-accept,
+.btn-decline {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-accept {
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+}
+
+.btn-decline {
+    background: #fff;
+    color: #333;
+    border: 1px solid #e0e0e0;
+}
