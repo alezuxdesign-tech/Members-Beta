@@ -53,17 +53,81 @@ class Notifications_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'icon_image',
+			'notification_icon',
 			[
-				'label' => __( 'Custom Icon', 'alezux-members' ),
-				'type' => Controls_Manager::MEDIA,
+				'label' => __( 'Icon', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
 				'default' => [
-					'url' => '',
+					'value' => 'fas fa-bell',
+					'library' => 'fa-solid',
 				],
 			]
 		);
 
 		$this->end_controls_section();
+
+		// Labels Section
+		$this->start_controls_section(
+			'section_labels',
+			[
+				'label' => __( 'Labels', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'label_mark_all_read',
+			[
+				'label' => __( 'Mark all read', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Mark all as read', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_inbox',
+			[
+				'label' => __( 'Inbox Tab', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Inbox', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_general',
+			[
+				'label' => __( 'General Tab', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'General', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_archived',
+			[
+				'label' => __( 'Archived Tab', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Archived', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_loading',
+			[
+				'label' => __( 'Loading Text', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Loading...', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_no_notifications',
+			[
+				'label' => __( 'No Notifications Text', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'No notifications', 'alezux-members' ),
+			]
+		);
 
 		// Style Section
 		$this->start_controls_section(
@@ -110,6 +174,7 @@ class Notifications_Widget extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .alezux-bell-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-bell-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .alezux-bell-icon img' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
@@ -147,30 +212,26 @@ class Notifications_Widget extends Widget_Base {
 		?>
 		<div class="alezux-notifications-widget">
 			<div class="alezux-bell-icon">
-				<?php if ( ! empty( $settings['icon_image']['url'] ) ) : ?>
-					<img src="<?php echo esc_url( $settings['icon_image']['url'] ); ?>" alt="<?php echo esc_attr( $settings['title'] ); ?>" class="alezux-custom-noti-icon" style="height: auto; display: block;">
-				<?php else : ?>
-					<i class="eicon-bell" aria-hidden="true"></i>
-				<?php endif; ?>
+				<?php \Elementor\Icons_Manager::render_icon( $settings['notification_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 				<span class="alezux-notification-badge" style="display:none;">0</span>
 			</div>
 			
 			<div class="alezux-notifications-dropdown">
 				<div class="alezux-dropdown-header">
 					<h3><?php echo esc_html( $settings['title'] ); ?></h3>
-					<span class="alezux-mark-all-read"><?php esc_html_e( 'Mark all as read', 'alezux-members' ); ?></span>
+					<span class="alezux-mark-all-read"><?php echo esc_html( $settings['label_mark_all_read'] ); ?></span>
 				</div>
 				
 				<div class="alezux-tabs">
-					<div class="alezux-tab active" data-target="inbox">Inbox <span class="badge-count">0</span></div>
-					<div class="alezux-tab" data-target="general">General</div>
-					<div class="alezux-tab" data-target="archived">Archived</div>
+					<div class="alezux-tab active" data-target="inbox"><?php echo esc_html( $settings['label_inbox'] ); ?> <span class="badge-count">0</span></div>
+					<div class="alezux-tab" data-target="general"><?php echo esc_html( $settings['label_general'] ); ?></div>
+					<div class="alezux-tab" data-target="archived"><?php echo esc_html( $settings['label_archived'] ); ?></div>
 					<div class="alezux-settings-icon"><i class="eicon-gear"></i></div>
 				</div>
 
 				<div class="alezux-notifications-list" id="alezux-notif-list-inbox">
 					<!-- Notifications loaded via AJAX -->
-					<div class="alezux-loading">Loading...</div>
+					<div class="alezux-loading"><?php echo esc_html( $settings['label_loading'] ); ?></div>
 				</div>
 				<div class="alezux-notifications-list" id="alezux-notif-list-general" style="display:none;"></div>
 				<div class="alezux-notifications-list" id="alezux-notif-list-archived" style="display:none;"></div>
