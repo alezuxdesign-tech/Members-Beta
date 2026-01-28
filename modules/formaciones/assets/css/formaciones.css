@@ -163,18 +163,22 @@
 }
 
 .alezux-btn-arrow {
-    background: #2a2a2a;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    text-decoration: none;
-    transition: background 0.2s;
+    /* DEPRECATED but keeping for safety if needed or remove if confident */
+    display: none;
 }
 
-.alezux-btn-arrow:hover {
-    background: #6c5ce7;
+.alezux-formacion-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.alezux-formacion-button:hover {
+    text-decoration: none;
 }

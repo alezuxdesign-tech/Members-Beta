@@ -35,12 +35,25 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			]
 		);
 
+			]
+		);
+
 		$this->add_control(
 			'posts_per_page',
 			[
 				'label' => __( 'Cantidad de Cursos', 'alezux-members' ),
 				'type' => Controls_Manager::NUMBER,
 				'default' => 6,
+			]
+		);
+
+		$this->add_control(
+			'button_text',
+			[
+				'label' => __( 'Texto del Botón', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Ver Curso', 'alezux-members' ),
+				'placeholder' => __( 'Ver Curso', 'alezux-members' ),
 			]
 		);
 
@@ -451,8 +464,8 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 							<div class="alezux-formacion-price">
 								<?php echo esc_html( $price ); ?>
 							</div>
-							<a href="<?php the_permalink(); ?>" class="alezux-btn-arrow">
-								<span class="dashicons dashicons-arrow-right-alt2"></span>
+							<a href="<?php the_permalink(); ?>" class="alezux-formacion-button">
+								<?php echo esc_html( $settings['button_text'] ); ?>
 							</a>
 						</div>
 					</div>
