@@ -262,13 +262,25 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 						<!-- Mentores -->
 						<?php if ( ! empty( $mentors ) && is_array( $mentors ) ) : ?>
 							<div class="alezux-formacion-mentors">
-								<?php foreach ( $mentors as $mentor ) : ?>
-									<?php if ( ! empty( $mentor['image'] ) ) : ?>
-										<div class="alezux-mentor-avatar" title="<?php echo esc_attr( $mentor['name'] ); ?>">
-											<img src="<?php echo esc_url( $mentor['image'] ); ?>" alt="<?php echo esc_attr( $mentor['name'] ); ?>">
-										</div>
-									<?php endif; ?>
-								<?php endforeach; ?>
+								<div class="alezux-mentors-avatars">
+									<?php foreach ( $mentors as $mentor ) : ?>
+										<?php if ( ! empty( $mentor['image'] ) ) : ?>
+											<div class="alezux-mentor-avatar">
+												<img src="<?php echo esc_url( $mentor['image'] ); ?>" alt="<?php echo esc_attr( $mentor['name'] ); ?>">
+											</div>
+										<?php endif; ?>
+									<?php endforeach; ?>
+								</div>
+								
+								<div class="alezux-mentors-info">
+									<span class="alezux-mentors-label"><?php _e( 'MENTORES', 'alezux-members' ); ?></span>
+									<span class="alezux-mentors-names">
+										<?php 
+										$names = array_map( function( $m ) { return $m['name']; }, $mentors );
+										echo esc_html( implode( ', ', $names ) ); 
+										?>
+									</span>
+								</div>
 							</div>
 						<?php endif; ?>
 

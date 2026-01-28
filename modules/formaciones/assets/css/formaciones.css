@@ -46,7 +46,15 @@
 
 .alezux-formacion-mentors {
     display: flex;
-    margin-bottom: 15px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.alezux-mentors-avatars {
+    display: flex;
+    padding-left: 10px;
+    /* Espacio para el overflow negativo del primer item si fuera necesario, pero aquí usaremos margin-left negativo en todos menos el primero */
 }
 
 .alezux-mentor-avatar {
@@ -55,9 +63,41 @@
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid #1a1a1a;
-    /* Borde del color de fondo para separar */
-    margin-right: -10px;
-    /* Overlap effect */
+    /* Borde del color de la tarjeta */
+    margin-left: -12px;
+    position: relative;
+    z-index: 1;
+}
+
+.alezux-mentor-avatar:first-child {
+    margin-left: 0;
+}
+
+.alezux-mentors-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.alezux-mentors-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6d7688;
+    /* Un gris azulado similar a la imagen */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.alezux-mentors-names {
+    font-size: 13px;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
 }
 
 .alezux-mentor-avatar img {
