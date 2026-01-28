@@ -244,6 +244,17 @@ class Notifications_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'dropdown_bg_color',
+			[
+				'label'     => __( 'Background Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notifications-dropdown' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
 			'accordion_accent_color',
 			[
 				'label'     => __( 'Accent Color', 'alezux-members' ),
