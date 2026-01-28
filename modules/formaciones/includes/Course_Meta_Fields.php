@@ -12,8 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Course_Meta_Fields {
 
 	public function __construct() {
-		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
-		add_action( 'save_post', [ $this, 'save_meta_boxes' ] );
+		// Aseguramos que se instancie solo en admin o cuando sea necesario
+		if ( is_admin() ) {
+			add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
+			add_action( 'save_post', [ $this, 'save_meta_boxes' ] );
+		}
 	}
 
 	/**
