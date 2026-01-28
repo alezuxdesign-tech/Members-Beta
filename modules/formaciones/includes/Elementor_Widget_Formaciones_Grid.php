@@ -379,11 +379,62 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			]
 		);
 		
-		// Mentores
-		$this->add_control(
-			'heading_mentors',
+        $this->end_controls_section();
+
+		// --- Sección de Estilo: Mentores ---
+		$this->start_controls_section(
+			'section_style_mentors',
 			[
 				'label' => __( 'Mentores', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'mentors_container_gap',
+			[
+				'label' => __( 'Espacio Inferior', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-formacion-mentors' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'mentors_avatar_size',
+			[
+				'label' => __( 'Tamaño Avatar', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 20,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 30,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-mentor-avatar' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-mentors-avatars' => 'height: {{SIZE}}{{UNIT}};', // Ensure container fits
+				],
+			]
+		);
+
+        $this->add_control(
+			'mentors_label_heading',
+			[
+				'label' => __( 'Etiqueta', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -392,7 +443,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		$this->add_control(
 			'mentors_label_color',
 			[
-				'label' => __( 'Color Etiqueta', 'alezux-members' ),
+				'label' => __( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#6d7688',
 				'selectors' => [
@@ -405,15 +456,23 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'mentors_label_typography',
-				'label' => __( 'Tipografía Etiqueta', 'alezux-members' ),
 				'selector' => '{{WRAPPER}} .alezux-mentors-label',
+			]
+		);
+
+        $this->add_control(
+			'mentors_names_heading',
+			[
+				'label' => __( 'Nombres', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
 			]
 		);
 
 		$this->add_control(
 			'mentors_names_color',
 			[
-				'label' => __( 'Color Nombres', 'alezux-members' ),
+				'label' => __( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#ffffff',
 				'selectors' => [
@@ -426,7 +485,6 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'mentors_names_typography',
-				'label' => __( 'Tipografía Nombres', 'alezux-members' ),
 				'selector' => '{{WRAPPER}} .alezux-mentors-names',
 			]
 		);
@@ -789,6 +847,10 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					
 					<div class="alezux-formacion-content">
 						
+                        <a href="<?php the_permalink(); ?>" class="alezux-formacion-title-link">
+							<h3 class="alezux-formacion-title"><?php the_title(); ?></h3>
+						</a>
+
 						<!-- Mentores -->
 						<?php if ( ! empty( $mentors ) && is_array( $mentors ) ) : ?>
 							<div class="alezux-formacion-mentors">
@@ -813,10 +875,6 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 								</div>
 							</div>
 						<?php endif; ?>
-
-						<a href="<?php the_permalink(); ?>" class="alezux-formacion-title-link">
-							<h3 class="alezux-formacion-title"><?php the_title(); ?></h3>
-						</a>
 
 						<div class="alezux-formacion-excerpt">
 							<?php echo wp_trim_words( $description, 15 ); ?>
