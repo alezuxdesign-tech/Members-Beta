@@ -246,41 +246,7 @@ class Notifications_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
-	protected function register_controls() {
-		// ... existing controls ...
-    } 
-    // Wait, I can't target `register_controls` closing brace easily if I don't see it.
-    // I will target `protected function render() {` and prepend the controls and the closing of the previous section.
-    // The previous section `section_style_dropdown` ends with `$this->end_controls_section();` at line 248.
-    // And then line 249 is `}` which closes `register_controls`.
-    // So I need to insert BEFORE the closing brace of `register_controls`.
-    
-    // Actually, looking at the file:
-    // 248: $this->end_controls_section();
-    // 249: }
-    // 250:
-    // 251: protected function render() {
-    
-    // I will replace `protected function render() {` with the new controls AND `protected function render() {`.
-    // I need to be careful to extend `register_controls` (i.e. put the new controls BEFORE the `}` at line 249).
-    
-    // So target:
-    // 	}
-    //
-    //	protected function render() {
-    
-    // And replace with:
-    //      // ... new controls ...
-    //      $this->end_controls_section(); // Closing typography section
-    //  }
-    //
-    //  protected function render() {
-    
-    // BUT, I need to make sure I am inside `register_controls`.
-    // Line 249 `}` closes `register_controls`.
-    // So I target lines 249-251.
-    
-        // Typography & Text Colors Section
+
 		$this->start_controls_section(
 			'section_style_typography',
 			[
