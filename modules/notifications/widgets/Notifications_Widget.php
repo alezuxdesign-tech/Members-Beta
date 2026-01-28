@@ -11,11 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Notifications_Widget extends Widget_Base {
 
 	public function get_name() {
-		return 'alezux_notifications';
+		return 'notifications';
 	}
 
 	public function get_title() {
-		return __( 'Alezux Notifications', 'alezux-members' );
+		return __( 'Notificaciones', 'alezux-members' );
 	}
 
 	public function get_icon() {
