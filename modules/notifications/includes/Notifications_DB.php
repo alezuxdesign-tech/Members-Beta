@@ -61,11 +61,17 @@ class Notifications_DB {
 		return $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE user_id = %d AND is_read = 0", $user_id ) );
 	}
 
-	public static function get_user_notifications( $user_id, $limit = 20, $offset = 0 ) {
+	public static function get_user_notifications( $user_id, $limit = 20, $offset = 0, $only_unread = true ) {
 		global $wpdb;
 		$table_name = self::get_table_name();
+		
+		$where_clause = "WHERE user_id = %d";
+		if ( $only_unread ) {
+			$where_clause .= " AND is_read = 0";
+		}
+		
 		return $wpdb->get_results( $wpdb->prepare( 
-			"SELECT * FROM $table_name WHERE user_id = %d ORDER BY created_at DESC LIMIT %d OFFSET %d", 
+			"SELECT * FROM $table_name $where_clause ORDER BY created_at DESC LIMIT %d OFFSET %d", 
 			$user_id, $limit, $offset 
 		) );
 	}

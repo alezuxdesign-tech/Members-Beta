@@ -96,7 +96,7 @@ class Notifications extends Module_Base {
 		}
 
 		$user_id = get_current_user_id();
-		$notifications = Notifications_DB::get_user_notifications( $user_id );
+		$notifications = Notifications_DB::get_user_notifications( $user_id, 20, 0, true );
 		$unread_count = Notifications_DB::get_unread_count( $user_id );
 
 		// Pre-process for frontend (e.g. human readable time)
