@@ -102,11 +102,8 @@ jQuery(document).ready(function ($) {
     function updateBadge(count) {
         if (count > 0) {
             $('.alezux-notification-badge').text(count).show();
-            // Update inbox tab badge too
-            $('.alezux-tab[data-target="inbox"] .badge-count').text(count);
         } else {
             $('.alezux-notification-badge').hide();
-            $('.alezux-tab[data-target="inbox"] .badge-count').text('0');
         }
     }
 

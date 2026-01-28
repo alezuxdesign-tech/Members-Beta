@@ -84,32 +84,7 @@ class Notifications_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'label_inbox',
-			[
-				'label' => __( 'Inbox Tab', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Inbox', 'alezux-members' ),
-			]
-		);
 
-		$this->add_control(
-			'label_general',
-			[
-				'label' => __( 'General Tab', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'General', 'alezux-members' ),
-			]
-		);
-
-		$this->add_control(
-			'label_archived',
-			[
-				'label' => __( 'Archived Tab', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Archived', 'alezux-members' ),
-			]
-		);
 
 		$this->add_control(
 			'label_loading',
@@ -271,6 +246,195 @@ class Notifications_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+	protected function register_controls() {
+		// ... existing controls ...
+    } 
+    // Wait, I can't target `register_controls` closing brace easily if I don't see it.
+    // I will target `protected function render() {` and prepend the controls and the closing of the previous section.
+    // The previous section `section_style_dropdown` ends with `$this->end_controls_section();` at line 248.
+    // And then line 249 is `}` which closes `register_controls`.
+    // So I need to insert BEFORE the closing brace of `register_controls`.
+    
+    // Actually, looking at the file:
+    // 248: $this->end_controls_section();
+    // 249: }
+    // 250:
+    // 251: protected function render() {
+    
+    // I will replace `protected function render() {` with the new controls AND `protected function render() {`.
+    // I need to be careful to extend `register_controls` (i.e. put the new controls BEFORE the `}` at line 249).
+    
+    // So target:
+    // 	}
+    //
+    //	protected function render() {
+    
+    // And replace with:
+    //      // ... new controls ...
+    //      $this->end_controls_section(); // Closing typography section
+    //  }
+    //
+    //  protected function render() {
+    
+    // BUT, I need to make sure I am inside `register_controls`.
+    // Line 249 `}` closes `register_controls`.
+    // So I target lines 249-251.
+    
+        // Typography & Text Colors Section
+		$this->start_controls_section(
+			'section_style_typography',
+			[
+				'label' => __( 'Typography & Colors', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		// Header Title
+		$this->add_control(
+			'heading_title_style',
+			[
+				'label' => __( 'Title', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-dropdown-header h3' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'title_typography',
+				'selector' => '{{WRAPPER}} .alezux-dropdown-header h3',
+			]
+		);
+
+		// Mark All Read
+		$this->add_control(
+			'heading_mark_read_style',
+			[
+				'label' => __( 'Mark All Read', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'mark_read_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-mark-all-read' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'mark_read_typography',
+				'selector' => '{{WRAPPER}} .alezux-mark-all-read',
+			]
+		);
+
+		// Notification Item Text
+		$this->add_control(
+			'heading_notif_text_style',
+			[
+				'label' => __( 'Notification Text', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'notif_text_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .notif-text' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'notif_text_typography',
+				'selector' => '{{WRAPPER}} .notif-text',
+			]
+		);
+
+		// Notification Meta
+		$this->add_control(
+			'heading_notif_meta_style',
+			[
+				'label' => __( 'Notification Date/Meta', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'notif_meta_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .notif-meta' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'notif_meta_typography',
+				'selector' => '{{WRAPPER}} .notif-meta',
+			]
+		);
+
+		// Loading / Empty
+		$this->add_control(
+			'heading_status_text_style',
+			[
+				'label' => __( 'Status Text (Loading/Empty)', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'status_text_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-loading' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-no-notifications' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'status_text_typography',
+				'selector' => '{{WRAPPER}} .alezux-loading, {{WRAPPER}} .alezux-no-notifications',
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
@@ -288,19 +452,10 @@ class Notifications_Widget extends Widget_Base {
 					<span class="alezux-mark-all-read"><?php echo esc_html( $settings['label_mark_all_read'] ); ?></span>
 				</div>
 				
-				<div class="alezux-tabs">
-					<div class="alezux-tab active" data-target="inbox"><?php echo esc_html( $settings['label_inbox'] ); ?> <span class="badge-count">0</span></div>
-					<div class="alezux-tab" data-target="general"><?php echo esc_html( $settings['label_general'] ); ?></div>
-					<div class="alezux-tab" data-target="archived"><?php echo esc_html( $settings['label_archived'] ); ?></div>
-					<div class="alezux-settings-icon"><i class="eicon-gear"></i></div>
-				</div>
-
 				<div class="alezux-notifications-list" id="alezux-notif-list-inbox">
 					<!-- Notifications loaded via AJAX -->
 					<div class="alezux-loading"><?php echo esc_html( $settings['label_loading'] ); ?></div>
 				</div>
-				<div class="alezux-notifications-list" id="alezux-notif-list-general" style="display:none;"></div>
-				<div class="alezux-notifications-list" id="alezux-notif-list-archived" style="display:none;"></div>
 			</div>
 		</div>
 		<?php
