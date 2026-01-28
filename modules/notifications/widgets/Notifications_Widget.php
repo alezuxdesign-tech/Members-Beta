@@ -129,6 +129,8 @@ class Notifications_Widget extends Widget_Base {
 			]
 		);
 
+		$this->end_controls_section();
+
 		// Style Section
 		$this->start_controls_section(
 			'section_style_icon',
