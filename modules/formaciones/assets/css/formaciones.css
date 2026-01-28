@@ -1,1 +1,116 @@
-/* Estilos para el módulo Formaciones */
+/* CSS para Formaciones Grid (Masonry) */
+.alezux-formaciones-grid {
+    column-count: 3;
+    column-gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .alezux-formaciones-grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 767px) {
+    .alezux-formaciones-grid {
+        column-count: 1;
+    }
+}
+
+.alezux-formacion-card {
+    break-inside: avoid;
+    /* Evita que la tarjeta se parta entre columnas */
+    background-color: #1a1a1a;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.alezux-formacion-card:hover {
+    transform: translateY(-5px);
+}
+
+.alezux-formacion-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 50px 50px 0 0;
+    /* Solo bordes superiores si hay imagen */
+}
+
+/* Si el borde radio global es 50px, ajustamos la imagen */
+.alezux-formacion-content {
+    padding: 25px;
+}
+
+.alezux-formacion-mentors {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.alezux-mentor-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #1a1a1a;
+    /* Borde del color de fondo para separar */
+    margin-right: -10px;
+    /* Overlap effect */
+}
+
+.alezux-mentor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.alezux-formacion-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.alezux-formacion-title-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.alezux-formacion-excerpt {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.alezux-formacion-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.alezux-formacion-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6c5ce7;
+}
+
+.alezux-btn-arrow {
+    background: #2a2a2a;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.alezux-btn-arrow:hover {
+    background: #6c5ce7;
+}
