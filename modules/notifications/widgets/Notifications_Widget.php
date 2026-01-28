@@ -26,6 +26,14 @@ class Notifications_Widget extends Widget_Base {
 		return [ 'alezux-members' ];
 	}
 
+	public function get_style_depends() {
+		return [ 'alezux-notifications-css' ];
+	}
+
+	public function get_script_depends() {
+		return [ 'alezux-notifications-js' ];
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section(
 			'content_section',
