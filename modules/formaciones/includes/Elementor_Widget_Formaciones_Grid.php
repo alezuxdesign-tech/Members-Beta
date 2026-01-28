@@ -98,9 +98,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					'{{WRAPPER}} .alezux-btn-icon-right' => 'margin-left: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .alezux-btn-icon-left' => 'margin-right: {{SIZE}}{{UNIT}};',
 				],
-				'condition' => [
-					'selected_icon[value]!' => '',
-				],
+				// The condition was removed from here as per the user's instruction.
 			]
 		);
 
@@ -188,7 +186,6 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-formaciones-grid' => 'gap: {{SIZE}}{{UNIT}};',
-				],	'{{WRAPPER}} .alezux-formacion-card' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
