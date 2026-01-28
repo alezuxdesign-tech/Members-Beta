@@ -167,7 +167,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					'4' => '4',
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-formaciones-grid' => 'column-count: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formaciones-grid' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
 				],
 			]
 		);
@@ -187,8 +187,8 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-formaciones-grid' => 'column-gap: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .alezux-formacion-card' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-formaciones-grid' => 'gap: {{SIZE}}{{UNIT}};',
+				],	'{{WRAPPER}} .alezux-formacion-card' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
