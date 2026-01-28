@@ -290,6 +290,50 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
+	</div>
+
+	<!-- TAB 3: NOTIFICACIONES -->
+	<div id="tab-notifications" class="alezux-tab-panel" style="display: none;">
+		<div class="alezux-card">
+			<h2 class="alezux-title">🔔 Enviar Notificación</h2>
+			<p class="alezux-text">Envía notificaciones de prueba o avisos importantes a los usuarios directamente desde aquí.</p>
+
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
+				<input type="hidden" name="action" value="alezux_send_test_notification">
+				<?php wp_nonce_field( 'alezux_send_test_notification_action', 'alezux_notification_nonce' ); ?>
+
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">Título</label>
+					<input type="text" name="notification_title" 
+						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+						   value="Aviso Importante" required>
+				</div>
+
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">Mensaje</label>
+					<textarea name="notification_message" rows="4" 
+							  style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+							  required>Hola, esta es una notificación enviada desde el panel de administración.</textarea>
+				</div>
+
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">ID de Usuario Destino (Opcional - Dejar vacío para enviar al usuario actual)</label>
+					<input type="number" name="target_user_id" 
+						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+						   placeholder="Ej: 1">
+					<p style="font-size: 12px; color: #777; margin-top: 5px;">Si se deja vacío, se enviará solo a ti mismo como prueba.</p>
+				</div>
+
+				<div style="margin-top: 20px; text-align: right;">
+					<button type="submit" class="button button-primary" 
+							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						Enviar Notificación de Prueba
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
 </div>
 
 <script>
