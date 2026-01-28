@@ -147,6 +147,7 @@ class Notifications_Widget extends Widget_Base {
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-bell-icon i' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .alezux-bell-icon svg' => 'fill: {{VALUE}}; color: {{VALUE}};',
 				],
 			]
 		);
@@ -202,6 +203,55 @@ class Notifications_Widget extends Widget_Base {
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
 					'{{WRAPPER}} .alezux-bell-icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'badge_bg_color',
+			[
+				'label'     => __( 'Badge Background Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notification-badge' => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
+				],
+				'condition' => [
+					'notification_icon[value]!' => '',
+				],
+			]
+		);
+
+		$this->add_control(
+			'badge_text_color',
+			[
+				'label'     => __( 'Badge Text Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notification-badge' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Dropdown Style Section
+		$this->start_controls_section(
+			'section_style_dropdown',
+			[
+				'label' => __( 'Dropdown / Panel', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'accordion_accent_color',
+			[
+				'label'     => __( 'Accent Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-tab.active' => 'color: {{VALUE}}; border-bottom-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-tab.active .badge-count' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-notification-item.unread::after' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
