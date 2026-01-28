@@ -109,13 +109,17 @@ jQuery(document).ready(function ($) {
 
         notifications.forEach(notif => {
             const isUnread = notif.is_read == '0' ? 'unread' : '';
-            const avatar = notif.avatar_url ? `<img src="${notif.avatar_url}" class="notif-avatar">` : `<div class="notif-avatar" style="background:#eee; display:flex; align-items:center; justify-content:center;">?</div>`;
+            // Si hay avatar_url usamos img, si no, un icono por defecto
+            const avatar = notif.avatar_url
+                ? `<img src="${notif.avatar_url}" class="notif-avatar">`
+                : `<div class="notif-avatar"><i class="eicon-bell-o"></i></div>`;
 
             const html = `
                 <div class="alezux-notification-item ${isUnread}" data-id="${notif.id}" data-link="${notif.link}">
                     ${avatar}
                     <div class="notif-content">
-                        <div class="notif-text">${notif.title} ${notif.message}</div>
+                        <div class="notif-title">${notif.title}</div>
+                        <div class="notif-message">${notif.message}</div>
                         <div class="notif-meta">${notif.time_ago}</div>
                     </div>
                 </div>
