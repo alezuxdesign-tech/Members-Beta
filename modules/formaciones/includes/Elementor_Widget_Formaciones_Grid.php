@@ -35,8 +35,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 			]
 		);
 
-			]
-		);
+
 
 		$this->add_control(
 			'posts_per_page',
