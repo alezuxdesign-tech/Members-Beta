@@ -1,24 +1,24 @@
-/* CSS para Formaciones Grid (Masonry) */
+/* CSS para Formaciones Grid (Standard Grid) */
 .alezux-formaciones-grid {
-    column-count: 3;
-    column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
 }
 
 @media (max-width: 1024px) {
     .alezux-formaciones-grid {
-        column-count: 2;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 767px) {
     .alezux-formaciones-grid {
-        column-count: 1;
+        grid-template-columns: 1fr;
     }
 }
 
 .alezux-formacion-card {
-    break-inside: avoid;
-    /* Evita que la tarjeta se parta entre columnas */
+    /* break-inside: avoid; - Removed as we are using Grid now */
     background-color: #1a1a1a;
     border-radius: 50px;
     margin-bottom: 20px;

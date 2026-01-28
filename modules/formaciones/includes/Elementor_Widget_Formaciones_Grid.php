@@ -21,7 +21,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Grid cursos (Masonry)', 'alezux-members' );
+		return __( 'Grid cursos (Standard)', 'alezux-members' );
 	}
 
 	public function get_icon() {
