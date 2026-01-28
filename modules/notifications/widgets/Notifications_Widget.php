@@ -52,6 +52,17 @@ class Notifications_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'icon_image',
+			[
+				'label' => __( 'Custom Icon', 'alezux-members' ),
+				'type' => Controls_Manager::MEDIA,
+				'default' => [
+					'url' => '',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Style Section
@@ -99,6 +110,7 @@ class Notifications_Widget extends Widget_Base {
 				],
 				'selectors'  => [
 					'{{WRAPPER}} .alezux-bell-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-bell-icon img' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -135,7 +147,11 @@ class Notifications_Widget extends Widget_Base {
 		?>
 		<div class="alezux-notifications-widget">
 			<div class="alezux-bell-icon">
-				<i class="eicon-bell" aria-hidden="true"></i>
+				<?php if ( ! empty( $settings['icon_image']['url'] ) ) : ?>
+					<img src="<?php echo esc_url( $settings['icon_image']['url'] ); ?>" alt="<?php echo esc_attr( $settings['title'] ); ?>" class="alezux-custom-noti-icon" style="height: auto; display: block;">
+				<?php else : ?>
+					<i class="eicon-bell" aria-hidden="true"></i>
+				<?php endif; ?>
 				<span class="alezux-notification-badge" style="display:none;">0</span>
 			</div>
 			
