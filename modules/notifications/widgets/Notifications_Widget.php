@@ -248,8 +248,11 @@ class Notifications_Widget extends Widget_Base {
 			[
 				'label'     => __( 'Background Color', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
+			'selectors' => [
 					'{{WRAPPER}} .alezux-notifications-dropdown' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-dropdown-header' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-tabs' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-notifications-list' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
