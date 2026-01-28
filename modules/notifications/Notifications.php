@@ -50,7 +50,7 @@ class Notifications extends Module_Base {
 			true 
 		);
 
-		wp_localize_script( 'alezux-notifications-js', 'alezux_invites_obj', [ // Standardizing localized object name if possible, or use module specific
+		wp_localize_script( 'alezux-notifications-js', 'alezux_notifications_obj', [ // Standardizing localized object name if possible, or use module specific
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'nonce'   => wp_create_nonce( 'alezux_notifications_nonce' ),
 		] );

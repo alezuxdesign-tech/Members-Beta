@@ -23,7 +23,7 @@ class Notifications_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux_members' ];
+		return [ 'alezux-members' ];
 	}
 
 	protected function register_controls() {

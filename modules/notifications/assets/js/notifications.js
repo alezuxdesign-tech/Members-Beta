@@ -24,9 +24,9 @@ jQuery(document).ready(function ($) {
 
     // Mark All Read
     $markAll.on('click', function () {
-        $.post(alezux_invites_obj.ajaxurl, {
+        $.post(alezux_notifications_obj.ajaxurl, {
             action: 'alezux_mark_all_read',
-            nonce: alezux_invites_obj.nonce
+            nonce: alezux_notifications_obj.nonce
         }, function (response) {
             if (response.success) {
                 $('.alezux-notification-item').removeClass('unread');
@@ -42,10 +42,10 @@ jQuery(document).ready(function ($) {
         const link = $item.data('link');
 
         if ($item.hasClass('unread')) {
-            $.post(alezux_invites_obj.ajaxurl, {
+            $.post(alezux_notifications_obj.ajaxurl, {
                 action: 'alezux_mark_read',
                 id: id,
-                nonce: alezux_invites_obj.nonce
+                nonce: alezux_notifications_obj.nonce
             });
             $item.removeClass('unread');
         }
@@ -57,9 +57,9 @@ jQuery(document).ready(function ($) {
 
     // Fetch Notifications
     function fetchNotifications() {
-        $.post(alezux_invites_obj.ajaxurl, {
+        $.post(alezux_notifications_obj.ajaxurl, {
             action: 'alezux_get_notifications',
-            nonce: alezux_invites_obj.nonce
+            nonce: alezux_notifications_obj.nonce
         }, function (response) {
             if (response.success) {
                 renderNotifications(response.data.notifications);
