@@ -11,6 +11,10 @@
     cursor: pointer;
     position: relative;
     color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .alezux-notification-badge {
@@ -32,17 +36,29 @@
 /* Dropdown Container */
 .alezux-notifications-dropdown {
     position: absolute;
-    top: 40px;
+    top: calc(100% + 15px);
     right: 0;
     width: 360px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     display: none;
-    /* Hidden by default */
     overflow: hidden;
-    border: 1px solid #eee;
+    border: 1px solid #f0f0f0;
+    animation: alezuxFadeInUp 0.2s ease-out forwards;
+}
+
+@keyframes alezuxFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .alezux-notifications-widget.active .alezux-notifications-dropdown {
@@ -56,66 +72,102 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #f5f5f5;
+    background: #fff;
 }
 
 .alezux-dropdown-header h3 {
     margin: 0;
     font-size: 16px;
     font-weight: 700;
+    color: #1a1a1a;
 }
 
 .alezux-mark-all-read {
     font-size: 12px;
     color: #666;
     cursor: pointer;
+    transition: color 0.2s;
 }
 
 .alezux-mark-all-read:hover {
     color: #333;
+    text-decoration: underline;
 }
 
 /* Tabs */
 .alezux-tabs {
     display: flex;
-    padding: 10px 20px;
+    padding: 0 20px;
     border-bottom: 1px solid #f5f5f5;
     align-items: center;
+    background: #fff;
 }
 
 .alezux-tab {
-    margin-right: 15px;
-    font-size: 14px;
+    margin-right: 20px;
+    font-size: 13px;
     color: #999;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
     position: relative;
-    padding-bottom: 5px;
+    padding: 12px 0;
+    transition: color 0.2s;
+}
+
+.alezux-tab:hover {
+    color: #555;
 }
 
 .alezux-tab.active {
-    color: #000;
-    border-bottom: 2px solid #000;
+    color: #6c5ce7;
+    border-bottom: 2px solid #6c5ce7;
 }
 
 .alezux-tab .badge-count {
-    background: #000;
-    color: #fff;
+    background: #f0f0f0;
+    color: #666;
     border-radius: 10px;
     padding: 2px 6px;
     font-size: 10px;
     margin-left: 5px;
+    vertical-align: middle;
+}
+
+.alezux-tab.active .badge-count {
+    background: #6c5ce7;
+    color: #fff;
 }
 
 .alezux-settings-icon {
     margin-left: auto;
     color: #999;
     cursor: pointer;
+    font-size: 14px;
 }
 
 /* List */
 .alezux-notifications-list {
     max-height: 400px;
     overflow-y: auto;
+    background: #fff;
+}
+
+/* Empty State */
+.alezux-no-notifications {
+    padding: 50px 20px;
+    text-align: center;
+    color: #a0a0a0;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.alezux-no-notifications-icon {
+    font-size: 32px;
+    opacity: 0.3;
+    margin-bottom: 5px;
 }
 
 .alezux-notification-item {
@@ -125,15 +177,16 @@
     border-bottom: 1px solid #f9f9f9;
     transition: background 0.2s;
     position: relative;
+    cursor: pointer;
 }
 
 .alezux-notification-item:hover {
-    background: #f9f9f9;
+    background: #fcfcfc;
 }
 
 .alezux-notification-item.unread {
-    background: #fff;
-    /* Could differ slightly */
+    background: #f0f7ff;
+    /* Very subtle blue tint */
 }
 
 /* Unread Indicator Dot */
@@ -143,11 +196,11 @@
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     background: #6c5ce7;
-    /* Purple dot */
     border-radius: 50%;
+    box-shadow: 0 0 0 2px #fff;
 }
 
 .notif-avatar {
@@ -156,10 +209,13 @@
     border-radius: 50%;
     margin-right: 15px;
     object-fit: cover;
+    border: 1px solid #eee;
 }
 
 .notif-content {
     flex: 1;
+    padding-right: 15px;
+    /* Space for the dot */
 }
 
 .notif-text {
@@ -170,37 +226,10 @@
 }
 
 .notif-text span {
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .notif-meta {
     font-size: 12px;
     color: #999;
-}
-
-.notif-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.btn-accept,
-.btn-decline {
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.btn-accept {
-    background: #6c5ce7;
-    color: #fff;
-    border: none;
-}
-
-.btn-decline {
-    background: #fff;
-    color: #333;
-    border: 1px solid #e0e0e0;
 }

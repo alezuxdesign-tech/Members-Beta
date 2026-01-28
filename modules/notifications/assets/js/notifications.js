@@ -71,7 +71,12 @@ jQuery(document).ready(function ($) {
     function renderNotifications(notifications) {
         $list.empty();
         if (notifications.length === 0) {
-            $list.html('<div style="padding:20px; text-align:center; color:#999;">No notifications</div>');
+            $list.html(`
+                <div class="alezux-no-notifications">
+                    <i class="eicon-bell-o alezux-no-notifications-icon"></i>
+                    <div>No new notifications</div>
+                </div>
+            `);
             return;
         }
 
