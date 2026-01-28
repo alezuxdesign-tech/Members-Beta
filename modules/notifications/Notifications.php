@@ -2,6 +2,7 @@
 namespace Alezux_Members\Modules\Notifications;
 
 use Alezux_Members\Core\Module_Base;
+require_once __DIR__ . '/includes/Notifications_DB.php';
 use Alezux_Members\Modules\Notifications\Includes\Notifications_DB;
 
 if ( ! defined( 'ABSPATH' ) ) {
