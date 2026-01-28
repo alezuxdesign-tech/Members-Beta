@@ -24,6 +24,7 @@ class Formaciones extends Module_Base {
 
 		// Encolar assets del frontend
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
+		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_frontend_assets' ] );
 
 		// Registrar Widget de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
@@ -34,7 +35,7 @@ class Formaciones extends Module_Base {
 			'alezux-formaciones-front',
 			$this->get_asset_url( 'assets/css/formaciones.css' ),
 			[],
-			'1.0.0'
+			'1.0.2' // Version bumped to force cache clear
 		);
 	}
 
