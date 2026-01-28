@@ -5,25 +5,27 @@ jQuery(document).ready(function ($) {
     const $list = $widget.find('#alezux-notif-list-inbox');
     const $markAll = $widget.find('.alezux-mark-all-read');
 
-    // Toggle Dropdown
-    $bell.on('click', function (e) {
+    // Toggle Dropdown using delegation for robustness
+    $(document).on('click', '.alezux-bell-icon', function (e) {
+        e.preventDefault();
         e.stopPropagation();
-        $widget.toggleClass('active');
-        if ($widget.hasClass('active')) {
-            markAllAsReadLocally(); // Optional: mark as read just by opening? Or wait for explicit click?
-            // Usually we might want to keep them unread until user interacts, but for now we won't auto-mark read.
-        }
+        var $parent = $(this).closest('.alezux-notifications-widget');
+        $parent.toggleClass('active');
+
+        // Close other open widgets if any
+        $('.alezux-notifications-widget').not($parent).removeClass('active');
     });
 
     // Close on click outside
     $(document).on('click', function (e) {
         if (!$(e.target).closest('.alezux-notifications-widget').length) {
-            $widget.removeClass('active');
+            $('.alezux-notifications-widget').removeClass('active');
         }
     });
 
     // Mark All Read
-    $markAll.on('click', function () {
+    $(document).on('click', '.alezux-mark-all-read', function (e) {
+        e.stopPropagation();
         $.post(alezux_notifications_obj.ajaxurl, {
             action: 'alezux_mark_all_read',
             nonce: alezux_notifications_obj.nonce
@@ -74,7 +76,7 @@ jQuery(document).ready(function ($) {
             $list.html(`
                 <div class="alezux-no-notifications">
                     <i class="eicon-bell-o alezux-no-notifications-icon"></i>
-                    <div>No new notifications</div>
+                    <div>No hay notificaciones</div>
                 </div>
             `);
             return;
@@ -99,11 +101,11 @@ jQuery(document).ready(function ($) {
 
     function updateBadge(count) {
         if (count > 0) {
-            $badge.text(count).show();
+            $('.alezux-notification-badge').text(count).show();
             // Update inbox tab badge too
             $('.alezux-tab[data-target="inbox"] .badge-count').text(count);
         } else {
-            $badge.hide();
+            $('.alezux-notification-badge').hide();
             $('.alezux-tab[data-target="inbox"] .badge-count').text('0');
         }
     }
