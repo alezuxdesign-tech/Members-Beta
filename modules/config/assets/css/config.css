@@ -23,10 +23,7 @@
     transition: all 0.3s ease;
 }
 
-.alezux-config-card.is-open .alezux-config-header {
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--alezux-border-color, #eee);
-    margin-bottom: 20px;
+.alezux-config-card.active .alezux-config-header {
     padding-bottom: 20px;
     border-bottom: 1px solid var(--alezux-border-color, #eee);
     margin-bottom: 20px;
@@ -124,7 +121,7 @@
     transition: transform 0.3s ease;
 }
 
-.alezux-config-card.is-open .alezux-config-toggle-icon {
+.alezux-config-card.active .alezux-config-toggle-icon {
     transform: rotate(180deg);
 }
 
@@ -144,8 +141,10 @@
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    /* Slight offset from header */
     margin-top: 15px;
     animation: alezuxFadeInUp 0.2s ease-out forwards;
+    z-index: 1000;
 }
 
 @keyframes alezuxFadeInUp {
@@ -160,8 +159,8 @@
     }
 }
 
-.alezux-config-card.is-open .alezux-config-menu {
-    display: block;
+.alezux-config-card.active .alezux-config-menu {
+    display: flex;
 }
 
 
