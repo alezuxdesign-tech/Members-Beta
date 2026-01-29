@@ -104,6 +104,32 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		);
 
 		$this->add_responsive_control(
+			'progress_bar_width',
+			[
+				'label' => __( 'Ancho Barra (Width)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [
+						'min' => 1,
+						'max' => 1000,
+					],
+					'%' => [
+						'min' => 1,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'size' => 100,
+					'unit' => '%',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-progress-bar' => 'width: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
 			'progress_bar_height',
 			[
 				'label' => __( 'Alto Barra', 'alezux-members' ),
