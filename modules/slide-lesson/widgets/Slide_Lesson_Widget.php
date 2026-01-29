@@ -761,13 +761,23 @@ class Slide_Lesson_Widget extends Widget_Base {
 		$settings = $this->get_settings_for_display();
 		$limit = $settings['limit'];
 
-		// Lógica duplicada para asegurar funcionamiento independiente
-		// Idealmente, esto debería estar en un Helper o Service
+		// Lógica corregida para LearnDash
+		// Obtener ID del curso actual
+		$course_id = learndash_get_course_id();
+		
 		$args = [
 			'post_type'      => 'sfwd-lessons',
 			'posts_per_page' => intval( $limit ),
 			'post_status'    => 'publish',
+            'orderby'        => 'menu_order',
+			'order'          => 'ASC',
 		];
+
+		// Si estamos en un contexto de curso, filtrar por ese curso
+		if ( ! empty( $course_id ) ) {
+			$args['meta_key']   = 'course_id';
+			$args['meta_value'] = $course_id;
+		}
 
 		$query = new \WP_Query( $args );
 		$lessons = [];
@@ -775,10 +785,15 @@ class Slide_Lesson_Widget extends Widget_Base {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				$query->the_post();
+				$lesson_id = get_the_ID();
+				
+				// Usar permalink específico de LearnDash si hay curso, sino el normal
+				$permalink = ! empty( $course_id ) ? learndash_get_step_permalink( $lesson_id, $course_id ) : get_permalink( $lesson_id );
+				
 				$lessons[] = [
 					'title'     => get_the_title(),
-					'permalink' => get_permalink(),
-					'image_url' => get_the_post_thumbnail_url( get_the_ID(), 'full' ),
+					'permalink' => $permalink,
+					'image_url' => get_the_post_thumbnail_url( $lesson_id, 'full' ),
 				];
 			}
 			wp_reset_postdata();
