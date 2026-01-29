@@ -95,14 +95,73 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		);
 
 		$this->add_control(
-			'header_meta_color',
+			'progress_bar_heading',
 			[
-				'label' => __( 'Color Meta (Progreso)', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'default' => '#a0a0a0',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-topics-header-meta' => 'color: {{VALUE}};',
+				'label' => __( 'Barra de Progreso', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'progress_bar_height',
+			[
+				'label' => __( 'Alto Barra', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 1,
+						'max' => 20,
+					],
 				],
+				'default' => [
+					'size' => 6,
+					'unit' => 'px',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-progress-bar' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_radius',
+			[
+				'label' => __( 'Radio Borde', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-progress-bar' => 'border-radius: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-topics-progress-bar-fill' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_bg_color',
+			[
+				'label' => __( 'Color Fondo (Contenedor)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#333333',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-progress-bar' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'progress_bar_fill',
+				'label' => __( 'Fondo Barra (Relleno)', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-topics-progress-bar-fill',
 			]
 		);
 
@@ -757,8 +816,14 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			<div class="alezux-topics-header">
 				<div class="alezux-topics-header-content">
 					<h3 class="alezux-topics-header-title"><?php echo esc_html( $lesson_title ); ?></h3>
-					<div class="alezux-topics-header-meta">
-						<?php echo esc_html( sprintf( '%d/%d terminado', $completed_count, $total_topics ) ); ?>
+					<?php
+					$progress_percentage = 0;
+					if ( $total_topics > 0 ) {
+						$progress_percentage = ( $completed_count / $total_topics ) * 100;
+					}
+					?>
+					<div class="alezux-topics-progress-bar">
+						<div class="alezux-topics-progress-bar-fill" style="width: <?php echo esc_attr( $progress_percentage ); ?>%;"></div>
 					</div>
 				</div>
 				<div class="alezux-topics-header-icon">

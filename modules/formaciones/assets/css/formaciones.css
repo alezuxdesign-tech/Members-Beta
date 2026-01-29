@@ -366,36 +366,31 @@
     display: block;
 }
 
-/* Completed State */
-/* If completed, maybe show green check? Or just white check? 
-   The image shows one Green icon (Active?) and one White icon (Completed?).
-   Let's assume:
-   - Active = Green Circle, White Check? Or maybe just the Bar is green?
-   - Completed = White Circle, Black Check?
-   
-   Looking at image:
-   - Top one: Green Bar, Green Checkmark Circle? Hard to clarify without zooming.
-   - Second one: No bar, White Checkmark Circle.
-   Let's try to match that logic.
-*/
-
 /* Completed Logic */
 .alezux-topic-check.completed {
     background-color: #ffffff;
 }
 
-/* Active & Completed Logic combined? 
-   Usually Active replaces Completed style if it's the current one.
-*/
-.alezux-topic-item.is-active .alezux-topic-check {
-    background-color: #2ecc71;
-    /* Bright Green */
-    border-color: #121212;
+/* Removed: Active state styling for checkmark. It should only visually change if COMPLETED. */
+
+/* Progress Bar Styles */
+.alezux-topics-progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #333;
+    /* Default container bg */
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 5px;
 }
 
-.alezux-topic-item.is-active .alezux-topic-check svg {
-    stroke: #ffffff;
-    /* White check on Green bg */
+.alezux-topics-progress-bar-fill {
+    height: 100%;
+    background-color: #00b894;
+    /* Default fill color */
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.5s ease-in-out;
 }
 
 /* Text Content */
