@@ -97,6 +97,19 @@ class Config_Widget extends Widget_Base {
 		$repeater = new Repeater();
 
 		$repeater->add_control(
+			'item_type',
+			[
+				'label' => esc_html__( 'Type', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'link',
+				'options' => [
+					'link' => esc_html__( 'Link', 'alezux-members' ),
+					'separator' => esc_html__( 'Separator', 'alezux-members' ),
+				],
+			]
+		);
+
+		$repeater->add_control(
 			'icon',
 			[
 				'label' => esc_html__( 'Icon', 'alezux-members' ),
@@ -104,6 +117,9 @@ class Config_Widget extends Widget_Base {
 				'default' => [
 					'value' => 'fas fa-link',
 					'library' => 'fa-solid',
+				],
+				'condition' => [
+					'item_type' => 'link',
 				],
 			]
 		);
@@ -115,6 +131,9 @@ class Config_Widget extends Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => esc_html__( 'Menu Item', 'alezux-members' ),
 				'label_block' => true,
+				'condition' => [
+					'item_type' => 'link',
+				],
 			]
 		);
 
@@ -126,6 +145,9 @@ class Config_Widget extends Widget_Base {
 				'placeholder' => esc_html__( 'https://your-link.com', 'alezux-members' ),
 				'default' => [
 					'url' => '#',
+				],
+				'condition' => [
+					'item_type' => 'link',
 				],
 			]
 		);
@@ -585,6 +607,12 @@ class Config_Widget extends Widget_Base {
 				<?php if ( ! empty( $settings['menu_items'] ) ) : ?>
 					<?php foreach ( $settings['menu_items'] as $item ) : ?>
 						<?php
+						// Check for separator
+						if ( isset( $item['item_type'] ) && 'separator' === $item['item_type'] ) {
+							echo '<div class="alezux-config-menu-separator"></div>';
+							continue;
+						}
+
 						$link_url = $item['link']['url'];
 						$link_target = $item['link']['is_external'] ? '_blank' : '_self';
 						$link_nofollow = $item['link']['nofollow'] ? 'nofollow' : '';
