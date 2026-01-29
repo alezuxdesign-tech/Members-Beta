@@ -149,10 +149,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    flex-wrap: wrap;
-    /* Allow wrapping */
-    gap: 10px;
-    /* Space between elements when wrapped */
+    /* Removed wrap to keep single line layout */
 }
 
 .alezux-formacion-price {
@@ -160,9 +157,8 @@
     font-weight: 600;
     color: #6c5ce7;
     white-space: nowrap;
-    /* Prevent price breaking */
-    margin-right: 15px;
-    /* Minimum space */
+    margin-right: 10px;
+    /* Reduced specific margin */
 }
 
 .alezux-btn-arrow {
@@ -181,9 +177,16 @@
     cursor: pointer;
     line-height: 1.2;
     white-space: nowrap;
-    /* Prevent button text breaking */
     flex-shrink: 0;
-    /* Prevent button squashing */
+    padding-left: 15px !important;
+    /* Force tighter padding to fit */
+    padding-right: 15px !important;
+}
+
+white-space: nowrap;
+/* Prevent button text breaking */
+flex-shrink: 0;
+/* Prevent button squashing */
 }
 
 .alezux-formacion-button:hover {
