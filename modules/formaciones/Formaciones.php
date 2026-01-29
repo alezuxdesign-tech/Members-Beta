@@ -153,6 +153,17 @@ class Formaciones extends Module_Base {
             $course_id = learndash_get_course_id( $post_id );
             
             // 2. Delete from Activity Table
+            // Ensure we use the correct post type. If it's a topic, we must explicitly say 'topic'.
+            $post_type_raw = get_post_type($post_id);
+            if ( 'sfwd-topic' === $post_type_raw ) {
+                $activity_type = 'topic';
+            } elseif ( 'sfwd-lessons' === $post_type_raw ) {
+                $activity_type = 'lesson';
+            } else {
+                 // Fallback or specific handling for other types if needed
+                 $activity_type = 'topic'; 
+            }
+
             $wpdb->delete(
                 $wpdb->prefix . 'learndash_user_activity',
                 [
