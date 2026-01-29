@@ -314,32 +314,31 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					$ticks_count = isset($settings['chart_ticks_count']) ? intval($settings['chart_ticks_count']) : 30;
 					$ticks_active = round( ($average_progress / 100) * $ticks_count );
 					
-					// Viewport 500x300 for maximum safety margin (aspect ratio 5:3)
-					// Center roughly at 250, 250
+					// Improved Viewport and Geometry for "Non-clipped" look
+					// Box 500x300.
+					// Center horizontally: 250.
+					// Vertical Center (cy): 240 (moved up from bottom to leave 60px space)
+					// Radius: 180 (Total width 360, fits in 500 easily).
+					
 					$cx = 250;
-					$cy = 250; 
-					$r = 200; // Radius
+					$cy = 240; 
+					$r = 180;
 					$tick_length = 45; 
 					
-					// Margins:
-					// Top: 250 - 200 = 50px (minus stroke cap ~6px) -> plenty.
-					// Left: 250 - 200 = 50px -> plenty.
-					// Right: 250 + 200 = 450px -> 50px margin -> plenty.
-					// Bottom: 250.
-					
-					$start_angle = -180;
-					$end_angle = 0;
-					$total_angle = 180;
+					// Angles: Restrict to -175 to -5 to lift ends off the "floor" and avoid "extra line" visual artifact
+					$start_angle = -175;
+					$end_angle = -5;
+					$total_angle = $end_angle - $start_angle; // 170 deg span
 					$step_angle = $total_angle / ($ticks_count - 1); 
 					
 					$active_color = $settings['chart_fill_color_start'];
 					$inactive_color = $settings['chart_track_color'];
 				?>
 				<div class="alezux-general-chart-container">
-					<svg class="alezux-general-chart-svg" viewBox="0 0 500 260" preserveAspectRatio="xMidYMax meet">
+					<svg class="alezux-general-chart-svg" viewBox="0 0 500 300" preserveAspectRatio="xMidYMax meet">
 						<defs>
 							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-50%" y="-50%" width="200%" height="200%">
-								<feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
 								<feMerge>
 									<feMergeNode in="coloredBlur"/>
 									<feMergeNode in="SourceGraphic"/>
@@ -418,10 +417,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				display: flex;
 				justify-content: center;
 				margin-bottom: 20px;
-				width: 100%; /* Ensure container fills Elementor wrapper */
+				width: 100%; 
 			}
 			.alezux-general-chart-svg {
-				overflow: visible; /* CRITICAL for glow */
+				overflow: visible; 
 				height: auto;
 			}
 			
@@ -435,7 +434,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				flex-direction: column;
 				justify-content: flex-end;
 				pointer-events: none;
-				padding-bottom: 20px; /* Adjusted for new viewBox height */
+				padding-bottom: 30px; /* Space for bottom margin */
 			}
 			.alezux-chart-percent {
 				font-size: 60px;
