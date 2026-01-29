@@ -226,6 +226,19 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'item_padding',
+			[
+				'label' => __( 'Relleno Item (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- Sección de Estilo: Indicadores ---
@@ -441,18 +454,7 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			]
 		);
 
-		$this->add_responsive_control(
-			'item_padding',
-			[
-				'label' => __( 'Relleno Item (Padding)', 'alezux-members' ),
-				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', '%' ],
-				'selectors' => [
-					'{{WRAPPER}} .alezux-topic-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator' => 'before',
-			]
-		);
+
 
 		$this->end_controls_section();
 
