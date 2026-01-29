@@ -448,14 +448,14 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 				?>
 				<a href="<?php echo esc_url( $permalink ); ?>" class="alezux-topic-item <?php echo esc_attr( $is_active ); ?> <?php echo $is_completed ? 'is-completed' : ''; ?>">
 					
-					<!-- Checkmark Icon (Always visible, changes style) -->
-					<div class="alezux-topic-check <?php echo $is_completed ? 'completed' : ''; ?>">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-							<polyline points="20 6 9 17 4 12"></polyline>
-						</svg>
-					</div>
-
 					<div class="alezux-topic-thumbnail-wrapper">
+						<!-- Checkmark Icon (Inside wrapper for absolute positioning) -->
+						<div class="alezux-topic-check <?php echo $is_completed ? 'completed' : ''; ?>">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="20 6 9 17 4 12"></polyline>
+							</svg>
+						</div>
+
 						<?php if ( $has_thumbnail ) : ?>
 							<div class="alezux-topic-thumbnail">
 								<img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="<?php echo esc_attr( $title ); ?>">

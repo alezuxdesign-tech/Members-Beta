@@ -282,22 +282,24 @@
 /* Wrapper de la imagen (más pequeño y ajustado) */
 .alezux-topic-thumbnail-wrapper {
     position: relative;
-    width: 130px;
-    /* Ancho fijo */
+    width: 140px;
+    /* Un poco más ancho para la proporción landscape */
     flex-shrink: 0;
-    margin-right: 16px;
-    border-radius: 10px;
+    margin-right: 20px;
+    /* Más espacio con el texto */
+    border-radius: 12px;
     overflow: visible;
-    /* Para permitir que el check salga si es necesario */
+    /* CRUCIAL: Permitir que el check salga */
 }
 
 .alezux-topic-thumbnail {
     width: 100%;
     aspect-ratio: 16/9;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     background-color: #222;
     position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .alezux-topic-thumbnail img {
@@ -315,23 +317,27 @@
     background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
 }
 
-/* Check de completado (Ahora fuera de la imagen) */
+/* Check de completado (Flotando a la izquierda) */
 .alezux-topic-check {
-    position: relative;
-    /* Ya no absoluto */
-    width: 24px;
-    height: 24px;
+    position: absolute;
+    top: 50%;
+    left: -14px;
+    /* Superpuesto al borde de la imagen */
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
     background-color: #fff;
-    /* Default white circle */
+    /* Por defecto blanco */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
-    /* Dark Icon */
-    margin-right: 16px;
-    /* Espacio con la imagen */
-    flex-shrink: 0;
+    color: #000;
+    /* Icono negro */
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 2px solid #050505;
+    /* 'Corte' visual con el fondo */
     transition: all 0.3s ease;
 }
 
@@ -348,14 +354,30 @@
     /* Verde brillante */
     color: #fff;
     /* Icono blanco */
+    border-color: #050505;
 }
 
-/* Check en item Activo (Si no está completado, se ve blanco) */
+/* Check en item Activo (pero no completado) */
 .alezux-topic-item.is-active .alezux-topic-check:not(.completed) {
     background-color: #fff;
-    color: #333;
+    color: #000;
+    transform: translateY(-50%) scale(1.1);
+    /* Ligeramente más grande */
 }
 
+/* Item activo: Barra verde a la izquierda */
+.alezux-topic-item {
+    border-left: 4px solid transparent;
+    padding-left: 20px;
+    /* Espacio para que la barra no pegue con la imagen */
+}
+
+.alezux-topic-item.is-active {
+    background-color: transparent;
+    /* Quitar fondo morado anterior */
+    border-left-color: #00b894;
+    /* Verde teal */
+}
 
 .alezux-topic-info {
     flex: 1;
@@ -366,18 +388,20 @@
 }
 
 .alezux-topic-title {
-    margin: 0 0 6px 0;
-    font-size: 1rem;
-    /* 16px */
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    /* Título grande */
     font-weight: 700;
     color: #ffffff;
-    line-height: 1.3;
+    line-height: 1.2;
     font-family: 'Manrope', sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .alezux-topic-author {
-    font-size: 0.85rem;
-    color: #888888;
+    font-size: 0.95rem;
+    color: #cccccc;
+    /* Texto más claro */
     font-weight: 500;
     display: block;
 }
