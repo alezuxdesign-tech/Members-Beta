@@ -130,13 +130,13 @@ class Formaciones extends Module_Base {
 
 				if ( $course_id ) {
 					$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-					if ( isset( $course_progress[$course_id] ) ) {
+					if ( ! empty( $course_progress[$course_id] ) ) {
 						// Check topics
-						if ( isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
+						if ( ! empty( $course_progress[$course_id]['topics'][$post_id] ) ) {
 							$is_completed = true;
 						}
 						// Check lessons (if it was a lesson)
-						if ( isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+						if ( ! empty( $course_progress[$course_id]['lessons'][$post_id] ) ) {
 							$is_completed = true;
 						}
 					}

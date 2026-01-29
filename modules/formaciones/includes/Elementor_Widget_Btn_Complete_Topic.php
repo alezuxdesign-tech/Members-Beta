@@ -370,8 +370,9 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 
 			if ( $course_id ) {
 				$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-				if ( isset( $course_progress[$course_id] ) ) {
-					if ( isset( $course_progress[$course_id]['topics'][$post_id] ) || isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+				if ( ! empty( $course_progress[$course_id] ) ) {
+					// Use !empty instead of isset to avoid false positives with 0/null/false
+					if ( ! empty( $course_progress[$course_id]['topics'][$post_id] ) || ! empty( $course_progress[$course_id]['lessons'][$post_id] ) ) {
 						$is_completed = true;
 					}
 				}
@@ -381,6 +382,8 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 			if ( ! $is_completed ) {
 				global $wpdb;
 				$activity_type = 'topic';
+				// ... (existing)
+
 				$pt = get_post_type($post_id);
 				if('sfwd-lessons' === $pt) $activity_type = 'lesson';
 				
