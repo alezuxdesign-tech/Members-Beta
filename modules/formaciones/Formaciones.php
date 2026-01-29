@@ -185,7 +185,9 @@ class Formaciones extends Module_Base {
 				$course_id = 0;
 				if(function_exists('learndash_get_course_id')){
 					$course_id = learndash_get_course_id( $post_id );
-				} else {
+				}
+                
+                if ( ! $course_id ) {
 					$course_id = get_post_meta( $post_id, 'course_id', true );
 				}
 
