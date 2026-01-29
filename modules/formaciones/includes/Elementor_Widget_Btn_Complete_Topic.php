@@ -399,24 +399,6 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		// If Manual Check is TRUE, then it is complete.
 		$is_completed = $manual_is_completed;
 
-		// VISIBLE DEBUG (REMOVE AFTER FIXING)
-        $debug_info = sprintf(
-            '<div style="background:rgba(0,0,0,0.8); color:#0f0; font-size:10px; padding:5px; margin-top:5px; position:absolute; z-index:9999;">
-                DEBUG V3:<br>
-                IsComp: %s<br>
-                C_ID: %s<br>
-                Meta_Topic: %s<br>
-                Meta_Less: %s<br>
-                Activity_Row: %s
-            </div>',
-            $manual_is_completed ? 'YES' : 'NO',
-            $course_id,
-            (isset($course_progress[$course_id]['topics'][$post_id]) && !empty($course_progress[$course_id]['topics'][$post_id])) ? 'YES' : 'NO',
-            (isset($course_progress[$course_id]['lessons'][$post_id]) && !empty($course_progress[$course_id]['lessons'][$post_id])) ? 'YES' : 'NO',
-            ($row) ? 'YES' : 'NO'
-        );
-        echo $debug_info;
-
 		// Debug comment for user inspection if needed
 		echo '<!-- Debug Completed Check: Manual=' . ($manual_is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
 		

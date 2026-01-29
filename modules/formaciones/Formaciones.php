@@ -173,14 +173,12 @@ class Formaciones extends Module_Base {
 				// === UNMARK COMPLETE ===
 				
 				// 1. Delete from Activity Table
-				$wpdb->delete(
-					$wpdb->prefix . 'learndash_user_activity',
-					[
-						'user_id' => $user_id,
-						'post_id' => $post_id,
-						'activity_type' => $activity_type
-					]
-				);
+				// 1. Delete from Activity Table (Aggressive: Ignore activity_type, just use post_id/user_id)
+				$wpdb->query( $wpdb->prepare(
+					"DELETE FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d",
+					$user_id,
+					$post_id
+				) );
 
 				// 2. Clear User Meta Cache for Course Progress
 				// Need Course ID
