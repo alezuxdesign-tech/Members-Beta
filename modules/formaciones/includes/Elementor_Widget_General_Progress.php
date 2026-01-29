@@ -91,46 +91,45 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'range' => [
 					'px' => [
 						'min' => 150,
-						'max' => 500,
+						'max' => 600,
 					],
 				],
 				'default' => [
-					'size' => 300,
+					'size' => 350,
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-general-chart-container' => 'width: {{SIZE}}px; height: calc({{SIZE}}px / 2 + 20px);', // +20px buffer
-					'{{WRAPPER}} .alezux-general-chart-svg' => 'width: {{SIZE}}px; height: {{SIZE}}px;', // SVG is square but clipped
+					'{{WRAPPER}} .alezux-general-chart-container' => 'width: {{SIZE}}px;', 
 				],
+			]
+		);
+		
+		$this->add_control(
+			'chart_ticks_count',
+			[
+				'label' => __( 'Cantidad de Segmentos', 'alezux-members' ),
+				'type' => Controls_Manager::NUMBER,
+				'min' => 10,
+				'max' => 60,
+				'step' => 1,
+				'default' => 30,
 			]
 		);
 
 		$this->add_control(
 			'chart_track_color',
 			[
-				'label' => __( 'Color de Fondo (Track)', 'alezux-members' ),
+				'label' => __( 'Color Inactivos', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#333333',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-chart-track' => 'stroke: {{VALUE}};',
-				],
+				'default' => '#ffffff',
 			]
 		);
 
 		$this->add_control(
 			'chart_fill_color_start',
 			[
-				'label' => __( 'Color Relleno (Inicio)', 'alezux-members' ),
+				'label' => __( 'Color Activos (Glow)', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#f1c40f',
-			]
-		);
-
-		$this->add_control(
-			'chart_fill_color_end',
-			[
-				'label' => __( 'Color Relleno (Fin)', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'default' => '#e67e22',
+				'default' => '#FFB800', // Gold/Yellow
 			]
 		);
 
@@ -139,9 +138,9 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			[
 				'label' => __( 'Color Porcentaje', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#f1c40f',
+				'default' => '#ffb800',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-chart-percent' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-chart-percent' => 'color: {{VALUE}}; text-shadow: 0 0 15px {{VALUE}};',
 				],
 			]
 		);
@@ -261,7 +260,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 		
 		if ( ! is_user_logged_in() ) {
 			if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-				echo '<div class="alezux-msg">' . __( 'Debes iniciar sesión para ver el progreso real.', 'alezux-members' ) . '</div>';
+				echo '<div class="alezux-msg" style="color:#fff;">' . __( 'Debes iniciar sesión para ver el progreso real.', 'alezux-members' ) . '</div>';
 				
 				// Mock data for editor
 				$courses_data = [
@@ -271,6 +270,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				];
 				$total_courses = 3;
 				$total_progress_sum = 145;
+				$average_progress = 48; // Mock avg
 			} else {
 				return;
 			}
@@ -298,10 +298,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					'permalink'  => get_permalink( $course_id ),
 				];
 			}
+			// Calculate Global Average
+			$average_progress = ( $total_courses > 0 ) ? round( $total_progress_sum / $total_courses ) : 0;
 		}
 
-		// Calculate Global Average
-		$average_progress = ( $total_courses > 0 ) ? round( $total_progress_sum / $total_courses ) : 0;
 
 		// --- RENDER ---
 		?>
@@ -309,58 +309,66 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			
 			<?php if ( 'yes' === $settings['show_chart'] ) : ?>
 				<?php 
-					// SVG Geometry
-					// We want a semicircle.
-					// Radius r = 90 (viewport 200x100)
-					// Circumference (half) = PI * r = 3.1416 * 90 ≈ 283
-					// Dasharray (segmented look): e.g. 5 stroke, 3 gap.
-					
-					$r = 90;
-					$c = M_PI * $r; // Sempercircle length
-					$pct = $average_progress / 100;
-					$dash_offset = $c * (1 - $pct); 
-					// Semicircle starts at 180deg (left) to 0deg (right)? No, usually 270 (-90) to 90.
-					// Standard SVG circle starts at 3 o'clock (0deg). 
-					// We need dashed stroke for "ticks".
-					
+					// SEGMENTED CHART LOGIC
 					$unique_id = $this->get_id();
+					$ticks_count = isset($settings['chart_ticks_count']) ? intval($settings['chart_ticks_count']) : 30;
+					$ticks_active = round( ($average_progress / 100) * $ticks_count );
+					
+					// Viewport 400x220 to allow nice padding and glow
+					$cx = 200;
+					$cy = 200; // Semicircle bottom center
+					$r = 160;
+					$tick_length = 40; 
+					$start_angle = -180;
+					$end_angle = 0;
+					$total_angle = 180;
+					$step_angle = $total_angle / ($ticks_count - 1); // Spread over 180 deg
+					
+					$active_color = $settings['chart_fill_color_start'];
+					$inactive_color = $settings['chart_track_color'];
 				?>
 				<div class="alezux-general-chart-container">
-					<svg class="alezux-general-chart-svg" viewBox="0 0 200 110" preserveAspectRatio="xMidYMax meet">
+					<svg class="alezux-general-chart-svg" viewBox="0 0 400 230" preserveAspectRatio="xMidYMax meet">
 						<defs>
-							<linearGradient id="grad_<?php echo esc_attr($unique_id); ?>" x1="0%" y1="0%" x2="100%" y2="0%">
-								<stop offset="0%" style="stop-color:<?php echo esc_attr($settings['chart_fill_color_start']); ?>;stop-opacity:1" />
-								<stop offset="100%" style="stop-color:<?php echo esc_attr($settings['chart_fill_color_end']); ?>;stop-opacity:1" />
-							</linearGradient>
+							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-50%" y="-50%" width="200%" height="200%">
+								<feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+								<feMerge>
+									<feMergeNode in="coloredBlur"/>
+									<feMergeNode in="SourceGraphic"/>
+								</feMerge>
+							</filter>
 						</defs>
 						
-						<!-- Track (Fondo) -->
-						<!-- Path: Arc from left (10,100) to right (190,100) with radius 90 -->
-						<path class="alezux-chart-track" d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke-width="20" stroke-linecap="round" stroke-dasharray="6 4" />
-						
-						<!-- Fill (Progreso) -->
-						<!-- Same path, but dashed based on percentage -->
-						<!-- stroke-dasharray: [Length of filled part] [Length of total path] -->
-						<!-- But we want segmented ticks also painted. -->
-						<!-- Trick: Use the same dasharray '6 4' but mask it? or simply verify SVG Dash offset logic. -->
-						<!-- Easier: Two paths. Top path is colored gradient, but 'stroke-dasharray' matches key value. -->
-						<!-- Actually, to "fill" the ticks progressively, we need a mask or clip-path. -->
-						
-						<mask id="mask_<?php echo esc_attr($unique_id); ?>">
-							<!-- White path reveals, Black hides. -->
-							<!-- We draw a solid thick white path that represents the progress length -->
-							<path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="white" stroke-width="22" stroke-dasharray="<?php echo $c * $pct; ?> <?php echo $c; ?>" />
-						</mask>
-
-						<!-- Colored Path (Apply Mask) -->
-						<path class="alezux-chart-fill" d="M 10 100 A 90 90 0 0 1 190 100" 
-							fill="none" 
-							stroke="url(#grad_<?php echo esc_attr($unique_id); ?>)" 
-							stroke-width="20" 
-							stroke-linecap="round" 
-							stroke-dasharray="6 4"
-							mask="url(#mask_<?php echo esc_attr($unique_id); ?>)"
-							/>
+						<!-- Ticks -->
+						<g class="alezux-chart-ticks">
+							<?php for ($i = 0; $i < $ticks_count; $i++) : 
+								$is_active = $i < $ticks_active;
+								$angle_deg = $start_angle + ($i * $step_angle);
+								$angle_rad = deg2rad($angle_deg);
+								
+								// Calculate start and end points of the tick line
+								// Outer point
+								$x1 = $cx + ($r * cos($angle_rad));
+								$y1 = $cy + ($r * sin($angle_rad));
+								
+								// Inner point
+								$x2 = $cx + ( ($r - $tick_length) * cos($angle_rad));
+								$y2 = $cy + ( ($r - $tick_length) * sin($angle_rad));
+								
+								$color = $is_active ? $active_color : $inactive_color;
+								$filter = $is_active ? "url(#glow-{$unique_id})" : "none";
+								$opacity = $is_active ? 1 : 1; // Inactive usually fully visible but white
+							?>
+								<line 
+									x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
+									x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
+									stroke="<?php echo esc_attr($color); ?>" 
+									stroke-width="8" 
+									stroke-linecap="round"
+									style="filter: <?php echo $filter; ?>;"
+								/>
+							<?php endfor; ?>
+						</g>
 					</svg>
 					
 					<div class="alezux-chart-content">
@@ -397,38 +405,43 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				/* Default dark background handling depending on theme, widget shouldn't enforce bg unless set in Advanced */
+				font-family: 'Roboto', sans-serif; /* Fallback */
 			}
 			.alezux-general-chart-container {
 				position: relative;
 				display: flex;
 				justify-content: center;
 				margin-bottom: 20px;
-				overflow: hidden; /* Hide bottom half of circle space if using full circle SVG tech */
+				/* Aspect ratio maintenance not critical as width controls SVG size */
 			}
+			.alezux-general-chart-svg {
+				overflow: visible; /* Allow glow to spill */
+			}
+			
 			.alezux-chart-content {
 				position: absolute;
-				bottom: 0;
+				bottom: 5px; /* Adjust vertical pos of text */
 				left: 0;
 				right: 0;
 				text-align: center;
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-end;
-				height: 100%;
-				padding-bottom: 10px; /* Adjust based on arc height */
+				pointer-events: none;
 			}
 			.alezux-chart-percent {
-				font-size: 40px;
-				font-weight: bold;
+				font-size: 50px;
+				font-weight: 700;
 				line-height: 1;
 				margin-bottom: 5px;
-				/* Glow effect simulation */
-				text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+				transition: all 0.3s;
 			}
 			.alezux-chart-label {
 				font-size: 14px;
-				opacity: 0.8;
+				font-weight: 400;
+				opacity: 0.9;
+				text-transform: uppercase;
+				letter-spacing: 1px;
 			}
 			
 			/* List Styles */
@@ -442,28 +455,36 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				margin-bottom: 5px;
+				margin-bottom: 8px;
 			}
 			.alezux-course-title {
 				text-decoration: none;
 				font-weight: 500;
 				flex-grow: 1;
-				margin-right: 10px;
+				margin-right: 15px;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				font-size: 15px;
+			}
+			.alezux-course-percent {
+				font-weight: 700;
+				font-size: 14px;
 			}
 			.alezux-course-divider {
 				height: 2px;
 				width: 100%;
 				position: relative;
+				border-radius: 2px;
+				overflow: hidden;
 			}
 			.alezux-course-divider-fill {
 				height: 100%;
 				position: absolute;
 				left: 0;
 				top: 0;
-				box-shadow: 0 0 5px currentColor; /* simple glow */
+				border-radius: 2px;
+				box-shadow: 0 0 8px currentColor; /* simple glow matching color */
 			}
 		</style>
 		<?php
