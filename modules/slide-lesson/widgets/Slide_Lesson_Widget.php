@@ -815,6 +815,36 @@ class Slide_Lesson_Widget extends Widget_Base {
 			wp_reset_postdata();
 		}
 
+		// Agrupar lecciones por separadores
+		// Regex para detectar [Separador (Titulo: ...)]
+		$slide_groups = [];
+		$current_group = [
+			'title' => '',
+			'lessons' => [],
+		];
+
+		foreach ( $lessons as $lesson ) {
+			if ( preg_match( '/\[Separador \(Titulo:\s*(.*?)\)\]/i', $lesson['title'], $matches ) ) {
+				// Si el grupo actual tiene lecciones, lo guardamos
+				if ( ! empty( $current_group['lessons'] ) ) {
+					$slide_groups[] = $current_group;
+				}
+				// Iniciar nuevo grupo con el título extraído
+				$current_group = [
+					'title'   => isset( $matches[1] ) ? trim( $matches[1] ) : '',
+					'lessons' => [],
+				];
+			} else {
+				// Es una lección normal, agregar al grupo actual
+				$current_group['lessons'][] = $lesson;
+			}
+		}
+
+		// Agregar el último grupo si tiene lecciones
+		if ( ! empty( $current_group['lessons'] ) ) {
+			$slide_groups[] = $current_group;
+		}
+
 		// Reutilizar la vista existente
 		// Usar __FILE__ para evitar ambigüedades con __DIR__
 		// plugin_dir_path( __FILE__ ) devuelve .../widgets/
