@@ -222,6 +222,14 @@ class Formaciones extends Module_Base {
 				wp_cache_delete( 'learndash_course_progress_' . $user_id . '_' . $course_id, 'learndash' );
 				wp_cache_delete( 'learndash_user_activity_' . $user_id . '_' . $post_id, 'learndash' );
 
+				// LiteSpeed Cache Purge
+				if ( defined( 'LSCWP_V' ) ) {
+					do_action( 'litespeed_purge_post', $post_id );
+					if ( $course_id ) {
+						do_action( 'litespeed_purge_post', $course_id );
+					}
+				}
+
 				wp_send_json_success( [ 'status' => 'incomplete', 'method' => 'manual_unmark' ] );
 
 			} else {
@@ -276,6 +284,14 @@ class Formaciones extends Module_Base {
 						// but usually just setting the key triggers recalculation on next full load or is enough.
 						
 						update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
+					}
+
+					// LiteSpeed Cache Purge
+					if ( defined( 'LSCWP_V' ) ) {
+						do_action( 'litespeed_purge_post', $post_id );
+						if ( $course_id ) {
+							do_action( 'litespeed_purge_post', $course_id );
+						}
 					}
 
 					wp_send_json_success( [ 'status' => 'completed', 'method' => 'manual_fallback_write' ] );
