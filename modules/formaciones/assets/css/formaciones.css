@@ -205,31 +205,36 @@
 /* --- Widget Topics List --- */
 .alezux-topics-widget {
     width: 100%;
-    /* Estilos base por si falla Elementor */
-    background-color: #1a1a1a;
-    border-radius: 15px;
-    padding: 20px;
+    background-color: #050505;
+    /* Fondo casi negro como en la imagen */
+    border-radius: 20px;
+    padding: 24px;
+    box-sizing: border-box;
+    border: 1px solid #1f1f1f;
 }
 
 .alezux-topics-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #1f1f1f;
 }
 
 .alezux-topics-header-content h3.alezux-topics-header-title {
-    margin: 0 0 5px 0;
-    font-size: 1.1rem;
+    margin: 0 0 4px 0;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #ffffff;
+    font-family: 'Manrope', sans-serif;
+    /* Asegurar fuente premium */
 }
 
 .alezux-topics-header-meta {
-    font-size: 0.85rem;
-    color: #a0a0a0;
+    font-size: 0.9rem;
+    color: #888888;
+    font-weight: 500;
 }
 
 .alezux-topics-header-icon {
@@ -244,14 +249,16 @@
 }
 
 .alezux-topic-item {
-    display: flex;
+    display: flex !important;
+    /* Forzar flex para evitar stacking vertical */
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #333;
-    text-decoration: none;
-    transition: background-color 0.3s, border-left-color 0.3s;
+    padding: 16px 0;
+    border-bottom: 1px solid #1f1f1f;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
     border-left: 3px solid transparent;
-    position: relative;
+    padding-left: 12px;
+    /* Espacio para el borde izquierdo */
     background-color: transparent;
 }
 
@@ -259,29 +266,38 @@
     border-bottom: none;
 }
 
+/* Estado Hover */
 .alezux-topic-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
+/* Estado Activo */
 .alezux-topic-item.is-active {
-    background-color: rgba(108, 92, 231, 0.1);
-    border-left-color: #6c5ce7;
+    background-color: rgba(108, 92, 231, 0.05);
+    /* Sutil fondo morado */
+    border-left-color: #8c7ae6;
+    /* Borde morado brillante */
 }
 
+/* Wrapper de la imagen (más pequeño y ajustado) */
 .alezux-topic-thumbnail-wrapper {
     position: relative;
-    width: 120px;
-    /* Ancho ajustado para parecerse más a la imagen */
+    width: 130px;
+    /* Ancho fijo */
     flex-shrink: 0;
-    margin-right: 15px;
+    margin-right: 16px;
+    border-radius: 10px;
+    overflow: visible;
+    /* Para permitir que el check salga si es necesario */
 }
 
 .alezux-topic-thumbnail {
     width: 100%;
     aspect-ratio: 16/9;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    background-color: #2a2a2a;
+    background-color: #222;
+    position: relative;
 }
 
 .alezux-topic-thumbnail img {
@@ -291,65 +307,93 @@
     display: block;
 }
 
+/* Placeholder si no hay imagen */
+.alezux-topic-thumbnail.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+}
+
+/* Check de completado */
 .alezux-topic-check {
     position: absolute;
     top: 50%;
-    left: -12px;
+    left: -10px;
+    /* Superpuesto al borde izquierdo de la imagen */
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    background-color: #333;
-    /* Default gray */
+    width: 22px;
+    height: 22px;
+    background-color: #2d2d2d;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #555;
-    font-size: 14px;
-    border: 3px solid #1a1a1a;
-    z-index: 2;
+    color: #666;
+    border: 2px solid #050505;
+    /* Borde del mismo color que el fondo del widget para 'cortar' */
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .alezux-topic-check svg {
-    width: 14px;
-    height: 14px;
-    stroke: currentColor;
+    width: 12px;
+    height: 12px;
+    stroke: #888;
     stroke-width: 3;
 }
 
-/* When completed (logic needed or just style active?) Image implies checks are "done" */
-.alezux-topic-item.is-completed .alezux-topic-check {
-    /* Need to add class in PHP if I want this */
+/* Check activo (verde o blanco según diseño) */
+.alezux-topic-check.completed {
     background-color: #333;
-    color: #fff;
 }
 
-/* Wait, I didn't add 'is-completed' class in PHP. I should check. */
+.alezux-topic-check.completed svg {
+    stroke: #fff;
+}
 
 .alezux-topic-info {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .alezux-topic-title {
-    margin: 0 0 5px 0;
+    margin: 0 0 6px 0;
     font-size: 1rem;
-    font-weight: 600;
+    /* 16px */
+    font-weight: 700;
     color: #ffffff;
     line-height: 1.3;
+    font-family: 'Manrope', sans-serif;
 }
 
 .alezux-topic-author {
-    font-size: 0.8rem;
-    color: #a0a0a0;
+    font-size: 0.85rem;
+    color: #888888;
+    font-weight: 500;
     display: block;
 }
 
+/* Ajustes Responsivos */
+@media (max-width: 768px) {
+    .alezux-topic-thumbnail-wrapper {
+        width: 100px;
+    }
+
+    .alezux-topics-header-title {
+        font-size: 1rem;
+    }
+}
+
 .alezux-elementor-placeholder {
-    padding: 20px;
-    background: #2a2a2a;
-    border: 1px dashed #444;
-    color: #a0a0a0;
+    padding: 30px;
+    background: #111;
+    border: 1px dashed #333;
+    color: #888;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-family: monospace;
 }
