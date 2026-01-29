@@ -106,11 +106,18 @@ class Formaciones extends Module_Base {
 			wp_send_json_error( [ 'message' => 'Invalid Post ID' ] );
 		}
 
+
+		// LOGGING FOR DEBUGGING
+		error_log( "Alezux Toggle: Post ID: $post_id, User ID: $user_id" );
+
 		// Check if already completed
 		$is_completed = learndash_is_target_complete( $post_id, $user_id );
+		error_log( "Alezux Toggle: Is Completed? " . ( $is_completed ? 'YES' : 'NO' ) );
 
 		if ( $is_completed ) {
 			// Unmark complete (Requires removing user activity)
+            error_log( "Alezux Toggle: Attempting to UNMARK" );
+            
 			// LearnDash doesn't have a simple "unmark" function for topics generally accessible, 
 			// we have to delete the activity record.
 			
