@@ -205,12 +205,11 @@
 /* --- Widget Topics List --- */
 .alezux-topics-widget {
     width: 100%;
-    background-color: transparent !important;
-    /* Remove background to match screenshot simplicity or keep minimal */
+    /* Background handled by Elementor Control */
     border-radius: 0;
     padding: 0;
     box-sizing: border-box;
-    border: none;
+    /* Border handled by Elementor Control */
 }
 
 /* Cabecera (Optional) */
@@ -260,7 +259,8 @@
     text-decoration: none !important;
     transition: all 0.2s ease;
     background-color: transparent;
-    border: none !important;
+    /* Border handled by Elementor Control */
+    border-bottom: 1px solid transparent;
     /* Removing default borders */
     gap: 20px;
     /* Active State Indicator Bar */

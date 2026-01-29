@@ -117,6 +117,25 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'list_gap',
+			[
+				'label' => __( 'Espacio entre Elementos', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range' => [
+					'px' => [
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-list' => 'gap: {{SIZE}}{{UNIT}};',
+					// Fallback for older browsers if flex gap not supported, though unlikely needed
+				],
+				'separator' => 'before',
+			]
+		);
+
 		$this->add_control(
 			'item_bg_color',
 			[
@@ -141,25 +160,283 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		);
 
 		$this->add_control(
+			'separator_heading',
+			[
+				'label' => __( 'Separador', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'item_border_style',
+			[
+				'label' => __( 'Estilo de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'solid',
+				'options' => [
+					'none' => __( 'Ninguno', 'alezux-members' ),
+					'solid' => __( 'Sólido', 'alezux-members' ),
+					'double' => __( 'Doble', 'alezux-members' ),
+					'dotted' => __( 'Punteado', 'alezux-members' ),
+					'dashed' => __( 'Discontinuo', 'alezux-members' ),
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item' => 'border-bottom-style: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
 			'item_border_color',
 			[
-				'label' => __( 'Color de Borde (Separador)', 'alezux-members' ),
+				'label' => __( 'Color de Separador', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#333333',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-topic-item' => 'border-bottom: 1px solid {{VALUE}};',
+					'{{WRAPPER}} .alezux-topic-item' => 'border-bottom-color: {{VALUE}};',
 				],
+				'condition' => [
+					'item_border_style!' => 'none',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'item_border_width',
+			[
+				'label' => __( 'Ancho de Separador', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'max' => 10,
+					],
+				],
+				'default' => [
+					'size' => 1,
+					'unit' => 'px',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item' => 'border-bottom-width: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'item_border_style!' => 'none',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Sección de Estilo: Indicadores ---
+		$this->start_controls_section(
+			'section_style_indicators',
+			[
+				'label' => __( 'Indicadores (Estado)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'active_bar_heading',
+			[
+				'label' => __( 'Barra Activa (Izquierda)', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
 			]
 		);
 
 		$this->add_control(
 			'active_indicator_color',
 			[
-				'label' => __( 'Indicador Activo (Borde Izq)', 'alezux-members' ),
+				'label' => __( 'Color Barra Activa', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#bf00ff', // Un morado vibrante por defecto
+				'default' => '#00b894',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-topic-item.is-active' => 'border-left-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-topic-item.is-active::before' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'active_indicator_width',
+			[
+				'label' => __( 'Ancho Barra', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'max' => 10,
+					],
+				],
+				'default' => [
+					'size' => 4,
+					'unit' => 'px',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item::before' => 'width: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'active_indicator_height',
+			[
+				'label' => __( 'Alto Barra (%)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ '%' ],
+				'range' => [
+					'%' => [
+						'min' => 10,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'size' => 70,
+					'unit' => '%',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item::before' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'checkmark_heading',
+			[
+				'label' => __( 'Icono de Estado (Check)', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		// Normal / Incomplete (Though usually hidden if not completed/active, sticking to design implies it might be visible or just completed)
+		// For simplicity, let's control "Completed" and "Active" states mostly.
+		
+		$this->start_controls_tabs( 'tabs_checkmark_style' );
+
+		$this->start_controls_tab(
+			'tab_checkmark_completed',
+			[
+				'label' => __( 'Completado', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'checkmark_bg_completed',
+			[
+				'label' => __( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-check.completed' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'checkmark_icon_color_completed',
+			[
+				'label' => __( 'Color Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#1a1a1a',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-check.completed svg' => 'stroke: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'checkmark_border_color_completed',
+			[
+				'label' => __( 'Borde', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-check.completed' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_checkmark_active',
+			[
+				'label' => __( 'Activo', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'checkmark_bg_active',
+			[
+				'label' => __( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#2ecc71',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item.is-active .alezux-topic-check' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'checkmark_icon_color_active',
+			[
+				'label' => __( 'Color Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item.is-active .alezux-topic-check svg' => 'stroke: {{VALUE}};',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'checkmark_border_color_active',
+			[
+				'label' => __( 'Borde', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item.is-active .alezux-topic-check' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+		
+		$this->add_responsive_control(
+			'checkmark_size',
+			[
+				'label' => __( 'Tamaño Total', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-check' => 'width: {{SIZE}}{{UNIT}} !important; height: {{SIZE}}{{UNIT}} !important; min-width: {{SIZE}}{{UNIT}} !important;',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'checkmark_icon_size',
+			[
+				'label' => __( 'Tamaño Icono (Interno)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 5,
+						'max' => 30,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-check svg' => 'width: {{SIZE}}{{UNIT}} !important; height: {{SIZE}}{{UNIT}} !important; min-width: {{SIZE}}{{UNIT}} !important; max-width: {{SIZE}}{{UNIT}} !important;',
 				],
 			]
 		);
@@ -167,12 +444,13 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		$this->add_responsive_control(
 			'item_padding',
 			[
-				'label' => __( 'Relleno (Padding)', 'alezux-members' ),
+				'label' => __( 'Relleno Item (Padding)', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', '%' ],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-topic-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
+				'separator' => 'before',
 			]
 		);
 
@@ -253,6 +531,26 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-topic-thumbnail img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 					'{{WRAPPER}} .alezux-topic-thumbnail' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'image_margin',
+			[
+				'label' => __( 'Margen Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'default' => [
+					'top' => 0,
+					'right' => 20,
+					'bottom' => 0,
+					'left' => 0,
+					'unit' => 'px',
+					'isLinked' => false,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-thumbnail-wrapper' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);

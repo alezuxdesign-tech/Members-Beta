@@ -35,7 +35,7 @@ class Formaciones extends Module_Base {
 			'alezux-formaciones-front',
 			$this->get_asset_url( 'assets/css/formaciones.css' ),
 			[],
-			'1.0.4' . time() // Version bumped to force cache clear
+			'1.0.5' . time() // Version bumped for full customization controls
 		);
 	}
 
