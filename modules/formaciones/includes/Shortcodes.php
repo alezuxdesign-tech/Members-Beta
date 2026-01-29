@@ -76,56 +76,114 @@ class Shortcodes {
 	}
 
 	/**
+	 * Helper: Obtiene el ID del último paso (lección/tema) visitado por el usuario de forma global.
+	 */
+	private function get_global_last_step( $user_id ) {
+		global $wpdb;
+		$activity_table = $wpdb->prefix . 'learndash_user_activity';
+
+		// Verificar si la tabla existe por seguridad (aunque debería en LD)
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$activity_table'" ) != $activity_table ) {
+			return 0;
+		}
+
+		// Consultar la actividad más reciente de tipo 'lesson' o 'topic'
+		$query = $wpdb->prepare(
+			"SELECT post_id 
+			 FROM $activity_table 
+			 WHERE user_id = %d 
+			 AND activity_type IN ('lesson', 'topic') 
+			 ORDER BY activity_updated DESC 
+			 LIMIT 1",
+			$user_id
+		);
+
+		$last_step_id = $wpdb->get_var( $query );
+
+		return $last_step_id ? intval( $last_step_id ) : 0;
+	}
+
+	/**
 	 * Shortcode: [alezux_resume_topic_name]
-	 * Retorna el nombre del último paso visitado por el usuario en el curso actual.
+	 * Retorna el nombre del último paso visitado global o por curso.
 	 */
 	public function render_resume_topic_name( $atts ) {
 		if ( ! is_user_logged_in() ) {
 			return '';
 		}
 
-		$course_id = learndash_get_course_id();
-		$user_id   = get_current_user_id();
+		$atts = shortcode_atts( [
+			'course_id' => 0,
+		], $atts );
 
-		if ( ! $course_id ) {
+		$user_id = get_current_user_id();
+		$step_id = 0;
+
+		// 1. Si se especifica ID o estamos en un curso, intentar lógica por curso
+		$context_course_id = learndash_get_course_id();
+		$target_course_id  = $atts['course_id'] ? intval( $atts['course_id'] ) : $context_course_id;
+
+		if ( $target_course_id ) {
+			// Lógica específica del curso
+			$step_id = learndash_course_get_last_step( $target_course_id, $user_id );
+			
+			// Fallback al primer paso si no hay progreso en ESTE curso
+			if ( ! $step_id ) {
+				$course_steps = learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
+				if ( ! empty( $course_steps ) ) {
+					$step_id = $course_steps[0];
+				}
+			}
+		} else {
+			// 2. Si NO hay contexto de curso, buscar GLOBALMENTE el último visitado
+			$step_id = $this->get_global_last_step( $user_id );
+		}
+
+		if ( ! $step_id ) {
 			return '';
 		}
 
-		// Obtener el último paso visitado
-		$last_step_id = learndash_course_get_last_step( $course_id, $user_id );
-
-		if ( ! $last_step_id ) {
-			// Si no hay paso registrado, quizás intentar devolver el primer paso o nada.
-			// Por defecto devolvemos nada si no ha empezado.
-			return '';
-		}
-
-		return get_the_title( $last_step_id );
+		return get_the_title( $step_id );
 	}
 
 	/**
 	 * Shortcode: [alezux_resume_topic_link]
-	 * Retorna el enlace del último paso visitado por el usuario en el curso actual.
+	 * Retorna el enlace del último paso visitado global o por curso.
 	 */
 	public function render_resume_topic_link( $atts ) {
 		if ( ! is_user_logged_in() ) {
 			return '';
 		}
 
-		$course_id = learndash_get_course_id();
-		$user_id   = get_current_user_id();
+		$atts = shortcode_atts( [
+			'course_id' => 0,
+		], $atts );
 
-		if ( ! $course_id ) {
+		$user_id = get_current_user_id();
+		$step_id = 0;
+
+		// 1. Si se especifica ID o estamos en un curso, intentar lógica por curso
+		$context_course_id = learndash_get_course_id();
+		$target_course_id  = $atts['course_id'] ? intval( $atts['course_id'] ) : $context_course_id;
+
+		if ( $target_course_id ) {
+			$step_id = learndash_course_get_last_step( $target_course_id, $user_id );
+			
+			if ( ! $step_id ) {
+				$course_steps = learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
+				if ( ! empty( $course_steps ) ) {
+					$step_id = $course_steps[0];
+				}
+			}
+		} else {
+			// 2. Global
+			$step_id = $this->get_global_last_step( $user_id );
+		}
+
+		if ( ! $step_id ) {
 			return '';
 		}
 
-		// Obtener el último paso visitado
-		$last_step_id = learndash_course_get_last_step( $course_id, $user_id );
-
-		if ( ! $last_step_id ) {
-			return '';
-		}
-
-		return get_permalink( $last_step_id );
+		return get_permalink( $step_id );
 	}
 }
