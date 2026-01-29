@@ -211,6 +211,11 @@ class Formaciones extends Module_Base {
 					}
 				}
 
+				// Clear Caches to ensure UI updates
+				clean_post_cache( $post_id );
+				wp_cache_delete( 'learndash_course_progress_' . $user_id . '_' . $course_id, 'learndash' );
+				wp_cache_delete( 'learndash_user_activity_' . $user_id . '_' . $post_id, 'learndash' );
+
 				wp_send_json_success( [ 'status' => 'incomplete', 'method' => 'manual_unmark' ] );
 
 			} else {
