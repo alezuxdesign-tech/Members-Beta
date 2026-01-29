@@ -135,7 +135,10 @@ class Formaciones extends Module_Base {
 
 			if ( function_exists( 'learndash_is_target_complete' ) ) {
 				$is_completed = learndash_is_target_complete( $post_id, $user_id );
-			} else {
+			} 
+			
+			// CRITICAL FIX: Force DB Check if native is false
+			if ( ! $is_completed ) {
 				// Fallback: Check Post Meta directly from User Activity or Course Progress
 				// Method A: Check '_sfwd_course_progress'
 				$course_id = 0;
