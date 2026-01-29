@@ -31,6 +31,27 @@ class Formaciones extends Module_Base {
 
 		// AJAX para completar/descompletar topic
 		add_action( 'wp_ajax_alezux_toggle_topic_complete', [ $this, 'handle_topic_completion' ] );
+
+		// Control de Caché (LiteSpeed)
+		add_action( 'wp', [ $this, 'control_litespeed_cache' ] );
+	}
+
+	public function control_litespeed_cache() {
+		// Solo aplicar si el usuario está logueado (LearnDash progress is user-specific)
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		if ( is_singular( [ 'sfwd-topic', 'sfwd-lessons', 'sfwd-courses' ] ) ) {
+			// Opción A: Deshabilitar caché completamente para estas páginas
+			if ( defined( 'LSCWP_V' ) ) {
+				do_action( 'litespeed_disable_cache' );
+				// Alternativa menos agresiva: do_action( 'litespeed_control_set_ttl', 0 );
+			}
+			
+			// Headers estándar de no-cache para asegurar
+			nocache_headers();
+		}
 	}
 
 	public function enqueue_frontend_assets() {
