@@ -216,6 +216,37 @@ class Slide_Lesson_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// --- Sección de Estilo: Título de Grupo (Separador) ---
+		$this->start_controls_section(
+			'section_style_group_title',
+			[
+				'label' => esc_html__( 'Título de Grupo', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'group_title_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-slide-group-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'group_title_typography',
+				'label' => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-slide-group-title',
+			]
+		);
+
+		$this->end_controls_section();
+
 
 		// --- Sección de Estilo: Navegación Avanzada ---
 		$this->start_controls_section(
@@ -234,6 +265,20 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
 				'label_off' => esc_html__( 'No', 'alezux-members' ),
 				'default' => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'nav_position_mode',
+			[
+				'label' => esc_html__( 'Modo de Posición', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'default',
+				'options' => [
+					'default' => esc_html__( 'Por Defecto', 'alezux-members' ),
+					'custom'  => esc_html__( 'Personalizado (Avanzado)', 'alezux-members' ),
+				],
+				'condition' => [ 'show_arrows' => 'yes' ],
 			]
 		);
 
@@ -347,7 +392,12 @@ class Slide_Lesson_Widget extends Widget_Base {
 				],
 				'default' => 'right',
 				'toggle' => false,
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'default' => 'right',
+				'toggle' => false,
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'nav_position_mode' => 'custom',
+				],
 			]
 		);
 
@@ -366,6 +416,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [ 
 					'show_arrows' => 'yes',
 					'prev_horizontal_orientation' => 'left',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -389,6 +440,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [ 
 					'show_arrows' => 'yes',
 					'prev_horizontal_orientation' => 'right',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -410,7 +462,10 @@ class Slide_Lesson_Widget extends Widget_Base {
 				],
 				'default' => 'top',
 				'toggle' => false,
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'nav_position_mode' => 'custom',
+				],
 			]
 		);
 
@@ -433,6 +488,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [
 					'show_arrows' => 'yes',
 					'prev_vertical_orientation' => 'top',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -452,6 +508,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [
 					'show_arrows' => 'yes',
 					'prev_vertical_orientation' => 'bottom',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -565,7 +622,10 @@ class Slide_Lesson_Widget extends Widget_Base {
 				],
 				'default' => 'right',
 				'toggle' => false,
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'nav_position_mode' => 'custom',
+				],
 			]
 		);
 
@@ -584,6 +644,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [ 
 					'show_arrows' => 'yes',
 					'next_horizontal_orientation' => 'left',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -607,6 +668,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [ 
 					'show_arrows' => 'yes',
 					'next_horizontal_orientation' => 'right',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);
@@ -628,7 +690,10 @@ class Slide_Lesson_Widget extends Widget_Base {
 				],
 				'default' => 'top',
 				'toggle' => false,
-				'condition' => [ 'show_arrows' => 'yes' ],
+				'condition' => [ 
+					'show_arrows' => 'yes',
+					'nav_position_mode' => 'custom',
+				],
 			]
 		);
 
@@ -648,10 +713,12 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-slide-nav-next' => '--alezux-nav-top: {{SIZE}}{{UNIT}}; --alezux-nav-bottom: auto;',
 				],
-				'condition' => [
+				'condition' => [ 
 					'show_arrows' => 'yes',
 					'next_vertical_orientation' => 'top',
+					'nav_position_mode' => 'custom',
 				],
+
 			]
 		);
 
@@ -670,6 +737,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'condition' => [
 					'show_arrows' => 'yes',
 					'next_vertical_orientation' => 'bottom',
+					'nav_position_mode' => 'custom',
 				],
 			]
 		);

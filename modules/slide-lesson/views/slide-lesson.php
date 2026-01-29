@@ -55,7 +55,7 @@ $render_icon = function( $setting_key, $default_class ) use ( $settings ) {
 			<h3 class="alezux-slide-group-title"><?php echo esc_html( $group_title ); ?></h3>
 		<?php endif; ?>
 
-		<div class="alezux-slide-lesson-container">
+		<div class="alezux-slide-lesson-container <?php echo esc_attr( $nav_class ); ?>">
 			
 			<?php if ( 'yes' === $show_arrows ) : ?>
 				<div class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">
