@@ -10,13 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Demo_Block extends Module_Base {
 
 	public function init() {
-		// Registrar Shortcodes usando el nuevo método auto-documentado
-		$this->register_shortcode( 
-			'alezux_demo_block', 
-			[ $this, 'render_shortcode' ], 
-			'Muestra un bloque de demostración con estilos Lego.' 
-		);
-
 		// Encolar estilos/scripts específicos del módulo
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -42,13 +35,5 @@ class Demo_Block extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Demo_Block\Widgets\Demo_Block_Widget() );
 	}
 
-	public function render_shortcode( $atts ) {
-		$atts = shortcode_atts( [
-			'title' => 'Hola Mundo Lego',
-		], $atts );
 
-		ob_start();
-		$this->render_view( 'demo-shortcode', $atts );
-		return ob_get_clean();
-	}
 }
