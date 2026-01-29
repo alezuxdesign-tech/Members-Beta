@@ -125,9 +125,18 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 		);
 
 		$this->add_control(
+			'chart_enable_glow',
+			[
+				'label' => __( 'Activar Glow (Barras)', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'default' => 'yes',
+			]
+		);
+
+		$this->add_control(
 			'chart_fill_color_start',
 			[
-				'label' => __( 'Color Activos (Glow)', 'alezux-members' ),
+				'label' => __( 'Color Activos', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#FFB800', // Gold/Yellow
 			]
@@ -140,8 +149,17 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'default' => '#ffb800',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-chart-percent' => 'color: {{VALUE}}; text-shadow: 0 0 15px {{VALUE}};',
+					'{{WRAPPER}} .alezux-chart-percent' => 'color: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->add_control(
+			'chart_percent_glow_show',
+			[
+				'label' => __( 'Activar Glow (Texto)', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'default' => 'yes',
 			]
 		);
 
@@ -333,11 +351,12 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					
 					$active_color = $settings['chart_fill_color_start'];
 					$inactive_color = $settings['chart_track_color'];
+					$enable_glow_chart = isset($settings['chart_enable_glow']) ? $settings['chart_enable_glow'] : 'yes';
 				?>
 				<div class="alezux-general-chart-container">
 					<svg class="alezux-general-chart-svg" viewBox="0 0 500 300" preserveAspectRatio="xMidYMax meet">
 						<defs>
-							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-50%" y="-50%" width="200%" height="200%">
+							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-150%" y="-150%" width="400%" height="400%">
 								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
 								<feMerge>
 									<feMergeNode in="coloredBlur"/>
@@ -362,7 +381,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 								$y2 = $cy + ( ($r - $tick_length) * sin($angle_rad));
 								
 								$color = $is_active ? $active_color : $inactive_color;
-								$filter = $is_active ? "url(#glow-{$unique_id})" : "none";
+								$filter = ($is_active && 'yes' === $enable_glow_chart) ? "url(#glow-{$unique_id})" : "none";
 							?>
 								<line 
 									x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
@@ -377,7 +396,13 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					</svg>
 					
 					<div class="alezux-chart-content">
-						<div class="alezux-chart-percent"><?php echo esc_html( $average_progress ); ?>%</div>
+						<?php
+							$percent_style = '';
+							if ( isset($settings['chart_percent_glow_show']) && 'yes' === $settings['chart_percent_glow_show'] ) {
+								$percent_style = 'text-shadow: 0 0 15px ' . $settings['chart_percent_color'] . ';';
+							}
+						?>
+						<div class="alezux-chart-percent" style="<?php echo esc_attr($percent_style); ?>"><?php echo esc_html( $average_progress ); ?>%</div>
 						<?php if ( $settings['chart_label'] ) : ?>
 							<div class="alezux-chart-label"><?php echo esc_html( $settings['chart_label'] ); ?></div>
 						<?php endif; ?>
