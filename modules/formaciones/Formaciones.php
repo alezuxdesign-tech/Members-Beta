@@ -106,71 +106,24 @@ class Formaciones extends Module_Base {
 			wp_send_json_error( [ 'message' => 'Invalid Post ID' ] );
 		}
 
-
-		// LOGGING FOR DEBUGGING
-		error_log( "Alezux Toggle: Post ID: $post_id, User ID: $user_id" );
-
 		// Check if already completed
 		$is_completed = learndash_is_target_complete( $post_id, $user_id );
-		error_log( "Alezux Toggle: Is Completed? " . ( $is_completed ? 'YES' : 'NO' ) );
 
 		if ( $is_completed ) {
-			// Unmark complete (Requires removing user activity)
-            error_log( "Alezux Toggle: Attempting to UNMARK" );
+			// Unmark complete logic
             
-			// LearnDash doesn't have a simple "unmark" function for topics generally accessible, 
-			// we have to delete the activity record.
-			
-			// This is a bit of a workaround regarding LearnDash internal APIs.
-			// We look for the activity record for this user and post.
+			// LearnDash does not have a public API to "unmark" a topic/lesson simply.
+			// We must remove the record from wp_learndash_user_activity table.
 			
 			global $wpdb;
-			// Assuming 'sfwd-topic' or 'sfwd-lessons'
-			// However `learndash_is_target_complete` checks activity. 
-			
-			// Try to find the activity ID to delete it via LD API if possible, or raw DB if needed (careful).
-			// Safe way: Update user meta course progress if needed, but activity table is key.
-			
-			// For simplicity and safety, we will attempt to use 'learndash_update_user_activity' with status 'not_completed' if it supports it, 
-			// OR direct deletion if we are sure.
-			
-			// Actually, LearnDash stores completion in `wp_learndash_user_activity`.
-			
-			/*
-			 * @todo Refine unmark logic if standard API is missing.
-			 * For now, let's try to fetch activity and delete.
-			 */
-             
-            // Try using the generic activity management. 
-            // If we cannot "uncomplete" easily, that's a limitation we might face.
-            // But let's look at `learndash_delete_user_activity`.
             
-            // Using a lower level query to be sure we hit the right record.
-            $activity_type = 'topic'; // Default guess
+            // Determine activity type
+            $activity_type = 'topic'; // Default
             $post_type = get_post_type($post_id);
             if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
             if('sfwd-topic' === $post_type) $activity_type = 'topic';
 
-            // Delete activity
-            // Since there is no public API to "uncomplete", we might need to rely on clearing the completion timestamp in user meta 
-            // OR deleting the row from wp_learndash_user_activity.
-            
-            // Let's use a widely accepted method for custom uncompletion:
-            // 1. Get course ID
-            $course_id = learndash_get_course_id( $post_id );
-            
-            // 2. Delete from Activity Table
-            // Ensure we use the correct post type. If it's a topic, we must explicitly say 'topic'.
-            $post_type_raw = get_post_type($post_id);
-            if ( 'sfwd-topic' === $post_type_raw ) {
-                $activity_type = 'topic';
-            } elseif ( 'sfwd-lessons' === $post_type_raw ) {
-                $activity_type = 'lesson';
-            } else {
-                 // Fallback or specific handling for other types if needed
-                 $activity_type = 'topic'; 
-            }
-
+            // 1. Delete from Activity Table
             $wpdb->delete(
                 $wpdb->prefix . 'learndash_user_activity',
                 [
@@ -180,23 +133,30 @@ class Formaciones extends Module_Base {
                 ]
             );
 
-            // 3. Update Course Progress Meta (Legacy & New)
-            // LearnDash caches progress, so we might need to trigger a recalculation or manually update user meta.
-            // 'course_completed_' meta
-             $course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-             if(isset($course_progress[$course_id]) && isset($course_progress[$course_id]['topics'][$post_id])) {
-                 unset($course_progress[$course_id]['topics'][$post_id]);
-                 // Also handling lessons if it was a lesson
-                 if ( isset($course_progress[$course_id]['lessons'][$post_id]) ) {
-                     unset($course_progress[$course_id]['lessons'][$post_id]); // Mark lesson incomplete
+            // 2. Clear User Meta Cache for Course Progress
+            // This forces LearnDash to rebuild the progress user meta on next load
+            $course_id = learndash_get_course_id( $post_id );
+            if ( $course_id ) {
+                 $course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+                 
+                 // Remove from progress array if exists
+                 if ( isset( $course_progress[$course_id] ) ) {
+                      if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
+                          unset( $course_progress[$course_id]['topics'][$post_id] );
+                      } elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+                          unset( $course_progress[$course_id]['lessons'][$post_id] );
+                      }
+                      
+                      // Update the meta
+                      update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
                  }
-                 update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
-             }
+            }
 
 			wp_send_json_success( [ 'status' => 'incomplete' ] );
 
 		} else {
 			// Mark complete
+            // We pass false for 'unmark' (default)
 			learndash_process_mark_complete( $user_id, $post_id );
 			wp_send_json_success( [ 'status' => 'completed' ] );
 		}

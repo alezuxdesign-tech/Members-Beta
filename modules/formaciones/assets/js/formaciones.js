@@ -23,12 +23,8 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        console.log('Click on Topic Button (ID: ' + postId + ')');
-
         // Add loading state
         $button.addClass('is-loading');
-        // Hide both states temporarily or assume loading spinner is overlay?
-        // Let's hide text to show spinner
         $contentWrapper.children().hide();
         $loader.css('display', 'flex'); // Force flex for centering
 
@@ -47,8 +43,6 @@ jQuery(document).ready(function ($) {
                 $button.removeClass('is-loading');
                 $loader.hide();
 
-                console.log('AJAX Success:', response);
-
                 if (response.success) {
                     if (response.data.status === 'completed') {
                         $button.addClass('is-completed');
@@ -60,8 +54,8 @@ jQuery(document).ready(function ($) {
                         $stateIncomplete.css('display', 'flex');
                     }
                 } else {
-                    console.error('Error toggling completion:', response);
-                    // Revert
+                    // Revert on logic error
+                    console.warn('Alezux Toggle: ', response);
                     if ($button.hasClass('is-completed')) {
                         $stateCompleted.css('display', 'flex');
                     } else {
@@ -74,7 +68,7 @@ jQuery(document).ready(function ($) {
                 $loader.hide();
                 console.error('AJAX Error:', error);
 
-                // Revert
+                // Revert UI on connection error
                 if ($button.hasClass('is-completed')) {
                     $stateCompleted.css('display', 'flex');
                 } else {
