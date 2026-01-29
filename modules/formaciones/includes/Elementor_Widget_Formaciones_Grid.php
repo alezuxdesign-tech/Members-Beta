@@ -812,6 +812,133 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- Sección Estilo: Barra de Progreso ---
+		$this->start_controls_section(
+			'section_style_progress_bar',
+			[
+				'label' => __( 'Barra de Progreso', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'show_progress_bar',
+			[
+				'label' => __( 'Mostrar Barra de Progreso', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __( 'Sí', 'alezux-members' ),
+				'label_off' => __( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_height',
+			[
+				'label' => __( 'Altura', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 2,
+						'max' => 20,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 6,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-track' => 'height: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'show_progress_bar' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_radius',
+			[
+				'label' => __( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 50,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 3,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-track, {{WRAPPER}} .alezux-progress-fill' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'show_progress_bar' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_track_color',
+			[
+				'label' => __( 'Color de Fondo (Pista)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'global' => [
+					'default' => \Elementor\Core\Kits\Documents\Tabs\Global_Colors::COLOR_TEXT,
+				],
+				'default' => '#333333',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-track' => 'background-color: {{VALUE}};',
+				],
+				'condition' => [
+					'show_progress_bar' => 'yes',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'progress_bar_fill_background',
+				'label' => __( 'Color de Relleno (Progreso)', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-progress-fill',
+				'condition' => [
+					'show_progress_bar' => 'yes',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'progress_bar_margin',
+			[
+				'label' => __( 'Margen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-wrapper' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'default' => [
+					'top' => 15,
+					'bottom' => 0,
+					'left' => 0,
+					'right' => 0,
+					'unit' => 'px',
+					'isLinked' => false,
+				],
+				'condition' => [
+					'show_progress_bar' => 'yes',
+				],
+			]
+		);
+        
+        $this->end_controls_section();
 	}
 
 	protected function render() {
@@ -902,6 +1029,27 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 								</div>
 							</div>
 						<?php endif; ?>
+                        
+                        <?php
+                        // Barra de Progreso (Solo si tiene acceso y está habilitada)
+                        if ( $has_access && 'yes' === $settings['show_progress_bar'] ) {
+                            $progress = learndash_course_progress( [
+                                'user_id'   => $user_id,
+                                'course_id' => $post_id,
+                                'array'     => true
+                            ] );
+                            // Asegurar que exista percentage, si no 0
+                            $percentage = isset($progress['percentage']) ? intval($progress['percentage']) : 0;
+                            ?>
+                            <div class="alezux-progress-wrapper">
+                                <div class="alezux-progress-track">
+                                    <div class="alezux-progress-fill" style="width: <?php echo esc_attr( $percentage ); ?>%;"></div>
+                                </div>
+                                <div class="alezux-progress-text"><?php echo esc_html( $percentage ); ?>% <?php esc_html_e('Completado', 'alezux-members'); ?></div>
+                            </div>
+                            <?php
+                        }
+                        ?>
 
 						<div class="alezux-formacion-excerpt">
 							<?php echo wp_trim_words( $description, 15 ); ?>
