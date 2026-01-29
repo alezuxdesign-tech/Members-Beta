@@ -398,6 +398,12 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		// Trust Manual Check if false (because we just deleted it in AJAX and cache might be stale)
 		// If Manual Check is TRUE, then it is complete.
 		$is_completed = $manual_is_completed;
+        
+        error_log("ALEZUX WIDGET DEBUG: PostID: $post_id, CourseID: $course_id, Manual: " . ($manual_is_completed ? 'YES' : 'NO'));
+        if($manual_is_completed) {
+             $course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+             error_log("ALEZUX WIDGET META: " . print_r($course_progress[$course_id] ?? 'NOT FOUND IN WIDGET', true));
+        }
 
 		// Debug comment for user inspection if needed
 		echo '<!-- Debug Completed Check: Manual=' . ($manual_is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';

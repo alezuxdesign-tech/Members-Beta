@@ -192,7 +192,9 @@ class Formaciones extends Module_Base {
 				}
 
 				if ( $course_id ) {
+                    error_log("ALEZUX DEBUG UNMARK: PostID: $post_id, UserID: $user_id, CourseID: $course_id, Type: $activity_type");
 					$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+                    error_log("ALEZUX DEBUG META BEFORE: " . print_r($course_progress[$course_id] ?? 'NOT FOUND', true));
 					
 					// Remove from progress array if exists
 					$updated = false;
@@ -200,13 +202,16 @@ class Formaciones extends Module_Base {
 						if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
 							unset( $course_progress[$course_id]['topics'][$post_id] );
 							$updated = true;
+                            error_log("ALEZUX DEBUG: Unset topic $post_id");
 						} elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
 							unset( $course_progress[$course_id]['lessons'][$post_id] );
 							$updated = true;
+                            error_log("ALEZUX DEBUG: Unset lesson $post_id");
 						}
 						
 						if ( $updated ) {
 							update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
+                            error_log("ALEZUX DEBUG: Meta Updated");
 						}
 					}
 				}
