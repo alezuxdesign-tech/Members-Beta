@@ -458,3 +458,74 @@
         height: 12px;
     }
 }
+
+/* --- BTN COMPLETE TOPIC WIDGET STYLES --- */
+
+.alezux-btn-complete-topic {
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Elementor button defaults usually cover cursor: pointer but ensuring it */
+    cursor: pointer;
+}
+
+.alezux-btn-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.alezux-btn-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Default gap */
+    width: 100%;
+    /* Ensure it takes space */
+}
+
+/* Ensure hidden states are truly hidden */
+.alezux-btn-state[style*="display:none"] {
+    display: none !important;
+}
+
+.alezux-btn-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Spinner Animation */
+@keyframes alezux-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.alezux-btn-loader i,
+.alezux-btn-loader svg {
+    animation: alezux-spin 1s infinite linear;
+    width: 1em;
+    /* Match text size */
+    height: 1em;
+}
+
+/* Ensure SVG icons behave in button */
+.alezux-btn-complete-topic svg {
+    height: 1em;
+    width: 1em;
+    fill: currentColor;
+}
+
+/* Specific state overrides if needed */
+.alezux-btn-complete-topic.is-completed {
+    /* Styles handled by Elementor Control mostly, but good to have a base class hook */
+}
