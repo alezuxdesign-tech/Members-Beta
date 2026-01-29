@@ -351,10 +351,50 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		$is_completed = false;
 
 		// Verify LearnDash function exists to prevent crash if not active or context is wrong
-		if ( function_exists( 'learndash_is_target_complete' ) && $post_id ) {
-			// Some specific post types might not be supported by LD, wrap in try/catch if needed or rely on LD handling it gracefully
-			// We will just call it.
+		// Verify LearnDash function exists to prevent crash if not active or context is wrong
+		// USE ROBUST FALLBACK CHECK - Matching logic from Formaciones.php AJAX handler
+		if ( function_exists( 'learndash_is_target_complete' ) ) {
 			$is_completed = learndash_is_target_complete( $post_id, $user_id );
+		}
+		
+		// If standard check says incomplete, verify with manual fallback (in case LD functions are weird or cache is stale)
+		if ( ! $is_completed ) {
+			$course_id = 0;
+			// Try to get Course ID
+			if(function_exists('learndash_get_course_id')){
+				$course_id = learndash_get_course_id( $post_id );
+			}
+			if ( ! $course_id ) {
+				$course_id = get_post_meta( $post_id, 'course_id', true );
+			}
+
+			if ( $course_id ) {
+				$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+				if ( isset( $course_progress[$course_id] ) ) {
+					if ( isset( $course_progress[$course_id]['topics'][$post_id] ) || isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+						$is_completed = true;
+					}
+				}
+			}
+			
+			// Double check: Activity Table
+			if ( ! $is_completed ) {
+				global $wpdb;
+				$activity_type = 'topic';
+				$pt = get_post_type($post_id);
+				if('sfwd-lessons' === $pt) $activity_type = 'lesson';
+				
+				$row = $wpdb->get_row( $wpdb->prepare(
+					"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s",
+					$user_id,
+					$post_id,
+					$activity_type
+				) );
+				
+				if ( $row ) {
+					$is_completed = true;
+				}
+			}
 		}
 		
 		$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
