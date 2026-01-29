@@ -205,6 +205,10 @@
 /* --- Widget Topics List --- */
 .alezux-topics-widget {
     width: 100%;
+    /* Estilos base por si falla Elementor */
+    background-color: #1a1a1a;
+    border-radius: 15px;
+    padding: 20px;
 }
 
 .alezux-topics-header {

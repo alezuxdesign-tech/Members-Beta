@@ -258,6 +258,86 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- Sección de Estilo: Contenedor Principal ---
+		$this->start_controls_section(
+			'section_style_container',
+			[
+				'label' => __( 'Contenedor del Widget', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'container_bg_color',
+			[
+				'label' => __( 'Color de Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#121212',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-widget' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'container_border',
+				'selector' => '{{WRAPPER}} .alezux-topics-widget',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'container_border_radius',
+			[
+				'label' => __( 'Radio de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'default' => [
+					'top' => 15,
+					'right' => 15,
+					'bottom' => 15,
+					'left' => 15,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-widget' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_padding',
+			[
+				'label' => __( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'default' => [
+					'top' => 20,
+					'right' => 20,
+					'bottom' => 20,
+					'left' => 20,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-widget' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'container_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-topics-widget',
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
