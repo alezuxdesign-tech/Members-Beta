@@ -149,6 +149,10 @@
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
+    flex-wrap: wrap;
+    /* Allow wrapping */
+    gap: 10px;
+    /* Space between elements when wrapped */
 }
 
 .alezux-formacion-price {
