@@ -196,11 +196,26 @@ class Formaciones extends Module_Base {
 				
 				// 1. Delete from Activity Table
 				// 1. Delete from Activity Table (Aggressive: Ignore activity_type, just use post_id/user_id)
-				$wpdb->query( $wpdb->prepare(
-					"DELETE FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d",
-					$user_id,
-					$post_id
-				) );
+				// 1. Delete from Activity Table
+				// CRITICAL FIX: Include activity_type to prevent deleting wrong rows (e.g. if ID check is loose or shared)
+				// Also include course_id if available for stricter check
+				$delete_where = [
+					'user_id' => $user_id,
+					'post_id' => $post_id,
+					'activity_type' => $activity_type
+				];
+				$delete_format = [ '%d', '%d', '%s' ];
+
+				if ( $course_id ) {
+					$delete_where['course_id'] = $course_id;
+					$delete_format[] = '%d';
+				}
+
+				$wpdb->delete(
+					$wpdb->prefix . 'learndash_user_activity',
+					$delete_where,
+					$delete_format
+				);
 
 				// 2. Clear User Meta Cache for Course Progress
 				// Need Course ID
