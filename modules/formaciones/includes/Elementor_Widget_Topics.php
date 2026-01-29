@@ -432,6 +432,7 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			<div class="alezux-topics-list">
 				<?php foreach ( $topics as $topic ) : 
 					$is_active = ( $current_topic_id === $topic->ID ) ? 'is-active' : '';
+					$user_id = get_current_user_id();
 					$is_completed = ( $user_id && function_exists( 'learndash_is_topic_complete' ) ) ? learndash_is_topic_complete( $user_id, $topic->ID ) : false;
 					$permalink = get_permalink( $topic->ID );
 					$title = get_the_title( $topic->ID );
@@ -442,10 +443,18 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 					$has_thumbnail = has_post_thumbnail( $topic->ID );
 					$thumbnail_url = '';
 					if ( $has_thumbnail ) {
-						$thumbnail_url = get_the_post_thumbnail_url( $topic->ID, 'medium' ); // Use medium optimal
+						$thumbnail_url = get_the_post_thumbnail_url( $topic->ID, 'medium' );
 					}
 				?>
-				<a href="<?php echo esc_url( $permalink ); ?>" class="alezux-topic-item <?php echo esc_attr( $is_active ); ?>">
+				<a href="<?php echo esc_url( $permalink ); ?>" class="alezux-topic-item <?php echo esc_attr( $is_active ); ?> <?php echo $is_completed ? 'is-completed' : ''; ?>">
+					
+					<!-- Checkmark Icon (Always visible, changes style) -->
+					<div class="alezux-topic-check <?php echo $is_completed ? 'completed' : ''; ?>">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="20 6 9 17 4 12"></polyline>
+						</svg>
+					</div>
+
 					<div class="alezux-topic-thumbnail-wrapper">
 						<?php if ( $has_thumbnail ) : ?>
 							<div class="alezux-topic-thumbnail">
@@ -454,17 +463,11 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 						<?php else : ?>
 							<div class="alezux-topic-thumbnail placeholder"></div>
 						<?php endif; ?>
-						
-						<?php if ( $is_completed ) : ?>
-						<div class="alezux-topic-check">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-						</div>
-						<?php endif; ?>
 					</div>
 					
 					<div class="alezux-topic-info">
 						<h4 class="alezux-topic-title"><?php echo esc_html( $title ); ?></h4>
-						<span class="alezux-topic-author"><?php echo esc_html( $author_name ); ?></span>
+						<span class="alezux-topic-author"><?php echo esc_html__( 'Autor:', 'alezux-members' ); ?> <?php echo esc_html( $author_name ); ?></span>
 					</div>
 				</a>
 				<?php endforeach; ?>
