@@ -250,15 +250,15 @@
 
 .alezux-topic-item {
     display: flex !important;
-    /* Forzar flex para evitar stacking vertical */
     align-items: center;
     padding: 16px 0;
     border-bottom: 1px solid #1f1f1f;
     text-decoration: none !important;
     transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-    padding-left: 12px;
-    /* Espacio para el borde izquierdo */
+    border-left: 4px solid transparent;
+    /* New border width */
+    padding-left: 20px;
+    /* New padding */
     background-color: transparent;
 }
 
@@ -273,111 +273,12 @@
 
 /* Estado Activo */
 .alezux-topic-item.is-active {
-    background-color: rgba(108, 92, 231, 0.05);
-    /* Sutil fondo morado */
-    border-left-color: #8c7ae6;
-    /* Borde morado brillante */
-}
-
-/* Wrapper de la imagen (más pequeño y ajustado) */
-.alezux-topic-thumbnail-wrapper {
-    position: relative;
-    width: 140px;
-    /* Un poco más ancho para la proporción landscape */
-    flex-shrink: 0;
-    margin-right: 20px;
-    /* Más espacio con el texto */
-    border-radius: 12px;
-    overflow: visible;
-    /* CRUCIAL: Permitir que el check salga */
-}
-
-.alezux-topic-thumbnail {
-    width: 100%;
-    aspect-ratio: 16/9;
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: #222;
-    position: relative;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.alezux-topic-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* Placeholder si no hay imagen */
-.alezux-topic-thumbnail.placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-}
-
-/* Check de completado (Flotando a la izquierda) */
-.alezux-topic-check {
-    position: absolute;
-    top: 50%;
-    left: -14px;
-    /* Superpuesto al borde de la imagen */
-    transform: translateY(-50%);
-    width: 26px;
-    height: 26px;
-    background-color: #fff;
-    /* Por defecto blanco */
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-    /* Icono negro */
-    z-index: 10;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-    border: 2px solid #050505;
-    /* 'Corte' visual con el fondo */
-    transition: all 0.3s ease;
-}
-
-.alezux-topic-check svg {
-    width: 14px;
-    height: 14px;
-    stroke: currentColor;
-    stroke-width: 3;
-}
-
-/* Check completado (Verde) */
-.alezux-topic-check.completed {
-    background-color: #2ed573;
-    /* Verde brillante */
-    color: #fff;
-    /* Icono blanco */
-    border-color: #050505;
-}
-
-/* Check en item Activo (pero no completado) */
-.alezux-topic-item.is-active .alezux-topic-check:not(.completed) {
-    background-color: #fff;
-    color: #000;
-    transform: translateY(-50%) scale(1.1);
-    /* Ligeramente más grande */
-}
-
-/* Item activo: Barra verde a la izquierda */
-.alezux-topic-item {
-    border-left: 4px solid transparent;
-    padding-left: 20px;
-    /* Espacio para que la barra no pegue con la imagen */
-}
-
-.alezux-topic-item.is-active {
     background-color: transparent;
-    /* Quitar fondo morado anterior */
+    /* No background */
     border-left-color: #00b894;
-    /* Verde teal */
+    /* Green Teal Border */
 }
+
 
 .alezux-topic-info {
     flex: 1;
