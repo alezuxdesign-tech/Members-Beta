@@ -11,11 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Shortcodes {
 
-	public function __construct() {
-		add_shortcode( 'alezux_course_lessons', [ $this, 'render_course_lessons' ] );
-		add_shortcode( 'alezux_course_whatsapp', [ $this, 'render_whatsapp_link' ] );
-		add_shortcode( 'alezux_course_slack', [ $this, 'render_slack_link' ] );
-		add_shortcode( 'alezux_course_zoom', [ $this, 'render_zoom_link' ] );
+	public function get_definitions() {
+		return [
+			'alezux_course_lessons' => [
+				'callback'    => [ $this, 'render_course_lessons' ],
+				'description' => __( 'Muestra la lista de lecciones del curso actual.', 'alezux-members' ),
+			],
+			'alezux_course_whatsapp' => [
+				'callback'    => [ $this, 'render_whatsapp_link' ],
+				'description' => __( 'Muestra el enlace de WhatsApp configurado en el curso.', 'alezux-members' ),
+			],
+			'alezux_course_slack' => [
+				'callback'    => [ $this, 'render_slack_link' ],
+				'description' => __( 'Muestra el enlace de Slack configurado en el curso.', 'alezux-members' ),
+			],
+			'alezux_course_zoom' => [
+				'callback'    => [ $this, 'render_zoom_link' ],
+				'description' => __( 'Muestra el enlace de Zoom configurado en el curso.', 'alezux-members' ),
+			],
+		];
 	}
 
 	/**

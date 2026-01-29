@@ -19,7 +19,12 @@ class Formaciones extends Module_Base {
 		require_once __DIR__ . '/includes/Shortcodes.php';
 		// Instanciar Meta Fields para que corran los hooks del backend
 		new \Alezux_Members\Modules\Formaciones\Includes\Course_Meta_Fields();
-		new \Alezux_Members\Modules\Formaciones\Includes\Shortcodes();
+		
+		// Registrar Shortcodes (y añadirlos a la documentación)
+		$shortcodes = new \Alezux_Members\Modules\Formaciones\Includes\Shortcodes();
+		foreach ( $shortcodes->get_definitions() as $tag => $def ) {
+			$this->register_shortcode( $tag, $def['callback'], $def['description'] );
+		}
 
 		// Encolar assets de administración
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
