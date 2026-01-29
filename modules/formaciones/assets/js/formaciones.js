@@ -31,13 +31,17 @@ jQuery(document).ready(function ($) {
         // Ensure alezux_vars is defined
         var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
 
+        // Determine method based on current state
+        var method = $button.hasClass('is-completed') ? 'unmark' : 'mark';
+
         $.ajax({
             url: ajaxUrl,
             type: 'POST',
             data: {
                 action: 'alezux_toggle_topic_complete',
                 post_id: postId,
-                nonce: nonce
+                nonce: nonce,
+                method: method
             },
             success: function (response) {
                 $button.removeClass('is-loading');
