@@ -450,8 +450,8 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 					
 					<div class="alezux-topic-thumbnail-wrapper">
 						<!-- Checkmark Icon (Inside wrapper for absolute positioning) -->
-						<div class="alezux-topic-check <?php echo $is_completed ? 'completed' : ''; ?>">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+						<div class="alezux-topic-check <?php echo $is_completed ? 'completed' : ''; ?>" style="width: 24px; height: 24px; min-width: 24px;">
+							<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
 								<polyline points="20 6 9 17 4 12"></polyline>
 							</svg>
 						</div>
