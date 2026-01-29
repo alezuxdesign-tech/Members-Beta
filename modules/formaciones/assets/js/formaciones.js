@@ -44,21 +44,18 @@ jQuery(document).ready(function ($) {
                 method: method
             },
             success: function (response) {
+                // Force reload to deal with aggressive caching issues (LiteSpeed)
+                // The user requested explicit page reload to ensure state is correct
+                if (response.success) {
+                    location.reload();
+                    return; // Stop processing UI updates since we are reloading
+                }
+
                 $button.removeClass('is-loading');
                 $loader.hide();
 
-                if (response.success) {
-                    if (response.data.status === 'completed') {
-                        $button.addClass('is-completed');
-                        $stateIncomplete.hide();
-                        $stateCompleted.css('display', 'flex');
-                    } else {
-                        $button.removeClass('is-completed');
-                        $stateCompleted.hide();
-                        $stateIncomplete.css('display', 'flex');
-                    }
-                } else {
-                    // Revert on logic error
+                if (!response.success) {
+                    // Revert on logic error if success is false but didn't throw error
                     console.warn('Alezux Toggle: ', response);
                     if ($button.hasClass('is-completed')) {
                         $stateCompleted.css('display', 'flex');
