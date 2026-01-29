@@ -50,12 +50,22 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		);
 
 		$this->add_control(
-			'button_text',
+			'button_text_access',
 			[
-				'label' => __( 'Texto del Botón', 'alezux-members' ),
+				'label' => __( 'Texto Botón (Con Acceso)', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Ver Curso', 'alezux-members' ),
-				'placeholder' => __( 'Ver Curso', 'alezux-members' ),
+				'default' => __( 'Continuar', 'alezux-members' ),
+				'placeholder' => __( 'Continuar', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_text_purchase',
+			[
+				'label' => __( 'Texto Botón (Sin Acceso)', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Comprar Curso', 'alezux-members' ),
+				'placeholder' => __( 'Comprar Curso', 'alezux-members' ),
 			]
 		);
 
@@ -888,7 +898,14 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 									</span>
 								<?php endif; ?>
 								
-								<span class="alezux-btn-text"><?php echo esc_html( $settings['button_text'] ); ?></span>
+								<?php 
+								// Lógica de Acceso y Texto del Botón
+								$user_id = get_current_user_id();
+								$has_access = sfwd_lms_has_access( $post_id, $user_id );
+								$button_text = $has_access ? $settings['button_text_access'] : $settings['button_text_purchase'];
+								?>
+								
+								<span class="alezux-btn-text"><?php echo esc_html( $button_text ); ?></span>
 
 								<?php if ( ! empty( $settings['selected_icon']['value'] ) && 'right' === $settings['icon_align'] ) : ?>
 									<span class="alezux-btn-icon alezux-btn-icon-right">
