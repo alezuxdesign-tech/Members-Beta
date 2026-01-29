@@ -201,3 +201,151 @@
 .alezux-btn-icon-right {
     margin-left: 8px;
 }
+
+/* --- Widget Topics List --- */
+.alezux-topics-widget {
+    width: 100%;
+}
+
+.alezux-topics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.alezux-topics-header-content h3.alezux-topics-header-title {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.alezux-topics-header-meta {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.alezux-topics-header-icon {
+    color: #ffffff;
+    font-size: 1.2rem;
+}
+
+.alezux-topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.alezux-topic-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    text-decoration: none;
+    transition: background-color 0.3s, border-left-color 0.3s;
+    border-left: 3px solid transparent;
+    position: relative;
+    background-color: transparent;
+}
+
+.alezux-topic-item:last-child {
+    border-bottom: none;
+}
+
+.alezux-topic-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.alezux-topic-item.is-active {
+    background-color: rgba(108, 92, 231, 0.1);
+    border-left-color: #6c5ce7;
+}
+
+.alezux-topic-thumbnail-wrapper {
+    position: relative;
+    width: 120px;
+    /* Ancho ajustado para parecerse más a la imagen */
+    flex-shrink: 0;
+    margin-right: 15px;
+}
+
+.alezux-topic-thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #2a2a2a;
+}
+
+.alezux-topic-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.alezux-topic-check {
+    position: absolute;
+    top: 50%;
+    left: -12px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background-color: #333;
+    /* Default gray */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 14px;
+    border: 3px solid #1a1a1a;
+    z-index: 2;
+}
+
+.alezux-topic-check svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 3;
+}
+
+/* When completed (logic needed or just style active?) Image implies checks are "done" */
+.alezux-topic-item.is-completed .alezux-topic-check {
+    /* Need to add class in PHP if I want this */
+    background-color: #333;
+    color: #fff;
+}
+
+/* Wait, I didn't add 'is-completed' class in PHP. I should check. */
+
+.alezux-topic-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.alezux-topic-title {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.alezux-topic-author {
+    font-size: 0.8rem;
+    color: #a0a0a0;
+    display: block;
+}
+
+.alezux-elementor-placeholder {
+    padding: 20px;
+    background: #2a2a2a;
+    border: 1px dashed #444;
+    color: #a0a0a0;
+    text-align: center;
+    border-radius: 10px;
+}

@@ -41,8 +41,10 @@ class Formaciones extends Module_Base {
 
 	public function register_elementor_widgets( $widgets_manager ) {
 		require_once __DIR__ . '/includes/Elementor_Widget_Formaciones_Grid.php';
+		require_once __DIR__ . '/includes/Elementor_Widget_Topics.php';
 		
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Formaciones_Grid() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Topics() );
 	}
 
 	public function enqueue_admin_assets( $hook ) {
