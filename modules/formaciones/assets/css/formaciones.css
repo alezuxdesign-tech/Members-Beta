@@ -478,20 +478,24 @@
     width: 100%;
 }
 
+/* Ensure hidden states are truly hidden */
 .alezux-btn-state {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    /* Default gap */
     width: 100%;
-    /* Ensure it takes space */
 }
 
-/* Ensure hidden states are truly hidden */
-.alezux-btn-state[style*="display:none"] {
-    display: none !important;
+/* Initially show the correct one based on parent class, JS will toggle display property directly though */
+.alezux-btn-complete-topic:not(.is-completed) .state-incomplete {
+    display: flex;
 }
+
+.alezux-btn-complete-topic.is-completed .state-completed {
+    display: flex;
+}
+
 
 .alezux-btn-loader {
     display: flex;
