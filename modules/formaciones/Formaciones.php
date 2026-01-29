@@ -148,8 +148,9 @@ class Formaciones extends Module_Base {
 					$post_type = get_post_type($post_id);
 					if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
 					
+					// CRITICAL FIX: Check for activity_status = 1 (completed).
 					$row = $wpdb->get_row( $wpdb->prepare(
-						"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s",
+						"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s AND activity_status = 1",
 						$user_id,
 						$post_id,
 						$activity_type

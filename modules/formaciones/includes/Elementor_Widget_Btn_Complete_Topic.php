@@ -354,56 +354,57 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		// Verify LearnDash function exists to prevent crash if not active or context is wrong
 		// USE ROBUST FALLBACK CHECK - Matching logic from Formaciones.php AJAX handler
 		
-		// 1. Manual Check (Source of Truth for instant updates)
-		$manual_is_completed = false;
-		$course_id = 0;
-		// Try to get Course ID
-		if(function_exists('learndash_get_course_id')){
-			$course_id = learndash_get_course_id( $post_id );
-		}
-		if ( ! $course_id ) {
-			$course_id = get_post_meta( $post_id, 'course_id', true );
-		}
+		// 1. Determine Status (Read)
+		$is_completed = false;
 
-		if ( $course_id ) {
-			$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-			if ( ! empty( $course_progress[$course_id] ) ) {
-				// Use !empty instead of isset to avoid false positives with 0/null/false
-				if ( ! empty( $course_progress[$course_id]['topics'][$post_id] ) || ! empty( $course_progress[$course_id]['lessons'][$post_id] ) ) {
-					$manual_is_completed = true;
+		if ( function_exists( 'learndash_is_target_complete' ) ) {
+			$is_completed = learndash_is_target_complete( $post_id, $user_id );
+		} else {
+			// Fallback: Check Post Meta directly from User Activity or Course Progress
+			
+			// Method A: Check '_sfwd_course_progress'
+			$course_id = 0;
+			if(function_exists('learndash_get_course_id')){
+				$course_id = learndash_get_course_id( $post_id );
+			}
+			if ( ! $course_id ) {
+				$course_id = get_post_meta( $post_id, 'course_id', true );
+			}
+
+			if ( $course_id ) {
+				$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+				if ( ! empty( $course_progress[$course_id] ) ) {
+					// Use !empty instead of isset to avoid false positives with 0/null/false
+					if ( ! empty( $course_progress[$course_id]['topics'][$post_id] ) || ! empty( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+						$is_completed = true;
+					}
+				}
+			}
+			
+			// Method B: Check Activity Table manually if Method A failed or as verification
+			if ( ! $is_completed ) {
+				global $wpdb;
+				$activity_type = 'topic';
+				$pt = get_post_type($post_id);
+				if('sfwd-lessons' === $pt) $activity_type = 'lesson';
+				
+				// CRITICAL FIX: Check for activity_status = 1 (completed). 
+				// Just existing in the table doesn't mean completed (could be started/visited).
+				$row = $wpdb->get_row( $wpdb->prepare(
+					"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s AND activity_status = 1",
+					$user_id,
+					$post_id,
+					$activity_type
+				) );
+				
+				if ( $row ) {
+					$is_completed = true;
 				}
 			}
 		}
-		
-		// Double check: Activity Table
-		if ( ! $manual_is_completed ) {
-			global $wpdb;
-			$activity_type = 'topic';
-			$pt = get_post_type($post_id);
-			if('sfwd-lessons' === $pt) $activity_type = 'lesson';
-			
-			$row = $wpdb->get_row( $wpdb->prepare(
-				"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s",
-				$user_id,
-				$post_id,
-				$activity_type
-			) );
-			
-			if ( $row ) {
-				$manual_is_completed = true;
-			}
-		}
 
-		// 2. Determine Final Status
-		// Trust Manual Check if false (because we just deleted it in AJAX and cache might be stale)
-		// If Manual Check is TRUE, then it is complete.
-		$is_completed = $manual_is_completed;
-        
-        error_log("ALEZUX WIDGET DEBUG: PostID: $post_id, CourseID: $course_id, Manual: " . ($manual_is_completed ? 'YES' : 'NO'));
-        if($manual_is_completed) {
-             $course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-             error_log("ALEZUX WIDGET META: " . print_r($course_progress[$course_id] ?? 'NOT FOUND IN WIDGET', true));
-        }
+		// Debug comment for user inspection if needed
+		// echo '<!-- Debug Completed Check: ' . ($is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
 
 		// Debug comment for user inspection if needed
 		echo '<!-- Debug Completed Check: Manual=' . ($manual_is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
