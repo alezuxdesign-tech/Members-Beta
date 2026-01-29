@@ -107,24 +107,71 @@ class Formaciones extends Module_Base {
 				throw new \Exception( 'Invalid Post ID' );
 			}
 
-			// Check if LearnDash function exists
-			if ( ! function_exists( 'learndash_is_target_complete' ) ) {
-				throw new \Exception( 'LearnDash functions not found. Is LearnDash active?' );
+			global $wpdb;
+
+			// --- 1. Determine Status (Read) ---
+			$is_completed = false;
+
+			if ( function_exists( 'learndash_is_target_complete' ) ) {
+				$is_completed = learndash_is_target_complete( $post_id, $user_id );
+			} else {
+				// Fallback: Check Post Meta directly from User Activity or Course Progress
+				// Method A: Check '_sfwd_course_progress'
+				$course_id = 0;
+				if(function_exists('learndash_get_course_id')){
+					$course_id = learndash_get_course_id( $post_id );
+				} else {
+					// Manual fallback for course ID
+					$post_type = get_post_type($post_id);
+					if('sfwd-topic' === $post_type || 'sfwd-lessons' === $post_type) {
+						$course_id = get_post_meta( $post_id, 'course_id', true );
+					}
+				}
+
+				if ( $course_id ) {
+					$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+					if ( isset( $course_progress[$course_id] ) ) {
+						// Check topics
+						if ( isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
+							$is_completed = true;
+						}
+						// Check lessons (if it was a lesson)
+						if ( isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+							$is_completed = true;
+						}
+					}
+				}
+				
+				// Method B: Check Activity Table manually if Method A failed or as verification
+				if ( ! $is_completed ) {
+					$activity_type = 'topic';
+					$post_type = get_post_type($post_id);
+					if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
+					
+					$row = $wpdb->get_row( $wpdb->prepare(
+						"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s",
+						$user_id,
+						$post_id,
+						$activity_type
+					) );
+					
+					if ( $row ) {
+						$is_completed = true;
+					}
+				}
 			}
 
-			// Check if already completed
-			$is_completed = learndash_is_target_complete( $post_id, $user_id );
+			// --- 2. Action (Write) ---
+			
+			// Determinar tipo activdad para escritura
+			$activity_type = 'topic'; 
+			$post_type = get_post_type($post_id);
+			if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
+			if('sfwd-topic' === $post_type) $activity_type = 'topic';
 
 			if ( $is_completed ) {
-				// Unmark complete logic
-				global $wpdb;
+				// === UNMARK COMPLETE ===
 				
-				// Determine activity type
-				$activity_type = 'topic'; // Default
-				$post_type = get_post_type($post_id);
-				if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
-				if('sfwd-topic' === $post_type) $activity_type = 'topic';
-
 				// 1. Delete from Activity Table
 				$wpdb->delete(
 					$wpdb->prefix . 'learndash_user_activity',
@@ -136,34 +183,91 @@ class Formaciones extends Module_Base {
 				);
 
 				// 2. Clear User Meta Cache for Course Progress
-				if ( function_exists( 'learndash_get_course_id' ) ) {
+				// Need Course ID
+				$course_id = 0;
+				if(function_exists('learndash_get_course_id')){
 					$course_id = learndash_get_course_id( $post_id );
-					if ( $course_id ) {
-						$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+				} else {
+					$course_id = get_post_meta( $post_id, 'course_id', true );
+				}
+
+				if ( $course_id ) {
+					$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+					
+					// Remove from progress array if exists
+					$updated = false;
+					if ( isset( $course_progress[$course_id] ) ) {
+						if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
+							unset( $course_progress[$course_id]['topics'][$post_id] );
+							$updated = true;
+						} elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+							unset( $course_progress[$course_id]['lessons'][$post_id] );
+							$updated = true;
+						}
 						
-						// Remove from progress array if exists
-						if ( isset( $course_progress[$course_id] ) ) {
-							if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
-								unset( $course_progress[$course_id]['topics'][$post_id] );
-							} elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
-								unset( $course_progress[$course_id]['lessons'][$post_id] );
-							}
-							
-							// Update the meta
+						if ( $updated ) {
 							update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
 						}
 					}
 				}
 
-				wp_send_json_success( [ 'status' => 'incomplete' ] );
+				wp_send_json_success( [ 'status' => 'incomplete', 'method' => 'manual_unmark' ] );
 
 			} else {
-				// Mark complete
+				// === MARK COMPLETE ===
+				
 				if ( function_exists( 'learndash_process_mark_complete' ) ) {
 					learndash_process_mark_complete( $user_id, $post_id );
-					wp_send_json_success( [ 'status' => 'completed' ] );
+					wp_send_json_success( [ 'status' => 'completed', 'method' => 'api' ] );
 				} else {
-					throw new \Exception( 'learndash_process_mark_complete not found' );
+					// Manual Mark Complete (Fallback)
+					
+					// 1. Insert into Activity Table
+					$now_timestamp = time(); // Epoch
+					
+					// Need Course ID for activity record
+					$course_id = 0;
+					if(function_exists('learndash_get_course_id')){
+						$course_id = learndash_get_course_id( $post_id );
+					} else {
+						$course_id = get_post_meta( $post_id, 'course_id', true );
+					}
+
+					$wpdb->insert(
+						$wpdb->prefix . 'learndash_user_activity',
+						[
+							'user_id' => $user_id,
+							'post_id' => $post_id,
+							'course_id' => $course_id,
+							'activity_type' => $activity_type,
+							'activity_status' => 1, // Completed
+							'activity_started' => $now_timestamp,
+							'activity_completed' => $now_timestamp,
+							'activity_updated' => $now_timestamp,
+						],
+						[ '%d', '%d', '%d', '%s', '%d', '%d', '%d', '%d' ]
+					);
+
+					// 2. Update User Meta Progress
+					if ( $course_id ) {
+						$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+						if ( ! is_array( $course_progress ) ) $course_progress = [];
+						if ( ! isset( $course_progress[$course_id] ) ) $course_progress[$course_id] = [];
+						
+						if ( 'topic' === $activity_type ) {
+							if ( ! isset( $course_progress[$course_id]['topics'] ) ) $course_progress[$course_id]['topics'] = [];
+							$course_progress[$course_id]['topics'][$post_id] = 1;
+						} elseif ( 'lesson' === $activity_type ) {
+							if ( ! isset( $course_progress[$course_id]['lessons'] ) ) $course_progress[$course_id]['lessons'] = [];
+							$course_progress[$course_id]['lessons'][$post_id] = 1;
+						}
+						// Also update 'total' and 'completed' counts if you want to be perfect, 
+						// but usually just setting the key triggers recalculation on next full load or is enough.
+						
+						update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
+					}
+
+					wp_send_json_success( [ 'status' => 'completed', 'method' => 'manual_fallback_write' ] );
 				}
 			}
 		} catch ( \Exception $e ) {
