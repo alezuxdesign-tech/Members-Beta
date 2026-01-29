@@ -53,6 +53,20 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 		);
 
 		$this->add_control(
+			'chart_style',
+			[
+				'label' => __( 'Estilo de Gráfico', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'segmented',
+				'options' => [
+					'segmented' => __( 'Segmentado (Ticks)', 'alezux-members' ),
+					'solid'     => __( 'Sólido (Arco)', 'alezux-members' ),
+				],
+				'condition' => [ 'show_chart' => 'yes' ],
+			]
+		);
+
+		$this->add_control(
 			'chart_label',
 			[
 				'label' => __( 'Etiqueta del Gráfico', 'alezux-members' ),
@@ -112,13 +126,27 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'max' => 60,
 				'step' => 1,
 				'default' => 30,
+				'condition' => [ 'chart_style' => 'segmented' ],
+			]
+		);
+		
+		$this->add_control(
+			'chart_bar_width',
+			[
+				'label' => __( 'Grosor de Barra', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => 5, 'max' => 50 ],
+				],
+				'default' => [ 'size' => 30 ],
+				'condition' => [ 'chart_style' => 'solid' ],
 			]
 		);
 
 		$this->add_control(
 			'chart_track_color',
 			[
-				'label' => __( 'Color Inactivos', 'alezux-members' ),
+				'label' => __( 'Color Fondo / Inactivos', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#ffffff',
 			]
@@ -130,15 +158,16 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'label' => __( 'Activar Glow (Barras)', 'alezux-members' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
+				'condition' => [ 'chart_style' => 'segmented' ],
 			]
 		);
 
 		$this->add_control(
 			'chart_fill_color_start',
 			[
-				'label' => __( 'Color Activos', 'alezux-members' ),
+				'label' => __( 'Color Activos / Progreso', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'default' => '#FFB800', // Gold/Yellow
+				'default' => '#FFB800', 
 			]
 		);
 
@@ -327,35 +356,39 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			
 			<?php if ( 'yes' === $settings['show_chart'] ) : ?>
 				<?php 
-					// SEGMENTED CHART LOGIC
+					// Chart Logic
 					$unique_id = $this->get_id();
-					$ticks_count = isset($settings['chart_ticks_count']) ? intval($settings['chart_ticks_count']) : 30;
-					$ticks_active = round( ($average_progress / 100) * $ticks_count );
-					
-					// Improved Viewport and Geometry for "Non-clipped" look
-					// Box 500x300.
-					// Center horizontally: 250.
-					// Vertical Center (cy): 240 (moved up from bottom to leave 60px space)
-					// Radius: 180 (Total width 360, fits in 500 easily).
+					$chart_style = isset($settings['chart_style']) ? $settings['chart_style'] : 'segmented';
 					
 					$cx = 250;
 					$cy = 240; 
 					$r = 180;
-					$tick_length = 45; 
-					
-					// Angles: Restrict to -175 to -5 to lift ends off the "floor" and avoid "extra line" visual artifact
-					$start_angle = -175;
-					$end_angle = -5;
-					$total_angle = $end_angle - $start_angle; // 170 deg span
-					$step_angle = $total_angle / ($ticks_count - 1); 
 					
 					$active_color = $settings['chart_fill_color_start'];
 					$inactive_color = $settings['chart_track_color'];
 					$enable_glow_chart = isset($settings['chart_enable_glow']) ? $settings['chart_enable_glow'] : 'yes';
+
+					// Helper for Solid Arc
+					$describe_arc = function($x, $y, $radius, $start_angle, $end_angle) {
+						$polar_to_cartesian = function($cx, $cy, $rad, $deg) {
+							$radians = $deg * M_PI / 180.0;
+							return [
+								'x' => $cx + ($rad * cos($radians)),
+								'y' => $cy + ($rad * sin($radians))
+							];
+						};
+						
+						$start = $polar_to_cartesian($x, $y, $radius, $end_angle);
+						$end = $polar_to_cartesian($x, $y, $radius, $start_angle);
+						$large_arc_flag = ($end_angle - $start_angle) <= 180 ? "0" : "1";
+						
+						return "M " . $start['x'] . " " . $start['y'] . " A $radius $radius 0 $large_arc_flag 0 " . $end['x'] . " " . $end['y'];
+					};
 				?>
 				<div class="alezux-general-chart-container">
 					<svg class="alezux-general-chart-svg" viewBox="0 0 500 300" preserveAspectRatio="xMidYMax meet">
 						<defs>
+							<?php if ( 'segmented' === $chart_style ) : ?>
 							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-150%" y="-150%" width="400%" height="400%">
 								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
 								<feMerge>
@@ -363,36 +396,70 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 									<feMergeNode in="SourceGraphic"/>
 								</feMerge>
 							</filter>
+							<?php endif; ?>
 						</defs>
 						
-						<!-- Ticks -->
-						<g class="alezux-chart-ticks">
-							<?php for ($i = 0; $i < $ticks_count; $i++) : 
-								$is_active = $i < $ticks_active;
-								$angle_deg = $start_angle + ($i * $step_angle);
-								$angle_rad = deg2rad($angle_deg);
-								
-								// Outer point
-								$x1 = $cx + ($r * cos($angle_rad));
-								$y1 = $cy + ($r * sin($angle_rad));
-								
-								// Inner point
-								$x2 = $cx + ( ($r - $tick_length) * cos($angle_rad));
-								$y2 = $cy + ( ($r - $tick_length) * sin($angle_rad));
-								
-								$color = $is_active ? $active_color : $inactive_color;
-								$filter = ($is_active && 'yes' === $enable_glow_chart) ? "url(#glow-{$unique_id})" : "none";
-							?>
-								<line 
-									x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
-									x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
-									stroke="<?php echo esc_attr($color); ?>" 
-									stroke-width="12" 
-									stroke-linecap="round"
-									style="filter: <?php echo $filter; ?>;"
-								/>
-							<?php endfor; ?>
-						</g>
+						<?php if ( 'segmented' === $chart_style ) : 
+							// Segmented/Ticks Style
+							$ticks_count = isset($settings['chart_ticks_count']) ? intval($settings['chart_ticks_count']) : 30;
+							$ticks_active = round( ($average_progress / 100) * $ticks_count );
+							$tick_length = 45; 
+							
+							$start_angle = -175;
+							$end_angle = -5;
+							$total_angle = $end_angle - $start_angle; 
+							$step_angle = $total_angle / ($ticks_count - 1); 
+						?>
+							<g class="alezux-chart-ticks">
+								<?php for ($i = 0; $i < $ticks_count; $i++) : 
+									$is_active = $i < $ticks_active;
+									$angle_deg = $start_angle + ($i * $step_angle);
+									$angle_rad = deg2rad($angle_deg);
+									
+									$x1 = $cx + ($r * cos($angle_rad));
+									$y1 = $cy + ($r * sin($angle_rad));
+									$x2 = $cx + ( ($r - $tick_length) * cos($angle_rad));
+									$y2 = $cy + ( ($r - $tick_length) * sin($angle_rad));
+									
+									$color = $is_active ? $active_color : $inactive_color;
+									$filter = ($is_active && 'yes' === $enable_glow_chart) ? "url(#glow-{$unique_id})" : "none";
+								?>
+									<line 
+										x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
+										x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
+										stroke="<?php echo esc_attr($color); ?>" 
+										stroke-width="12" 
+										stroke-linecap="round"
+										style="filter: <?php echo $filter; ?>;"
+									/>
+								<?php endfor; ?>
+							</g>
+						
+						<?php else : 
+							// Solid Style
+							$bar_width = isset($settings['chart_bar_width']['size']) ? $settings['chart_bar_width']['size'] : 30;
+							
+							// Background Path (180 to 360)
+							$bg_path = $describe_arc($cx, $cy, $r, 180, 360);
+							
+							// Progress Path
+							$progress_end_angle = 180 + (180 * ($average_progress / 100));
+							// Clamp progress angle
+							if ($progress_end_angle > 360) $progress_end_angle = 360;
+							if ($progress_end_angle < 180) $progress_end_angle = 180;
+
+							$progress_path = $describe_arc($cx, $cy, $r, 180, $progress_end_angle);
+							
+							// Inner Dotted Line
+							$inner_r = $r - ($bar_width/2) - 25; 
+							$dotted_path = $describe_arc($cx, $cy, $inner_r, 180, 360);
+						?>
+							<path d="<?php echo $bg_path; ?>" fill="none" stroke="<?php echo esc_attr($inactive_color); ?>" stroke-width="<?php echo esc_attr($bar_width); ?>" stroke-linecap="round" />
+							<path d="<?php echo $progress_path; ?>" fill="none" stroke="<?php echo esc_attr($active_color); ?>" stroke-width="<?php echo esc_attr($bar_width); ?>" stroke-linecap="round" />
+							<?php if ( $inner_r > 0 ): ?>
+								<path d="<?php echo $dotted_path; ?>" fill="none" stroke="<?php echo esc_attr($inactive_color); ?>" stroke-width="2" stroke-dasharray="1 8" stroke-linecap="round" opacity="0.5" />
+							<?php endif; ?>
+						<?php endif; ?>
 					</svg>
 					
 					<div class="alezux-chart-content">

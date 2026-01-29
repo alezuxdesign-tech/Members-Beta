@@ -16,23 +16,23 @@ class Shortcodes {
 
 			'alezux_course_whatsapp' => [
 				'callback'    => [ $this, 'render_whatsapp_link' ],
-				'description' => __( 'Muestra el enlace de WhatsApp configurado en el curso.', 'alezux-members' ),
+				'description' => \__( 'Muestra el enlace de WhatsApp configurado en el curso.', 'alezux-members' ),
 			],
 			'alezux_course_slack' => [
 				'callback'    => [ $this, 'render_slack_link' ],
-				'description' => __( 'Muestra el enlace de Slack configurado en el curso.', 'alezux-members' ),
+				'description' => \__( 'Muestra el enlace de Slack configurado en el curso.', 'alezux-members' ),
 			],
 			'alezux_course_zoom' => [
 				'callback'    => [ $this, 'render_zoom_link' ],
-				'description' => __( 'Muestra el enlace de Zoom configurado en el curso.', 'alezux-members' ),
+				'description' => \__( 'Muestra el enlace de Zoom configurado en el curso.', 'alezux-members' ),
 			],
 			'alezux_resume_topic_name' => [
 				'callback'    => [ $this, 'render_resume_topic_name' ],
-				'description' => __( 'Muestra el nombre del tema donde quedó el estudiante.', 'alezux-members' ),
+				'description' => \__( 'Muestra el nombre del tema donde quedó el estudiante.', 'alezux-members' ),
 			],
 			'alezux_resume_topic_link' => [
 				'callback'    => [ $this, 'render_resume_topic_link' ],
-				'description' => __( 'Muestra el enlace del tema donde quedó el estudiante.', 'alezux-members' ),
+				'description' => \__( 'Muestra el enlace del tema donde quedó el estudiante.', 'alezux-members' ),
 			],
 		];
 	}
@@ -44,11 +44,11 @@ class Shortcodes {
 	 * Retorna el enlace de Whatsapp del curso actual.
 	 */
 	public function render_whatsapp_link( $atts ) {
-		$course_id = learndash_get_course_id();
+		$course_id = \learndash_get_course_id();
 		if ( ! $course_id ) return '';
 
-		$link = get_post_meta( $course_id, '_alezux_course_whatsapp', true );
-		return esc_url( $link );
+		$link = \get_post_meta( $course_id, '_alezux_course_whatsapp', true );
+		return \esc_url( $link );
 	}
 
 	/**
@@ -56,11 +56,11 @@ class Shortcodes {
 	 * Retorna el enlace de Slack del curso actual.
 	 */
 	public function render_slack_link( $atts ) {
-		$course_id = learndash_get_course_id();
+		$course_id = \learndash_get_course_id();
 		if ( ! $course_id ) return '';
 
-		$link = get_post_meta( $course_id, '_alezux_course_slack', true );
-		return esc_url( $link );
+		$link = \get_post_meta( $course_id, '_alezux_course_slack', true );
+		return \esc_url( $link );
 	}
 
 	/**
@@ -68,11 +68,11 @@ class Shortcodes {
 	 * Retorna el enlace de Zoom del curso actual.
 	 */
 	public function render_zoom_link( $atts ) {
-		$course_id = learndash_get_course_id();
+		$course_id = \learndash_get_course_id();
 		if ( ! $course_id ) return '';
 
-		$link = get_post_meta( $course_id, '_alezux_course_zoom', true );
-		return esc_url( $link );
+		$link = \get_post_meta( $course_id, '_alezux_course_zoom', true );
+		return \esc_url( $link );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Shortcodes {
 
 		$last_step_id = $wpdb->get_var( $query );
 
-		return $last_step_id ? intval( $last_step_id ) : 0;
+		return $last_step_id ? \intval( $last_step_id ) : 0;
 	}
 
 	/**
@@ -111,16 +111,16 @@ class Shortcodes {
 	 *  - global: (string) "yes" para forzar búsqueda global ignorando el contexto actual.
 	 */
 	public function render_resume_topic_name( $atts ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! \is_user_logged_in() ) {
 			return '';
 		}
 
-		$atts = shortcode_atts( [
+		$atts = \shortcode_atts( [
 			'course_id' => 0,
 			'global'    => 'no', // 'yes' para forzar global
 		], $atts );
 
-		$user_id = get_current_user_id();
+		$user_id = \get_current_user_id();
 		$step_id = 0;
 		$force_global = ( 'yes' === $atts['global'] );
 
@@ -128,19 +128,19 @@ class Shortcodes {
 		$target_course_id = 0;
 		if ( ! $force_global ) {
 			if ( $atts['course_id'] ) {
-				$target_course_id = intval( $atts['course_id'] );
+				$target_course_id = \intval( $atts['course_id'] );
 			} else {
-				$target_course_id = learndash_get_course_id();
+				$target_course_id = \learndash_get_course_id();
 			}
 		}
 
 		if ( $target_course_id ) {
 			// Lógica específica del curso
-			$step_id = learndash_course_get_last_step( $target_course_id, $user_id );
+			$step_id = \learndash_course_get_last_step( $target_course_id, $user_id );
 			
 			// Fallback al primer paso si no hay progreso en ESTE curso
 			if ( ! $step_id ) {
-				$course_steps = learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
+				$course_steps = \learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
 				if ( ! empty( $course_steps ) ) {
 					$step_id = $course_steps[0];
 				}
@@ -154,7 +154,7 @@ class Shortcodes {
 			return '';
 		}
 
-		return get_the_title( $step_id );
+		return \get_the_title( $step_id );
 	}
 
 	/**
@@ -162,16 +162,16 @@ class Shortcodes {
 	 * Retorna el enlace del último paso visitado global o por curso.
 	 */
 	public function render_resume_topic_link( $atts ) {
-		if ( ! is_user_logged_in() ) {
+		if ( ! \is_user_logged_in() ) {
 			return '';
 		}
 
-		$atts = shortcode_atts( [
+		$atts = \shortcode_atts( [
 			'course_id' => 0,
 			'global'    => 'no',
 		], $atts );
 
-		$user_id = get_current_user_id();
+		$user_id = \get_current_user_id();
 		$step_id = 0;
 		$force_global = ( 'yes' === $atts['global'] );
 
@@ -179,17 +179,17 @@ class Shortcodes {
 		$target_course_id = 0;
 		if ( ! $force_global ) {
 			if ( $atts['course_id'] ) {
-				$target_course_id = intval( $atts['course_id'] );
+				$target_course_id = \intval( $atts['course_id'] );
 			} else {
-				$target_course_id = learndash_get_course_id();
+				$target_course_id = \learndash_get_course_id();
 			}
 		}
 
 		if ( $target_course_id ) {
-			$step_id = learndash_course_get_last_step( $target_course_id, $user_id );
+			$step_id = \learndash_course_get_last_step( $target_course_id, $user_id );
 			
 			if ( ! $step_id ) {
-				$course_steps = learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
+				$course_steps = \learndash_course_get_steps_by_type( $target_course_id, 'sfwd-lessons' );
 				if ( ! empty( $course_steps ) ) {
 					$step_id = $course_steps[0];
 				}
@@ -203,6 +203,6 @@ class Shortcodes {
 			return '';
 		}
 
-		return get_permalink( $step_id );
+		return \get_permalink( $step_id );
 	}
 }
