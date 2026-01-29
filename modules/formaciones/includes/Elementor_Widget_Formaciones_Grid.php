@@ -836,10 +836,30 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				// Obtener datos
 				$price = get_post_meta( $post_id, '_alezux_course_price', true );
 				$mentors = get_post_meta( $post_id, '_alezux_course_mentors', true );
+				
+				// LearnDash Settings
+				$course_options = get_post_meta( $post_id, '_sfwd-courses', true );
+				$price_type = isset( $course_options['sfwd-courses_course_price_type'] ) ? $course_options['sfwd-courses_course_price_type'] : 'open';
+				$custom_url = isset( $course_options['sfwd-courses_custom_button_url'] ) ? $course_options['sfwd-courses_custom_button_url'] : '';
+				
 				// Usar tamaño de imagen configurado por el usuario (o 'large' por defecto)
 				$img_size = !empty($settings['image_size']) ? $settings['image_size'] : 'large';
 				$image_url = get_the_post_thumbnail_url( $post_id, $img_size );
 				$description = get_the_excerpt();
+
+                // Lógica de Acceso y Enlaces
+				$user_id = get_current_user_id();
+				$has_access = sfwd_lms_has_access( $post_id, $user_id );
+				
+				$button_text = $has_access ? $settings['button_text_access'] : $settings['button_text_purchase'];
+                
+                // Si NO tiene acceso y hay una URL personalizada (ej. WooCommerce para cursos Closed), usar esa URL
+                // Si tiene acceso, siempre usar el permalink del curso
+                $button_link = get_the_permalink();
+                
+                if ( ! $has_access && ( 'closed' === $price_type || 'buynow' === $price_type ) && ! empty( $custom_url ) ) {
+                    $button_link = $custom_url;
+                }
 
 				// Renderizar Tarjeta
 				?>
@@ -891,19 +911,12 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 							<div class="alezux-formacion-price">
 								<?php echo esc_html( $price ); ?>
 							</div>
-							<a href="<?php the_permalink(); ?>" class="alezux-formacion-button">
+							<a href="<?php echo esc_url( $button_link ); ?>" class="alezux-formacion-button">
 								<?php if ( ! empty( $settings['selected_icon']['value'] ) && 'left' === $settings['icon_align'] ) : ?>
 									<span class="alezux-btn-icon alezux-btn-icon-left">
 										<?php Icons_Manager::render_icon( $settings['selected_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 									</span>
 								<?php endif; ?>
-								
-								<?php 
-								// Lógica de Acceso y Texto del Botón
-								$user_id = get_current_user_id();
-								$has_access = sfwd_lms_has_access( $post_id, $user_id );
-								$button_text = $has_access ? $settings['button_text_access'] : $settings['button_text_purchase'];
-								?>
 								
 								<span class="alezux-btn-text"><?php echo esc_html( $button_text ); ?></span>
 
