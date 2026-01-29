@@ -152,6 +152,45 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		);
 
 		$this->add_control(
+			'show_progress_percentage',
+			[
+				'label' => __( 'Mostrar Porcentaje (%)', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __( 'Sí', 'alezux-members' ),
+				'label_off' => __( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'no',
+			]
+		);
+
+		$this->add_control(
+			'progress_percentage_color',
+			[
+				'label' => __( 'Color Porcentaje', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topics-progress-percentage' => 'color: {{VALUE}};',
+				],
+				'condition' => [
+					'show_progress_percentage' => 'yes',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'progress_percentage_typography',
+				'label' => __( 'Tipografía Porcentaje', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-topics-progress-percentage',
+				'condition' => [
+					'show_progress_percentage' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
 			'progress_bar_radius',
 			[
 				'label' => __( 'Radio Borde', 'alezux-members' ),
@@ -851,6 +890,11 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 					<div class="alezux-topics-progress-bar">
 						<div class="alezux-topics-progress-bar-fill" style="width: <?php echo esc_attr( $progress_percentage ); ?>%;"></div>
 					</div>
+					<?php if ( 'yes' === $settings['show_progress_percentage'] ) : ?>
+						<div class="alezux-topics-progress-percentage">
+							<?php echo esc_html( round( $progress_percentage ) . '%' ); ?>
+						</div>
+					<?php endif; ?>
 				</div>
 				<div class="alezux-topics-header-icon">
 					<i class="eicon-chevron-down"></i>

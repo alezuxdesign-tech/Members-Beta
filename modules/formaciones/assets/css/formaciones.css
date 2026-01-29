@@ -399,6 +399,14 @@
     transition: width 0.5s ease-in-out;
 }
 
+.alezux-topics-progress-percentage {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-top: 4px;
+    text-align: right;
+}
+
 /* Text Content */
 .alezux-topic-info {
     flex: 1;
