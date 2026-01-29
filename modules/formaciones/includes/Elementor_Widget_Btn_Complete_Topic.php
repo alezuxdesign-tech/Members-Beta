@@ -346,14 +346,16 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 			return;
 		}
 
+		// Check content and user context safely
 		$user_id = get_current_user_id();
 		$is_completed = false;
 
-		// Verificar si es un Topic o Lesson de LearnDash y si está completado.
-		// Nota: learndash_is_topic_complete funciona; para lecciones es learndash_is_lesson_complete
-		// Usaremos una función genérica de LearnDash si es posible, o comprobaremos el post type.
-		$is_completed = learndash_is_target_complete( $post_id, $user_id );
-
+		// Verify LearnDash function exists to prevent crash if not active or context is wrong
+		if ( function_exists( 'learndash_is_target_complete' ) && $post_id ) {
+			// Some specific post types might not be supported by LD, wrap in try/catch if needed or rely on LD handling it gracefully
+			// We will just call it.
+			$is_completed = learndash_is_target_complete( $post_id, $user_id );
+		}
 		
 		$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
 		$this->add_render_attribute( 'button', 'role', 'button' );
