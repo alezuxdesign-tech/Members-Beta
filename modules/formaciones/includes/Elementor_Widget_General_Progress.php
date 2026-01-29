@@ -328,10 +328,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					$inactive_color = $settings['chart_track_color'];
 				?>
 				<div class="alezux-general-chart-container">
-					<svg class="alezux-general-chart-svg" viewBox="0 0 400 230" preserveAspectRatio="xMidYMax meet">
+					<svg class="alezux-general-chart-svg" viewBox="0 0 400 210" preserveAspectRatio="xMidYMax meet">
 						<defs>
 							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-50%" y="-50%" width="200%" height="200%">
-								<feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
 								<feMerge>
 									<feMergeNode in="coloredBlur"/>
 									<feMergeNode in="SourceGraphic"/>
@@ -357,13 +357,14 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 								
 								$color = $is_active ? $active_color : $inactive_color;
 								$filter = $is_active ? "url(#glow-{$unique_id})" : "none";
-								$opacity = $is_active ? 1 : 1; // Inactive usually fully visible but white
+								
+								// Active ticks slightly thicker for pop? No, uniform thickness.
 							?>
 								<line 
 									x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
 									x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
 									stroke="<?php echo esc_attr($color); ?>" 
-									stroke-width="8" 
+									stroke-width="10" 
 									stroke-linecap="round"
 									style="filter: <?php echo $filter; ?>;"
 								/>
@@ -420,7 +421,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			
 			.alezux-chart-content {
 				position: absolute;
-				bottom: 5px; /* Adjust vertical pos of text */
+				bottom: 0;
 				left: 0;
 				right: 0;
 				text-align: center;
@@ -428,20 +429,21 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				flex-direction: column;
 				justify-content: flex-end;
 				pointer-events: none;
+				padding-bottom: 30px; /* Optically center text in the arch void */
 			}
 			.alezux-chart-percent {
-				font-size: 50px;
+				font-size: 60px;
 				font-weight: 700;
 				line-height: 1;
-				margin-bottom: 5px;
+				margin-bottom: 0px;
 				transition: all 0.3s;
 			}
 			.alezux-chart-label {
-				font-size: 14px;
-				font-weight: 400;
+				font-size: 16px;
+				font-weight: 500;
 				opacity: 0.9;
-				text-transform: uppercase;
-				letter-spacing: 1px;
+				letter-spacing: 0.5px;
+				/* title case natural */
 			}
 			
 			/* List Styles */
