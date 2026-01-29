@@ -16,8 +16,10 @@ class Formaciones extends Module_Base {
 	public function init() {
 		// Cargar clases internas
 		require_once __DIR__ . '/includes/Course_Meta_Fields.php';
+		require_once __DIR__ . '/includes/Shortcodes.php';
 		// Instanciar Meta Fields para que corran los hooks del backend
 		new \Alezux_Members\Modules\Formaciones\Includes\Course_Meta_Fields();
+		new \Alezux_Members\Modules\Formaciones\Includes\Shortcodes();
 
 		// Encolar assets de administración
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
@@ -79,10 +81,12 @@ class Formaciones extends Module_Base {
 		require_once __DIR__ . '/includes/Elementor_Widget_Formaciones_Grid.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_Topics.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_Btn_Complete_Topic.php';
+		require_once __DIR__ . '/includes/Elementor_Widget_Course_Progress.php';
 		
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Formaciones_Grid() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Topics() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Btn_Complete_Topic() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Course_Progress() );
 	}
 
 	public function enqueue_admin_assets( $hook ) {

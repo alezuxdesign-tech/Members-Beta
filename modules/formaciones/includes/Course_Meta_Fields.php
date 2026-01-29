@@ -41,6 +41,9 @@ class Course_Meta_Fields {
 
 		// Recuperar valores guardados
 		$price = get_post_meta( $post->ID, '_alezux_course_price', true );
+		$whatsapp = get_post_meta( $post->ID, '_alezux_course_whatsapp', true );
+		$slack = get_post_meta( $post->ID, '_alezux_course_slack', true );
+		$zoom = get_post_meta( $post->ID, '_alezux_course_zoom', true );
 		$mentors = get_post_meta( $post->ID, '_alezux_course_mentors', true );
 		
 		if ( ! is_array( $mentors ) ) {
@@ -53,6 +56,29 @@ class Course_Meta_Fields {
 				<label for="alezux_course_price"><strong><?php _e( 'Precio del Curso', 'alezux-members' ); ?></strong></label>
 				<p class="description"><?php _e( 'Introduce el precio (ej. $99 USD o Gratis). Se mostrará tal cual en el grid.', 'alezux-members' ); ?></p>
 				<input type="text" id="alezux_course_price" name="alezux_course_price" value="<?php echo esc_attr( $price ); ?>" class="widefat">
+			</div>
+
+			<hr>
+
+			<!-- Campos de Contacto y Reunión -->
+			<h3><?php _e( 'Enlaces de Comunidad y Reuniones', 'alezux-members' ); ?></h3>
+			
+			<div class="alezux-meta-field">
+				<label for="alezux_course_whatsapp"><strong><?php _e( 'Enlace de WhatsApp', 'alezux-members' ); ?></strong></label>
+				<p class="description"><?php _e( 'Enlace al grupo o contacto de WhatsApp.', 'alezux-members' ); ?></p>
+				<input type="url" id="alezux_course_whatsapp" name="alezux_course_whatsapp" value="<?php echo esc_attr( $whatsapp ); ?>" class="widefat" placeholder="https://chat.whatsapp.com/...">
+			</div>
+
+			<div class="alezux-meta-field">
+				<label for="alezux_course_slack"><strong><?php _e( 'Enlace de Slack', 'alezux-members' ); ?></strong></label>
+				<p class="description"><?php _e( 'Enlace al canal o espacio de trabajo de Slack.', 'alezux-members' ); ?></p>
+				<input type="url" id="alezux_course_slack" name="alezux_course_slack" value="<?php echo esc_attr( $slack ); ?>" class="widefat" placeholder="https://join.slack.com/...">
+			</div>
+
+			<div class="alezux-meta-field">
+				<label for="alezux_course_zoom"><strong><?php _e( 'Enlace de Zoom', 'alezux-members' ); ?></strong></label>
+				<p class="description"><?php _e( 'Enlace recurrente a la sala de Zoom.', 'alezux-members' ); ?></p>
+				<input type="url" id="alezux_course_zoom" name="alezux_course_zoom" value="<?php echo esc_attr( $zoom ); ?>" class="widefat" placeholder="https://zoom.us/j/...">
 			</div>
 
 			<hr>
@@ -125,6 +151,21 @@ class Course_Meta_Fields {
 		// Guardar Precio
 		if ( isset( $_POST['alezux_course_price'] ) ) {
 			update_post_meta( $post_id, '_alezux_course_price', sanitize_text_field( $_POST['alezux_course_price'] ) );
+		}
+
+		// Guardar Whatsapp
+		if ( isset( $_POST['alezux_course_whatsapp'] ) ) {
+			update_post_meta( $post_id, '_alezux_course_whatsapp', esc_url_raw( $_POST['alezux_course_whatsapp'] ) );
+		}
+
+		// Guardar Slack
+		if ( isset( $_POST['alezux_course_slack'] ) ) {
+			update_post_meta( $post_id, '_alezux_course_slack', esc_url_raw( $_POST['alezux_course_slack'] ) );
+		}
+
+		// Guardar Zoom
+		if ( isset( $_POST['alezux_course_zoom'] ) ) {
+			update_post_meta( $post_id, '_alezux_course_zoom', esc_url_raw( $_POST['alezux_course_zoom'] ) );
 		}
 
 		// Guardar Mentores
