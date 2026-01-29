@@ -155,6 +155,10 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: #6c5ce7;
+    white-space: nowrap;
+    /* Prevent price breaking */
+    margin-right: 15px;
+    /* Minimum space */
 }
 
 .alezux-btn-arrow {
@@ -172,10 +176,16 @@
     transition: all 0.3s ease;
     cursor: pointer;
     line-height: 1.2;
+    white-space: nowrap;
+    /* Prevent button text breaking */
+    flex-shrink: 0;
+    /* Prevent button squashing */
 }
 
 .alezux-formacion-button:hover {
     text-decoration: none;
+    transform: translateY(-2px);
+    /* Add slight hover lift */
 }
 
 .alezux-formacion-button .alezux-btn-icon {
