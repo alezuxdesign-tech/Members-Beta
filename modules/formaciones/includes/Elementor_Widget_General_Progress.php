@@ -314,24 +314,32 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 					$ticks_count = isset($settings['chart_ticks_count']) ? intval($settings['chart_ticks_count']) : 30;
 					$ticks_active = round( ($average_progress / 100) * $ticks_count );
 					
-					// Viewport 400x220 to allow nice padding and glow
-					$cx = 200;
-					$cy = 200; // Semicircle bottom center
-					$r = 160;
-					$tick_length = 40; 
+					// Viewport 500x300 for maximum safety margin (aspect ratio 5:3)
+					// Center roughly at 250, 250
+					$cx = 250;
+					$cy = 250; 
+					$r = 200; // Radius
+					$tick_length = 45; 
+					
+					// Margins:
+					// Top: 250 - 200 = 50px (minus stroke cap ~6px) -> plenty.
+					// Left: 250 - 200 = 50px -> plenty.
+					// Right: 250 + 200 = 450px -> 50px margin -> plenty.
+					// Bottom: 250.
+					
 					$start_angle = -180;
 					$end_angle = 0;
 					$total_angle = 180;
-					$step_angle = $total_angle / ($ticks_count - 1); // Spread over 180 deg
+					$step_angle = $total_angle / ($ticks_count - 1); 
 					
 					$active_color = $settings['chart_fill_color_start'];
 					$inactive_color = $settings['chart_track_color'];
 				?>
 				<div class="alezux-general-chart-container">
-					<svg class="alezux-general-chart-svg" viewBox="0 0 400 210" preserveAspectRatio="xMidYMax meet">
+					<svg class="alezux-general-chart-svg" viewBox="0 0 500 260" preserveAspectRatio="xMidYMax meet">
 						<defs>
 							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-50%" y="-50%" width="200%" height="200%">
-								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+								<feGaussianBlur stdDeviation="5" result="coloredBlur"/>
 								<feMerge>
 									<feMergeNode in="coloredBlur"/>
 									<feMergeNode in="SourceGraphic"/>
@@ -346,7 +354,6 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 								$angle_deg = $start_angle + ($i * $step_angle);
 								$angle_rad = deg2rad($angle_deg);
 								
-								// Calculate start and end points of the tick line
 								// Outer point
 								$x1 = $cx + ($r * cos($angle_rad));
 								$y1 = $cy + ($r * sin($angle_rad));
@@ -357,14 +364,12 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 								
 								$color = $is_active ? $active_color : $inactive_color;
 								$filter = $is_active ? "url(#glow-{$unique_id})" : "none";
-								
-								// Active ticks slightly thicker for pop? No, uniform thickness.
 							?>
 								<line 
 									x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
 									x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
 									stroke="<?php echo esc_attr($color); ?>" 
-									stroke-width="10" 
+									stroke-width="12" 
 									stroke-linecap="round"
 									style="filter: <?php echo $filter; ?>;"
 								/>
@@ -406,17 +411,18 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				font-family: 'Roboto', sans-serif; /* Fallback */
+				font-family: 'Roboto', sans-serif; 
 			}
 			.alezux-general-chart-container {
 				position: relative;
 				display: flex;
 				justify-content: center;
 				margin-bottom: 20px;
-				/* Aspect ratio maintenance not critical as width controls SVG size */
+				width: 100%; /* Ensure container fills Elementor wrapper */
 			}
 			.alezux-general-chart-svg {
-				overflow: visible; /* Allow glow to spill */
+				overflow: visible; /* CRITICAL for glow */
+				height: auto;
 			}
 			
 			.alezux-chart-content {
@@ -429,7 +435,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				flex-direction: column;
 				justify-content: flex-end;
 				pointer-events: none;
-				padding-bottom: 30px; /* Optically center text in the arch void */
+				padding-bottom: 20px; /* Adjusted for new viewBox height */
 			}
 			.alezux-chart-percent {
 				font-size: 60px;
@@ -443,7 +449,6 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				font-weight: 500;
 				opacity: 0.9;
 				letter-spacing: 0.5px;
-				/* title case natural */
 			}
 			
 			/* List Styles */
