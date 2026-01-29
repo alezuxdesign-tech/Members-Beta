@@ -276,8 +276,11 @@
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
-    bottom: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    /* Center vertically */
+    height: 70%;
+    /* Not full height, looks cleaner */
     width: 4px;
     background-color: transparent;
     border-radius: 4px;
@@ -292,11 +295,14 @@
 /* Thumbnail Wrapper */
 .alezux-topic-thumbnail-wrapper {
     position: relative;
-    width: 160px;
-    /* Fixed width for thumbnail from image */
-    height: 90px;
+    width: 120px;
+    /* Reduced from 160px for better proportion */
+    height: 68px;
+    /* 16:9 ratio approx */
     flex-shrink: 0;
-    border-radius: 12px;
+    border-radius: 8px;
+    margin-right: 20px;
+    /* Force spacing between image and text */
 }
 
 .alezux-topic-thumbnail {
@@ -304,7 +310,6 @@
     height: 100%;
     overflow: hidden;
     border-radius: 8px;
-    /* Slightly rounded corners */
     background-color: #2a2a2a;
 }
 
@@ -324,34 +329,41 @@
 }
 
 /* Checkmark / Status Icon */
-/* DESIGN CRITICAL: Overlapping the left edge of the thumbnail */
+/* Refined positioning and sizing */
 .alezux-topic-check {
-    position: absolute;
-    left: -12px;
-    /* Pull it outside the image to the left */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
+    position: absolute !important;
+    /* Force absolute */
+    left: -10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 24px !important;
+    height: 24px !important;
     border-radius: 50%;
     background-color: #ffffff;
     /* Default: White circle */
-    z-index: 10;
-    display: flex;
+    z-index: 20;
+    /* High z-index */
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     border: 2px solid #121212;
     /* Optional: border matching background to create 'cutout' effect if needed, usually looks cleaner without or with dark border */
 }
 
 /* Checkmark Icon SVG */
+/* FORCE SIZE to prevent giant icon */
 .alezux-topic-check svg {
-    width: 14px;
-    height: 14px;
+    width: 12px !important;
+    height: 12px !important;
+    min-width: 12px !important;
+    /* Prevent collapse */
+    max-width: 12px !important;
+    /* Prevent explosion */
     stroke: #1a1a1a;
     /* Dark check on white bg */
     stroke-width: 3px;
+    display: block;
 }
 
 /* Completed State */
