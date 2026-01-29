@@ -787,8 +787,24 @@ class Slide_Lesson_Widget extends Widget_Base {
 				$query->the_post();
 				$lesson_id = get_the_ID();
 				
-				// Usar permalink específico de LearnDash si hay curso, sino el normal
+				// Enlace base: Lección
 				$permalink = ! empty( $course_id ) ? learndash_get_step_permalink( $lesson_id, $course_id ) : get_permalink( $lesson_id );
+
+				// Intentar obtener topics para enlazar al primero
+				if ( ! empty( $course_id ) && function_exists( 'learndash_get_topic_list' ) ) {
+					// query_type = post_ids optimiza si solo necesitamos IDs, pero default objects está bien para safety
+					$topics = learndash_get_topic_list( $lesson_id, $course_id );
+					
+					if ( ! empty( $topics ) && is_array( $topics ) ) {
+						// El primer elemento es el primer topic ordenado
+						$first_topic = $topics[0];
+						$first_topic_id = is_object( $first_topic ) ? $first_topic->ID : ( is_numeric( $first_topic ) ? $first_topic : 0 );
+						
+						if ( $first_topic_id ) {
+							$permalink = learndash_get_step_permalink( $first_topic_id, $course_id );
+						}
+					}
+				}
 				
 				$lessons[] = [
 					'title'     => get_the_title(),
