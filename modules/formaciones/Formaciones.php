@@ -87,11 +87,13 @@ class Formaciones extends Module_Base {
 		require_once __DIR__ . '/includes/Elementor_Widget_Topics.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_Btn_Complete_Topic.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_Course_Progress.php';
+		require_once __DIR__ . '/includes/Elementor_Widget_General_Progress.php';
 		
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Formaciones_Grid() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Topics() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Btn_Complete_Topic() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Course_Progress() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_General_Progress() );
 	}
 
 	public function enqueue_admin_assets( $hook ) {

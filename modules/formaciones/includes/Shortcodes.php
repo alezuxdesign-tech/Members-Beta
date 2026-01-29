@@ -106,6 +106,9 @@ class Shortcodes {
 	/**
 	 * Shortcode: [alezux_resume_topic_name]
 	 * Retorna el nombre del último paso visitado global o por curso.
+	 * Atributos:
+	 *  - course_id: (int) ID del curso específico.
+	 *  - global: (string) "yes" para forzar búsqueda global ignorando el contexto actual.
 	 */
 	public function render_resume_topic_name( $atts ) {
 		if ( ! is_user_logged_in() ) {
@@ -114,14 +117,22 @@ class Shortcodes {
 
 		$atts = shortcode_atts( [
 			'course_id' => 0,
+			'global'    => 'no', // 'yes' para forzar global
 		], $atts );
 
 		$user_id = get_current_user_id();
 		$step_id = 0;
+		$force_global = ( 'yes' === $atts['global'] );
 
-		// 1. Si se especifica ID o estamos en un curso, intentar lógica por curso
-		$context_course_id = learndash_get_course_id();
-		$target_course_id  = $atts['course_id'] ? intval( $atts['course_id'] ) : $context_course_id;
+		// 1. Determinar el Course ID objetivo (solo si no forzamos global)
+		$target_course_id = 0;
+		if ( ! $force_global ) {
+			if ( $atts['course_id'] ) {
+				$target_course_id = intval( $atts['course_id'] );
+			} else {
+				$target_course_id = learndash_get_course_id();
+			}
+		}
 
 		if ( $target_course_id ) {
 			// Lógica específica del curso
@@ -157,14 +168,22 @@ class Shortcodes {
 
 		$atts = shortcode_atts( [
 			'course_id' => 0,
+			'global'    => 'no',
 		], $atts );
 
 		$user_id = get_current_user_id();
 		$step_id = 0;
+		$force_global = ( 'yes' === $atts['global'] );
 
-		// 1. Si se especifica ID o estamos en un curso, intentar lógica por curso
-		$context_course_id = learndash_get_course_id();
-		$target_course_id  = $atts['course_id'] ? intval( $atts['course_id'] ) : $context_course_id;
+		// 1. Determinar el Course ID objetivo (solo si no forzamos global)
+		$target_course_id = 0;
+		if ( ! $force_global ) {
+			if ( $atts['course_id'] ) {
+				$target_course_id = intval( $atts['course_id'] );
+			} else {
+				$target_course_id = learndash_get_course_id();
+			}
+		}
 
 		if ( $target_course_id ) {
 			$step_id = learndash_course_get_last_step( $target_course_id, $user_id );
