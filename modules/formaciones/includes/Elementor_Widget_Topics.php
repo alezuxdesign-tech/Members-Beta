@@ -313,6 +313,44 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'active_indicator_offset',
+			[
+				'label' => __( 'Desplazamiento Horizontal', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => -50,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item::before' => 'left: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'active_indicator_border_radius',
+			[
+				'label' => __( 'Radio de Borde Barra', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-topic-item::before' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'active_indicator_border',
+				'selector' => '{{WRAPPER}} .alezux-topic-item::before',
+			]
+		);
+
 		$this->add_control(
 			'checkmark_heading',
 			[
