@@ -388,10 +388,14 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 				$pt = get_post_type($post_id);
 				if('sfwd-lessons' === $pt) $activity_type = 'lesson';
 				
-				// CRITICAL FIX: Check for activity_status = 1 (completed). 
-				// Just existing in the table doesn't mean completed (could be started/visited).
+				// CRITICAL FIX: Verificación más robusta.
+				// A veces activity_status no es 1 en versiones viejas, pero si activity_completed > 0, está completado.
 				$row = $wpdb->get_row( $wpdb->prepare(
-					"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity WHERE user_id = %d AND post_id = %d AND activity_type = %s AND activity_status = 1",
+					"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
+					WHERE user_id = %d 
+					AND post_id = %d 
+					AND activity_type = %s 
+					AND (activity_status = 1 OR activity_completed > 0)",
 					$user_id,
 					$post_id,
 					$activity_type
@@ -406,8 +410,8 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		// Debug comment for user inspection if needed
 		// echo '<!-- Debug Completed Check: ' . ($is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
 
-		// Debug comment for user inspection if needed
-		echo '<!-- Debug Completed Check: Manual=' . ($manual_is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
+		// 3. Final Fallback (If all else fails, check logic mismatch)
+		// Si aun asi es falso, pero el Widget detecta "Completado" en el contexto de Elementor (A veces pasa), forzamos? No, confiamos en DB.
 		
 		$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
 		$this->add_render_attribute( 'button', 'role', 'button' );
