@@ -90,75 +90,86 @@ class Formaciones extends Module_Base {
 		);
 	}
 	public function handle_topic_completion() {
-		// Validar nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'alezux_toggle_complete_' . $_POST['post_id'] ) ) {
-			wp_send_json_error( [ 'message' => 'Invalid nonce' ] );
-		}
+		try {
+			// Validar nonce
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'alezux_toggle_complete_' . $_POST['post_id'] ) ) {
+				throw new \Exception( 'Invalid nonce' );
+			}
 
-		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( [ 'message' => 'User not logged in' ] );
-		}
+			if ( ! is_user_logged_in() ) {
+				throw new \Exception( 'User not logged in' );
+			}
 
-		$post_id = intval( $_POST['post_id'] );
-		$user_id = get_current_user_id();
+			$post_id = intval( $_POST['post_id'] );
+			$user_id = get_current_user_id();
 
-		if ( ! $post_id ) {
-			wp_send_json_error( [ 'message' => 'Invalid Post ID' ] );
-		}
+			if ( ! $post_id ) {
+				throw new \Exception( 'Invalid Post ID' );
+			}
 
-		// Check if already completed
-		$is_completed = learndash_is_target_complete( $post_id, $user_id );
+			// Check if LearnDash function exists
+			if ( ! function_exists( 'learndash_is_target_complete' ) ) {
+				throw new \Exception( 'LearnDash functions not found. Is LearnDash active?' );
+			}
 
-		if ( $is_completed ) {
-			// Unmark complete logic
-            
-			// LearnDash does not have a public API to "unmark" a topic/lesson simply.
-			// We must remove the record from wp_learndash_user_activity table.
-			
-			global $wpdb;
-            
-            // Determine activity type
-            $activity_type = 'topic'; // Default
-            $post_type = get_post_type($post_id);
-            if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
-            if('sfwd-topic' === $post_type) $activity_type = 'topic';
+			// Check if already completed
+			$is_completed = learndash_is_target_complete( $post_id, $user_id );
 
-            // 1. Delete from Activity Table
-            $wpdb->delete(
-                $wpdb->prefix . 'learndash_user_activity',
-                [
-                    'user_id' => $user_id,
-                    'post_id' => $post_id,
-                    'activity_type' => $activity_type
-                ]
-            );
+			if ( $is_completed ) {
+				// Unmark complete logic
+				global $wpdb;
+				
+				// Determine activity type
+				$activity_type = 'topic'; // Default
+				$post_type = get_post_type($post_id);
+				if('sfwd-lessons' === $post_type) $activity_type = 'lesson';
+				if('sfwd-topic' === $post_type) $activity_type = 'topic';
 
-            // 2. Clear User Meta Cache for Course Progress
-            // This forces LearnDash to rebuild the progress user meta on next load
-            $course_id = learndash_get_course_id( $post_id );
-            if ( $course_id ) {
-                 $course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-                 
-                 // Remove from progress array if exists
-                 if ( isset( $course_progress[$course_id] ) ) {
-                      if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
-                          unset( $course_progress[$course_id]['topics'][$post_id] );
-                      } elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
-                          unset( $course_progress[$course_id]['lessons'][$post_id] );
-                      }
-                      
-                      // Update the meta
-                      update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
-                 }
-            }
+				// 1. Delete from Activity Table
+				$wpdb->delete(
+					$wpdb->prefix . 'learndash_user_activity',
+					[
+						'user_id' => $user_id,
+						'post_id' => $post_id,
+						'activity_type' => $activity_type
+					]
+				);
 
-			wp_send_json_success( [ 'status' => 'incomplete' ] );
+				// 2. Clear User Meta Cache for Course Progress
+				if ( function_exists( 'learndash_get_course_id' ) ) {
+					$course_id = learndash_get_course_id( $post_id );
+					if ( $course_id ) {
+						$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
+						
+						// Remove from progress array if exists
+						if ( isset( $course_progress[$course_id] ) ) {
+							if ( 'topic' === $activity_type && isset( $course_progress[$course_id]['topics'][$post_id] ) ) {
+								unset( $course_progress[$course_id]['topics'][$post_id] );
+							} elseif ( 'lesson' === $activity_type && isset( $course_progress[$course_id]['lessons'][$post_id] ) ) {
+								unset( $course_progress[$course_id]['lessons'][$post_id] );
+							}
+							
+							// Update the meta
+							update_user_meta( $user_id, '_sfwd_course_progress', $course_progress );
+						}
+					}
+				}
 
-		} else {
-			// Mark complete
-            // We pass false for 'unmark' (default)
-			learndash_process_mark_complete( $user_id, $post_id );
-			wp_send_json_success( [ 'status' => 'completed' ] );
+				wp_send_json_success( [ 'status' => 'incomplete' ] );
+
+			} else {
+				// Mark complete
+				if ( function_exists( 'learndash_process_mark_complete' ) ) {
+					learndash_process_mark_complete( $user_id, $post_id );
+					wp_send_json_success( [ 'status' => 'completed' ] );
+				} else {
+					throw new \Exception( 'learndash_process_mark_complete not found' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json_error( [ 'message' => $e->getMessage() ] );
+		} catch ( \Throwable $e ) {
+			wp_send_json_error( [ 'message' => 'Fatal Error: ' . $e->getMessage() ] );
 		}
 	}
 }
