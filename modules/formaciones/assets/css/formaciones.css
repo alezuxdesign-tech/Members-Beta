@@ -222,6 +222,12 @@
     border-bottom: 1px solid #1f1f1f;
 }
 
+.alezux-topics-header-content {
+    flex: 1;
+    min-width: 0;
+    margin-right: 20px;
+}
+
 .alezux-topics-header-content h3.alezux-topics-header-title {
     margin: 0 0 4px 0;
     font-size: 1.2rem;
