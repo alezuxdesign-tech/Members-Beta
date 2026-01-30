@@ -340,36 +340,25 @@ jQuery(document).ready(function ($) {
                 console.log('Alezux Tracker: sendData called but nothing to send.');
             }
         }
-        formData.append('action', 'alezux_track_study_time');
-        formData.append('seconds', timeToSend);
-        formData.append('post_id', postId);
-        navigator.sendBeacon(ajaxUrl, formData);
-    } else {
-        $.post(ajaxUrl, {
-            action: 'alezux_track_study_time',
-            seconds: timeToSend,
-            post_id: postId
-        });
-    }
-}
-        }
 
-    $(window).on('beforeunload visibilitychange', function () {
-        console.log('Alezux Tracker Event: Window/Vis Change', document.visibilityState);
-        if (document.visibilityState === 'hidden') {
-            if (isTracking) {
-                const now = Date.now();
-                const sessionTime = Math.floor((now - startTime) / 1000);
-                if (sessionTime > 0) {
-                    accumulatedTime += sessionTime;
-                    startTime = now;
-                    console.log('Alezux Tracker: Accumulating before exit:', sessionTime);
+
+
+        $(window).on('beforeunload visibilitychange', function () {
+            console.log('Alezux Tracker Event: Window/Vis Change', document.visibilityState);
+            if (document.visibilityState === 'hidden') {
+                if (isTracking) {
+                    const now = Date.now();
+                    const sessionTime = Math.floor((now - startTime) / 1000);
+                    if (sessionTime > 0) {
+                        accumulatedTime += sessionTime;
+                        startTime = now;
+                        console.log('Alezux Tracker: Accumulating before exit:', sessionTime);
+                    }
                 }
+                sendData();
             }
-            sendData();
-        }
-    });
+        });
 
-    }) ();
+    })();
 
 });
