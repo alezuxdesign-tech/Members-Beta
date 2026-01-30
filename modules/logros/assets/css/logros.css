@@ -1,6 +1,7 @@
-/* Basic Form Styles */
+/* Wrapper del Formulario */
 .alezux-logro-form {
-    max-width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .alezux-logro-form-group {
@@ -9,130 +10,172 @@
 
 .alezux-logro-form label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.alezux-logro-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.alezux-logro-submit {
-    cursor: pointer;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-}
-
-/* Upload Box Styles */
-.alezux-upload-box {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 30px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f9f9f9;
-    position: relative;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.alezux-upload-box:hover {
-    border-color: var(--alezux-primary, #6c5ce7);
-    background-color: #f0f0f0;
-}
-
-.alezux-upload-placeholder i {
-    font-size: 48px;
-    color: #ccc;
-    margin-bottom: 10px;
-    display: block;
-    transition: color 0.3s;
-}
-
-.alezux-upload-box:hover .alezux-upload-placeholder i {
-    color: var(--alezux-primary, #6c5ce7);
-}
-
-.alezux-upload-placeholder span {
-    color: #888;
+    margin-bottom: 8px;
     font-weight: 500;
 }
 
+/* Inputs y Selects */
+.alezux-logro-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    /* Importante para padding */
+}
+
+/* Caja de carga (Upload Box) */
+.alezux-upload-box {
+    border: 2px dashed #ccc;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.alezux-upload-box:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+/* Contenido del Placeholder */
+.alezux-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.alezux-upload-icon i,
+.alezux-upload-icon svg {
+    font-size: 32px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.alezux-upload-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+}
+
+.alezux-upload-subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: #777;
+    margin-bottom: 10px;
+    max-width: 80%;
+}
+
+/* Fake Button Look */
+.alezux-upload-button-wrapper {
+    margin-top: 5px;
+}
+
+.alezux-upload-btn-fake {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    pointer-events: none;
+    /* El click lo recibe la caja */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Preview de imagen ya subida */
 .alezux-upload-preview {
     position: relative;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .alezux-upload-preview img {
     max-height: 200px;
     max-width: 100%;
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .alezux-remove-img {
     position: absolute;
     top: -10px;
     right: -10px;
-    background: #ff4757;
-    color: white;
-    width: 25px;
-    height: 25px;
+    background: #ff4444;
+    color: #fff;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s;
+    font-size: 14px;
+    transition: background 0.2s;
+    z-index: 10;
 }
 
 .alezux-remove-img:hover {
-    transform: scale(1.1);
+    background: #cc0000;
 }
 
-/* Grid Styles handled by Widget Controls largely, but some defaults */
-.alezux-logro-card {
-    transition: transform 0.2s;
+/* Boton Submit */
+.alezux-logro-form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    /* Default align */
 }
 
-.alezux-logro-card:hover {
-    transform: translateY(-5px);
+.alezux-logro-submit {
+    padding: 12px 24px;
+    background-color: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
 }
 
-/* Popup Styles */
-.alezux-logro-popup-overlay {
-    backdrop-filter: blur(5px);
+.alezux-logro-submit:hover {
+    background-color: #005177;
 }
 
-.alezux-logro-popup-content {
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-    animation: alezux-pop-in 0.3s ease-out;
+/* Mensajes de respuesta */
+#alezux-logro-response {
+    margin-top: 15px;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 4px;
 }
 
-@keyframes alezux-pop-in {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+.alezux-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
-.alezux-popup-close:hover {
-    color: #ff0000;
+.alezux-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
