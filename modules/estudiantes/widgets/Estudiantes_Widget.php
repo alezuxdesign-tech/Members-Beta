@@ -251,25 +251,34 @@ class Estudiantes_Widget extends Widget_Base {
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
+		$limit = 10;
 
 		// Obtener estudiantes
 		$args = [
-			'role__in' => [ 'subscriber', 'student' ],
-			'number'   => 50, // Límite inicial para rendimiento
+			'role__in'    => [ 'subscriber', 'student' ],
+			'number'      => $limit,
+			'count_total' => true,
 		];
 
 		$user_query = new \WP_User_Query( $args );
 		$students = $user_query->get_results();
+		$total_users = $user_query->get_total();
 
 		// Fallback si no hay roles específicos
-		if ( empty( $students ) ) {
-			$args = [ 'number' => 50 ]; 
+		if ( empty( $students ) && $total_users === 0 ) {
+			$args = [ 
+				'number'      => $limit,
+				'count_total' => true,
+			]; 
 			$user_query = new \WP_User_Query( $args );
 			$students = $user_query->get_results();
+			$total_users = $user_query->get_total();
 		}
 
+		$total_pages = ceil( $total_users / $limit );
+
 		?>
-		<div class="alezux-estudiantes-wrapper">
+		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo esc_attr( $limit ); ?>">
 			<!-- Header -->
 			<div class="alezux-estudiantes-header">
 				<div class="alezux-header-content">
@@ -339,6 +348,13 @@ class Estudiantes_Widget extends Widget_Base {
 						<?php endif; ?>
 					</tbody>
 				</table>
+			</div>
+			
+			<!-- Pagination -->
+			<div class="alezux-estudiantes-pagination" 
+				 data-total-pages="<?php echo esc_attr( $total_pages ); ?>" 
+				 data-current-page="1">
+				<!-- Pagination rendered via JS -->
 			</div>
 		</div>
 		<?php

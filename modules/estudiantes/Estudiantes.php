@@ -145,21 +145,28 @@ class Estudiantes extends Module_Base {
 		}
 
 		$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+		$page   = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
+		$limit  = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 10;
+		$offset = ( $page - 1 ) * $limit;
 
 		$args = [
-			'role__in' => [ 'subscriber', 'student' ],
-			'number'   => 50,
-			'search'   => '*' . $search . '*',
+			'role__in'       => [ 'subscriber', 'student' ],
+			'number'         => $limit,
+			'offset'         => $offset,
+			'search'         => '*' . $search . '*',
 			'search_columns' => [ 'user_login', 'user_email', 'display_name' ],
+			'count_total'    => true, // Asegurar que cuente el total
 		];
 
-		// Si string vacío, devuelve lista inicial
+		// Si string vacío, devuelve lista inicial sin filtro de búsqueda
 		if ( empty( $search ) ) {
 			unset( $args['search'] );
 		}
 
 		$user_query = new \WP_User_Query( $args );
 		$students = $user_query->get_results();
+		$total_users = $user_query->get_total();
+		$total_pages = ceil( $total_users / $limit );
 
 		// Fallback búsqueda global si no hay roles específicos y no encontramos nada (opcional)
 		// Mantenemos la lógica simple de widget para consistencia
@@ -169,14 +176,19 @@ class Estudiantes extends Module_Base {
 			$data[] = [
 				'id'           => $student->ID,
 				'name'         => $student->display_name,
-				'username'     => $student->user_nicename, // o user_login
+				'username'     => $student->user_nicename,
 				'email'        => $student->user_email,
 				'avatar_url'   => get_avatar_url( $student->ID ),
-				'status_label' => 'OK', // Simulado
-				'status_class' => 'status-active', // Simulado
+				'status_label' => 'OK',
+				'status_class' => 'status-active',
 			];
 		}
 
-		wp_send_json_success( $data );
+		wp_send_json_success( [
+			'students'     => $data,
+			'total_pages'  => $total_pages,
+			'current_page' => $page,
+			'total_users'  => $total_users
+		] );
 	}
 }
