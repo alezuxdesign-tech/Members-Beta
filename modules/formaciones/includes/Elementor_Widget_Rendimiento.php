@@ -381,11 +381,35 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             return ['data' => $data, 'max' => $max_val];
         };
 
-        // 1. Weekly Data (7 Days)
-        $weekly = $process_daily_data(7);
-        $weekly_data = $weekly['data'];
-        $max_weekly = $weekly['max'];
+        // 1. Weekly Data (Calendar Week: Mon-Sun)
+        $weekly_data = [];
+        $max_weekly = 0;
         
+        // Find Monday of the current week (based on WP Local Time)
+        // 'w' 0 (Sun) - 6 (Sat). We want Monday (1) to be start.
+        $current_w = date('w', $wp_local_timestamp);
+        $offset_to_monday = ($current_w == 0) ? 6 : $current_w - 1;
+        $monday_timestamp = strtotime("-$offset_to_monday days", $wp_local_timestamp);
+
+        for ($i = 0; $i < 7; $i++) {
+            $day_ts = strtotime("+$i days", $monday_timestamp);
+            $d = date('Y-m-d', $day_ts);
+            
+            $val = isset($log[$d]) ? $log[$d] : 0;
+            if ($val > $max_weekly) $max_weekly = $val;
+            
+            $is_today = ($d === date('Y-m-d', $wp_local_timestamp));
+            
+            $weekly_data[] = [
+                'val' => $val,
+                // Force label to be Mon, Tue, etc.
+                'label' => date_i18n('l', $day_ts), // Full day name as requested "Lunes", "Martes" -> 'l' gives full name. User said "Lunes...Domingo"
+                'full_date' => date_i18n(get_option('date_format'), $day_ts),
+                'date' => $d,
+                'is_today' => $is_today
+            ];
+        }
+
         // Calculate Real Max for Best logic (Weekly)
         $real_max_weekly = 0;
         foreach ($weekly_data as $d) {
@@ -394,34 +418,38 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         if ($max_weekly == 0) $max_weekly = 3600;
         $max_weekly = ceil($max_weekly / 1800) * 1800;
 
-        // 2. Monthly Data (30 Days)
+        // 2. Monthly Data (Last 30 Days) - Kept as rolling window or should be Calendar Month?
+        // User requested "Semanal" -> Mon-Sun. "Anual" -> Jan-Dec.
+        // User didn't specify "Mensual", but "Semanal" was refined. Assuming Mensual stays as "Last 30 Days" per previous agreement, unless implied otherwise. 
+        // Plan said: "Mensual: Últimos 30 días". User approved plan.
+        // So I keep Monthly as is.
+        
         $monthly = $process_daily_data(30);
         $monthly_data = $monthly['data'];
         $max_monthly = $monthly['max'];
         // Reduce labels for monthly view (show every 5th)
         foreach ($monthly_data as $key => &$d) {
-             // Show label for 1st, 5th... or just simplify.
-             // Let's show label if index % 5 == 0 or last one.
+             // Show label if index % 5 == 0 or last one.
              if ($key % 5 !== 0 && $key !== 29) {
                  $d['label'] = ''; 
              } else {
-                 $d['label'] = date_i18n('d', strtotime($d['date'])); // Day number for monthly view
+                 $d['label'] = date_i18n('d', strtotime($d['date'])); // Day number
              }
         }
         if ($max_monthly == 0) $max_monthly = 3600;
         $max_monthly = ceil($max_monthly / 1800) * 1800;
 
-        // 3. Yearly Data (12 Months)
+        // 3. Yearly Data (Calendar Year: Jan-Dec)
         $yearly_data = [];
         $max_yearly = 0;
-        for ($i = 11; $i >= 0; $i--) {
-            $month_start = date('Y-m-01', strtotime("-$i months", $wp_local_timestamp));
+        $current_year = date('Y', $wp_local_timestamp);
+
+        for ($m = 1; $m <= 12; $m++) {
+            $month_start = "$current_year-" . sprintf('%02d', $m) . "-01";
             $month_end = date('Y-m-t', strtotime($month_start));
             $month_val = 0;
             
             // Sum all days in this month from $log
-            // This loop over log keys is inefficient if log is huge, but it's okay for 1 user / 1 year.
-            // Better: Iterate days in month and check log.
             $current_day = $month_start;
             while (strtotime($current_day) <= strtotime($month_end)) {
                  if (isset($log[$current_day])) {
@@ -432,11 +460,13 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 
             if ($month_val > $max_yearly) $max_yearly = $month_val;
             
+            $is_current_month = ($m === (int)date('n', $wp_local_timestamp));
+
             $yearly_data[] = [
                 'val' => $month_val,
-                'label' => date_i18n('M', strtotime($month_start)), // Jan, Feb
+                'label' => date_i18n('F', strtotime($month_start)), // Full month name "Enero", "Febrero"
                 'full_date' => date_i18n('F Y', strtotime($month_start)),
-                'is_today' => ($i === 0) // Current month
+                'is_today' => $is_current_month
             ];
         }
         if ($max_yearly == 0) $max_yearly = 3600;
