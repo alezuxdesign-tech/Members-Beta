@@ -1,0 +1,50 @@
+/* Basic Form Styles */
+.alezux-logro-form {
+    max-width: 100%;
+}
+.alezux-logro-form-group {
+    margin-bottom: 20px;
+}
+.alezux-logro-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.alezux-logro-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.alezux-logro-submit {
+    cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+}
+
+/* Grid Styles handled by Widget Controls largely, but some defaults */
+.alezux-logro-card {
+    transition: transform 0.2s;
+}
+.alezux-logro-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Popup Styles */
+.alezux-logro-popup-overlay {
+    backdrop-filter: blur(5px);
+}
+.alezux-logro-popup-content {
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    animation: alezux-pop-in 0.3s ease-out;
+}
+
+@keyframes alezux-pop-in {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.alezux-popup-close:hover {
+    color: #ff0000;
+}
