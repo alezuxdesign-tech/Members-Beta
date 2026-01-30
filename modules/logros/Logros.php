@@ -59,7 +59,7 @@ class Logros extends Module_Base {
 			'alezux-logros-js',
 			$this->get_asset_url( 'assets/js/logros.js' ),
 			[ 'jquery' ],
-			ALEZUX_MEMBERS_VERSION,
+			time(), // Force reload for debug
 			true
 		);
 

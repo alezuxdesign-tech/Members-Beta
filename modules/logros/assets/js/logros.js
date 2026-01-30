@@ -92,7 +92,9 @@ function loadLogros(container) {
     var search = container.find('#alezux-logro-search').val();
     var course_id = container.find('#alezux-logro-course-filter').val();
 
-    console.log('Loading Logros...', { search, course_id });
+    console.log('Alezux: loadLogros called');
+    console.log('Alezux: Vars:', alezux_logros_vars);
+    console.log('Alezux: Filters:', { search: search, course_id: course_id });
 
     tableContainer.html('<div class="alezux-loading">Cargando registros...</div>');
 
@@ -106,14 +108,18 @@ function loadLogros(container) {
             course_id: course_id
         },
         success: function (response) {
+            console.log('Alezux: AJAX Response:', response);
             if (response.success) {
                 renderTable(response.data, container);
             } else {
+                console.error('Alezux: Server Error:', response.data.message);
                 tableContainer.html('<div class="alezux-error">' + response.data.message + '</div>');
             }
         },
-        error: function () {
-            container.html('<div class="alezux-error">Error al cargar los registros.</div>');
+        error: function (xhr, status, error) {
+            console.error('Alezux: AJAX Error:', status, error);
+            console.log('Alezux: XHR:', xhr);
+            tableContainer.html('<div class="alezux-error">Error al cargar los registros. Ver consola.</div>');
         }
     });
 }
