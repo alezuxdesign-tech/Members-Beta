@@ -1,0 +1,91 @@
+/* Estudiantes Module Styles */
+
+.alezux-estudiantes-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--alezux-bg-card, #fff);
+    border-radius: 12px;
+    box-shadow: var(--alezux-box-shadow, 0 4px 20px rgba(0, 0, 0, 0.05));
+    padding: 20px;
+}
+
+.alezux-estudiantes-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.alezux-estudiantes-table th {
+    padding: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #888;
+    border-bottom: 1px solid var(--alezux-border-color, #eee);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.alezux-estudiantes-table td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--alezux-border-color, #f5f5f5);
+    color: #333;
+    font-size: 15px;
+}
+
+.alezux-estudiantes-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Column Specifics */
+.col-foto img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.col-nombre {
+    font-weight: 600;
+}
+
+.col-correo {
+    color: #666;
+}
+
+.col-estado span {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.status-inactive {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+.col-funciones .btn-gestionar {
+    background: var(--alezux-primary, #6c5ce7);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.col-funciones .btn-gestionar:hover {
+    background: var(--alezux-primary-hover, #5649c0);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
