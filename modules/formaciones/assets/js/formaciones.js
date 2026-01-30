@@ -183,6 +183,56 @@ jQuery(document).ready(function ($) {
             stopTracking('html5-' + (this.id || 'gen'));
         });
 
+        // --- VdoCipher API Support ---
+        function initVdoCipher() {
+            const vdoIframes = $('iframe[src*="vdocipher.com"]');
+            console.log('Alezux Tracker: Detected VdoCipher Iframes count:', vdoIframes.length);
+
+            if (vdoIframes.length === 0) return;
+
+            // Load VdoCipher API
+            // Check if global VdoPlayer exists
+            if (typeof VdoPlayer === 'undefined') {
+                console.log('Alezux Tracker: Loading VdoCipher API...');
+                $.getScript('https://player.vdocipher.com/v2/api.js')
+                    .done(function () {
+                        console.log('Alezux Tracker: VdoCipher API Loaded');
+                        bindVdoPlayers();
+                    })
+                    .fail(function (jqxhr, settings, exception) {
+                        console.error('Alezux Tracker: VdoCipher API Load Failed', exception);
+                    });
+            } else {
+                console.log('Alezux Tracker: VdoCipher API already present');
+                bindVdoPlayers();
+            }
+
+            function bindVdoPlayers() {
+                vdoIframes.each(function () {
+                    const iframe = this;
+                    const player = new VdoPlayer(iframe);
+
+                    console.log('Alezux Tracker: Binding VdoCipher Player', iframe.src);
+
+                    player.video.addEventListener('play', function () {
+                        console.log('Alezux Tracker Event: VdoCipher Play');
+                        startTracking('vdo-' + (iframe.id || iframe.src));
+                    });
+
+                    player.video.addEventListener('pause', function () {
+                        console.log('Alezux Tracker Event: VdoCipher Pause');
+                        stopTracking('vdo-' + (iframe.id || iframe.src));
+                    });
+
+                    player.video.addEventListener('ended', function () {
+                        console.log('Alezux Tracker Event: VdoCipher Ended');
+                        stopTracking('vdo-' + (iframe.id || iframe.src));
+                    });
+                });
+            }
+        }
+        initVdoCipher();
+
         // --- YouTube API ---
         function onYouTubeIframeAPIReady() {
             $('iframe[src*="youtube.com"], iframe[src*="youtu.be"]').each(function (index) {
