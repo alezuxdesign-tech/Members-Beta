@@ -299,9 +299,20 @@ class Grid_Logros_Widget extends Widget_Base {
 		?>
 		<div class="alezux-logros-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
 			<?php foreach ( $achievements as $logro ) : 
-				$image_url = $logro->image_id ? wp_get_attachment_image_url( $logro->image_id, 'medium' ) : '';
-				if ( ! $image_url ) $image_url = ALEZUX_MEMBERS_URL . 'assets/images/placeholder.jpg'; 
+                // IMAGE HANDLING FIX
+				// Get medium for grid, large for popup
+				$image_url_grid = '';
+				$image_url_popup = '';
+
+				if ( ! empty( $logro->image_id ) ) {
+					$image_url_grid = wp_get_attachment_image_url( $logro->image_id, 'medium' );
+					$image_url_popup = wp_get_attachment_image_url( $logro->image_id, 'large' );
+				}
+
+                // If wp_get_attachment_image_url returns false (invalid ID or deleted), use placeholder
+				if ( ! $image_url_grid ) $image_url_grid = ALEZUX_MEMBERS_URL . 'assets/images/placeholder.jpg'; 
 				
+                // Use default avatar if null
 				$student_data = $logro->student_id ? get_userdata( $logro->student_id ) : null;
 				$student_name = $student_data ? $student_data->display_name : esc_html__( 'Sistema', 'alezux-members' );
 				$student_avatar = get_avatar_url( $logro->student_id ? $logro->student_id : 0 );
@@ -309,7 +320,9 @@ class Grid_Logros_Widget extends Widget_Base {
 				$short_message = mb_strimwidth( strip_tags( $logro->message ), 0, 100, '...' );
 				?>
 				<div class="alezux-logro-card" style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-					<div class="alezux-logro-image" style="height: 150px; background-image: url('<?php echo esc_url( $image_url ); ?>'); background-size: cover; background-position: center; border-radius: 5px; margin-bottom: 10px;"></div>
+					<!-- Use img tag instead of background-image for better compatibility if div has no height content -->
+                    <!-- Or ensure height is set. Code had height: 150px. -->
+					<div class="alezux-logro-image" style="height: 150px; background-image: url('<?php echo esc_url( $image_url_grid ); ?>'); background-size: cover; background-position: center; border-radius: 5px; margin-bottom: 10px; background-color: #f0f0f0;"></div>
 					
 					<div class="alezux-logro-content">
 						<p class="alezux-logro-text"><?php echo esc_html( $short_message ); ?></p>
@@ -322,7 +335,7 @@ class Grid_Logros_Widget extends Widget_Base {
 						<a href="#" class="alezux-logro-view-btn button" 
 						   data-popup-target="#<?php echo esc_attr( $popup_id ); ?>"
 						   data-id="<?php echo esc_attr( $logro->id ); ?>"
-						   data-image="<?php echo esc_url( wp_get_attachment_image_url( $logro->image_id, 'large' ) ); ?>"
+						   data-image="<?php echo esc_url( $image_url_popup ? $image_url_popup : $image_url_grid ); ?>"
 						   data-message="<?php echo esc_attr( $logro->message ); ?>"
 						   data-student="<?php echo esc_attr( $student_name ); ?>"
 						   data-avatar="<?php echo esc_url( $student_avatar ); ?>"
@@ -337,18 +350,71 @@ class Grid_Logros_Widget extends Widget_Base {
 		<!-- Popup Estático para esta instancia -->
 		<div id="<?php echo esc_attr( $popup_id ); ?>" class="alezux-logro-popup-overlay" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9999; justify-content: center; align-items: center; background: rgba(0,0,0,0.8);">
 			<div class="alezux-logro-popup-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 600px; width: 90%; position: relative;">
-				<span class="alezux-popup-close" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px;">&times;</span>
+				<span class="alezux-popup-close" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px; color: #333;">&times;</span>
 				
-				<img class="popup-image-el" src="" style="width: 100%; max-height: 300px; object-fit: cover; margin-bottom: 15px; border-radius: 5px;">
+				<img class="popup-image-el" src="" style="width: 100%; max-height: 300px; object-fit: contain; margin-bottom: 15px; border-radius: 5px; background: #f0f0f0;">
 				
 				<div style="display: flex; align-items: center; margin-bottom: 15px;">
-					<img class="popup-avatar-el" src="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
-					<h4 class="popup-student-el" style="margin: 0;"></h4>
+					<img class="popup-avatar-el" src="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;">
+					<h4 class="popup-student-el" style="margin: 0; font-size: 1.1em;"></h4>
 				</div>
 				
-				<p class="popup-message-el" style="line-height: 1.6;"></p>
+				<p class="popup-message-el" style="line-height: 1.6; color: #444; white-space: pre-wrap;"></p>
 			</div>
 		</div>
+
+        <!-- Inline Script for Popup Logic -->
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+                // Popup Handler for this widget instance
+                var popupId = '#<?php echo esc_js( $popup_id ); ?>';
+                
+                // Open Popup
+                // Use document delegation to potential dynamic content if needed, but instance specific ID is safer to bind directly if element exists
+                // We use delegation on body for the open button click to be sure
+                $('body').on('click', '.alezux-logro-view-btn', function(e) {
+                    
+                    var targetId = $(this).data('popup-target');
+                    
+                    // Verify if this button targets OUR popup
+                    if(targetId !== popupId) return; 
+                    
+                    e.preventDefault();
+
+                    var popup = $(targetId);
+                    var image = $(this).data('image');
+                    var message = $(this).data('message');
+                    var student = $(this).data('student');
+                    var avatar = $(this).data('avatar');
+
+                    // Set Content
+                    if(image) {
+                        popup.find('.popup-image-el').attr('src', image).show();
+                    } else {
+                        popup.find('.popup-image-el').hide();
+                    }
+                    
+                    popup.find('.popup-student-el').text(student);
+                    popup.find('.popup-avatar-el').attr('src', avatar);
+                    popup.find('.popup-message-el').text(message);
+
+                    // Show
+                    popup.css('display', 'flex').hide().fadeIn();
+                });
+
+                // Close Popup
+                $(popupId + ' .alezux-popup-close').on('click', function() {
+                    $(popupId).fadeOut();
+                });
+
+                // Close on click outside
+                $(popupId).on('click', function(e) {
+                    if ($(e.target).is(popupId)) {
+                        $(this).fadeOut();
+                    }
+                });
+            });
+        </script>
 		<?php
 	}
 }
