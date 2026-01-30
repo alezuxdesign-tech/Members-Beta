@@ -303,7 +303,7 @@ class View_Logros_Widget extends Widget_Base {
 					],
 				],
 			'selectors' => [
-					'{{WRAPPER}} .alezux-card-image' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; flex: 0 0 {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-card-image' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; flex: 0 0 {{SIZE}}{{UNIT}}; max-width: 100%;',
 				],
 			]
 		);
@@ -1142,8 +1142,8 @@ class View_Logros_Widget extends Widget_Base {
 					'label' => esc_html__( 'Color', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
-						'{{WRAPPER}} .alezux-logro-form-wrapper h3' => 'color: {{VALUE}};',
-                        '{{WRAPPER}} .alezux-delete-modal-content h3' => 'color: {{VALUE}};',
+						'{{WRAPPER}} .alezux-logro-form-wrapper h3' => 'color: {{VALUE}} !important;',
+                        '{{WRAPPER}} .alezux-delete-modal-content h3' => 'color: {{VALUE}} !important;',
 					],
 				]
 			);
@@ -1155,6 +1155,36 @@ class View_Logros_Widget extends Widget_Base {
 					'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper h3, {{WRAPPER}} .alezux-delete-modal-content h3',
 				]
 			);
+
+            // LABELS
+            $this->add_control(
+				'heading_modal_labels',
+				[
+					'label' => esc_html__( 'Etiquetas (Labels)', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_label_color',
+				[
+					'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-form-group label' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+             $this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'modal_label_typography',
+					'selector' => '{{WRAPPER}} .alezux-logro-form-group label',
+				]
+			);
+
 
             $this->add_control(
 				'heading_modal_inputs',
@@ -1186,6 +1216,46 @@ class View_Logros_Widget extends Widget_Base {
 					],
 				]
 			);
+            
+            $this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'modal_input_typography',
+					'selector' => '{{WRAPPER}} .alezux-logro-input',
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Border::get_type(),
+				[
+					'name' => 'modal_input_border',
+					'selector' => '{{WRAPPER}} .alezux-logro-input',
+				]
+			);
+
+            $this->add_control(
+				'modal_input_radius',
+				[
+					'label' => esc_html__( 'Radio Borde', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', '%' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-input' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
+
+            $this->add_control(
+				'modal_input_padding',
+				[
+					'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', 'em' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-input' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
 
             $this->add_control(
 				'heading_modal_submit',
@@ -1195,6 +1265,23 @@ class View_Logros_Widget extends Widget_Base {
 					'separator' => 'before',
 				]
 			);
+
+            $this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'modal_submit_typography',
+					'selector' => '{{WRAPPER}} .alezux-logro-submit',
+				]
+			);
+
+            $this->start_controls_tabs( 'tabs_modal_submit' );
+
+            $this->start_controls_tab(
+                'tab_modal_submit_normal',
+                [
+                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                ]
+            );
 
             $this->add_control(
 				'modal_submit_bg',
@@ -1215,6 +1302,82 @@ class View_Logros_Widget extends Widget_Base {
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-submit' => 'color: {{VALUE}};',
 					],
+				]
+			);
+
+            $this->end_controls_tab();
+
+            $this->start_controls_tab(
+                'tab_modal_submit_hover',
+                [
+                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                ]
+            );
+
+             $this->add_control(
+				'modal_submit_bg_hover',
+				[
+					'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit:hover' => 'background-color: {{VALUE}};',
+					],
+				]
+			);
+            
+            $this->add_control(
+				'modal_submit_color_hover',
+				[
+					'label' => esc_html__( 'Texto Botón', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit:hover' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->end_controls_tab();
+            
+            $this->end_controls_tabs();
+
+             $this->add_group_control(
+				Group_Control_Border::get_type(),
+				[
+					'name' => 'modal_submit_border',
+					'selector' => '{{WRAPPER}} .alezux-logro-submit',
+					'separator' => 'before',
+				]
+			);
+
+             $this->add_control(
+				'modal_submit_radius',
+				[
+					'label' => esc_html__( 'Radio Borde', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', '%' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
+
+             $this->add_control(
+				'modal_submit_padding',
+				[
+					'label' => esc_html__( 'Relleno', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', 'em' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Box_Shadow::get_type(),
+				[
+					'name' => 'modal_submit_shadow',
+					'selector' => '{{WRAPPER}} .alezux-logro-submit',
 				]
 			);
 
