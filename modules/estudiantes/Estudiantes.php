@@ -27,7 +27,49 @@ class Estudiantes extends Module_Base {
 		add_action( 'wp_ajax_alezux_register_batch_csv', [ $this, 'ajax_register_batch_csv' ] );
 	}
 
-    // ... (rest of existing methods until ajax_search_students)
+	public function register_assets() {
+		wp_enqueue_style( 'alezux-estudiantes-css', plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.0' );
+		wp_enqueue_script( 'alezux-estudiantes-js', plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.0', true );
+
+		wp_localize_script( 'alezux-estudiantes-js', 'alezux_estudiantes_vars', [
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'nonce'    => wp_create_nonce( 'alezux_estudiantes_nonce' ),
+		] );
+	}
+
+	public function register_elementor_widgets( $widgets_manager ) {
+		// Include widget files
+		if ( file_exists( __DIR__ . '/widgets/Estudiantes_Widget.php' ) ) {
+			require_once __DIR__ . '/widgets/Estudiantes_Widget.php';
+			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Estudiantes_Widget() );
+		}
+		
+		if ( file_exists( __DIR__ . '/widgets/Estudiantes_Register_Widget.php' ) ) {
+			require_once __DIR__ . '/widgets/Estudiantes_Register_Widget.php';
+			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Estudiantes_Register_Widget() );
+		}
+
+		if ( file_exists( __DIR__ . '/widgets/Estudiantes_CSV_Widget.php' ) ) {
+			require_once __DIR__ . '/widgets/Estudiantes_CSV_Widget.php';
+			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Estudiantes_CSV_Widget() );
+		}
+	}
+
+	public function shortcode_total_students() {
+		$result = count_users();
+		return $result['total_users'];
+	}
+
+	public function shortcode_new_students_month() {
+		$args = array(
+			'role__in'    => array( 'subscriber', 'student' ),
+			'date_query'  => array(
+				array( 'after' => 'first day of this month' )
+			)
+		);
+		$user_query = new \WP_User_Query( $args );
+		return $user_query->get_total();
+	}
 
 	/**
 	 * AJAX Handler: Buscar estudiantes
