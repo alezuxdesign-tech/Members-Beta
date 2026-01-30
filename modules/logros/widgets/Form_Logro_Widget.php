@@ -290,9 +290,9 @@ class Form_Logro_Widget extends Widget_Base {
 				<div class="alezux-logro-form-group">
 					<label style="display:block; margin-bottom:8px; font-weight:600;"><?php echo esc_html( $settings['label_image'] ); ?></label>
 					<div class="alezux-logro-upload-container">
-						<input type="hidden" id="logro-image-id" name="image_id" value="">
+						<input type="hidden" name="image_id" class="alezux-logro-image-id" value="">
 						
-						<div id="alezux-upload-trigger" class="alezux-upload-box">
+						<div class="alezux-upload-box">
 							
                             <!-- Placeholder State: The Redesigned Upload Area -->
                             <div class="alezux-upload-placeholder">
@@ -312,7 +312,7 @@ class Form_Logro_Widget extends Widget_Base {
 
                             <!-- Preview State -->
 							<div class="alezux-upload-preview" style="display: none;">
-								<img id="alezux-preview-img" src="" alt="Preview">
+								<img class="alezux-preview-img" src="" alt="Preview">
 								<span class="alezux-remove-img" title="Eliminar"><i class="eicon-close"></i></span>
 							</div>
 

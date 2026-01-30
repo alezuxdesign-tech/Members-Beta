@@ -1,102 +1,183 @@
-/* Wrapper del Formulario */
+/* =========================================
+   Alezux Members - Premium Logros Form Styles
+   ========================================= */
+
+/* --- Wrapper & Container --- */
+.alezux-logro-form-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
 .alezux-logro-form {
     display: flex;
     flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    /* Soft Premium Shadow */
+    padding: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .alezux-logro-form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    position: relative;
 }
 
 .alezux-logro-form label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    /* Dark Gray */
+    letter-spacing: 0.02em;
 }
 
-/* Inputs y Selects */
+/* --- Inputs & Textarea --- */
 .alezux-logro-input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 14px 16px;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #1f2937;
+    transition: all 0.3s ease;
     box-sizing: border-box;
-    /* Importante para padding */
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-/* Caja de carga (Upload Box) */
+.alezux-logro-input:focus {
+    background-color: #fff;
+    border-color: #3b82f6;
+    /* Blue-500 */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    /* Focus Ring */
+}
+
+.alezux-logro-input::placeholder {
+    color: #9ca3af;
+}
+
+textarea.alezux-logro-input {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* --- Select Styling Override --- */
+select.alezux-logro-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* --- Upload Box (Premium Design) --- */
 .alezux-upload-box {
-    border: 2px dashed #ccc;
-    background-color: #f9f9f9;
-    border-radius: 12px;
+    border: 2px dashed #d1d5db;
+    background-color: #f8fafc;
+    border-radius: 16px;
     padding: 40px 20px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 200px;
+    min-height: 240px;
+    overflow: hidden;
 }
 
 .alezux-upload-box:hover {
-    background-color: #f0f0f0;
-    border-color: #aaa;
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    transform: translateY(-2px);
 }
 
-/* Contenido del Placeholder */
+/* Drag & Drop Highlight State */
+.alezux-upload-box.drag-over {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    /* light blue bg */
+    transform: scale(1.01);
+}
+
+/* Content Placeholder */
 .alezux-upload-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     width: 100%;
+    z-index: 2;
 }
 
 .alezux-upload-icon i,
 .alezux-upload-icon svg {
-    font-size: 32px;
-    color: #555;
-    margin-bottom: 5px;
+    font-size: 48px;
+    color: #64748b;
+    /* Slate-500 */
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.alezux-upload-box:hover .alezux-upload-icon i {
+    color: #3b82f6;
+    /* Blue on hover */
 }
 
 .alezux-upload-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.4;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.3;
 }
 
 .alezux-upload-subtitle {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
-    color: #777;
-    margin-bottom: 10px;
-    max-width: 80%;
+    color: #64748b;
+    max-width: 280px;
+    line-height: 1.5;
 }
 
-/* Fake Button Look */
+/* Fake Button */
 .alezux-upload-button-wrapper {
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .alezux-upload-btn-fake {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: #0f172a;
     pointer-events: none;
-    /* El click lo recibe la caja */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
-/* Preview de imagen ya subida */
+.alezux-upload-box:hover .alezux-upload-btn-fake {
+    background-color: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+}
+
+/* --- Preview Image --- */
 .alezux-upload-preview {
     position: relative;
     width: 100%;
@@ -104,78 +185,140 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 5;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .alezux-upload-preview img {
-    max-height: 200px;
+    max-height: 220px;
     max-width: 100%;
     object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
+/* Remove Button */
 .alezux-remove-img {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #ff4444;
+    top: -12px;
+    right: -12px;
+    background: #ef4444;
+    /* Red-500 */
     color: #fff;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
     font-size: 14px;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
     z-index: 10;
 }
 
 .alezux-remove-img:hover {
-    background: #cc0000;
+    background: #dc2626;
+    /* Red-600 */
+    transform: scale(1.1) rotate(90deg);
 }
 
-/* Boton Submit */
+/* --- Actions & Submit Button --- */
 .alezux-logro-form-actions {
-    margin-top: 20px;
+    margin-top: 32px;
     display: flex;
     justify-content: flex-end;
-    /* Default align */
 }
 
 .alezux-logro-submit {
-    padding: 12px 24px;
-    background-color: #0073aa;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    /* Blue Gradient */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.025em;
+    position: relative;
+    overflow: hidden;
 }
 
 .alezux-logro-submit:hover {
-    background-color: #005177;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
-/* Mensajes de respuesta */
+.alezux-logro-submit:active {
+    transform: translateY(0);
+}
+
+.alezux-logro-submit:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- Response Messaging --- */
 #alezux-logro-response {
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 14px;
-    padding: 10px;
-    border-radius: 4px;
+    font-weight: 500;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.alezux-success,
+.alezux-error {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .alezux-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: #ecfdf5;
+    /* Green-50 */
+    color: #047857;
+    /* Green-700 */
+    border: 1px solid #a7f3d0;
+    border-left: 4px solid #10b981;
 }
 
 .alezux-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: #fef2f2;
+    /* Red-50 */
+    color: #b91c1c;
+    /* Red-700 */
+    border: 1px solid #fecaca;
+    border-left: 4px solid #ef4444;
 }
