@@ -373,11 +373,17 @@ class Formaciones extends Module_Base {
 
 		$user_id = get_current_user_id();
 		$seconds = isset( $_POST['seconds'] ) ? intval( $_POST['seconds'] ) : 0;
-		$date    = isset( $_POST['date'] ) ? sanitize_text_field( $_POST['date'] ) : date( 'Y-m-d' );
+		
+		// CRITICAL FIX: Use WordPress Local Time instead of Client Time (UTC)
+		// This ensures that "Today" in the chart matches "Today" in the database relative to site settings.
+		$date = current_time( 'Y-m-d' );
 
 		if ( $seconds <= 0 ) {
 			wp_send_json_success(); // No hay nada que guardar
 		}
+
+		// Debug Log to confirm reception
+		error_log( "ALEZUX TRACKER: User $user_id | Seconds: $seconds | Date: $date" );
 
 		// Obtener log actual
 		// Estructura: [ '2023-10-27' => 120, '2023-10-28' => 300 ]
@@ -401,6 +407,6 @@ class Formaciones extends Module_Base {
 
 		update_user_meta( $user_id, 'alezux_study_time_log', $log );
 
-		wp_send_json_success( [ 'logged' => $seconds, 'total_today' => $log[ $date ] ] );
+		wp_send_json_success( [ 'logged' => $seconds, 'total_today' => $log[ $date ], 'date_used' => $date ] );
 	}
 }

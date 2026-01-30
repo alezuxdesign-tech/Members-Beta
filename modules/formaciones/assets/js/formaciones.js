@@ -240,8 +240,7 @@ jQuery(document).ready(function ($) {
             var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
             $.post(ajaxUrl, {
                 action: 'alezux_track_study_time',
-                seconds: sec,
-                date: new Date().toISOString().slice(0, 10)
+                seconds: sec
             });
         }
 
