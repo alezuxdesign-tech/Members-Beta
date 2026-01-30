@@ -1,4 +1,5 @@
 
+
 var AlezuxViewLogrosHandler = function ($scope, $) {
     var container = $scope.find('.alezux-view-logros-wrapper');
 
@@ -8,100 +9,104 @@ var AlezuxViewLogrosHandler = function ($scope, $) {
     }
 
     if (!container.length) return;
-    if (container.data('alezux-initialized')) return; // Prevent double init
 
-    console.log('Alezux Members: Initializing Logros Widget with Cards Layout', container);
+    // Removing strict initialization check to allow re-render update in Editor
+    // OLD: if (container.data('alezux-initialized')) return; 
 
-    // Initial Load - Reset offset or use cached? Better to reset for freshness
-    // But if we want pagination state, we might need to store it. 
-    // For now, simple load.
-    loadLogros(container, false);
+    console.log('Alezux Members: Initializing Logros Widget', container);
 
-    // Search and Filter Events - Scope to container to avoid conflicts
-    container.find('#alezux-logro-search').on('keyup', function () {
+    // Reset global offset for this instance
+    // Note: If multiple widgets exist on same page, global vars are bad. 
+    // Ideally we attach these to the container.data, but refactoring that is bigger.
+    // For now assuming single widget use-case or accepting last-one-wins for global vars.
+    currentOffset = 0;
+
+    // List Container referencing
+    var listContainer = container.find('#alezux-logros-list-container');
+
+    // --- EVENTS (Using off/on to prevent duplicates on re-init) ---
+
+    // Search
+    container.find('#alezux-logro-search').off('keyup').on('keyup', function () {
         delay(function () {
-            loadLogros(container, false); // New Search = Reset List
+            currentOffset = 0;
+            loadLogros(container, false);
         }, 500);
     });
 
-    container.find('#alezux-logro-course-filter').on('change', function () {
-        loadLogros(container, false); // New Filter = Reset List
+    // Filter
+    container.find('#alezux-logro-course-filter').off('change').on('change', function () {
+        currentOffset = 0;
+        loadLogros(container, false);
     });
 
-    // Load More Event
-    container.find('#alezux-load-more-logros').on('click', function (e) {
+    // Load More
+    container.find('#alezux-load-more-logros').off('click').on('click', function (e) {
         e.preventDefault();
-        loadLogros(container, true); // Append = true
+        loadLogros(container, true);
     });
 
-    // Delete Event - Open Modal
-    container.on('click', '.alezux-delete-logro', function (e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        openDeleteModal(id);
-    });
-
-    // Modal Events - Close
-    $('.alezux-modal-close, .alezux-modal-close-btn').off('click').on('click', function (e) {
-        e.preventDefault();
-        $(this).closest('.alezux-modal').fadeOut();
-    });
-
-    // DELETE CONFIRMATION
-    $('#alezux-confirm-delete-btn').off('click').on('click', function (e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        if (id) {
-            deleteLogro(id, container);
-        }
-    });
-
-    // Edit Event - Open Modal
-    container.on('click', '.alezux-edit-logro', function (e) {
+    // Edit Button
+    container.off('click', '.alezux-edit-logro').on('click', '.alezux-edit-logro', function (e) {
         e.preventDefault();
         var id = $(this).data('id');
         openEditModal(id);
     });
 
+    // Delete Button
+    container.off('click', '.alezux-delete-logro').on('click', '.alezux-delete-logro', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        openDeleteModal(id);
+    });
+
+    // Modal Close
+    $('body').off('click', '.alezux-modal-close, .alezux-modal-close-btn').on('click', '.alezux-modal-close, .alezux-modal-close-btn', function (e) {
+        e.preventDefault();
+        $(this).closest('.alezux-modal').fadeOut();
+    });
+
+    // Delete Confirm (Bind globally or to unique ID if possible, avoiding closure issues)
+    // Using body delegation for modals appended to footer/body
+    $('body').off('click', '#alezux-confirm-delete-btn').on('click', '#alezux-confirm-delete-btn', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id'); // Ensure the button gets the ID injected
+        if (id) deleteLogro(id, container);
+    });
+
     // Edit Form Submit
-    $('#alezux-logro-edit-form').off('submit').on('submit', function (e) {
+    $('body').off('submit', '#alezux-logro-edit-form').on('submit', '#alezux-logro-edit-form', function (e) {
         e.preventDefault();
         updateLogro(container);
     });
 
-    // Setup Media Uploader for Edit Modal
+    // Media Uploader
     setupUploadHandler(container);
 
+    // Initial Load calling
+    loadLogros(container, false);
+
+    // Mark as init (optional, mostly for debug now)
     container.data('alezux-initialized', true);
 };
 
-// Global pagination state
+// Global pagination/state vars (Scoped strictly would be better but keeping structure)
 var currentOffset = 0;
-var itemsLimit = 5;
+var itemsLimit = 20;
 var isLoading = false;
 
+// Initialize
+jQuery(window).on('elementor/frontend/init', function () {
+    elementorFrontend.hooks.addAction('frontend/element_ready/alezux_view_logros.default', AlezuxViewLogrosHandler);
+});
+
+// Fallback
 jQuery(document).ready(function ($) {
-
-    // 1. Elementor Hook
-    if (typeof elementorFrontend !== 'undefined') {
-        elementorFrontend.hooks.addAction('frontend/element_ready/alezux_view_logros.default', AlezuxViewLogrosHandler);
-    }
-
-    // 2. Manual Fallback
-    function initWidgets() {
-        $('.elementor-widget-alezux_view_logros').each(function () {
-            AlezuxViewLogrosHandler($(this), $);
-        });
+    if (typeof elementorFrontend === 'undefined') {
         $('.alezux-view-logros-wrapper').each(function () {
-            // Pass wrapper as scope
             AlezuxViewLogrosHandler($(this), $);
         });
     }
-
-    initWidgets();
-
-    // 3. Window Load fallback
-    $(window).on('load', initWidgets);
 });
 
 var delay = (function () {
