@@ -210,24 +210,45 @@ jQuery(document).ready(function ($) {
             function bindVdoPlayers() {
                 vdoIframes.each(function () {
                     const iframe = this;
-                    const player = new VdoPlayer(iframe);
+                    let player;
 
-                    console.log('Alezux Tracker: Binding VdoCipher Player', iframe.src);
+                    try {
+                        // Try to get existing instance first
+                        if (typeof VdoPlayer.getInstance === 'function') {
+                            player = VdoPlayer.getInstance(iframe);
+                        }
+                    } catch (e) { console.warn('VdoCipher getInstance error', e); }
 
-                    player.video.addEventListener('play', function () {
-                        console.log('Alezux Tracker Event: VdoCipher Play');
-                        startTracking('vdo-' + (iframe.id || iframe.src));
-                    });
+                    if (!player) {
+                        console.log('Alezux Tracker: Creating NEW VdoCipher Player instance for', iframe.src);
+                        try {
+                            player = new VdoPlayer(iframe);
+                        } catch (e) {
+                            console.error('Alezux Tracker: Failed to create VdoPlayer', e);
+                            // Fallback: maybe getInstance failed but it exists?
+                            // Just stop here for this iframe to avoid crash
+                            return;
+                        }
+                    } else {
+                        console.log('Alezux Tracker: Using EXISTING VdoCipher Player instance for', iframe.src);
+                    }
 
-                    player.video.addEventListener('pause', function () {
-                        console.log('Alezux Tracker Event: VdoCipher Pause');
-                        stopTracking('vdo-' + (iframe.id || iframe.src));
-                    });
+                    if (player && player.video) {
+                        player.video.addEventListener('play', function () {
+                            console.log('Alezux Tracker Event: VdoCipher Play');
+                            startTracking('vdo-' + (iframe.id || iframe.src));
+                        });
 
-                    player.video.addEventListener('ended', function () {
-                        console.log('Alezux Tracker Event: VdoCipher Ended');
-                        stopTracking('vdo-' + (iframe.id || iframe.src));
-                    });
+                        player.video.addEventListener('pause', function () {
+                            console.log('Alezux Tracker Event: VdoCipher Pause');
+                            stopTracking('vdo-' + (iframe.id || iframe.src));
+                        });
+
+                        player.video.addEventListener('ended', function () {
+                            console.log('Alezux Tracker Event: VdoCipher Ended');
+                            stopTracking('vdo-' + (iframe.id || iframe.src));
+                        });
+                    }
                 });
             }
         }
