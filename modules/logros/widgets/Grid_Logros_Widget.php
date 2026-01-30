@@ -298,9 +298,9 @@ class Grid_Logros_Widget extends Widget_Base {
 
 		?>
 		<div class="alezux-logros-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-			<?php foreach ( $achievements as $logro ) : 
-                // IMAGE HANDLING FIX
-				// Get medium for grid, large for popup
+			// Bucle de logros
+			foreach ( $achievements as $logro ) : 
+				// Obtener datos
 				$image_url_grid = '';
 				$image_url_popup = '';
 
@@ -308,42 +308,64 @@ class Grid_Logros_Widget extends Widget_Base {
 					$image_url_grid = wp_get_attachment_image_url( $logro->image_id, 'medium' );
 					$image_url_popup = wp_get_attachment_image_url( $logro->image_id, 'large' );
 				}
-
-                // If wp_get_attachment_image_url returns false (invalid ID or deleted), use placeholder
-				if ( ! $image_url_grid ) $image_url_grid = ALEZUX_MEMBERS_URL . 'assets/images/placeholder.jpg'; 
 				
-                // Use default avatar if null
+				// Imagen por defecto si no hay
+				// if ( ! $image_url_grid ) $image_url_grid = ALEZUX_MEMBERS_URL . 'assets/images/placeholder.jpg'; 
+				// Nota: Según diseño, si no hay imagen, quizás queramos mostrar solo fondo blanco o un placeholder más sutil.
+				// Dejaremos vacío si no hay imagen para que CSS maneje el fondo blanco.
+
 				$student_data = $logro->student_id ? get_userdata( $logro->student_id ) : null;
 				$student_name = $student_data ? $student_data->display_name : esc_html__( 'Sistema', 'alezux-members' );
 				$student_avatar = get_avatar_url( $logro->student_id ? $logro->student_id : 0 );
 				
-				$short_message = mb_strimwidth( strip_tags( $logro->message ), 0, 100, '...' );
+				$course_title = get_the_title( $logro->course_id );
+				if ( ! $course_title ) $course_title = esc_html__( 'Curso General', 'alezux-members' );
+
+				$date_format = get_option( 'date_format' );
+				$logro_date = date_i18n( $date_format, strtotime( $logro->created_at ) );
+
+				$short_message = mb_strimwidth( strip_tags( $logro->message ), 0, 120, '...' );
 				?>
-				<div class="alezux-logro-card" style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-					<!-- Use img tag instead of background-image for better compatibility if div has no height content -->
-                    <!-- Or ensure height is set. Code had height: 150px. -->
-					<div class="alezux-logro-image" style="height: 150px; background-image: url('<?php echo esc_url( $image_url_grid ); ?>'); background-size: cover; background-position: center; border-radius: 5px; margin-bottom: 10px; background-color: #f0f0f0;"></div>
-					
-					<div class="alezux-logro-content">
-						<p class="alezux-logro-text"><?php echo esc_html( $short_message ); ?></p>
+				
+				<div class="alezux-logro-card-v2">
+					<!-- Sección Superior: Imagen/Fondo Blanco + Badge Curso -->
+					<div class="alezux-card-v2-top" <?php echo $image_url_grid ? 'style="background-image: url(' . esc_url( $image_url_grid ) . ');"' : ''; ?>>
+						<div class="alezux-card-v2-badge">
+							<?php echo esc_html( $course_title ); ?>
+						</div>
+					</div>
+
+					<!-- Sección Inferior: Contenido Oscuro -->
+					<div class="alezux-card-v2-body">
 						
-						<div class="alezux-logro-author" style="display: flex; align-items: center; margin-top: 10px;">
-							<img src="<?php echo esc_url( $student_avatar ); ?>" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-							<span style="font-weight: bold; font-size: 0.9em;"><?php echo esc_html( $student_name ); ?></span>
+						<!-- Mensaje -->
+						<div class="alezux-card-v2-message">
+							<?php echo esc_html( $short_message ); ?>
 						</div>
 
-						<a href="#" class="alezux-logro-view-btn button" 
-						   data-popup-target="#<?php echo esc_attr( $popup_id ); ?>"
-						   data-id="<?php echo esc_attr( $logro->id ); ?>"
-						   data-image="<?php echo esc_url( $image_url_popup ? $image_url_popup : $image_url_grid ); ?>"
-						   data-message="<?php echo esc_attr( $logro->message ); ?>"
-						   data-student="<?php echo esc_attr( $student_name ); ?>"
-						   data-avatar="<?php echo esc_url( $student_avatar ); ?>"
-						   style="display: block; text-align: center; margin-top: 15px; padding: 8px; background: #000; color: #fff; text-decoration: none; border-radius: 5px;">
-							<?php esc_html_e( 'Ver Logro', 'alezux-members' ); ?>
-						</a>
+						<!-- Footer: Estudiante y Botón -->
+						<div class="alezux-card-v2-footer">
+							<div class="alezux-card-v2-student-info">
+								<img src="<?php echo esc_url( $student_avatar ); ?>" alt="<?php echo esc_attr( $student_name ); ?>" class="alezux-card-v2-avatar">
+								<div class="alezux-card-v2-meta">
+									<span class="alezux-card-v2-name"><?php echo esc_html( $student_name ); ?></span>
+									<span class="alezux-card-v2-date"><?php echo esc_html( $logro_date ); ?></span>
+								</div>
+							</div>
+							
+							<a href="#" class="alezux-logro-view-btn alezux-card-v2-btn" 
+							   data-popup-target="#<?php echo esc_attr( $popup_id ); ?>"
+							   data-id="<?php echo esc_attr( $logro->id ); ?>"
+							   data-image="<?php echo esc_url( $image_url_popup ? $image_url_popup : $image_url_grid ); ?>"
+							   data-message="<?php echo esc_attr( $logro->message ); ?>"
+							   data-student="<?php echo esc_attr( $student_name ); ?>"
+							   data-avatar="<?php echo esc_url( $student_avatar ); ?>">
+								<?php esc_html_e( 'Ver logro', 'alezux-members' ); ?>
+							</a>
+						</div>
 					</div>
 				</div>
+
 			<?php endforeach; ?>
 		</div>
 

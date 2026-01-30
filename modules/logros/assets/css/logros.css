@@ -2,7 +2,8 @@
    Alezux Members - Premium Logros Form Styles
    ========================================= */
 
-/* Use Wrapper ID/Class integration to increase specificity without !important */
+/* ... (Estilos previos del formulario se mantienen igual - OMITIDO PARTE SUPERIOR PARA APPEND) ... */
+/* NOTA: Como la herramienta no soporta append fácil sin leer todo, voy a pegar todo el contenido previo MAS los nuevos estilos reemplazando la sección vieja de cartas */
 
 /* Wrapper del Formulario */
 .alezux-logro-form-wrapper {
@@ -274,217 +275,169 @@
 }
 
 /* =========================================
-   NEW CARD LAYOUT STYLES
+   NEW CARD LAYOUT STYLES - DARK/GREEN V2
    ========================================= */
 
-#alezux-logros-list-container {
+.alezux-logro-card-v2 {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-}
-
-.alezux-logro-card {
-    display: flex;
-    background-color: #0f0f0f;
-    /* Dark background as per reference */
-    border-radius: 12px;
-    padding: 20px;
-    gap: 20px;
-    color: #fff;
-    position: relative;
-    border: 1px solid #222;
-}
-
-@media (max-width: 768px) {
-    .alezux-logro-card {
-        flex-direction: column;
-    }
-}
-
-/* Image Column */
-.alezux-card-image {
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
-    background: #fff;
-    border-radius: 8px;
+    border-radius: 14px;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* Para recortar fondos y bordes */
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    background-color: #0f0f0f;
+    /* Fondo oscuro de fallback para el card */
 }
 
-.alezux-card-image img {
+.alezux-logro-card-v2:hover {
+    transform: translateY(-5px);
+}
+
+/* Sección Superior: Imagen o Fondo Blanco */
+.alezux-card-v2-top {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 200px;
+    /* Altura generosa para la parte blanca/imagen */
+    background-color: #ffffff;
+    /* Fondo blanco por defecto */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    /* Para posicionar el badge */
 }
 
-.alezux-card-placeholder-img {
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    /* White placeholder box as per image */
+/* Badge del Curso */
+.alezux-card-v2-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #2ed573;
+    /* Verde brillante tipo diseño */
+    color: #1e1e1e;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
 }
 
-/* Content Column */
-.alezux-card-content {
-    flex-grow: 1;
+/* Sección Inferior: Cuerpo Oscuro */
+.alezux-card-v2-body {
+    background-color: #0d0d0d;
+    /* Negro profundo */
+    padding: 25px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-}
-
-/* Header */
-.alezux-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.alezux-course-badge {
-    background-color: #1a4d2e;
-    /* Dark green bg */
-    color: #4ade80;
-    /* Light green text */
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.alezux-card-date {
-    color: #a1a1aa;
-    font-size: 12px;
-}
-
-/* Message */
-/* Message */
-.alezux-card-message {
-    color: #d1d5db;
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0 0 15px 0;
     flex-grow: 1;
+    color: #e5e5e5;
+}
 
-    /* Truncate text */
+/* Mensaje del Logro */
+.alezux-card-v2-message {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #d1d5db;
+    /* Gris claro */
+    margin-bottom: 25px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* Footer & Actions */
-.alezux-card-footer {
+/* Footer: Datos + Botón */
+.alezux-card-v2-footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    /* Botón alineado abajo */
 }
 
-.alezux-card-student {
+/* Info Estudiante */
+.alezux-card-v2-student-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
-.alezux-student-avatar {
-    width: 24px;
-    height: 24px;
+.alezux-card-v2-avatar {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #3f3f46;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: sandybrown;
-    /* Matches reference icon somewhat */
-    overflow: hidden;
-}
-
-.alezux-student-avatar img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    border-radius: 50%;
+    border: 2px solid #333;
 }
 
-.alezux-student-name {
-    color: #9ca3af;
-    font-size: 13px;
-}
-
-.alezux-card-actions {
+.alezux-card-v2-meta {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    line-height: 1.2;
 }
 
-.alezux-btn-card-action {
-    padding: 6px 16px;
-    border-radius: 6px;
+.alezux-card-v2-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.alezux-card-v2-date {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* Botón Ver Logro */
+.alezux-card-v2-btn {
+    background-color: #1a472a;
+    /* Verde oscuro bosque */
+    color: #ffffff !important;
+    /* Force white text */
+    padding: 10px 20px;
+    border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
-    cursor: pointer;
-    border: none;
+    text-decoration: none;
+    border: 1px solid #2f6f42;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
-.alezux-btn-card-edit {
-    background-color: #1a4d2e;
-    /* Dark green */
-    color: #fff;
-    border: 1px solid #1a4d2e;
+.alezux-card-v2-btn:hover {
+    background-color: #2ed573;
+    /* Verde brillante al hover */
+    color: #0f0f0f !important;
+    border-color: #2ed573;
 }
 
-.alezux-btn-card-edit:hover {
-    background-color: #14532d;
-}
-
-.alezux-btn-card-delete {
-    background-color: #ef4444;
-    /* Red */
-    color: #fff;
-    border: 1px solid #ef4444;
-}
-
-.alezux-btn-card-delete:hover {
-    background-color: #dc2626;
-}
-
-/* =========================================
-   CUSTOM MODALS
-   ========================================= */
+/* Custom Modals (Mantener estilos de modal existentes) */
 
 .alezux-modal {
     display: none;
     position: fixed;
     z-index: 99999;
-    /* Top level */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.7);
-    /* Darker overlay */
     backdrop-filter: blur(5px);
     display: flex;
-    /* Flex to center */
     align-items: center;
-    /* Vertical center */
     justify-content: center;
-    /* Horizontal center */
 }
 
-/* IMPORTANT: Override flex display for jQuery fadeIn/Out which sets display:block */
 .alezux-modal[style*="display: block"] {
     display: flex !important;
 }
 
-/* Delete Modal Specifics */
 .alezux-delete-modal-content {
     background-color: #18181b;
-    /* Dark bg */
     color: #fff;
     border-radius: 16px;
     padding: 40px 30px;
@@ -495,7 +448,6 @@
     border: 1px solid #27272a;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     margin: auto;
-    /* For flex centering fallback */
 }
 
 .alezux-delete-icon {
@@ -550,7 +502,6 @@
     background: #dc2626;
 }
 
-/* Centering overrides to ensure modales are always centered */
 .alezux-modal-content {
     margin: auto;
 }
