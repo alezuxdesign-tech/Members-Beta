@@ -277,6 +277,18 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'color: {{VALUE}};',
+					// El icono hereda del texto salvo que se sobrescriba
+					'{{WRAPPER}} .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_icon_color',
+			[
+				'label' => esc_html__( 'Color Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-icon' => 'color: {{VALUE}};',
 				],
 			]
@@ -309,6 +321,18 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link:hover' => 'color: {{VALUE}};',
+					// El icono hereda del texto hover salvo que se sobrescriba
+					'{{WRAPPER}} .alezux-menu-admin-item-link:hover .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_icon_color_hover',
+			[
+				'label' => esc_html__( 'Color Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link:hover .alezux-menu-admin-icon' => 'color: {{VALUE}};',
 				],
 			]
@@ -341,6 +365,18 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active' => 'color: {{VALUE}};',
+					// El icono hereda del texto activo salvo que se sobrescriba
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_icon_color_active',
+			[
+				'label' => esc_html__( 'Color Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon' => 'color: {{VALUE}};',
 				],
 			]
