@@ -880,9 +880,13 @@ class View_Logros_Widget extends Widget_Base {
 				</select>
 			</div>
 
+			<?php
+			$show_image = ( ! empty( $settings['show_image'] ) && 'yes' === $settings['show_image'] ) ? 'yes' : 'no';
+			$image_size = ! empty( $settings['image_resolution'] ) ? $settings['image_resolution'] : 'medium';
+			?>
 			<div id="alezux-logros-list-container" 
-				 data-show-image="<?php echo esc_attr( $settings['show_image'] ?? 'yes' ); ?>"
-				 data-image-size="<?php echo esc_attr( $settings['image_resolution'] ?? 'medium' ); ?>">
+				 data-show-image="<?php echo esc_attr( $show_image ); ?>"
+				 data-image-size="<?php echo esc_attr( $image_size ); ?>">
 				<!-- La lista de tarjetas se cargará vía AJAX -->
 				<div class="alezux-loading"><?php esc_html_e( 'Cargando registros...', 'alezux-members' ); ?></div>
 			</div>

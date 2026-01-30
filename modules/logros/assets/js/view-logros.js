@@ -147,7 +147,10 @@ function loadLogros(container, append) {
             course_id: course_id,
             limit: itemsLimit,
             offset: currentOffset,
-            image_size: listContainer.data('image-size') || 'medium' // Pass requested size
+            image_size: listContainer.data('image-size') || 'medium'
+        },
+        beforeSend: function () {
+            console.log('Alezux: Requesting achievements. Image Size:', listContainer.data('image-size'), 'Show Image:', listContainer.data('show-image'));
         },
         success: function (response) {
             console.log('Alezux: AJAX Response:', response);
