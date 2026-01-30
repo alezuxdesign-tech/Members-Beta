@@ -432,7 +432,16 @@ class Form_Logro_Widget extends Widget_Base {
 			]
 		);
 
-		// General Box Style
+		$this->start_controls_tabs( 'tabs_upload_box_style' );
+
+		// -- NORMAL STATE --
+		$this->start_controls_tab(
+			'tab_upload_box_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
 		$this->add_control(
 			'upload_bg_color', 
 			[
@@ -443,18 +452,83 @@ class Form_Logro_Widget extends Widget_Base {
 				]
 			]
 		);
+
 		$this->add_group_control(
 			Group_Control_Border::get_type(), 
 			[
 				'name' => 'upload_border', 
 				'selector' => '{{WRAPPER}} .alezux-upload-box', 
-				'defaults' => [
-					'border' => 'dashed', 
-					'width' => ['top'=>2,'right'=>2,'bottom'=>2,'left'=>2], 
-					'color'=>'#cccccc'
+			]
+		);
+
+		$this->add_control(
+			'upload_icon_color', 
+			[
+				'label' => 'Color Icono', 
+				'type' => Controls_Manager::COLOR, 
+				'selectors' => [
+					'{{WRAPPER}} .alezux-upload-icon i' => 'color: {{VALUE}}; fill: {{VALUE}};',
+					'{{WRAPPER}} .alezux-upload-icon svg' => 'fill: {{VALUE}};'
+				],
+				'separator' => 'before'
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// -- HOVER STATE --
+		$this->start_controls_tab(
+			'tab_upload_box_hover',
+			[
+				'label' => esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'upload_bg_color_hover', 
+			[
+				'label' => 'Fondo Hover', 
+				'type' => Controls_Manager::COLOR, 
+				'selectors' => [
+					'{{WRAPPER}} .alezux-upload-box:hover' => 'background-color: {{VALUE}};'
 				]
 			]
 		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(), 
+			[
+				'name' => 'upload_border_hover', 
+				'selector' => '{{WRAPPER}} .alezux-upload-box:hover', 
+			]
+		);
+
+		$this->add_control(
+			'upload_icon_color_hover', 
+			[
+				'label' => 'Color Icono Hover', 
+				'type' => Controls_Manager::COLOR, 
+				'selectors' => [
+					'{{WRAPPER}} .alezux-upload-box:hover .alezux-upload-icon i' => 'color: {{VALUE}}; fill: {{VALUE}};',
+					'{{WRAPPER}} .alezux-upload-box:hover .alezux-upload-icon svg' => 'fill: {{VALUE}};'
+				],
+				'separator' => 'before'
+			]
+		);
+
+		$this->add_control(
+			'upload_hover_animation',
+			[
+				'label' => esc_html__( 'Animación Hover', 'alezux-members' ),
+				'type' => Controls_Manager::HOVER_ANIMATION,
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// Shared Styles (outside tabs)
 		$this->add_control(
 			'upload_border_radius', 
 			[
@@ -462,7 +536,8 @@ class Form_Logro_Widget extends Widget_Base {
 				'type'=>Controls_Manager::DIMENSIONS, 
 				'selectors'=>[
 					'{{WRAPPER}} .alezux-upload-box'=>'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};'
-				]
+				],
+				'separator' => 'before'
 			]
 		);
 		$this->add_responsive_control(
@@ -476,46 +551,36 @@ class Form_Logro_Widget extends Widget_Base {
 			]
 		);
 
-		// Icon Style
-		$this->add_control(
-			'heading_upload_icon', 
-			[
-				'label' => 'Icono', 
-				'type' => Controls_Manager::HEADING, 
-				'separator' => 'before'
-			]
-		);
-		$this->add_control(
-			'upload_icon_color', 
-			[
-				'label' => 'Color Icono', 
-				'type' => Controls_Manager::COLOR, 
-				'selectors' => [
-					'{{WRAPPER}} .alezux-upload-icon i' => 'color: {{VALUE}};'
-				]
-			]
-		);
 		$this->add_control(
 			'upload_icon_size', 
 			[
 				'label' => 'Tamaño Icono', 
 				'type' => Controls_Manager::SLIDER, 
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 100,
+					],
+				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-upload-icon' => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .alezux-upload-icon i' => 'font-size: {{SIZE}}{{UNIT}};'
-				]
+					'{{WRAPPER}} .alezux-upload-icon i' => 'font-size: {{SIZE}}{{UNIT}}; width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-upload-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};'
+				],
+				'separator' => 'before'
 			]
 		);
 
-		// Title Style
+		// Title Styles
 		$this->add_control(
-			'heading_upload_title', 
+			'heading_upload_text_style', 
 			[
-				'label' => 'Título', 
+				'label' => 'Textos (Título/Subtítulo)', 
 				'type' => Controls_Manager::HEADING, 
 				'separator' => 'before'
 			]
 		);
+
 		$this->add_control(
 			'upload_title_color', 
 			[
@@ -534,15 +599,6 @@ class Form_Logro_Widget extends Widget_Base {
 			]
 		);
 
-		// Subtitle Style
-		$this->add_control(
-			'heading_upload_subtitle', 
-			[
-				'label' => 'Subtítulo', 
-				'type' => Controls_Manager::HEADING, 
-				'separator' => 'before'
-			]
-		);
 		$this->add_control(
 			'upload_subtitle_color', 
 			[
@@ -560,6 +616,7 @@ class Form_Logro_Widget extends Widget_Base {
 				'selector' => '{{WRAPPER}} .alezux-upload-subtitle'
 			]
 		);
+
 
 		// Fake Button Style
 		$this->add_control(
