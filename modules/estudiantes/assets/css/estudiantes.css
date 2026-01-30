@@ -236,3 +236,121 @@
 .alezux-estudiantes-pagination .page-link.next i {
     margin-left: 5px;
 }
+
+/* =========================================
+   Nuevos Widgets Styles (Registro & CSV)
+   ========================================= */
+
+/* Manual Register Form Base */
+.alezux-register-form {
+    background: var(--alezux-bg-card, #1a1a1a);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--alezux-border-color, #2a2a2a);
+}
+
+.alezux-register-title,
+.alezux-csv-title {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.alezux-form-group {
+    margin-bottom: 20px;
+}
+
+.alezux-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #ccc;
+    font-weight: 500;
+}
+
+.alezux-form-control {
+    width: 100%;
+    padding: 12px 15px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.alezux-form-control:focus {
+    border-color: var(--alezux-primary, #6c5ce7);
+    background: #252525;
+}
+
+.alezux-register-submit {
+    padding: 12px 24px;
+    background: var(--alezux-primary, #6c5ce7);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.alezux-register-submit:hover {
+    filter: brightness(1.1);
+}
+
+.alezux-register-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* CSV Upload Box */
+.alezux-csv-upload-box {
+    border: 2px dashed #444;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #222;
+    transition: all 0.3s ease;
+    color: #888;
+}
+
+.alezux-csv-upload-box:hover,
+.alezux-csv-upload-box.dragover {
+    border-color: var(--alezux-primary, #6c5ce7);
+    background: #2a2a2a;
+    color: #fff;
+}
+
+.alezux-upload-title {
+    margin: 0 0 5px;
+    font-size: 16px;
+    color: inherit;
+}
+
+.alezux-upload-subtitle {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* Progress Bar */
+.alezux-progress-bar {
+    position: relative;
+    width: 100%;
+    background: #333;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.alezux-progress-fill {
+    height: 100%;
+    background: var(--alezux-primary, #6c5ce7);
+    width: 0%;
+    transition: width 0.3s ease;
+}

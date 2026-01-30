@@ -165,5 +165,237 @@ jQuery(document).ready(function($) {
         alert('Gestionar estudiante ID: ' + id + ' (Próximamente modal)');
     });
 
+
+    /**
+     * ================================
+     * Lógica de Registro Manual
+     * ================================
+     */
+    $('#alezux-manual-register-form').on('submit', function(e) {
+        e.preventDefault();
+        var $form = $(this);
+        var $btn  = $form.find('button[type="submit"]');
+        var $msg  = $form.find('.alezux-form-message');
+        var $spinner = $btn.find('i.fa-spinner');
+
+        $btn.prop('disabled', true);
+        $spinner.show();
+        $msg.html('');
+
+        var formData = {
+            action: 'alezux_register_student',
+            nonce: nonce,
+            first_name: $form.find('input[name="first_name"]').val(),
+            last_name:  $form.find('input[name="last_name"]').val(),
+            email:      $form.find('input[name="email"]').val(),
+            course_id:  $form.find('select[name="course_id"]').val()
+        };
+
+        $.ajax({
+            url: ajax_url,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $msg.html('<div style="color: green; margin-top: 10px;">' + response.data.message + '</div>');
+                    $form[0].reset();
+                } else {
+                    $msg.html('<div style="color: red; margin-top: 10px;">' + response.data.message + '</div>');
+                }
+            },
+            error: function() {
+                $msg.html('<div style="color: red; margin-top: 10px;">Error de conexión.</div>');
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                $spinner.hide();
+            }
+        });
+    });
+
+
+    /**
+     * ================================
+     * Lógica de Registro Masivo (CSV)
+     * ================================
+     */
+    var $dropzone = $('#alezux-csv-dropzone');
+    var $fileInput = $('#alezux-csv-file-input');
+    var $progressContainer = $('#alezux-csv-progress-container');
+    var $progressBarFill = $progressContainer.find('.alezux-progress-fill');
+    var $statusText = $progressContainer.find('.status-text');
+    var $statusCount = $progressContainer.find('.status-count');
+    var $report = $('#alezux-csv-report');
+
+    // Drag & Drop UI
+    $dropzone.on('dragover', function(e) {
+        e.preventDefault();
+        $(this).addClass('dragover');
+    });
+    $dropzone.on('dragleave drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('dragover');
+    });
+    $dropzone.on('click', function() {
+        $fileInput.click();
+    });
+
+    // File Selection
+    $dropzone.on('drop', function(e) {
+        var files = e.originalEvent.dataTransfer.files;
+        if (files.length) handleCSVFile(files[0]);
+    });
+    $fileInput.on('change', function(e) {
+        if (this.files.length) handleCSVFile(this.files[0]);
+    });
+
+    function handleCSVFile(file) {
+        if (file.type !== "text/csv" && file.type !== "application/vnd.ms-excel" && !file.name.match(/\.csv$/i)) {
+            alert("Por favor sube un archivo CSV válido.");
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var text = e.target.result;
+            var students = parseCSV(text);
+            
+            if (students.length === 0) {
+                alert("El archivo CSV parece estar vacío o mal formateado.");
+                return;
+            }
+
+            if (confirm("Se encontraron " + students.length + " estudiantes. ¿Iniciar importación?")) {
+                startBatchProcess(students);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // Simple CSV Parser (Nombre, Apellido, Email)
+    function parseCSV(text) {
+        var lines = text.split(/\r\n|\n/);
+        var students = [];
+        
+        // Detectar si hay header (si la primera linea tiene 'email' o 'correo')
+        var startIndex = 0;
+        if (lines[0] && (lines[0].toLowerCase().includes('email') || lines[0].toLowerCase().includes('correo'))) {
+            startIndex = 1;
+        }
+
+        for (var i = startIndex; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line) continue;
+            
+            // Separar por coma o punto y coma
+            var parts = line.split(/,|;/);
+            if (parts.length >= 3) {
+                // Asumimos formato: Nombre, Apellido, Email
+                var first = parts[0].trim().replace(/^"|"$/g, '');
+                var last  = parts[1].trim().replace(/^"|"$/g, '');
+                var email = parts[2].trim().replace(/^"|"$/g, '');
+                
+                if (email && email.includes('@')) {
+                    students.push({
+                        first_name: first,
+                        last_name: last,
+                        email: email
+                    });
+                }
+            }
+        }
+        return students;
+    }
+
+    // Batch Queue System
+    function startBatchProcess(students) {
+        var courseId = $('#alezux-csv-course-select').val();
+        var batchSize = 5; // 5 correos por lote
+        var total = students.length;
+        var processed = 0;
+        var successCount = 0;
+        var errors = [];
+
+        $progressContainer.show();
+        $report.html('');
+        $progressBarFill.css('width', '0%');
+        updateStatus("Iniciando cola...", 0, total);
+
+        // Recursive Batch Function
+        function processNextBatch() {
+            if (processed >= total) {
+                finishProcess(successCount, total, errors);
+                return;
+            }
+
+            var batch = students.slice(processed, processed + batchSize);
+            
+            updateStatus("Enviando lote...", processed, total);
+
+            $.ajax({
+                url: ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_register_batch_csv',
+                    nonce: nonce,
+                    students: batch,
+                    course_id: courseId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        processed += parseInt(response.data.processed);
+                        successCount += parseInt(response.data.success);
+                        if (response.data.errors && response.data.errors.length) {
+                            errors = errors.concat(response.data.errors);
+                        }
+                    } else {
+                        // Si falla todo el lote, contamos como procesados pero con error
+                        processed += batch.length;
+                        errors.push("Error de lote: " + (response.data.message || "Desconocido"));
+                    }
+                    
+                    var percent = Math.round((processed / total) * 100);
+                    $progressBarFill.css('width', percent + '%');
+                    updateStatus("Procesando...", processed, total);
+
+                    // Esperar 500ms antes del siguiente lote para no saturar
+                    setTimeout(processNextBatch, 500);
+                },
+                error: function() {
+                    processed += batch.length;
+                    errors.push("Error de conexión en lote.");
+                    setTimeout(processNextBatch, 1000);
+                }
+            });
+        }
+
+        processNextBatch();
+    }
+
+    function updateStatus(text, current, total) {
+        $statusText.text(text);
+        $statusCount.text(current + '/' + total);
+    }
+
+    function finishProcess(success, total, errors) {
+        $progressBarFill.css('width', '100%');
+        $progressBarFill.css('background-color', '#4CAF50'); // Green
+        updateStatus("¡Proceso completado!", total, total);
+        
+        var reportHtml = "<div><strong>Resumen:</strong> " + success + " registrados exitosamente.</div>";
+        if (errors.length > 0) {
+            reportHtml += "<div style='color:#ff6b6b; margin-top:5px;'><strong>Errores (" + errors.length + "):</strong><br>";
+            $.each(errors, function(i, err) {
+                reportHtml += "- " + err + "<br>";
+            });
+            reportHtml += "</div>";
+        }
+        $report.html(reportHtml);
+        
+        alert("Proceso finalizado.\nEnviados: " + success + "\nErrores: " + errors.length);
+        $fileInput.val(''); // Reset input
+    }
+
+
 });
 ```

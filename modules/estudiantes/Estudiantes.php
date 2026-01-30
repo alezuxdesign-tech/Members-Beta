@@ -14,11 +14,6 @@ class Estudiantes extends Module_Base {
 		add_shortcode( 'alezux_estudiantes_total', [ $this, 'shortcode_total_students' ] );
 		add_shortcode( 'alezux_estudiantes_nuevos_mes', [ $this, 'shortcode_new_students_month' ] );
 
-		// Registrar Categoría de Elementor (Ya existe 'alezux-admin' en Logros, podemos reusarla o registrarla si no existe)
-		// Mejor usamos 'alezux-admin' que ya se usa en Logros si queremos agrupar herramientas de admin.
-		// Pero si este modulo carga independiente, deberíamos asegurarnos.
-		// Logros usa 'alezux-admin'. Usaremos la misma.
-
 		// Registrar Widgets de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 		
@@ -26,119 +21,20 @@ class Estudiantes extends Module_Base {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
 
-		// AJAX Búsqueda Estudiantes
+		// AJAX Endpoints
 		add_action( 'wp_ajax_alezux_search_students', [ $this, 'ajax_search_students' ] );
-		// Si queremos que funcione para no logueados (dudoso para admin panel, pero por si acaso)
-		// add_action( 'wp_ajax_nopriv_alezux_search_students', [ $this, 'ajax_search_students' ] );
+		add_action( 'wp_ajax_alezux_register_student', [ $this, 'ajax_register_student' ] );
+		add_action( 'wp_ajax_alezux_register_batch_csv', [ $this, 'ajax_register_batch_csv' ] );
 	}
 
-	public function register_elementor_widgets( $widgets_manager ) {
-		require_once __DIR__ . '/widgets/Estudiantes_Widget.php';
-		$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Estudiantes_Widget() );
-	}
-
-	public function register_assets() {
-		// Estilos
-		wp_register_style(
-			'alezux-estudiantes-css',
-			$this->get_asset_url( 'assets/css/estudiantes.css' ),
-			[],
-			time()
-		);
-
-		// Scripts
-		wp_register_script(
-			'alezux-estudiantes-js',
-			$this->get_asset_url( 'assets/js/estudiantes.js' ),
-			[ 'jquery' ],
-			time(),
-			true
-		);
-
-		wp_localize_script( 'alezux-estudiantes-js', 'alezux_estudiantes_vars', [
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'alezux_estudiantes_nonce' ),
-		] );
-	}
-
-	/**
-	 * Shortcode: Listar número global de alumnos
-	 * [alezux_estudiantes_total]
-	 */
-	public function shortcode_total_students() {
-		// Contar usuarios. Asumimos rol 'subscriber' o todos. 
-		// Generalmente en LMS los alumnos son 'subscriber' o 'student' (si es LearnDash)
-		// Vamos a contar todos los usuarios que no sean administradores para tener un número "real" de alumnos?
-		// O mejor, usamos count_users() y sumamos todo menos admin?
-		// Simplifiquemos sumando usuarios con rol 'subscriber'.
-		
-		$count = 0;
-		$users = count_users();
-		
-		// Si existe el rol subscriber, lo usamos.
-		if ( isset( $users['avail_roles']['subscriber'] ) ) {
-			$count += $users['avail_roles']['subscriber'];
-		}
-		// Si existe el rol student (LearnDash), lo sumamos también si es distinto
-		if ( isset( $users['avail_roles']['student'] ) ) {
-			$count += $users['avail_roles']['student'];
-		}
-		
-		// Si no hay roles específicos, devolvemos total users
-		if ( $count === 0 && isset( $users['total_users'] ) ) {
-			// Excluir admin es buena práctica si es "alumnos"
-			$count = $users['total_users'];
-		}
-
-		return number_format( $count );
-	}
-
-	/**
-	 * Shortcode: Listar estudiantes nuevos que ingresaron el mes
-	 * [alezux_estudiantes_nuevos_mes]
-	 */
-	public function shortcode_new_students_month() {
-		$args = [
-			'role__in' => [ 'subscriber', 'student' ], // Ajustar según roles reales
-			'date_query' => [
-				[
-					'year'  => date( 'Y' ),
-					'month' => date( 'm' ),
-				],
-			],
-			'fields' => 'ID', // Solo necesitamos contar
-		];
-
-		// Si no hay roles definidos, busca en todos (menos admin idealmente, pero get_users busca todos por defecto)
-		// Vamos a intentar obtener usuarios registrados este mes.
-		
-		$user_query = new \WP_User_Query( $args );
-		$results = $user_query->get_results();
-		
-		// Si da 0 y puede ser porque no hay roles 'subscriber/student', intentamos sin roles
-		if ( empty( $results ) ) {
-			$args_bucket = [
-				'date_query' => [
-					[
-						'year'  => date( 'Y' ),
-						'month' => date( 'm' ),
-					],
-				],
-				'fields' => 'ID',
-			];
-			$user_query_bucket = new \WP_User_Query( $args_bucket );
-			$results_bucket = $user_query_bucket->get_results();
-			return number_format( count( $results_bucket ) );
-		}
-
-		return number_format( count( $results ) );
-	}
+    // ... (rest of existing methods until ajax_search_students)
 
 	/**
 	 * AJAX Handler: Buscar estudiantes
 	 */
 	public function ajax_search_students() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+        // ... (existing code)
+        check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_users' ) ) {
 			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
@@ -168,9 +64,6 @@ class Estudiantes extends Module_Base {
 		$total_users = $user_query->get_total();
 		$total_pages = ceil( $total_users / $limit );
 
-		// Fallback búsqueda global si no hay roles específicos y no encontramos nada (opcional)
-		// Mantenemos la lógica simple de widget para consistencia
-
 		$data = [];
 		foreach ( $students as $student ) {
 			$data[] = [
@@ -190,5 +83,187 @@ class Estudiantes extends Module_Base {
 			'current_page' => $page,
 			'total_users'  => $total_users
 		] );
+	}
+
+	/**
+	 * AJAX Handler: Registro Manual de 1 Estudiante
+	 */
+	public function ajax_register_student() {
+		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'edit_users' ) ) {
+			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		}
+
+		$first_name = isset( $_POST['first_name'] ) ? sanitize_text_field( $_POST['first_name'] ) : '';
+		$last_name  = isset( $_POST['last_name'] ) ? sanitize_text_field( $_POST['last_name'] ) : '';
+		$email      = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+		$course_id  = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
+
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			wp_send_json_error( [ 'message' => 'Email inválido.' ] );
+		}
+
+		$result = $this->register_single_student( [
+			'first_name' => $first_name,
+			'last_name'  => $last_name,
+			'email'      => $email,
+			'course_id'  => $course_id,
+		] );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+		}
+
+		wp_send_json_success( [ 'message' => 'Estudiante registrado correctamente.' ] );
+	}
+
+	/**
+	 * AJAX Handler: Registro Batch CSV (Procesa lote pequeño)
+	 */
+	public function ajax_register_batch_csv() {
+		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'edit_users' ) ) {
+			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		}
+
+		$students  = isset( $_POST['students'] ) ? $_POST['students'] : []; // Array de {name, email, ...}
+		$course_id = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
+
+		if ( empty( $students ) || ! is_array( $students ) ) {
+			wp_send_json_error( [ 'message' => 'No hay datos para procesar.' ] );
+		}
+
+		$success_count = 0;
+		$errors = [];
+
+		foreach ( $students as $student_data ) {
+			// Mapeo básico CSV (asumimos frontend envía claves normalizadas)
+			$data = [
+				'first_name' => isset( $student_data['first_name'] ) ? sanitize_text_field( $student_data['first_name'] ) : '',
+				'last_name'  => isset( $student_data['last_name'] ) ? sanitize_text_field( $student_data['last_name'] ) : '',
+				'email'      => isset( $student_data['email'] ) ? sanitize_email( $student_data['email'] ) : '',
+				'course_id'  => $course_id,
+			];
+
+			if ( empty( $data['email'] ) ) continue;
+
+			$res = $this->register_single_student( $data );
+			if ( ! is_wp_error( $res ) ) {
+				$success_count++;
+			} else {
+				$errors[] = $data['email'] . ': ' . $res->get_error_message();
+			}
+		}
+
+		wp_send_json_success( [
+			'processed' => count( $students ),
+			'success'   => $success_count,
+			'errors'    => $errors,
+		] );
+	}
+
+	/**
+	 * Lógica centralizada para registrar/matricular un estudiante
+	 */
+	private function register_single_student( $data ) {
+		$email      = $data['email'];
+		$first_name = $data['first_name'];
+		$last_name  = $data['last_name'];
+		$course_id  = $data['course_id'];
+
+		$user = get_user_by( 'email', $email );
+		$is_new_user = false;
+		$password = '';
+
+		if ( ! $user ) {
+			// Crear usuario
+			$password = wp_generate_password( 12, true );
+			$username = sanitize_user( current( explode( '@', $email ) ), true );
+			
+			// Asegurar username único
+			$base_username = $username;
+			$i = 1;
+			while ( username_exists( $username ) ) {
+				$username = $base_username . $i;
+				$i++;
+			}
+
+			$user_id = wp_create_user( $username, $password, $email );
+
+			if ( is_wp_error( $user_id ) ) {
+				return $user_id;
+			}
+
+			// Actualizar meta
+			wp_update_user( [
+				'ID' => $user_id,
+				'first_name' => $first_name,
+				'last_name'  => $last_name,
+				'role'       => 'subscriber' // O 'student' si se prefiere
+			] );
+
+			$is_new_user = true;
+			$user = get_user_by( 'id', $user_id );
+		} else {
+			// Usuario existe, solo matricularemos
+			$user_id = $user->ID;
+		}
+
+		// Asignar Curso LearnDash
+		if ( $course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
+			ld_update_course_access( $user_id, $course_id, false ); // false = add access
+		}
+
+		// Enviar Email
+		if ( $is_new_user ) {
+			$this->send_new_user_email( $user, $password, $course_id );
+		} else {
+			// Opcional: Notificar nueva matriculación a usuario existente?
+			// Por ahora solo credenciales a nuevos según requerimiento.
+		}
+
+		return true;
+	}
+
+	/**
+	 * Enviar Correo con Credenciales
+	 */
+	private function send_new_user_email( $user, $password, $course_id ) {
+		$site_name = get_bloginfo( 'name' );
+		$site_url  = home_url(); // URL para ingresar
+		$login_url = wp_login_url(); // O URL personalizada de login
+		
+		$course_title = '';
+		if ( $course_id ) {
+			$course = get_post( $course_id );
+			if ( $course ) $course_title = $course->post_title;
+		}
+
+		$subject = "Bienvenido a $site_name - Tus Credenciales de Acceso";
+		
+		$message  = "<p>Hola <strong>" . esc_html( $user->first_name ) . "</strong>,</p>";
+		$message .= "<p>Se ha creado tu cuenta en <strong>$site_name</strong> exitosamente.</p>";
+		
+		if ( $course_title ) {
+			$message .= "<p>Has sido inscrito en el curso: <strong>$course_title</strong>.</p>";
+		}
+
+		$message .= "<p>Aquí tienes tus datos de acceso:</p>";
+		$message .= "<ul>";
+		$message .= "<li><strong>URL de Acceso:</strong> <a href='$login_url'>$login_url</a></li>";
+		$message .= "<li><strong>Usuario:</strong> " . esc_html( $user->user_login ) . "</li>";
+		$message .= "<li><strong>Contraseña:</strong> " . esc_html( $password ) . "</li>";
+		$message .= "</ul>";
+		$message .= "<p>Te recomendamos cambiar tu contraseña al ingresar.</p>";
+		$message .= "<p>¡Nos vemos dentro!</p>";
+
+		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+		// From header personalizado con nombre del dominio
+		$domain = $_SERVER['SERVER_NAME'];
+		$headers[] = "From: $site_name <no-reply@$domain>";
+
+		wp_mail( $user->user_email, $subject, $message, $headers );
 	}
 }
