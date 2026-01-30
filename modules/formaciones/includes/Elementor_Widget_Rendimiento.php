@@ -317,10 +317,29 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         $is_editor = \Elementor\Plugin::$instance->editor->is_edit_mode();
         
         // --- DATA FETCHING ---
+        // --- DATA FETCHING (SQL) ---
         $log = [];
         if ( is_user_logged_in() ) {
-            $log = get_user_meta( $user_id, 'alezux_study_time_log', true );
-            if ( ! is_array( $log ) ) $log = [];
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'alezux_study_log';
+            $six_days_ago = date('Y-m-d', strtotime('-6 days'));
+            
+            // Query: Sum seconds per day for this user, from 6 days ago until now
+            $results = $wpdb->get_results( $wpdb->prepare(
+                "SELECT date, SUM(seconds) as total_seconds 
+                 FROM $table_name 
+                 WHERE user_id = %d 
+                 AND date >= %s 
+                 GROUP BY date",
+                $user_id,
+                $six_days_ago
+            ) );
+
+            if ( $results ) {
+                foreach ( $results as $row ) {
+                    $log[ $row->date ] = (int) $row->total_seconds;
+                }
+            }
         } else if ( $is_editor ) {
             // Mock data for editor
             $today = date('Y-m-d');

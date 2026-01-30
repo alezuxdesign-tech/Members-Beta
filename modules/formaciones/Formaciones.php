@@ -82,6 +82,7 @@ class Formaciones extends Module_Base {
 
 		wp_localize_script( 'alezux-formaciones-js', 'alezux_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'post_id'  => get_the_ID(),
 		] );
 	}
 

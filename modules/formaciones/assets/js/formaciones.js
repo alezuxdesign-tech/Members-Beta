@@ -84,24 +84,41 @@ jQuery(document).ready(function ($) {
      * Supports HTML5, YouTube (API), Vimeo (API), and generic Iframe interaction.
      */
     (function () {
-        let activeSeconds = 0;
-        let accumulatedSeconds = 0;
-        let isPlaying = false;
-        let lastSyncTime = Date.now();
-        const SYNC_INTERVAL = 30000; // 30 seconds
-
-        // State tracking
+        // --- Alezux Time Tracker (SQL - Event Driven) ---
+        let startTime = 0;
+        let accumulatedTime = 0;
+        let isTracking = false;
         let activeSources = new Set();
 
+        function startTracking(source) {
+            if (!activeSources.has(source)) {
+                activeSources.add(source);
+                if (!isTracking) {
+                    isTracking = true;
+                    startTime = Date.now();
+                }
+            }
+        }
+
+        function stopTracking(source) {
+            if (activeSources.has(source)) {
+                activeSources.delete(source);
+                if (activeSources.size === 0 && isTracking) {
+                    isTracking = false;
+                    const now = Date.now();
+                    const sessionTime = Math.floor((now - startTime) / 1000);
+                    if (sessionTime > 0) {
+                        accumulatedTime += sessionTime;
+                        sendData();
+                    }
+                }
+            }
+        }
+
+        // Adapter for existing calls
         const logState = (source, active) => {
-            if (active) activeSources.add(source);
-            else activeSources.delete(source);
-
-            const wasPlaying = isPlaying;
-            isPlaying = activeSources.size > 0;
-
-            // Debug only
-            // if (wasPlaying !== isPlaying) console.log('Alezux Tracker:', isPlaying ? 'Reconding...' : 'Paused', [...activeSources]);
+            if (active) startTracking(source);
+            else stopTracking(source);
         };
 
         // --- 1. HTML5 Native Video/Audio ---
@@ -217,35 +234,43 @@ jQuery(document).ready(function ($) {
         initYouTube();
 
 
-        // --- Core Timer Loop ---
-        setInterval(function () {
-            // Only track if playing AND visible
-            if (isPlaying && document.visibilityState === 'visible') {
-                activeSeconds++;
-                accumulatedSeconds++;
+        function sendData() {
+            if (accumulatedTime > 0) {
+                const timeToSend = accumulatedTime;
+                accumulatedTime = 0;
+
+                var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
+                var postId = (typeof alezux_vars !== 'undefined') ? alezux_vars.post_id : 0;
+
+                // Reliable send on unload
+                if (navigator.sendBeacon) {
+                    const formData = new FormData();
+                    formData.append('action', 'alezux_track_study_time');
+                    formData.append('seconds', timeToSend);
+                    formData.append('post_id', postId);
+                    navigator.sendBeacon(ajaxUrl, formData);
+                } else {
+                    $.post(ajaxUrl, {
+                        action: 'alezux_track_study_time',
+                        seconds: timeToSend,
+                        post_id: postId
+                    });
+                }
             }
-
-            // Sync
-            if (Date.now() - lastSyncTime > SYNC_INTERVAL && accumulatedSeconds > 0) {
-                syncTime();
-            }
-        }, 1000);
-
-        function syncTime() {
-            if (accumulatedSeconds === 0) return;
-            const sec = accumulatedSeconds;
-            accumulatedSeconds = 0;
-            lastSyncTime = Date.now();
-
-            var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
-            $.post(ajaxUrl, {
-                action: 'alezux_track_study_time',
-                seconds: sec
-            });
         }
 
         $(window).on('beforeunload visibilitychange', function () {
-            if (document.visibilityState === 'hidden') syncTime();
+            if (document.visibilityState === 'hidden') {
+                if (isTracking) {
+                    const now = Date.now();
+                    const sessionTime = Math.floor((now - startTime) / 1000);
+                    if (sessionTime > 0) {
+                        accumulatedTime += sessionTime;
+                        startTime = now;
+                    }
+                }
+                sendData();
+            }
         });
 
     })();
