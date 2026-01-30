@@ -83,24 +83,42 @@ jQuery(document).ready(function ($) {
      * Time Tracking Logic for Study - UNIVERSAL VERSION
      * Supports HTML5, YouTube (API), Vimeo (API), and generic Iframe interaction.
      */
+    /**
+     * Study Time Tracker (Event Driven - SQL)
+     */
     (function () {
-        // --- Alezux Time Tracker (SQL - Event Driven) ---
+        console.log('Alezux Tracker: Init');
+        if (typeof alezux_vars === 'undefined' || !alezux_vars.ajax_url || !alezux_vars.post_id) {
+            console.error('Alezux Tracker: Missing vars', typeof alezux_vars !== 'undefined' ? alezux_vars : 'undefined');
+            return;
+        }
+
+        const ajaxUrl = alezux_vars.ajax_url;
+        const postId = alezux_vars.post_id;
+
+        // State
         let startTime = 0;
         let accumulatedTime = 0;
         let isTracking = false;
         let activeSources = new Set();
 
+        console.log('Alezux Tracker: Ready. Post ID:', postId);
+
         function startTracking(source) {
+            console.log('Alezux Tracker: Request Start from', source);
             if (!activeSources.has(source)) {
                 activeSources.add(source);
                 if (!isTracking) {
                     isTracking = true;
                     startTime = Date.now();
+                    console.log('Alezux Tracker: STARTED TRACKING. StartTime:', new Date(startTime).toLocaleTimeString());
                 }
             }
+            console.log('Alezux Tracker: Active Sources:', Array.from(activeSources));
         }
 
         function stopTracking(source) {
+            console.log('Alezux Tracker: Request Stop from', source);
             if (activeSources.has(source)) {
                 activeSources.delete(source);
                 if (activeSources.size === 0 && isTracking) {
@@ -109,9 +127,44 @@ jQuery(document).ready(function ($) {
                     const sessionTime = Math.floor((now - startTime) / 1000);
                     if (sessionTime > 0) {
                         accumulatedTime += sessionTime;
+                        console.log('Alezux Tracker: STOPPED TRACKING. Session Secs:', sessionTime, 'Total Accum:', accumulatedTime);
                         sendData();
+                    } else {
+                        console.log('Alezux Tracker: STOPPED ignored (0s duration)');
                     }
                 }
+            }
+            console.log('Alezux Tracker: Active Sources:', Array.from(activeSources));
+        }
+
+        function sendData() {
+            if (accumulatedTime > 0) {
+                const timeToSend = accumulatedTime;
+                accumulatedTime = 0;
+
+                console.log('Alezux Tracker: SENDING DATA...', timeToSend, 'seconds');
+
+                // Reliable send on unload
+                if (navigator.sendBeacon) {
+                    const formData = new FormData();
+                    formData.append('action', 'alezux_track_study_time');
+                    formData.append('seconds', timeToSend);
+                    formData.append('post_id', postId);
+                    const success = navigator.sendBeacon(ajaxUrl, formData); // Returns true if queued
+                    console.log('Alezux Tracker: Beacon Queued?', success);
+                } else {
+                    $.post(ajaxUrl, {
+                        action: 'alezux_track_study_time',
+                        seconds: timeToSend,
+                        post_id: postId
+                    }).done(function (res) {
+                        console.log('Alezux Tracker: AJAX Success', res);
+                    }).fail(function (err) {
+                        console.error('Alezux Tracker: AJAX Fail', err);
+                    });
+                }
+            } else {
+                console.log('Alezux Tracker: sendData called but nothing to send.');
             }
         }
 
@@ -121,118 +174,65 @@ jQuery(document).ready(function ($) {
             else stopTracking(source);
         };
 
-        // --- 1. HTML5 Native Video/Audio ---
-        $('video, audio').on('play', () => logState('html5', true))
-            .on('pause ended waiting', () => logState('html5', false));
-
-        // --- 2. Generic Iframe Focus Fallback (For unknown players) ---
-        // If user clicks into an iframe, we assume they might be watching. 
-        // We stop assumtion if they click back out or blur window.
-        // This is a heuristic for "Any Player".
-        $(window).on('blur', function () {
-            setTimeout(function () {
-                if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                    // console.log('Focus lost to Iframe - assuming playback interactions');
-                    // We don't verify provider here, just generic fallback
-                    // But to avoid double counting with YT/Vimeo APIs, we verify src
-                    const src = document.activeElement.src || '';
-                    if (!src.includes('youtube') && !src.includes('vimeo')) {
-                        logState('generic-iframe', true);
-                    }
-                }
-            }, 100);
-        });
-        $(window).on('focus', function () {
-            // User came back to main window, assume interaction with generic iframe stopped or pausing?
-            // Actually, for generic iframe, it's hard to know when they stop. 
-            // We'll be conservative: if they focus back on body, stop generic count.
-            logState('generic-iframe', false);
+        // --- HTML5 Events ---
+        $('video, audio').on('play', function () {
+            console.log('Alezux Tracker Event: HTML5 Play');
+            startTracking('html5-' + (this.id || 'gen'));
+        }).on('pause ended', function () {
+            console.log('Alezux Tracker Event: HTML5 Pause/Ended');
+            stopTracking('html5-' + (this.id || 'gen'));
         });
 
+        // --- YouTube API ---
+        function onYouTubeIframeAPIReady() {
+            $('iframe[src*="youtube.com"], iframe[src*="youtu.be"]').each(function (index) {
+                if (!this.id) this.id = 'alezux-yt-' + index;
+                try {
+                    new YT.Player(this.id, {
+                        events: {
+                            'onStateChange': function (event) {
+                                if (event.data === YT.PlayerState.PLAYING) {
+                                    console.log('Alezux Tracker Event: YT Playing');
+                                    startTracking('yt-' + event.target.getIframe().id);
+                                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                                    console.log('Alezux Tracker Event: YT Paused/Ended');
+                                    stopTracking('yt-' + event.target.getIframe().id);
+                                }
+                            }
+                        }
+                    });
+                } catch (e) { }
+            });
+        }
 
-        // --- 3. Vimeo API Support ---
-        function initVimeo() {
-            const iframes = $('iframe[src*="vimeo.com"]');
-            if (iframes.length === 0) return;
+        if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+        } else {
+            onYouTubeIframeAPIReady();
+        }
 
-            // Load Vimeo Player SDK
+        // --- Vimeo API ---
+        const vimeoIframes = $('iframe[src*="vimeo.com"]');
+        if (vimeoIframes.length > 0) {
             if (typeof Vimeo === 'undefined') {
                 $.getScript('https://player.vimeo.com/api/player.js').done(bindVimeo);
             } else {
                 bindVimeo();
             }
-
-            function bindVimeo() {
-                iframes.each(function () {
-                    const player = new Vimeo.Player(this);
-                    player.on('play', () => logState('vimeo', true));
-                    player.on('pause', () => logState('vimeo', false));
-                    player.on('ended', () => logState('vimeo', false));
-                    // Check initial status
-                    player.getPaused().then((paused) => {
-                        if (!paused) logState('vimeo', true);
-                    });
-                });
-            }
         }
-        initVimeo();
 
-        // --- 4. YouTube API Support ---
-        function initYouTube() {
-            const ytIframes = $('iframe[src*="youtube.com"], iframe[src*="youtu.be"]');
-            if (ytIframes.length === 0) return;
-
-            // 4.1 Force 'enablejsapi=1' to allow tracking
-            ytIframes.each(function () {
-                let src = $(this).attr('src');
-                if (src && src.indexOf('enablejsapi=1') === -1) {
-                    const separator = src.indexOf('?') !== -1 ? '&' : '?';
-                    $(this).attr('src', src + separator + 'enablejsapi=1');
-                }
-                // Ensure ID
-                if (!$(this).attr('id')) {
-                    $(this).attr('id', 'alezux-yt-' + Math.floor(Math.random() * 10000));
-                }
+        function bindVimeo() {
+            vimeoIframes.each(function () {
+                const player = new Vimeo.Player(this);
+                player.on('play', () => { console.log('Alezux Tracker Event: Vimeo Play'); startTracking('vimeo'); });
+                player.on('pause', () => { console.log('Alezux Tracker Event: Vimeo Pause'); stopTracking('vimeo'); });
+                player.on('ended', () => { console.log('Alezux Tracker Event: Vimeo Ended'); stopTracking('vimeo'); });
             });
-
-            // 4.2 Load YT API
-            if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
-                var tag = document.createElement('script');
-                tag.src = "https://www.youtube.com/iframe_api";
-                var firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                // Queued Init
-                window.onYouTubeIframeAPIReady = function () {
-                    bindYouTubePlayers();
-                };
-            } else {
-                bindYouTubePlayers();
-            }
-
-            function bindYouTubePlayers() {
-                ytIframes.each(function () {
-                    const id = $(this).attr('id');
-                    try {
-                        new YT.Player(id, {
-                            events: {
-                                'onStateChange': onPlayerStateChange
-                            }
-                        });
-                    } catch (e) { console.error('YT Bind Error', e); }
-                });
-            }
-
-            function onPlayerStateChange(event) {
-                if (event.data === YT.PlayerState.PLAYING) {
-                    logState('youtube', true);
-                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                    logState('youtube', false);
-                }
-            }
         }
-        initYouTube();
-
 
         function sendData() {
             if (accumulatedTime > 0) {
@@ -241,6 +241,8 @@ jQuery(document).ready(function ($) {
 
                 var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
                 var postId = (typeof alezux_vars !== 'undefined') ? alezux_vars.post_id : 0;
+
+                console.log('Alezux Tracker: Sending Data (Auto/Beacon)...', timeToSend);
 
                 // Reliable send on unload
                 if (navigator.sendBeacon) {
@@ -260,6 +262,7 @@ jQuery(document).ready(function ($) {
         }
 
         $(window).on('beforeunload visibilitychange', function () {
+            console.log('Alezux Tracker Event: Window/Vis Change', document.visibilityState);
             if (document.visibilityState === 'hidden') {
                 if (isTracking) {
                     const now = Date.now();
@@ -267,6 +270,7 @@ jQuery(document).ready(function ($) {
                     if (sessionTime > 0) {
                         accumulatedTime += sessionTime;
                         startTime = now;
+                        console.log('Alezux Tracker: Accumulating before exit:', sessionTime);
                     }
                 }
                 sendData();
