@@ -53,22 +53,22 @@ class Formaciones extends Module_Base {
         global $wpdb;
         $table_name = $wpdb->prefix . 'alezux_study_log';
         
-        if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
-            $charset_collate = $wpdb->get_charset_collate();
+        $charset_collate = $wpdb->get_charset_collate();
 
-            $sql = "CREATE TABLE $table_name (
-                id bigint(20) NOT NULL AUTO_INCREMENT,
-                user_id bigint(20) NOT NULL,
-                date date NOT NULL,
-                seconds int(11) NOT NULL DEFAULT 0,
-                last_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY  (id),
-                UNIQUE KEY user_date (user_id, date)
-            ) $charset_collate;";
+        $sql = "CREATE TABLE $table_name (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            date date NOT NULL,
+            seconds int(11) NOT NULL DEFAULT 0,
+            course_id bigint(20) NOT NULL DEFAULT 0,
+            topic_id bigint(20) NOT NULL DEFAULT 0,
+            last_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            UNIQUE KEY user_date_topic (user_id, date, topic_id)
+        ) $charset_collate;";
 
-            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-            dbDelta( $sql );
-        }
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        dbDelta( $sql );
     }
 
 	public function control_litespeed_cache() {
@@ -105,9 +105,16 @@ class Formaciones extends Module_Base {
 			true
 		);
 
+        // Get Course ID (Context)
+        $course_id = 0;
+        if ( function_exists( 'learndash_get_course_id' ) ) {
+            $course_id = learndash_get_course_id( get_the_ID() );
+        }
+
 		wp_localize_script( 'alezux-formaciones-js', 'alezux_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'post_id'  => get_the_ID(),
+            'course_id' => $course_id,
 		] );
 	}
 
@@ -399,6 +406,8 @@ class Formaciones extends Module_Base {
 
 		$user_id = get_current_user_id();
 		$seconds = isset( $_POST['seconds'] ) ? intval( $_POST['seconds'] ) : 0;
+        $course_id = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
+        $topic_id = isset( $_POST['topic_id'] ) ? intval( $_POST['topic_id'] ) : 0;
 		
 		// Use WordPress Local Time
 		$date = current_time( 'Y-m-d' );
@@ -408,21 +417,23 @@ class Formaciones extends Module_Base {
 		}
 
 		// Debug Log
-		error_log( "ALEZUX TRACKER SQL: User $user_id | Seconds: $seconds | Date: $date" );
+		error_log( "ALEZUX TRACKER SQL: User $user_id | Seconds: $seconds | Date: $date | Course: $course_id | Topic: $topic_id" );
 
         // --- SQL INSERTION ---
         global $wpdb;
         $table_name = $wpdb->prefix . 'alezux_study_log';
 
         // Insert or Update (accumulator)
-        // If row exists for user+date, add seconds to existing value
+        // If row exists for user+date+topic, add seconds to existing value
         $sql = $wpdb->prepare(
-            "INSERT INTO $table_name (user_id, date, seconds) 
-             VALUES (%d, %s, %d) 
-             ON DUPLICATE KEY UPDATE seconds = seconds + VALUES(seconds)",
+            "INSERT INTO $table_name (user_id, date, seconds, course_id, topic_id) 
+             VALUES (%d, %s, %d, %d, %d) 
+             ON DUPLICATE KEY UPDATE seconds = seconds + VALUES(seconds), course_id = VALUES(course_id)",
             $user_id,
             $date,
-            $seconds
+            $seconds,
+            $course_id,
+            $topic_id
         );
 
         $result = $wpdb->query( $sql );
@@ -434,4 +445,5 @@ class Formaciones extends Module_Base {
 
 		wp_send_json_success( [ 'logged' => $seconds, 'date_used' => $date ] );
 	}
+
 }

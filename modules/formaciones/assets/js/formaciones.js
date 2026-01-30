@@ -312,42 +312,64 @@ jQuery(document).ready(function ($) {
 
                 var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
                 var postId = (typeof alezux_vars !== 'undefined') ? alezux_vars.post_id : 0;
+                var courseId = (typeof alezux_vars !== 'undefined' && alezux_vars.course_id) ? alezux_vars.course_id : 0;
 
-                console.log('Alezux Tracker: Sending Data (Auto/Beacon)...', timeToSend);
+                console.log('Alezux Tracker: Sending Data (Auto/Beacon)...', timeToSend, 'Course:', courseId, 'Topic:', postId);
 
                 // Reliable send on unload
                 if (navigator.sendBeacon) {
                     const formData = new FormData();
                     formData.append('action', 'alezux_track_study_time');
                     formData.append('seconds', timeToSend);
-                    formData.append('post_id', postId);
-                    navigator.sendBeacon(ajaxUrl, formData);
+                    formData.append('post_id', postId); // Legacy/Fallback
+                    formData.append('course_id', courseId);
+                    formData.append('topic_id', postId);
+
+                    const success = navigator.sendBeacon(ajaxUrl, formData); // Returns true if queued
+                    console.log('Alezux Tracker: Beacon Queued?', success);
                 } else {
                     $.post(ajaxUrl, {
                         action: 'alezux_track_study_time',
                         seconds: timeToSend,
-                        post_id: postId
+                        post_id: postId, // Legacy
+                        course_id: courseId,
+                        topic_id: postId
                     });
                 }
+            } else {
+                console.log('Alezux Tracker: sendData called but nothing to send.');
             }
         }
-
-        $(window).on('beforeunload visibilitychange', function () {
-            console.log('Alezux Tracker Event: Window/Vis Change', document.visibilityState);
-            if (document.visibilityState === 'hidden') {
-                if (isTracking) {
-                    const now = Date.now();
-                    const sessionTime = Math.floor((now - startTime) / 1000);
-                    if (sessionTime > 0) {
-                        accumulatedTime += sessionTime;
-                        startTime = now;
-                        console.log('Alezux Tracker: Accumulating before exit:', sessionTime);
-                    }
-                }
-                sendData();
-            }
+        formData.append('action', 'alezux_track_study_time');
+        formData.append('seconds', timeToSend);
+        formData.append('post_id', postId);
+        navigator.sendBeacon(ajaxUrl, formData);
+    } else {
+        $.post(ajaxUrl, {
+            action: 'alezux_track_study_time',
+            seconds: timeToSend,
+            post_id: postId
         });
+    }
+}
+        }
 
-    })();
+    $(window).on('beforeunload visibilitychange', function () {
+        console.log('Alezux Tracker Event: Window/Vis Change', document.visibilityState);
+        if (document.visibilityState === 'hidden') {
+            if (isTracking) {
+                const now = Date.now();
+                const sessionTime = Math.floor((now - startTime) / 1000);
+                if (sessionTime > 0) {
+                    accumulatedTime += sessionTime;
+                    startTime = now;
+                    console.log('Alezux Tracker: Accumulating before exit:', sessionTime);
+                }
+            }
+            sendData();
+        }
+    });
+
+    }) ();
 
 });
