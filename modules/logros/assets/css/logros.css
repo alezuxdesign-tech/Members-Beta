@@ -2,7 +2,7 @@
    Alezux Members - Premium Logros Form Styles
    ========================================= */
 
-/* Use Wrapper ID/Class integration to increase specificity without !important */
+/* ... (Existing form styles preserved) ... */
 
 /* Wrapper del Formulario */
 .alezux-logro-form-wrapper {
@@ -11,12 +11,10 @@
     font-family: 'Inter', 'Roboto', sans-serif;
 }
 
-/* Form Container */
 .alezux-logro-form-wrapper .alezux-logro-form {
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
-    /* Base color, Elementor can override */
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     padding: 40px;
@@ -30,7 +28,6 @@
     position: relative;
 }
 
-/* Labels */
 .alezux-logro-form-wrapper .alezux-logro-form label {
     display: block;
     margin-bottom: 8px;
@@ -40,7 +37,6 @@
     letter-spacing: 0.02em;
 }
 
-/* Inputs y Selects */
 .alezux-logro-form-wrapper .alezux-logro-input {
     width: 100%;
     padding: 14px 16px;
@@ -68,7 +64,6 @@
     line-height: 1.6;
 }
 
-/* Select Styling Override */
 .alezux-logro-form-wrapper select.alezux-logro-input {
     appearance: none;
     -webkit-appearance: none;
@@ -98,12 +93,6 @@
     overflow: hidden;
 }
 
-.alezux-logro-form-wrapper .alezux-upload-box:hover {
-    /* Hover styles handled by Elementor or fallback handled delicately if needed, 
-       but removing hardcoded here allows Elementor control */
-}
-
-/* Content Placeholder */
 .alezux-logro-form-wrapper .alezux-upload-placeholder {
     display: flex;
     flex-direction: column;
@@ -113,15 +102,12 @@
     z-index: 2;
 }
 
-/* Icon - Weak Styling */
 .alezux-logro-form-wrapper .alezux-upload-icon i,
 .alezux-logro-form-wrapper .alezux-upload-icon svg {
     font-size: 48px;
-    /* color: #64748b; REMOVED to allow Elementor default */
     margin-bottom: 8px;
     display: inline-block;
     line-height: 1;
-    /* fill: #64748b; REMOVED */
 }
 
 .alezux-logro-form-wrapper .alezux-upload-title {
@@ -141,11 +127,9 @@
     margin: 0;
 }
 
-/* Fake Button Look */
 .alezux-logro-form-wrapper .alezux-upload-button-wrapper {
     margin-top: 10px;
     pointer-events: auto;
-    /* Re-enable pointer events if we want exact button clicks, but box click is handled */
 }
 
 .alezux-logro-form-wrapper .alezux-upload-btn-fake {
@@ -169,7 +153,6 @@
     border-color: #3b82f6;
 }
 
-/* Preview de imagen */
 .alezux-logro-form-wrapper .alezux-upload-preview {
     position: relative;
     width: 100%;
@@ -207,7 +190,6 @@
     z-index: 10;
 }
 
-/* Boton Submit */
 .alezux-logro-form-wrapper .alezux-logro-form-actions {
     margin-top: 32px;
     display: flex;
@@ -217,7 +199,6 @@
 .alezux-logro-form-wrapper .alezux-logro-submit {
     padding: 14px 32px;
     background-color: #3b82f6;
-    /* Flat color instead of gradient for easier override */
     color: white;
     border: none;
     border-radius: 10px;
@@ -232,7 +213,6 @@
     transform: translateY(-2px);
 }
 
-/* Mensajes de respuesta */
 .alezux-logro-form-wrapper #alezux-logro-response {
     margin-top: 20px;
     border-radius: 8px;
@@ -253,304 +233,153 @@
     border-left: 5px solid #ef4444;
 }
 
-.alezux-logros-filters {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.alezux-logros-filters input,
-.alezux-logros-filters select {
-    padding: 10px 15px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 14px;
-    width: 100%;
-    max-width: 300px;
-}
 
 /* =========================================
-   NEW CARD LAYOUT STYLES
+   GRID LOGROS NEW DESIGN (Reference Match)
    ========================================= */
 
-#alezux-logros-list-container {
+.alezux-logro-card.style-ref-image {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-}
-
-.alezux-logro-card {
-    display: flex;
-    background-color: #0f0f0f;
-    /* Dark background as per reference */
-    border-radius: 12px;
-    padding: 20px;
-    gap: 20px;
-    color: #fff;
-    position: relative;
-    border: 1px solid #222;
-}
-
-@media (max-width: 768px) {
-    .alezux-logro-card {
-        flex-direction: column;
-    }
-}
-
-/* Image Column */
-.alezux-card-image {
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
-    background: #fff;
-    border-radius: 8px;
+    border-radius: 16px;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.alezux-card-image img {
-    width: 100%;
+    background-color: transparent;
+    /* Top is image, bottom is dark */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: none;
+    /* Removed border to match clean look, assume shadow handles depth or parent handles gap */
     height: 100%;
-    object-fit: cover;
+    min-height: 400px;
 }
 
-.alezux-card-placeholder-img {
+/* TOP HALF: IMAGE */
+.alezux-logro-card.style-ref-image .alezux-card-top {
+    height: 220px;
+    /* Specific height for image area */
+    background-size: cover;
+    background-position: center;
+    background-color: #f0f0f0;
+    /* Placeholder color */
+    position: relative;
     width: 100%;
-    height: 100%;
-    background-color: #fff;
-    /* White placeholder box as per image */
 }
 
-/* Content Column */
-.alezux-card-content {
+/* BADGE */
+.style-ref-image .alezux-course-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: #22c55e;
+    /* Bright Green */
+    color: #052e16;
+    /* Dark Green Text */
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* BOTTOM HALF: DARK CONTENT */
+.alezux-logro-card.style-ref-image .alezux-card-bottom {
+    background-color: #0F0F0F;
+    /* Dark background as in image */
+    padding: 24px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-/* Header */
-.alezux-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.alezux-course-badge {
-    background-color: #1a4d2e;
-    /* Dark green bg */
-    color: #4ade80;
-    /* Light green text */
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.alezux-card-date {
-    color: #a1a1aa;
-    font-size: 12px;
-}
-
-/* Message */
-/* Message */
-.alezux-card-message {
+/* DESCRIPTION TEXT */
+.style-ref-image .alezux-card-desc {
     color: #d1d5db;
+    /* Light grey text */
     font-size: 14px;
-    line-height: 1.5;
-    margin: 0 0 15px 0;
-    flex-grow: 1;
+    line-height: 1.6;
+    margin: 0 0 24px 0;
 
-    /* Truncate text */
+    /* Clamp text */
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-/* Footer & Actions */
-.alezux-card-footer {
+/* FOOTER */
+.style-ref-image .alezux-card-footer {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
+    border-top: 1px solid #27272a;
+    /* Subtle divider */
+    padding-top: 20px;
 }
 
-.alezux-card-student {
+/* USER INFO */
+.style-ref-image .alezux-card-user {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
-.alezux-student-avatar {
-    width: 24px;
-    height: 24px;
+.style-ref-image .alezux-card-user img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #3f3f46;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: sandybrown;
-    /* Matches reference icon somewhat */
-    overflow: hidden;
-}
-
-.alezux-student-avatar img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    border-radius: 50%;
-}
-
-.alezux-student-name {
-    color: #9ca3af;
-    font-size: 13px;
-}
-
-.alezux-card-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.alezux-btn-card-action {
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-}
-
-.alezux-btn-card-edit {
-    background-color: #1a4d2e;
-    /* Dark green */
-    color: #fff;
-    border: 1px solid #1a4d2e;
-}
-
-.alezux-btn-card-edit:hover {
-    background-color: #14532d;
-}
-
-.alezux-btn-card-delete {
-    background-color: #ef4444;
-    /* Red */
-    color: #fff;
-    border: 1px solid #ef4444;
-}
-
-.alezux-btn-card-delete:hover {
-    background-color: #dc2626;
-}
-
-/* =========================================
-   CUSTOM MODALS
-   ========================================= */
-
-.alezux-modal {
-    display: none;
-    position: fixed;
-    z-index: 99999;
-    /* Top level */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    /* Darker overlay */
-    backdrop-filter: blur(5px);
-    display: flex;
-    /* Flex to center */
-    align-items: center;
-    /* Vertical center */
-    justify-content: center;
-    /* Horizontal center */
-}
-
-/* IMPORTANT: Override flex display for jQuery fadeIn/Out which sets display:block */
-.alezux-modal[style*="display: block"] {
-    display: flex !important;
-}
-
-/* Delete Modal Specifics */
-.alezux-delete-modal-content {
-    background-color: #18181b;
-    /* Dark bg */
-    color: #fff;
-    border-radius: 16px;
-    padding: 40px 30px;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    border: 1px solid #27272a;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-    margin: auto;
-    /* For flex centering fallback */
-}
-
-.alezux-delete-icon {
-    font-size: 30px;
-    color: #ef4444;
-    margin-bottom: 20px;
-}
-
-.alezux-delete-modal-content h3 {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-    color: #fff;
-}
-
-.alezux-delete-modal-content p {
-    color: #a1a1aa;
-    font-size: 15px;
-    line-height: 1.5;
-    margin-bottom: 30px;
-}
-
-.alezux-delete-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-}
-
-.alezux-btn-cancel {
-    background: transparent;
+    background-color: #27272a;
     border: 1px solid #3f3f46;
-    color: #fff;
-    padding: 10px 24px;
-    border-radius: 8px;
 }
 
-.alezux-btn-cancel:hover {
-    background: #27272a;
+.style-ref-image .alezux-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.alezux-btn-danger-confirm {
-    background: #ef4444;
-    color: #fff;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 8px;
+.style-ref-image .alezux-user-name {
+    color: #f3f4f6;
+    /* White name */
+    font-size: 13px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.alezux-btn-danger-confirm:hover {
-    background: #dc2626;
+.style-ref-image .alezux-user-date {
+    color: #9ca3af;
+    /* Grey date */
+    font-size: 12px;
 }
 
-/* Centering overrides to ensure modales are always centered */
-.alezux-modal-content {
-    margin: auto;
+/* BUTTON */
+.style-ref-image .alezux-logro-view-btn {
+    background-color: #15803d;
+    /* Darker Green button */
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    /* Rounded corners */
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    display: inline-block;
+    /* Ensure padding works */
+}
+
+.style-ref-image .alezux-logro-view-btn:hover {
+    background-color: #166534;
+    /* Darken hover */
+    color: #fff;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .alezux-logros-grid {
+        grid-template-columns: 1fr !important;
+    }
 }
