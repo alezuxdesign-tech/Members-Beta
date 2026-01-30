@@ -1,196 +1,232 @@
+// Encapsulate initialization logic
+var AlezuxViewLogrosHandler = function ($scope, $) {
+    var container = $scope.find('.alezux-view-logros-wrapper');
+
+    // Check if scope itself is the wrapper (manual init case)
+    if (!container.length && $scope.hasClass('alezux-view-logros-wrapper')) {
+        container = $scope;
+    }
+
+    if (!container.length) return;
+    if (container.data('alezux-initialized')) return; // Prevent double init
+
+    console.log('Alezux Members: Initializing Logros Widget', container);
+
+    loadLogros(container);
+
+    // Search and Filter Events - Scope to container to avoid conflicts
+    container.find('#alezux-logro-search').on('keyup', function () {
+        delay(function () {
+            loadLogros(container);
+        }, 500);
+    });
+
+    container.find('#alezux-logro-course-filter').on('change', function () {
+        loadLogros(container);
+    });
+
+    // Delete Event
+    container.on('click', '.alezux-delete-logro', function (e) {
+        e.preventDefault();
+        if (confirm('¿Estás seguro de que deseas eliminar este logro?')) {
+            var id = $(this).data('id');
+            deleteLogro(id, container);
+        }
+    });
+
+    // Edit Event - Open Modal
+    container.on('click', '.alezux-edit-logro', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        openEditModal(id);
+    });
+
+    // Close Modal
+    $('.alezux-modal-close').off('click').on('click', function () {
+        $('#alezux-logro-edit-modal').fadeOut();
+    });
+
+    // Save Edit Event
+    $('#alezux-logro-edit-form').off('submit').on('submit', function (e) {
+        e.preventDefault();
+        updateLogro(container);
+    });
+
+    container.data('alezux-initialized', true);
+};
+
 jQuery(document).ready(function ($) {
 
-    // Initialize Logros View Widget
-    if ($('.alezux-view-logros-wrapper').length) {
-        loadLogros();
+    // 1. Elementor Hook
+    if (typeof elementorFrontend !== 'undefined') {
+        elementorFrontend.hooks.addAction('frontend/element_ready/alezux_view_logros.default', AlezuxViewLogrosHandler);
+    }
 
-        // Search and Filter Events
-        $('#alezux-logro-search').on('keyup', function () {
-            delay(function () {
-                loadLogros();
-            }, 500);
+    // 2. Manual Fallback
+    function initWidgets() {
+        $('.elementor-widget-alezux_view_logros').each(function () {
+            AlezuxViewLogrosHandler($(this), $);
         });
-
-        $('#alezux-logro-course-filter').on('change', function () {
-            loadLogros();
-        });
-
-        // Delete Event
-        $(document).on('click', '.alezux-delete-logro', function (e) {
-            e.preventDefault();
-            if (confirm('¿Estás seguro de que deseas eliminar este logro?')) {
-                var id = $(this).data('id');
-                deleteLogro(id);
-            }
-        });
-
-        // Edit Event - Open Modal
-        $(document).on('click', '.alezux-edit-logro', function (e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            openEditModal(id);
-        });
-
-        // Close Modal
-        $('.alezux-modal-close').on('click', function () {
-            $('#alezux-logro-edit-modal').fadeOut();
-        });
-
-        // Save Edit Event
-        $('#alezux-logro-edit-form').on('submit', function (e) {
-            e.preventDefault();
-            updateLogro();
+        $('.alezux-view-logros-wrapper').each(function () {
+            // Pass wrapper as scope
+            AlezuxViewLogrosHandler($(this), $);
         });
     }
 
-    var delay = (function () {
-        var timer = 0;
-        return function (callback, ms) {
-            clearTimeout(timer);
-            timer = setTimeout(callback, ms);
-        };
-    })();
+    initWidgets();
 
-    function loadLogros(container) {
-        var tableContainer = container.find('#alezux-logros-table-container');
-        var search = container.find('#alezux-logro-search').val();
-        var course_id = container.find('#alezux-logro-course-filter').val();
+    // 3. Window Load fallback
+    $(window).on('load', initWidgets);
+});
 
-        console.log('Loading Logros...', { search, course_id });
+var delay = (function () {
+    var timer = 0;
+    return function (callback, ms) {
+        clearTimeout(timer);
+        timer = setTimeout(callback, ms);
+    };
+})();
 
-        tableContainer.html('<div class="alezux-loading">Cargando registros...</div>');
+function loadLogros(container) {
+    var tableContainer = container.find('#alezux-logros-table-container');
+    var search = container.find('#alezux-logro-search').val();
+    var course_id = container.find('#alezux-logro-course-filter').val();
 
-        $.ajax({
-            url: alezux_logros_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'alezux_get_achievements',
-                nonce: alezux_logros_vars.nonce,
-                search: search,
-                course_id: course_id
-            },
-            success: function (response) {
-                if (response.success) {
-                    renderTable(response.data, container);
-                } else {
-                    tableContainer.html('<div class="alezux-error">' + response.data.message + '</div>');
-                }
-            },
-            error: function () {
-                container.html('<div class="alezux-error">Error al cargar los registros.</div>');
+    console.log('Loading Logros...', { search, course_id });
+
+    tableContainer.html('<div class="alezux-loading">Cargando registros...</div>');
+
+    $.ajax({
+        url: alezux_logros_vars.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'alezux_get_achievements',
+            nonce: alezux_logros_vars.nonce,
+            search: search,
+            course_id: course_id
+        },
+        success: function (response) {
+            if (response.success) {
+                renderTable(response.data, container);
+            } else {
+                tableContainer.html('<div class="alezux-error">' + response.data.message + '</div>');
             }
-        });
-    }
-
-    function renderTable(data, container) {
-        var tableContainer = container.find('#alezux-logros-table-container');
-
-        if (data.length === 0) {
-            tableContainer.html('<div class="alezux-no-results">No se encontraron logros.</div>');
-            return;
+        },
+        error: function () {
+            container.html('<div class="alezux-error">Error al cargar los registros.</div>');
         }
+    });
+}
 
-        var html = '<table class="alezux-logros-table">';
-        html += '<thead><tr>';
-        html += '<th>ID</th>';
-        html += '<th>Curso</th>';
-        html += '<th>Estudiante</th>';
-        html += '<th>Mensaje</th>';
-        html += '<th>Fecha</th>';
-        html += '<th>Imágen</th>'
-        html += '<th>Acciones</th>';
-        html += '</tr></thead>';
-        html += '<tbody>';
+function renderTable(data, container) {
+    var tableContainer = container.find('#alezux-logros-table-container');
 
-        $.each(data, function (index, item) {
-            html += '<tr>';
-            html += '<td>' + item.id + '</td>';
-            html += '<td>' + item.course_title + '</td>';
-            html += '<td>' + item.student_name + ' (' + item.student_email + ')</td>';
-            html += '<td>' + item.message + '</td>';
-            html += '<td>' + item.created_at + '</td>';
-            html += '<td>' + item.image_id + '</td>';
-            html += '<td class="alezux-actions-cell">';
-            html += '<button class="alezux-btn-icon alezux-edit-logro" data-id="' + item.id + '" title="Editar"><i class="fa fa-pencil"></i></button>';
-            html += '<button class="alezux-btn-icon alezux-btn-danger alezux-delete-logro" data-id="' + item.id + '" title="Eliminar"><i class="fa fa-trash"></i></button>';
-            html += '</td>';
-            html += '</tr>';
-        });
-
-        html += '</tbody></table>';
-        tableContainer.html(html);
+    if (data.length === 0) {
+        tableContainer.html('<div class="alezux-no-results">No se encontraron logros.</div>');
+        return;
     }
 
-    function deleteLogro(id, container) {
-        $.ajax({
-            url: alezux_logros_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'alezux_delete_achievement',
-                nonce: alezux_logros_vars.nonce,
-                id: id
-            },
-            success: function (response) {
-                if (response.success) {
-                    loadLogros(container); // Reload table
-                } else {
-                    alert(response.data.message);
-                }
+    var html = '<table class="alezux-logros-table">';
+    html += '<thead><tr>';
+    html += '<th>ID</th>';
+    html += '<th>Curso</th>';
+    html += '<th>Estudiante</th>';
+    html += '<th>Mensaje</th>';
+    html += '<th>Fecha</th>';
+    html += '<th>Imágen</th>'
+    html += '<th>Acciones</th>';
+    html += '</tr></thead>';
+    html += '<tbody>';
+
+    $.each(data, function (index, item) {
+        html += '<tr>';
+        html += '<td>' + item.id + '</td>';
+        html += '<td>' + item.course_title + '</td>';
+        html += '<td>' + item.student_name + ' (' + item.student_email + ')</td>';
+        html += '<td>' + item.message + '</td>';
+        html += '<td>' + item.created_at + '</td>';
+        html += '<td>' + item.image_id + '</td>';
+        html += '<td class="alezux-actions-cell">';
+        html += '<button class="alezux-btn-icon alezux-edit-logro" data-id="' + item.id + '" title="Editar"><i class="fa fa-pencil"></i></button>';
+        html += '<button class="alezux-btn-icon alezux-btn-danger alezux-delete-logro" data-id="' + item.id + '" title="Eliminar"><i class="fa fa-trash"></i></button>';
+        html += '</td>';
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    tableContainer.html(html);
+}
+
+function deleteLogro(id, container) {
+    $.ajax({
+        url: alezux_logros_vars.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'alezux_delete_achievement',
+            nonce: alezux_logros_vars.nonce,
+            id: id
+        },
+        success: function (response) {
+            if (response.success) {
+                loadLogros(container); // Reload table
+            } else {
+                alert(response.data.message);
             }
-        });
-    }
+        }
+    });
+}
 
-    function openEditModal(id) {
-        var modal = $('#alezux-logro-edit-modal');
+function openEditModal(id) {
+    var modal = $('#alezux-logro-edit-modal');
 
-        // Cargar datos
-        $.ajax({
-            url: alezux_logros_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'alezux_get_achievement',
-                nonce: alezux_logros_vars.nonce,
-                id: id
-            },
-            success: function (response) {
-                if (response.success) {
-                    var data = response.data;
-                    $('#edit-logro-id').val(data.id);
-                    $('#edit-course-id').val(data.course_id);
-                    $('#edit-student-id').val(data.student_id);
-                    $('#edit-message').val(data.message);
-                    $('#edit-image-id').val(data.image_id);
+    // Cargar datos
+    $.ajax({
+        url: alezux_logros_vars.ajax_url,
+        type: 'POST',
+        data: {
+            action: 'alezux_get_achievement',
+            nonce: alezux_logros_vars.nonce,
+            id: id
+        },
+        success: function (response) {
+            if (response.success) {
+                var data = response.data;
+                $('#edit-logro-id').val(data.id);
+                $('#edit-course-id').val(data.course_id);
+                $('#edit-student-id').val(data.student_id);
+                $('#edit-message').val(data.message);
+                $('#edit-image-id').val(data.image_id);
 
-                    modal.fadeIn();
-                } else {
-                    alert(response.data.message);
-                }
+                modal.fadeIn();
+            } else {
+                alert(response.data.message);
             }
-        });
-    }
+        }
+    });
+}
 
-    function updateLogro(container) {
-        var form = $('#alezux-logro-edit-form');
-        var formData = form.serialize();
+function updateLogro(container) {
+    var form = $('#alezux-logro-edit-form');
+    var formData = form.serialize();
 
-        // Add action and nonce
-        formData += '&action=alezux_update_achievement&nonce=' + alezux_logros_vars.nonce;
+    // Add action and nonce
+    formData += '&action=alezux_update_achievement&nonce=' + alezux_logros_vars.nonce;
 
-        $.ajax({
-            url: alezux_logros_vars.ajax_url,
-            type: 'POST',
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    $('#alezux-logro-edit-modal').fadeOut();
-                    if (container) loadLogros(container); // Reload table
-                    else location.reload();
-                    alert('Logro actualizado correctamente.');
-                } else {
-                    alert(response.data.message);
-                }
+    $.ajax({
+        url: alezux_logros_vars.ajax_url,
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                $('#alezux-logro-edit-modal').fadeOut();
+                if (container) loadLogros(container); // Reload table
+                else location.reload();
+                alert('Logro actualizado correctamente.');
+            } else {
+                alert(response.data.message);
             }
-        });
-    }
+        }
+    });
+}
 
 });
