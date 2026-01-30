@@ -31,11 +31,11 @@ class Estudiantes_Register_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-estudiantes-js' ]; // Usamos el JS principal del módulo
+		return [ 'alezux-estudiantes-register-js' ];
 	}
 
 	public function get_style_depends() {
-		return [ 'alezux-estudiantes-css' ];
+		return [ 'alezux-estudiantes-register-css' ];
 	}
 
 	protected function register_controls() {

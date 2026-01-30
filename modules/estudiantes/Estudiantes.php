@@ -28,13 +28,25 @@ class Estudiantes extends Module_Base {
 	}
 
 	public function register_assets() {
-		wp_enqueue_style( 'alezux-estudiantes-css', plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.0' );
-		wp_enqueue_script( 'alezux-estudiantes-js', plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.0', true );
+		// Estilos
+		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.0' );
+		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.0' );
+		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.0' ); // Se registra pero no se encola globalmente
 
-		wp_localize_script( 'alezux-estudiantes-js', 'alezux_estudiantes_vars', [
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'alezux_estudiantes_nonce' ),
-		] );
+		// Scripts
+		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.0', true );
+		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.0', true );
+		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.0', true );
+
+		// Localize Scripts (Variables comunes)
+		$vars = [
+			'ajax_url' => \admin_url( 'admin-ajax.php' ),
+			'nonce'    => \wp_create_nonce( 'alezux_estudiantes_nonce' ),
+		];
+
+		\wp_localize_script( 'alezux-estudiantes-js', 'alezux_estudiantes_vars', $vars );
+		\wp_localize_script( 'alezux-estudiantes-register-js', 'alezux_estudiantes_vars', $vars );
+		\wp_localize_script( 'alezux-estudiantes-csv-js', 'alezux_estudiantes_vars', $vars );
 	}
 
 	public function register_elementor_widgets( $widgets_manager ) {
