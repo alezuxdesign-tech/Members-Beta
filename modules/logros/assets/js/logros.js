@@ -98,7 +98,7 @@ function loadLogros(container) {
 
     tableContainer.html('<div class="alezux-loading">Cargando registros...</div>');
 
-    $.ajax({
+    jQuery.ajax({
         url: alezux_logros_vars.ajax_url,
         type: 'POST',
         data: {
@@ -144,7 +144,7 @@ function renderTable(data, container) {
     html += '</tr></thead>';
     html += '<tbody>';
 
-    $.each(data, function (index, item) {
+    jQuery.each(data, function (index, item) {
         html += '<tr>';
         html += '<td>' + item.id + '</td>';
         html += '<td>' + item.course_title + '</td>';
@@ -164,7 +164,7 @@ function renderTable(data, container) {
 }
 
 function deleteLogro(id, container) {
-    $.ajax({
+    jQuery.ajax({
         url: alezux_logros_vars.ajax_url,
         type: 'POST',
         data: {
@@ -183,10 +183,10 @@ function deleteLogro(id, container) {
 }
 
 function openEditModal(id) {
-    var modal = $('#alezux-logro-edit-modal');
+    var modal = jQuery('#alezux-logro-edit-modal');
 
     // Cargar datos
-    $.ajax({
+    jQuery.ajax({
         url: alezux_logros_vars.ajax_url,
         type: 'POST',
         data: {
@@ -197,11 +197,11 @@ function openEditModal(id) {
         success: function (response) {
             if (response.success) {
                 var data = response.data;
-                $('#edit-logro-id').val(data.id);
-                $('#edit-course-id').val(data.course_id);
-                $('#edit-student-id').val(data.student_id);
-                $('#edit-message').val(data.message);
-                $('#edit-image-id').val(data.image_id);
+                jQuery('#edit-logro-id').val(data.id);
+                jQuery('#edit-course-id').val(data.course_id);
+                jQuery('#edit-student-id').val(data.student_id);
+                jQuery('#edit-message').val(data.message);
+                jQuery('#edit-image-id').val(data.image_id);
 
                 modal.fadeIn();
             } else {
@@ -212,19 +212,19 @@ function openEditModal(id) {
 }
 
 function updateLogro(container) {
-    var form = $('#alezux-logro-edit-form');
+    var form = jQuery('#alezux-logro-edit-form');
     var formData = form.serialize();
 
     // Add action and nonce
     formData += '&action=alezux_update_achievement&nonce=' + alezux_logros_vars.nonce;
 
-    $.ajax({
+    jQuery.ajax({
         url: alezux_logros_vars.ajax_url,
         type: 'POST',
         data: formData,
         success: function (response) {
             if (response.success) {
-                $('#alezux-logro-edit-modal').fadeOut();
+                jQuery('#alezux-logro-edit-modal').fadeOut();
                 if (container) loadLogros(container); // Reload table
                 else location.reload();
                 alert('Logro actualizado correctamente.');
