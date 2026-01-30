@@ -290,6 +290,8 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-icon svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
@@ -334,6 +336,8 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link:hover .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-item-link:hover .alezux-menu-admin-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-item-link:hover .alezux-menu-admin-icon svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
@@ -378,6 +382,8 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
