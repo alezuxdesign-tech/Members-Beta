@@ -38,6 +38,9 @@ class Formaciones extends Module_Base {
 
 		// AJAX para completar/descompletar topic
 		add_action( 'wp_ajax_alezux_toggle_topic_complete', [ $this, 'handle_topic_completion' ] );
+		
+		// AJAX para seguimiento de tiempo
+		add_action( 'wp_ajax_alezux_track_study_time', [ $this, 'handle_study_time_tracking' ] );
 
 		// Control de Caché (LiteSpeed)
 		add_action( 'wp', [ $this, 'control_litespeed_cache' ] );
@@ -88,12 +91,14 @@ class Formaciones extends Module_Base {
 		require_once __DIR__ . '/includes/Elementor_Widget_Btn_Complete_Topic.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_Course_Progress.php';
 		require_once __DIR__ . '/includes/Elementor_Widget_General_Progress.php';
+		require_once __DIR__ . '/includes/Elementor_Widget_Rendimiento.php';
 		
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Formaciones_Grid() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Topics() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Btn_Complete_Topic() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Course_Progress() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_General_Progress() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Rendimiento() );
 	}
 
 	public function enqueue_admin_assets( $hook ) {
@@ -356,5 +361,46 @@ class Formaciones extends Module_Base {
 		} catch ( \Throwable $e ) {
 			wp_send_json_error( [ 'message' => 'Fatal Error: ' . $e->getMessage() ] );
 		}
+	}
+
+	public function handle_study_time_tracking() {
+		// Verificar nonce para seguridad (opcional pero recomendado)
+		// check_ajax_referer( 'alezux_study_tracker_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( [ 'message' => 'User not logged in' ] );
+		}
+
+		$user_id = get_current_user_id();
+		$seconds = isset( $_POST['seconds'] ) ? intval( $_POST['seconds'] ) : 0;
+		$date    = isset( $_POST['date'] ) ? sanitize_text_field( $_POST['date'] ) : date( 'Y-m-d' );
+
+		if ( $seconds <= 0 ) {
+			wp_send_json_success(); // No hay nada que guardar
+		}
+
+		// Obtener log actual
+		// Estructura: [ '2023-10-27' => 120, '2023-10-28' => 300 ]
+		$log = get_user_meta( $user_id, 'alezux_study_time_log', true );
+		if ( ! is_array( $log ) ) {
+			$log = [];
+		}
+
+		if ( isset( $log[ $date ] ) ) {
+			$log[ $date ] += $seconds;
+		} else {
+			$log[ $date ] = $seconds;
+		}
+
+		// Limpieza opcional: Mantener solo últimos 365 días para no explotar la DB
+		if ( count( $log ) > 365 ) {
+			// Ordenar por clave (fecha) y quitar los antiguos
+			ksort( $log );
+			$log = array_slice( $log, -365, 365, true );
+		}
+
+		update_user_meta( $user_id, 'alezux_study_time_log', $log );
+
+		wp_send_json_success( [ 'logged' => $seconds, 'total_today' => $log[ $date ] ] );
 	}
 }

@@ -78,4 +78,86 @@ jQuery(document).ready(function ($) {
             }
         });
     });
+
+    /**
+     * Time Tracking Logic for Study
+     * Detects HTML5 video/audio playback and tracks time.
+     */
+    (function () {
+        let activeSeconds = 0;
+        let accumulatedSeconds = 0;
+        let isPlaying = false;
+        let lastSyncTime = Date.now();
+        const SYNC_INTERVAL = 30000; // 30 seconds
+
+        function startTracking() {
+            isPlaying = true;
+        }
+
+        function stopTracking() {
+            isPlaying = false;
+        }
+
+        // Detect HTML5 Media Elements
+        $('video, audio').on('play', startTracking).on('pause ended', stopTracking);
+
+        // Initial check if any media is already playing (autostart)
+        $('video, audio').each(function () {
+            if (!this.paused && !this.ended) {
+                isPlaying = true;
+            }
+        });
+
+        // Main Timer Loop
+        setInterval(function () {
+            // Only count if playing AND tab is visible
+            if (isPlaying && document.visibilityState === 'visible') {
+                activeSeconds++;
+                accumulatedSeconds++;
+            }
+
+            // Auto sync every 30s if we have data
+            if (Date.now() - lastSyncTime > SYNC_INTERVAL && accumulatedSeconds > 0) {
+                syncTime();
+            }
+        }, 1000);
+
+        // Sync function
+        function syncTime() {
+            if (accumulatedSeconds === 0) return;
+
+            const secondsToSend = accumulatedSeconds;
+            accumulatedSeconds = 0; // Reset immediately
+            lastSyncTime = Date.now();
+
+            var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
+
+            // Use navigator.sendBeacon if available for unload events, otherwise standard AJAX
+            // But for interval, standard AJAX is fine.
+            // Note: jQuery AJAX might fail on unload, but we'll try best effort.
+
+            $.post(ajaxUrl, {
+                action: 'alezux_track_study_time',
+                seconds: secondsToSend,
+                date: new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+            });
+        }
+
+        // Save on unload / visibility change (mobile)
+        $(window).on('beforeunload', function () {
+            syncTime();
+        });
+
+        // Also sync on visibility hidden (user switches tabs)
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                syncTime();
+                // If it was playing, it might pause automatically depending on browser, 
+                // but we keep the isPlaying flag as is because the browser pauses the video usually.
+                // However, we stop counting because of the visibility check in the loop.
+            }
+        });
+
+    })();
+
 });
