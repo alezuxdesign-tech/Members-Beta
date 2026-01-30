@@ -143,8 +143,11 @@ function loadLogros(container, append) {
             nonce: alezux_logros_vars.nonce,
             search: search,
             course_id: course_id,
+            search: search,
+            course_id: course_id,
             limit: itemsLimit,
-            offset: currentOffset
+            offset: currentOffset,
+            image_size: listContainer.data('image-size') || 'medium' // Pass requested size
         },
         success: function (response) {
             console.log('Alezux: AJAX Response:', response);
@@ -219,12 +222,18 @@ function renderCards(data, container) {
             imgHtml = '<div class="alezux-card-placeholder-img"></div>';
         }
 
+        var showImage = container.data('show-image');
+        // Default to yes if undefined, but data attr usually returns string 'yes'/'no' or undefined
+        if (showImage === undefined) showImage = 'yes';
+
         html += '<div class="alezux-logro-card">';
 
-        // Image Column
-        html += '<div class="alezux-card-image">';
-        html += imgHtml;
-        html += '</div>';
+        // Image Column - Only render if showImage is yes
+        if (showImage === 'yes') {
+            html += '<div class="alezux-card-image">';
+            html += imgHtml;
+            html += '</div>';
+        }
 
         // Content Column
         html += '<div class="alezux-card-content">';

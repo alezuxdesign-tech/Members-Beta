@@ -251,11 +251,42 @@ class View_Logros_Widget extends Widget_Base {
 		/* -------------------------------------------------------------------------- */
 		/*                               SECTION: IMAGE                               */
 		/* -------------------------------------------------------------------------- */
+
 		$this->start_controls_section(
 			'section_style_image',
 			[
 				'label' => esc_html__( 'Imagen', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'show_image',
+			[
+				'label' => esc_html__( 'Mostrar Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'image_resolution',
+			[
+				'label' => esc_html__( 'Resolución de Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'medium',
+				'options' => [
+					'thumbnail' => esc_html__( 'Miniatura (150x150)', 'alezux-members' ),
+					'medium' => esc_html__( 'Medio (300x300)', 'alezux-members' ),
+					'large' => esc_html__( 'Grande (1024x1024)', 'alezux-members' ),
+					'full' => esc_html__( 'Completo', 'alezux-members' ),
+				],
+				'condition' => [
+					'show_image' => 'yes',
+				],
 			]
 		);
 
@@ -849,7 +880,9 @@ class View_Logros_Widget extends Widget_Base {
 				</select>
 			</div>
 
-			<div id="alezux-logros-list-container">
+			<div id="alezux-logros-list-container" 
+				 data-show-image="<?php echo esc_attr( $settings['show_image'] ?? 'yes' ); ?>"
+				 data-image-size="<?php echo esc_attr( $settings['image_resolution'] ?? 'medium' ); ?>">
 				<!-- La lista de tarjetas se cargará vía AJAX -->
 				<div class="alezux-loading"><?php esc_html_e( 'Cargando registros...', 'alezux-members' ); ?></div>
 			</div>

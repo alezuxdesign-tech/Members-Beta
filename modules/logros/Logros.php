@@ -175,6 +175,7 @@ class Logros extends Module_Base {
 		$course_filter = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
 		$limit = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 20;
 		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
+		$image_size = isset( $_POST['image_size'] ) ? sanitize_text_field( $_POST['image_size'] ) : 'medium';
 
 		$where_clauses = [ '1=1' ];
 		$params = [];
@@ -207,7 +208,7 @@ class Logros extends Module_Base {
 			$row->student_email = $user_info ? $user_info->user_email : '---';
 			$row->student_name = $user_info ? $user_info->display_name : '---';
 			$row->student_avatar = $user_info ? get_avatar_url( $row->student_id ) : '';
-			$row->image_url = $row->image_id ? wp_get_attachment_image_url( $row->image_id, 'medium' ) : '';
+			$row->image_url = $row->image_id ? wp_get_attachment_image_url( $row->image_id, $image_size ) : '';
 			$row->formatted_date = date_i18n( get_option( 'date_format' ), strtotime( $row->created_at ) );
 		}
 
