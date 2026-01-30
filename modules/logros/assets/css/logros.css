@@ -334,12 +334,20 @@
 }
 
 /* Message */
+/* Message */
 .alezux-card-message {
     color: #d1d5db;
     font-size: 14px;
     line-height: 1.5;
     margin: 0 0 15px 0;
     flex-grow: 1;
+
+    /* Truncate text */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Footer & Actions */
