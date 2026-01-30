@@ -112,8 +112,7 @@
     gap: 16px;
     width: 100%;
     z-index: 2;
-    pointer-events: none;
-    /* Allow clicks to pass through to the box */
+    /* pointer-events removed explicitly */
 }
 
 /* Icon - Specificity to override theme but allow Elementor */
@@ -170,8 +169,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #0f172a;
-    pointer-events: none;
-    /* Let the box handle the click for smoother UX */
+    /* pointer-events removed explicitly */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
