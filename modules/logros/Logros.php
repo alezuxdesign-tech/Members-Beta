@@ -2,6 +2,7 @@
 namespace Alezux_Members\Modules\Logros;
 
 use Alezux_Members\Core\Module_Base;
+use Alezux_Members\Modules\Notifications\Notifications; // Import Notifications Module
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -155,7 +156,62 @@ class Logros extends Module_Base {
 		);
 
 		if ( $result ) {
-			wp_send_json_success( [ 'message' => 'Logro guardado correctamente.' ] );
+			// --- NOTIFICACIONES ---
+			$notification_title = '¡Nuevo Logro!';
+			$notification_link = '#'; // O link al perfil de logros
+			$avatar_url = '';
+
+			if ( $image_id ) {
+				$avatar_url = wp_get_attachment_image_url( $image_id, 'thumbnail' );
+			}
+
+			// 1. Notificar al estudiante específico
+			if ( $student_id ) {
+				$personal_msg = 'Se te ha asignado el logro: ' . wp_trim_words( $message, 10 );
+				Notifications::add_notification( 
+					$notification_title, 
+					$personal_msg, 
+					$notification_link, 
+					$avatar_url, 
+					[ $student_id ] 
+				);
+			}
+
+			// 2. Notificar al resto del curso
+			if ( $course_id ) {
+				$course_title = get_the_title( $course_id );
+				$course_msg = 'Se ha añadido un nuevo logro al curso: ' . $course_title;
+				
+				// Obtener usuarios del curso
+				$course_users = [];
+				if ( function_exists( 'learndash_get_course_users_access_from_meta' ) ) {
+					$course_users = learndash_get_course_users_access_from_meta( $course_id );
+				} else {
+					// Fallback genérico si no encuentra función LD (Busca por meta key común o lo deja vacío)
+					// Opción segura: obtener usuarios inscritos si existe metadata estándar
+					// Por ahora, si no hay función LD, intentamos busqueda manual básica o dejamos vacío para evitar errores
+					// Alezux Standards: Si no hay API, mejor no romper.
+				}
+
+				if ( ! empty( $course_users ) ) {
+					// Excluir al estudiante ya notificado
+					if ( $student_id ) {
+						$course_users = array_diff( $course_users, [ $student_id ] );
+					}
+
+					if ( ! empty( $course_users ) ) {
+						Notifications::add_notification( 
+							'Nuevo Logro en ' . $course_title, 
+							$course_msg, 
+							$notification_link, 
+							$avatar_url, 
+							$course_users 
+						);
+					}
+				}
+			}
+
+			wp_send_json_success( [ 'message' => 'Logro guardado y notificado correctamente.' ] );
 		} else {
 			wp_send_json_error( [ 'message' => 'Error al guardar en la base de datos.' ] );
 		}
