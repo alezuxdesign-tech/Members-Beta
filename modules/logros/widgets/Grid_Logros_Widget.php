@@ -368,6 +368,16 @@ class Grid_Logros_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'view_btn_text',
+			[
+				'label' => esc_html__( 'Texto del Botón', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Ver logro', 'alezux-members' ),
+				'placeholder' => esc_html__( 'Escribe el texto aquí', 'alezux-members' ),
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
@@ -601,7 +611,7 @@ class Grid_Logros_Widget extends Widget_Base {
 		$popup_id = 'alezux-popup-' . $this->get_id();
 
 		?>
-		<div class="alezux-logros-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+		<div class="alezux-logros-grid" style="display: grid;">
 <?php 
 			// Bucle de logros
 			foreach ( $achievements as $logro ) : 
@@ -665,7 +675,7 @@ class Grid_Logros_Widget extends Widget_Base {
 							   data-message="<?php echo esc_attr( $logro->message ); ?>"
 							   data-student="<?php echo esc_attr( $student_name ); ?>"
 							   data-avatar="<?php echo esc_url( $student_avatar ); ?>">
-								<?php esc_html_e( 'Ver logro', 'alezux-members' ); ?>
+								<?php echo esc_html( $settings['view_btn_text'] ); ?>
 							</a>
 						</div>
 					</div>
