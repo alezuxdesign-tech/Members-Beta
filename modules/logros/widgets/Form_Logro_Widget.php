@@ -32,7 +32,8 @@ class Form_Logro_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-logros-js', 'jquery' ];
+		// Retiramos alezux-logros-js para evitar duplicidad y posibles 404, usamos inline.
+		return [ 'jquery' ];
 	}
 
 	public function get_style_depends() {
@@ -841,7 +842,7 @@ class Form_Logro_Widget extends Widget_Base {
 					<div class="alezux-logro-upload-container">
 						<input type="hidden" name="image_id" class="alezux-logro-image-id" value="">
 						
-						<div class="alezux-upload-box" onclick="console.log('Alezux Debug: Inline click triggered on upload box');">
+						<div class="alezux-upload-box">
 							
                             <!-- Placeholder State -->
                             <div class="alezux-upload-placeholder">
@@ -879,6 +880,135 @@ class Form_Logro_Widget extends Widget_Base {
 
 			</form>
 		</div>
+
+        <!-- INLINE SCRIPT FORCE LOAD -->
+        <script type="text/javascript">
+            // Define vars manually since wp_localize_script might not be hitting if file not enqueued
+            var alezux_logros_vars = {
+                ajax_url: '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+                nonce: '<?php echo wp_create_nonce( 'alezux_logros_nonce' ); ?>'
+            };
+
+            jQuery(document).ready(function ($) {
+                console.log('Alezux Members: Inline Widget Script Running');
+
+                var file_frame;
+
+                // UI Updater function
+                function updateUploadUI($box, attachment) {
+                    var $container = $box.closest('.alezux-logro-upload-container');
+                    var $input = $container.find('.alezux-logro-image-id');
+                    var $previewBox = $box.find('.alezux-upload-preview');
+                    var $placeholder = $box.find('.alezux-upload-placeholder');
+                    var $previewImg = $box.find('.alezux-preview-img');
+
+                    if (attachment) {
+                        $input.val(attachment.id);
+                        // Try medium size, fallback to url
+                        var url = attachment.url;
+                        if(attachment.sizes && attachment.sizes.medium) {
+                            url = attachment.sizes.medium.url;
+                        }
+
+                        $previewImg.attr('src', url);
+                        $placeholder.hide();
+                        $previewBox.css('display', 'flex').hide().fadeIn();
+                    } else {
+                        $input.val('');
+                        $previewImg.attr('src', '');
+                        $previewBox.hide();
+                        $placeholder.fadeIn();
+                    }
+                }
+
+                // 1. CLICK HANDLER
+                // Use body delegation to capture clicks on any new instances
+                $('body').on('click', '.alezux-upload-box', function (event) {
+                    
+                    // Ignore clicks on close/remove button (handled separately)
+                    if ($(event.target).closest('.alezux-remove-img').length) {
+                        return; 
+                    }
+
+                    event.preventDefault();
+
+                    // Check for wp.media
+                    if (typeof wp === 'undefined' || !wp.media) {
+                        console.error('WP Media not found.');
+                        alert('Error: La librería de medios de WordPress no se ha cargado.');
+                        return;
+                    }
+
+                    var $box = $(this);
+
+                    // Reopen frame if exists
+                    if (file_frame) {
+                        file_frame.open();
+                        return;
+                    }
+
+                    // Create frame
+                    file_frame = wp.media.frames.file_frame = wp.media({
+                        title: 'Seleccionar Imagen',
+                        button: {
+                            text: 'Usar imagen'
+                        },
+                        multiple: false
+                    });
+
+                    // On Select
+                    file_frame.on('select', function () {
+                        var attachment = file_frame.state().get('selection').first().toJSON();
+                        updateUploadUI($box, attachment);
+                    });
+
+                    file_frame.open();
+                });
+
+                // 2. REMOVE HANDLER
+                $('body').on('click', '.alezux-remove-img', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var $box = $(this).closest('.alezux-upload-box');
+                    updateUploadUI($box, null);
+                });
+
+                // 3. SUBMIT HANDLER
+                $(document).on('submit', '#alezux-logro-form', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    var $response = $form.find('#alezux-logro-response');
+                    var $btn = $form.find('button[type="submit"]');
+                    
+                    $btn.prop('disabled', true).css('opacity',0.7);
+                    $response.html('');
+
+                    var formData = new FormData(this);
+                    formData.append('action', 'alezux_save_achievement');
+                    formData.append('nonce', alezux_logros_vars.nonce);
+
+                    $.ajax({
+                        url: alezux_logros_vars.ajax_url,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            if (res.success) {
+                                $response.html('<div style="color:green; padding:10px; background:#e0ffe0; margin-top:10px;">'+ res.data.message +'</div>');
+                                $form[0].reset();
+                                $form.find('.alezux-upload-box').each(function(){ updateUploadUI($(this), null); });
+                            } else {
+                                $response.html('<div style="color:red; padding:10px; background:#ffe0e0; margin-top:10px;">'+ (res.data.message||'Error') +'</div>');
+                            }
+                        },
+                        complete: function(){
+                            $btn.prop('disabled', false).css('opacity',1);
+                        }
+                    });
+                });
+            });
+        </script>
 		<?php
 	}
 }
