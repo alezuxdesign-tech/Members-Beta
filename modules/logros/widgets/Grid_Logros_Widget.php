@@ -32,11 +32,11 @@ class Grid_Logros_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-logros-js', 'jquery' ];
+		return [ 'jquery' ]; // Ya no depende de logros.js compartido
 	}
 
 	public function get_style_depends() {
-		return [ 'alezux-logros-css' ];
+		return [ 'alezux-grid-logros-css' ];
 	}
 
 	protected function register_controls() {

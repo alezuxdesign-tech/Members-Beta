@@ -31,11 +31,11 @@ class View_Logros_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-logros-js' ];
+		return [ 'alezux-view-logros-js' ];
 	}
 
 	public function get_style_depends() {
-		return [ 'alezux-logros-css' ];
+		return [ 'alezux-view-logros-css' ];
 	}
 
 	protected function register_controls() {

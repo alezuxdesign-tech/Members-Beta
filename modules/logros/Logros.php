@@ -55,26 +55,40 @@ class Logros extends Module_Base {
 
 	public function register_assets() {
 		// Scripts
+		// VIEW LOGROS JS
 		wp_register_script(
-			'alezux-logros-js',
-			$this->get_asset_url( 'assets/js/logros.js' ),
+			'alezux-view-logros-js',
+			$this->get_asset_url( 'assets/js/view-logros.js' ),
 			[ 'jquery' ],
-			time(), // Force reload for debug
+			time(),
 			true
 		);
 
-		wp_localize_script( 'alezux-logros-js', 'alezux_logros_vars', [
+		wp_localize_script( 'alezux-view-logros-js', 'alezux_logros_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'alezux_logros_nonce' ),
 		] );
 		
 		// Estilos
+		// VIEW LOGROS CSS
 		wp_register_style(
-			'alezux-logros-css',
-			$this->get_asset_url( 'assets/css/logros.css' ),
+			'alezux-view-logros-css',
+			$this->get_asset_url( 'assets/css/view-logros.css' ),
 			[],
-			time() // Force reload for dev
+			time()
 		);
+
+		// GRID LOGROS CSS
+		wp_register_style(
+			'alezux-grid-logros-css',
+			$this->get_asset_url( 'assets/css/grid-logros.css' ),
+			[],
+			time()
+		);
+		
+		// GRID LOGROS JS (Si en el futuro se necesita, por ahora Grid usa JS inline)
+		// Pero es bueno registrarlo si creamos el archivo
+		// wp_register_script('alezux-grid-logros-js', ...);
 	}
 
 	private function maybe_create_table() {
