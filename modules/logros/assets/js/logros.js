@@ -243,7 +243,11 @@ function renderCards(data, container) {
 
         // Student Info
         html += '<div class="alezux-card-student">';
-        html += '<div class="alezux-student-avatar"><i class="fas fa-user-circle"></i></div>'; // Generic avatar if no URL
+        if (item.student_avatar) {
+            html += '<div class="alezux-student-avatar"><img src="' + item.student_avatar + '" alt="Avatar"></div>';
+        } else {
+            html += '<div class="alezux-student-avatar"><i class="fas fa-user-circle"></i></div>';
+        }
         html += '<span class="alezux-student-name">' + (item.student_name || 'Estudiante Desconocido') + '</span>';
         html += '</div>';
 
