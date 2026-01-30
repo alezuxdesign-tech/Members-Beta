@@ -327,6 +327,38 @@ class Menu_Admin_Widget extends Widget_Base {
 
 		$this->end_controls_tab();
 
+		$this->start_controls_tab(
+			'tab_item_active',
+			[
+				'label' => esc_html__( 'Activo', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'item_color_active',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active .alezux-menu-admin-icon' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_bg_color_active',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
 		$this->end_controls_tabs();
 
 		$this->add_group_control(
@@ -402,14 +434,36 @@ class Menu_Admin_Widget extends Widget_Base {
 		?>
 		<div class="alezux-menu-admin-container">
 			<ul class="alezux-menu-admin-list" style="display: flex; list-style: none; margin: 0; padding: 0;">
-				<?php foreach ( $settings['menu_items'] as $index => $item ) : 
+				<?php
+				// Obtener URL actual normalizada para comparación
+				$protocol = is_ssl() ? 'https://' : 'http://';
+				$current_url_raw = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				// Eliminamos query args para una comparación más limpia de "página", 
+				// o usamos la URL completa dependiendo de la necesidad. 
+				// Generalmente para menús, queremos coincidir path.
+				// Una forma segura es usar set_url_scheme y untrailingslashit
+				$current_url = untrailingslashit( strtok( $current_url_raw, '?' ) );
+
+				foreach ( $settings['menu_items'] as $index => $item ) : 
 					$link_key = 'link_' . $index;
 					if ( ! empty( $item['link']['url'] ) ) {
 						$this->add_link_attributes( $link_key, $item['link'] );
 					}
+					
+					// Lógica de Activo
+					$is_active = false;
+					if ( ! empty( $item['link']['url'] ) ) {
+						$item_url = untrailingslashit( strtok( $item['link']['url'], '?' ) );
+						// Si la URL del item coincide con la actual
+						if ( $item_url === $current_url ) {
+							$is_active = true;
+						}
+					}
+					
+					$active_class = $is_active ? ' alezux-menu-item-active' : '';
 					?>
 					<li class="alezux-menu-admin-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ); ?>">
-						<a class="alezux-menu-admin-item-link" <?php echo $this->get_render_attribute_string( $link_key ); ?> style="display: flex; align-items: center; text-decoration: none; transition: all 0.3s ease;">
+						<a class="alezux-menu-admin-item-link<?php echo esc_attr( $active_class ); ?>" <?php echo $this->get_render_attribute_string( $link_key ); ?> style="display: flex; align-items: center; text-decoration: none; transition: all 0.3s ease;">
 							<?php if ( ! empty( $item['icon']['value'] ) ) : ?>
 								<span class="alezux-menu-admin-icon" style="display: inline-flex; align-items: center; justify-content: center;">
 									<?php Icons_Manager::render_icon( $item['icon'], [ 'aria-hidden' => 'true' ] ); ?>
