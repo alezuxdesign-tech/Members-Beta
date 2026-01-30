@@ -25,6 +25,11 @@ class Estudiantes extends Module_Base {
 		// Registrar scripts y estilos
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
+
+		// AJAX Búsqueda Estudiantes
+		add_action( 'wp_ajax_alezux_search_students', [ $this, 'ajax_search_students' ] );
+		// Si queremos que funcione para no logueados (dudoso para admin panel, pero por si acaso)
+		// add_action( 'wp_ajax_nopriv_alezux_search_students', [ $this, 'ajax_search_students' ] );
 	}
 
 	public function register_elementor_widgets( $widgets_manager ) {
@@ -33,14 +38,27 @@ class Estudiantes extends Module_Base {
 	}
 
 	public function register_assets() {
-		// Aquí registraremos CSS si es necesario para la tabla
-		// Por ahora lo dejamos preparado
+		// Estilos
 		wp_register_style(
 			'alezux-estudiantes-css',
 			$this->get_asset_url( 'assets/css/estudiantes.css' ),
 			[],
 			time()
 		);
+
+		// Scripts
+		wp_register_script(
+			'alezux-estudiantes-js',
+			$this->get_asset_url( 'assets/js/estudiantes.js' ),
+			[ 'jquery' ],
+			time(),
+			true
+		);
+
+		wp_localize_script( 'alezux-estudiantes-js', 'alezux_estudiantes_vars', [
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'nonce'    => wp_create_nonce( 'alezux_estudiantes_nonce' ),
+		] );
 	}
 
 	/**
@@ -114,5 +132,51 @@ class Estudiantes extends Module_Base {
 		}
 
 		return number_format( count( $results ) );
+	}
+
+	/**
+	 * AJAX Handler: Buscar estudiantes
+	 */
+	public function ajax_search_students() {
+		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'edit_users' ) ) {
+			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		}
+
+		$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+
+		$args = [
+			'role__in' => [ 'subscriber', 'student' ],
+			'number'   => 50,
+			'search'   => '*' . $search . '*',
+			'search_columns' => [ 'user_login', 'user_email', 'display_name' ],
+		];
+
+		// Si string vacío, devuelve lista inicial
+		if ( empty( $search ) ) {
+			unset( $args['search'] );
+		}
+
+		$user_query = new \WP_User_Query( $args );
+		$students = $user_query->get_results();
+
+		// Fallback búsqueda global si no hay roles específicos y no encontramos nada (opcional)
+		// Mantenemos la lógica simple de widget para consistencia
+
+		$data = [];
+		foreach ( $students as $student ) {
+			$data[] = [
+				'id'           => $student->ID,
+				'name'         => $student->display_name,
+				'username'     => $student->user_nicename, // o user_login
+				'email'        => $student->user_email,
+				'avatar_url'   => get_avatar_url( $student->ID ),
+				'status_label' => 'OK', // Simulado
+				'status_class' => 'status-active', // Simulado
+			];
+		}
+
+		wp_send_json_success( $data );
 	}
 }
