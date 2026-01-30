@@ -302,8 +302,8 @@ class View_Logros_Widget extends Widget_Base {
 						'max' => 500,
 					],
 				],
-				'selectors' => [
-					'{{WRAPPER}} .alezux-card-image' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+			'selectors' => [
+					'{{WRAPPER}} .alezux-card-image' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; flex: 0 0 {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -852,6 +852,373 @@ class View_Logros_Widget extends Widget_Base {
 		$this->end_controls_tabs();
 
 		$this->end_controls_section();
+
+			// ------------------------------
+			// BUTTONS STYLE
+			// ------------------------------
+			$this->start_controls_section(
+				'section_style_buttons',
+				[
+					'label' => esc_html__( 'Botones Tarjeta', 'alezux-members' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				]
+			);
+
+            $this->add_control(
+				'heading_btn_edit',
+				[
+					'label' => esc_html__( 'Editar', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'btn_edit_typography',
+					'selector' => '{{WRAPPER}} .alezux-btn-card-edit',
+				]
+			);
+
+            $this->start_controls_tabs( 'tabs_btn_edit' );
+
+            $this->start_controls_tab(
+                'tab_btn_edit_normal',
+                [
+                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                ]
+            );
+
+            $this->add_control(
+                'btn_edit_color',
+                [
+                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-edit' => 'color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'btn_edit_bg_color',
+                [
+                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-edit' => 'background-color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->end_controls_tab();
+
+            $this->start_controls_tab(
+                'tab_btn_edit_hover',
+                [
+                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                ]
+            );
+
+            $this->add_control(
+                'btn_edit_color_hover',
+                [
+                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-edit:hover' => 'color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'btn_edit_bg_color_hover',
+                [
+                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-edit:hover' => 'background-color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->end_controls_tab();
+
+            $this->end_controls_tabs();
+
+            // DELETE BUTTON
+            $this->add_control(
+				'heading_btn_delete',
+				[
+					'label' => esc_html__( 'Eliminar', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'btn_delete_typography',
+					'selector' => '{{WRAPPER}} .alezux-btn-card-delete',
+				]
+			);
+
+            $this->start_controls_tabs( 'tabs_btn_delete' );
+
+            $this->start_controls_tab(
+                'tab_btn_delete_normal',
+                [
+                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                ]
+            );
+
+            $this->add_control(
+                'btn_delete_color',
+                [
+                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-delete' => 'color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'btn_delete_bg_color',
+                [
+                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-delete' => 'background-color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->end_controls_tab();
+
+            $this->start_controls_tab(
+                'tab_btn_delete_hover',
+                [
+                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                ]
+            );
+
+            $this->add_control(
+                'btn_delete_color_hover',
+                [
+                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-delete:hover' => 'color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'btn_delete_bg_color_hover',
+                [
+                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'type' => Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .alezux-btn-card-delete:hover' => 'background-color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->end_controls_tab();
+
+            $this->end_controls_tabs();
+
+			$this->end_controls_section();
+
+			// ------------------------------
+			// MODAL STYLE (POPUP)
+			// ------------------------------
+			$this->start_controls_section(
+				'section_style_modal',
+				[
+					'label' => esc_html__( 'Modal / Popup', 'alezux-members' ),
+					'tab'   => Controls_Manager::TAB_STYLE,
+				]
+			);
+
+            $this->add_control(
+				'heading_modal_overlay',
+				[
+					'label' => esc_html__( 'Fondo Overlay', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_overlay_bg',
+				[
+					'label' => esc_html__( 'Color', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->add_control(
+				'heading_modal_box',
+				[
+					'label' => esc_html__( 'Caja de Contenido', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_box_bg',
+				[
+					'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form' => 'background-color: {{VALUE}};',
+                        '{{WRAPPER}} .alezux-delete-modal-content' => 'background-color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Border::get_type(),
+				[
+					'name' => 'modal_box_border',
+					'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form, {{WRAPPER}} .alezux-delete-modal-content',
+				]
+			);
+
+            $this->add_control(
+				'modal_box_radius',
+				[
+					'label' => esc_html__( 'Radio de Borde', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', '%', 'em' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                        '{{WRAPPER}} .alezux-delete-modal-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Box_Shadow::get_type(),
+				[
+					'name' => 'modal_box_shadow',
+					'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form, {{WRAPPER}} .alezux-delete-modal-content',
+				]
+			);
+
+            $this->add_control(
+				'modal_box_padding',
+				[
+					'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+					'type' => Controls_Manager::DIMENSIONS,
+					'size_units' => [ 'px', 'em', '%' ],
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                        '{{WRAPPER}} .alezux-delete-modal-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+				]
+			);
+
+            $this->add_control(
+				'heading_modal_title',
+				[
+					'label' => esc_html__( 'Título', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_title_color',
+				[
+					'label' => esc_html__( 'Color', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-form-wrapper h3' => 'color: {{VALUE}};',
+                        '{{WRAPPER}} .alezux-delete-modal-content h3' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->add_group_control(
+				Group_Control_Typography::get_type(),
+				[
+					'name' => 'modal_title_typography',
+					'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper h3, {{WRAPPER}} .alezux-delete-modal-content h3',
+				]
+			);
+
+            $this->add_control(
+				'heading_modal_inputs',
+				[
+					'label' => esc_html__( 'Campos (Inputs)', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_input_bg',
+				[
+					'label' => esc_html__( 'Fondo Campo', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-input' => 'background-color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->add_control(
+				'modal_input_color',
+				[
+					'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-input' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->add_control(
+				'heading_modal_submit',
+				[
+					'label' => esc_html__( 'Botón Guardar', 'alezux-members' ),
+					'type' => Controls_Manager::HEADING,
+					'separator' => 'before',
+				]
+			);
+
+            $this->add_control(
+				'modal_submit_bg',
+				[
+					'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit' => 'background-color: {{VALUE}};',
+					],
+				]
+			);
+            
+            $this->add_control(
+				'modal_submit_color',
+				[
+					'label' => esc_html__( 'Texto Botón', 'alezux-members' ),
+					'type' => Controls_Manager::COLOR,
+					'selectors' => [
+						'{{WRAPPER}} .alezux-logro-submit' => 'color: {{VALUE}};',
+					],
+				]
+			);
+
+            $this->end_controls_section();
 	}
 
 	protected function render() {
