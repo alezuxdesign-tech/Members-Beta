@@ -104,7 +104,7 @@ class View_Logros_Widget extends Widget_Base {
 					<span class="alezux-modal-close">&times;</span>
 					<h3><?php esc_html_e( 'Editar Logro', 'alezux-members' ); ?></h3>
 					<form id="alezux-logro-edit-form">
-						<input type="hidden" id="edit-logro-id" name="logro_id">
+						<input type="hidden" id="edit-logro-id" name="id">
 						
 						<div class="alezux-form-group">
 							<label for="edit-course-id"><?php esc_html_e( 'Curso', 'alezux-members' ); ?></label>
