@@ -922,8 +922,8 @@ class Form_Logro_Widget extends Widget_Base {
                 }
 
                 // 1. CLICK HANDLER
-                // Use body delegation to capture clicks on any new instances
-                $('body').on('click', '.alezux-upload-box', function (event) {
+                // Unbind first to prevent stacking if script runs multiple times
+                $('body').off('click', '.alezux-upload-box').on('click', '.alezux-upload-box', function (event) {
                     
                     // Ignore clicks on close/remove button (handled separately)
                     if ($(event.target).closest('.alezux-remove-img').length) {
@@ -966,7 +966,7 @@ class Form_Logro_Widget extends Widget_Base {
                 });
 
                 // 2. REMOVE HANDLER
-                $('body').on('click', '.alezux-remove-img', function(e) {
+                $('body').off('click', '.alezux-remove-img').on('click', '.alezux-remove-img', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     var $box = $(this).closest('.alezux-upload-box');
@@ -974,9 +974,16 @@ class Form_Logro_Widget extends Widget_Base {
                 });
 
                 // 3. SUBMIT HANDLER
-                $(document).on('submit', '#alezux-logro-form', function (e) {
+                $(document).off('submit', '#alezux-logro-form').on('submit', '#alezux-logro-form', function (e) {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
+                    
                     var $form = $(this);
+                    
+                    // Simple debounce check
+                    if($form.data('submitting')) return;
+                    $form.data('submitting', true);
+
                     var $response = $form.find('#alezux-logro-response');
                     var $btn = $form.find('button[type="submit"]');
                     
@@ -1002,8 +1009,12 @@ class Form_Logro_Widget extends Widget_Base {
                                 $response.html('<div style="color:red; padding:10px; background:#ffe0e0; margin-top:10px;">'+ (res.data.message||'Error') +'</div>');
                             }
                         },
+                        error: function(){
+                             $response.html('<div style="color:red; padding:10px; background:#ffe0e0; margin-top:10px;">Error de servidor</div>');
+                        },
                         complete: function(){
                             $btn.prop('disabled', false).css('opacity',1);
+                            $form.data('submitting', false);
                         }
                     });
                 });
