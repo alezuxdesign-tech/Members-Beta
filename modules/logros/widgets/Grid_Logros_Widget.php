@@ -509,10 +509,19 @@ class Grid_Logros_Widget extends Widget_Base {
 			]
 		);
 
+		// --- Container Popup ---
+		$this->add_control(
+			'heading_popup_container',
+			[
+				'label' => esc_html__( 'Contenedor', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
 		$this->add_control(
 			'popup_bg_color',
 			[
-				'label' => esc_html__( 'Color Fondo Popup', 'alezux-members' ),
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-logro-popup-content' => 'background-color: {{VALUE}};',
@@ -523,7 +532,7 @@ class Grid_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'popup_padding',
 			[
-				'label' => esc_html__( 'Relleno Popup', 'alezux-members' ),
+				'label' => esc_html__( 'Relleno', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', '%' ],
 				'selectors' => [
@@ -535,7 +544,7 @@ class Grid_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'popup_border_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde Popup', 'alezux-members' ),
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -544,22 +553,143 @@ class Grid_Logros_Widget extends Widget_Base {
 			]
 		);
 
+		// --- Imagen Logro ---
+		$this->add_control(
+			'heading_popup_image',
+			[
+				'label' => esc_html__( 'Imagen Logro', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'popup_image_border_radius',
+			[
+				'label' => esc_html__( 'Radio Borde Imagen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .popup-image-el' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'popup_image_shadow',
+				'selector' => '{{WRAPPER}} .popup-image-el',
+			]
+		);
+
+		// --- Info Estudiante ---
+		$this->add_control(
+			'heading_popup_student',
+			[
+				'label' => esc_html__( 'Estudiante', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'popup_avatar_border_radius',
+			[
+				'label' => esc_html__( 'Radio Borde Avatar', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .popup-avatar-el' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'popup_student_typography',
+				'label' => 'Tipografía Nombre',
+				'selector' => '{{WRAPPER}} .popup-student-el',
+			]
+		);
+
+		$this->add_control(
+			'popup_student_color',
+			[
+				'label' => esc_html__( 'Color Nombre', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .popup-student-el' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		// --- Mensaje ---
+		$this->add_control(
+			'heading_popup_message',
+			[
+				'label' => esc_html__( 'Mensaje', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
 		$this->add_group_control(
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'popup_msg_typography',
-				'label' => 'Tipografía Mensaje',
+				'label' => 'Tipografía',
 				'selector' => '{{WRAPPER}} .popup-message-el',
 			]
 		);
 
 		$this->add_control(
-			'popup_text_color',
+			'popup_msg_color',
 			[
-				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'label' => esc_html__( 'Color Mensaje', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .popup-message-el, {{WRAPPER}} .popup-student-el' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .popup-message-el' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		// --- Cerrar ---
+		$this->add_control(
+			'heading_popup_close',
+			[
+				'label' => esc_html__( 'Icono Cerrar', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'popup_close_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-popup-close' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'popup_close_size',
+			[
+				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-popup-close' => 'font-size: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
