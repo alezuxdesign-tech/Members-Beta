@@ -322,7 +322,10 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         if ( is_user_logged_in() ) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'alezux_study_log';
-            $six_days_ago = date('Y-m-d', strtotime('-6 days'));
+            
+            // Fix Timezone: Use WP Local Time as base
+            $wp_local_timestamp = current_time('timestamp');
+            $six_days_ago = date('Y-m-d', strtotime('-6 days', $wp_local_timestamp));
             
             // Query: Sum seconds per day for this user, from 6 days ago until now
             $results = $wpdb->get_results( $wpdb->prepare(
@@ -342,11 +345,11 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             }
         } else if ( $is_editor ) {
             // Mock data for editor
-            $today = date('Y-m-d');
+            $today = date('Y-m-d', current_time('timestamp'));
             $log = [
-                date('Y-m-d', strtotime('-1 day')) => 3600,
-                date('Y-m-d', strtotime('-2 days')) => 7200,
-                date('Y-m-d', strtotime('-3 days')) => 1800,
+                date('Y-m-d', strtotime('-1 day', current_time('timestamp'))) => 3600,
+                date('Y-m-d', strtotime('-2 days', current_time('timestamp'))) => 7200,
+                date('Y-m-d', strtotime('-3 days', current_time('timestamp'))) => 1800,
                 $today => 5400,
             ];
         }
@@ -363,8 +366,11 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         $max_daily = 0;
         $days_labels = [];
         
+        $wp_local_timestamp = current_time('timestamp'); // Re-fetch to be sure available in this scope
+
         for ($i = 6; $i >= 0; $i--) {
-            $d = date('Y-m-d', strtotime("-$i days"));
+            // Fix Timezone in Loop
+            $d = date('Y-m-d', strtotime("-$i days", $wp_local_timestamp));
             $val = isset($log[$d]) ? $log[$d] : 0;
             if ($val > $max_daily) $max_daily = $val;
             

@@ -42,9 +42,34 @@ class Formaciones extends Module_Base {
 		// AJAX para seguimiento de tiempo
 		add_action( 'wp_ajax_alezux_track_study_time', [ $this, 'handle_study_time_tracking' ] );
 
+        // Create Table if not exists (Auto-migration)
+        add_action( 'admin_init', [ $this, 'create_study_log_table' ] );
+
 		// Control de Caché (LiteSpeed)
 		add_action( 'wp', [ $this, 'control_litespeed_cache' ] );
 	}
+
+    public function create_study_log_table() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'alezux_study_log';
+        
+        if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
+            $charset_collate = $wpdb->get_charset_collate();
+
+            $sql = "CREATE TABLE $table_name (
+                id bigint(20) NOT NULL AUTO_INCREMENT,
+                user_id bigint(20) NOT NULL,
+                date date NOT NULL,
+                seconds int(11) NOT NULL DEFAULT 0,
+                last_updated datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY  (id),
+                UNIQUE KEY user_date (user_id, date)
+            ) $charset_collate;";
+
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
+    }
 
 	public function control_litespeed_cache() {
 		// Solo aplicar si el usuario está logueado (LearnDash progress is user-specific)
@@ -375,39 +400,38 @@ class Formaciones extends Module_Base {
 		$user_id = get_current_user_id();
 		$seconds = isset( $_POST['seconds'] ) ? intval( $_POST['seconds'] ) : 0;
 		
-		// CRITICAL FIX: Use WordPress Local Time instead of Client Time (UTC)
-		// This ensures that "Today" in the chart matches "Today" in the database relative to site settings.
+		// Use WordPress Local Time
 		$date = current_time( 'Y-m-d' );
 
 		if ( $seconds <= 0 ) {
 			wp_send_json_success(); // No hay nada que guardar
 		}
 
-		// Debug Log to confirm reception
-		error_log( "ALEZUX TRACKER: User $user_id | Seconds: $seconds | Date: $date" );
+		// Debug Log
+		error_log( "ALEZUX TRACKER SQL: User $user_id | Seconds: $seconds | Date: $date" );
 
-		// Obtener log actual
-		// Estructura: [ '2023-10-27' => 120, '2023-10-28' => 300 ]
-		$log = get_user_meta( $user_id, 'alezux_study_time_log', true );
-		if ( ! is_array( $log ) ) {
-			$log = [];
-		}
+        // --- SQL INSERTION ---
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'alezux_study_log';
 
-		if ( isset( $log[ $date ] ) ) {
-			$log[ $date ] += $seconds;
-		} else {
-			$log[ $date ] = $seconds;
-		}
+        // Insert or Update (accumulator)
+        // If row exists for user+date, add seconds to existing value
+        $sql = $wpdb->prepare(
+            "INSERT INTO $table_name (user_id, date, seconds) 
+             VALUES (%d, %s, %d) 
+             ON DUPLICATE KEY UPDATE seconds = seconds + VALUES(seconds)",
+            $user_id,
+            $date,
+            $seconds
+        );
 
-		// Limpieza opcional: Mantener solo últimos 365 días para no explotar la DB
-		if ( count( $log ) > 365 ) {
-			// Ordenar por clave (fecha) y quitar los antiguos
-			ksort( $log );
-			$log = array_slice( $log, -365, 365, true );
-		}
+        $result = $wpdb->query( $sql );
 
-		update_user_meta( $user_id, 'alezux_study_time_log', $log );
+        if ( $result === false ) {
+            error_log( "ALEZUX TRACKER SQL ERROR: " . $wpdb->last_error );
+            wp_send_json_error( [ 'message' => 'Database error' ] );
+        }
 
-		wp_send_json_success( [ 'logged' => $seconds, 'total_today' => $log[ $date ], 'date_used' => $date ] );
+		wp_send_json_success( [ 'logged' => $seconds, 'date_used' => $date ] );
 	}
 }
