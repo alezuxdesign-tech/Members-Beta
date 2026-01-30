@@ -32,7 +32,6 @@ class Form_Logro_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		// Retiramos alezux-logros-js para evitar duplicidad y posibles 404, usamos inline.
 		return [ 'jquery' ];
 	}
 
@@ -802,15 +801,19 @@ class Form_Logro_Widget extends Widget_Base {
         // Fetch courses and students
 		$courses = get_posts( [ 'post_type' => 'sfwd-courses', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC' ] );
 		$students = get_users( [ 'role__in' => [ 'student', 'subscriber', 'customer' ], 'fields' => [ 'ID', 'display_name', 'user_email' ], 'number' => 300 ] );
+        
+        // UNIQUE ID for this widget instance
+        $unique_id = $this->get_id();
+        $form_id = 'alezux-logro-form-' . $unique_id;
 
 		?>
 		<div class="alezux-logro-form-wrapper">
-			<form id="alezux-logro-form" class="alezux-logro-form">
+			<form id="<?php echo esc_attr($form_id); ?>" class="alezux-logro-form" data-widget-id="<?php echo esc_attr($unique_id); ?>">
 				
                 <!-- Course -->
 				<div class="alezux-logro-form-group">
-					<label for="logro-course"><?php echo esc_html( $settings['label_course'] ); ?></label>
-					<select id="logro-course" name="course_id" class="alezux-logro-input" required>
+					<label for="logro-course-<?php echo esc_attr($unique_id); ?>"><?php echo esc_html( $settings['label_course'] ); ?></label>
+					<select id="logro-course-<?php echo esc_attr($unique_id); ?>" name="course_id" class="alezux-logro-input" required>
 						<option value=""><?php echo esc_html( $settings['placeholder_course'] ); ?></option>
 						<?php foreach ( $courses as $course ) : ?>
 							<option value="<?php echo esc_attr( $course->ID ); ?>"><?php echo esc_html( $course->post_title ); ?></option>
@@ -820,8 +823,8 @@ class Form_Logro_Widget extends Widget_Base {
                 
                 <!-- Student -->
                 <div class="alezux-logro-form-group">
-					<label for="logro-student"><?php echo esc_html( $settings['label_student'] ); ?></label>
-					<select id="logro-student" name="student_id" class="alezux-logro-input">
+					<label for="logro-student-<?php echo esc_attr($unique_id); ?>"><?php echo esc_html( $settings['label_student'] ); ?></label>
+					<select id="logro-student-<?php echo esc_attr($unique_id); ?>" name="student_id" class="alezux-logro-input">
 						<option value=""><?php echo esc_html( $settings['placeholder_student'] ); ?></option>
 						<?php foreach ( $students as $student ) : ?>
 							<option value="<?php echo esc_attr( $student->ID ); ?>">
@@ -833,8 +836,8 @@ class Form_Logro_Widget extends Widget_Base {
 
                 <!-- Message -->
                 <div class="alezux-logro-form-group">
-					<label for="logro-message"><?php echo esc_html( $settings['label_message'] ); ?></label>
-					<textarea id="logro-message" name="message" class="alezux-logro-input" rows="4" required></textarea>
+					<label for="logro-message-<?php echo esc_attr($unique_id); ?>"><?php echo esc_html( $settings['label_message'] ); ?></label>
+					<textarea id="logro-message-<?php echo esc_attr($unique_id); ?>" name="message" class="alezux-logro-input" rows="4" required></textarea>
 				</div>
 
 				<div class="alezux-logro-form-group">
@@ -890,7 +893,7 @@ class Form_Logro_Widget extends Widget_Base {
             };
 
             jQuery(document).ready(function ($) {
-                console.log('Alezux Members: Inline Widget Script Running');
+                console.log('Alezux Members: Inline Widget Script Running [Instance: <?php echo esc_js($unique_id); ?>]');
 
                 var file_frame;
 
@@ -921,8 +924,8 @@ class Form_Logro_Widget extends Widget_Base {
                     }
                 }
 
-                // 1. CLICK HANDLER
-                // Unbind first to prevent stacking if script runs multiple times
+                // 1. CLICK HANDLER (Delegate to unique instance or class)
+                // Use CLASS selector to be generic, but safeguard with off()
                 $('body').off('click', '.alezux-upload-box').on('click', '.alezux-upload-box', function (event) {
                     
                     // Ignore clicks on close/remove button (handled separately)
@@ -935,7 +938,7 @@ class Form_Logro_Widget extends Widget_Base {
                     // Check for wp.media
                     if (typeof wp === 'undefined' || !wp.media) {
                         console.error('WP Media not found.');
-                        alert('Error: La librería de medios de WordPress no se ha cargado.');
+                        alert('Error: La librería de medios no está disponible.');
                         return;
                     }
 
@@ -973,15 +976,20 @@ class Form_Logro_Widget extends Widget_Base {
                     updateUploadUI($box, null);
                 });
 
-                // 3. SUBMIT HANDLER
-                $(document).off('submit', '#alezux-logro-form').on('submit', '#alezux-logro-form', function (e) {
+                // 3. SUBMIT HANDLER - Target CLASS instead of ID
+                // IMPORTANT: Use class selector to catch any form, but handle generically
+                $(document).off('submit', '.alezux-logro-form').on('submit', '.alezux-logro-form', function (e) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
                     
                     var $form = $(this);
-                    
-                    // Simple debounce check
-                    if($form.data('submitting')) return;
+                    console.log('Alezux Submit Triggered for form:', $form.attr('id'));
+
+                    // Double check submitting state
+                    if($form.data('submitting') === true) {
+                        console.warn('Prevented double submission');
+                        return;
+                    }
                     $form.data('submitting', true);
 
                     var $response = $form.find('#alezux-logro-response');
@@ -1014,7 +1022,7 @@ class Form_Logro_Widget extends Widget_Base {
                         },
                         complete: function(){
                             $btn.prop('disabled', false).css('opacity',1);
-                            $form.data('submitting', false);
+                            $form.data('submitting', false); // Release lock
                         }
                     });
                 });
