@@ -568,6 +568,8 @@ class Grid_Logros_Widget extends Widget_Base {
 	}
 
 	protected function render() {
+		$settings = $this->get_settings_for_display();
+
 		if ( ! is_user_logged_in() ) {
 			if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 				echo '<div>Grid visible solo para usuarios logueados.</div>';
