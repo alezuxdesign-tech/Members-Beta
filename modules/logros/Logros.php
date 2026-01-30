@@ -24,6 +24,9 @@ class Logros extends Module_Base {
 		
 		// Encolar scripts necesarios
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		// Asegurar carga en el editor de Elementor y frontend de Elementor
+		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_scripts' ] );
+		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	public function register_elementor_category( $elements_manager ) {
