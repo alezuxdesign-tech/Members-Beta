@@ -57,25 +57,25 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         $this->add_control(
 			'tab_daily_label',
 			[
-				'label' => __( 'Etiqueta Diario', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Daily', 'alezux-members' ),
-			]
-		);
-        $this->add_control(
-			'tab_weekly_label',
-			[
-				'label' => __( 'Etiqueta Semanal', 'alezux-members' ),
+				'label' => __( 'Etiqueta Semanal (7 Días)', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
 				'default' => __( 'Weekly', 'alezux-members' ),
 			]
 		);
         $this->add_control(
-			'tab_monthly_label',
+			'tab_weekly_label',
 			[
-				'label' => __( 'Etiqueta Mensual', 'alezux-members' ),
+				'label' => __( 'Etiqueta Mensual (30 Días)', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
 				'default' => __( 'Monthly', 'alezux-members' ),
+			]
+		);
+        $this->add_control(
+			'tab_monthly_label',
+			[
+				'label' => __( 'Etiqueta Anual (12 Meses)', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Yearly', 'alezux-members' ),
 			]
 		);
 
@@ -325,9 +325,10 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             
             // Fix Timezone: Use WP Local Time as base
             $wp_local_timestamp = current_time('timestamp');
-            $six_days_ago = date('Y-m-d', strtotime('-6 days', $wp_local_timestamp));
+            // Fetch 1 year of data for all views
+            $one_year_ago = date('Y-m-d', strtotime('-1 year', $wp_local_timestamp));
             
-            // Query: Sum seconds per day for this user, from 6 days ago until now
+            // Query: Sum seconds per day for this user, from 1 year ago until now
             $results = $wpdb->get_results( $wpdb->prepare(
                 "SELECT date, SUM(seconds) as total_seconds 
                  FROM $table_name 
@@ -335,7 +336,7 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                  AND date >= %s 
                  GROUP BY date",
                 $user_id,
-                $six_days_ago
+                $one_year_ago
             ) );
 
             if ( $results ) {
@@ -354,70 +355,105 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             ];
         }
 
-        // Helper to format seconds
-        // $format_time = function($seconds) {
-        //     $h = floor($seconds / 3600);
-        //     $m = floor(($seconds % 3600) / 60);
-        //     return sprintf('%02dh %02dm', $h, $m);
-        // };
-
-        // Process Data for Daily (Last 7 Days)
-        $daily_data = [];
-        $max_daily = 0;
-        $days_labels = [];
-        
         $wp_local_timestamp = current_time('timestamp'); // Re-fetch to be sure available in this scope
 
-        for ($i = 6; $i >= 0; $i--) {
-            // Fix Timezone in Loop
-            $d = date('Y-m-d', strtotime("-$i days", $wp_local_timestamp));
-            $val = isset($log[$d]) ? $log[$d] : 0;
-            if ($val > $max_daily) $max_daily = $val;
+        // --- DATA PROCESSING FUNCTIONS ---
+        // Helper to process daily bars (used for Weekly and Monthly)
+        $process_daily_data = function($days_count) use ($log, $wp_local_timestamp) {
+            $data = [];
+            $max_val = 0;
+            for ($i = $days_count - 1; $i >= 0; $i--) {
+                $d = date('Y-m-d', strtotime("-$i days", $wp_local_timestamp));
+                $val = isset($log[$d]) ? $log[$d] : 0;
+                if ($val > $max_val) $max_val = $val;
+                
+                $day_label = date_i18n('D', strtotime($d)); // Localized day name
+                // For Monthly (30 days), modify label slightly later or here
+                
+                $data[] = [
+                    'val' => $val,
+                    'label' => $day_label,
+                    'full_date' => date_i18n(get_option('date_format'), strtotime($d)),
+                    'date' => $d,
+                    'is_today' => ($i === 0)
+                ];
+            }
+            return ['data' => $data, 'max' => $max_val];
+        };
+
+        // 1. Weekly Data (7 Days)
+        $weekly = $process_daily_data(7);
+        $weekly_data = $weekly['data'];
+        $max_weekly = $weekly['max'];
+        
+        // Calculate Real Max for Best logic (Weekly)
+        $real_max_weekly = 0;
+        foreach ($weekly_data as $d) {
+            if ($d['val'] > $real_max_weekly) $real_max_weekly = $d['val'];
+        }
+        if ($max_weekly == 0) $max_weekly = 3600;
+        $max_weekly = ceil($max_weekly / 1800) * 1800;
+
+        // 2. Monthly Data (30 Days)
+        $monthly = $process_daily_data(30);
+        $monthly_data = $monthly['data'];
+        $max_monthly = $monthly['max'];
+        // Reduce labels for monthly view (show every 5th)
+        foreach ($monthly_data as $key => &$d) {
+             // Show label for 1st, 5th... or just simplify.
+             // Let's show label if index % 5 == 0 or last one.
+             if ($key % 5 !== 0 && $key !== 29) {
+                 $d['label'] = ''; 
+             } else {
+                 $d['label'] = date_i18n('d', strtotime($d['date'])); // Day number for monthly view
+             }
+        }
+        if ($max_monthly == 0) $max_monthly = 3600;
+        $max_monthly = ceil($max_monthly / 1800) * 1800;
+
+        // 3. Yearly Data (12 Months)
+        $yearly_data = [];
+        $max_yearly = 0;
+        for ($i = 11; $i >= 0; $i--) {
+            $month_start = date('Y-m-01', strtotime("-$i months", $wp_local_timestamp));
+            $month_end = date('Y-m-t', strtotime($month_start));
+            $month_val = 0;
             
-            $day_label = date_i18n('D', strtotime($d)); // Localized day name (Mon, Tue)
-            $is_today = ($i === 0);
+            // Sum all days in this month from $log
+            // This loop over log keys is inefficient if log is huge, but it's okay for 1 user / 1 year.
+            // Better: Iterate days in month and check log.
+            $current_day = $month_start;
+            while (strtotime($current_day) <= strtotime($month_end)) {
+                 if (isset($log[$current_day])) {
+                     $month_val += $log[$current_day];
+                 }
+                 $current_day = date('Y-m-d', strtotime($current_day . ' +1 day'));
+            }
+
+            if ($month_val > $max_yearly) $max_yearly = $month_val;
             
-            $daily_data[] = [
-                'val' => $val,
-                'label' => $day_label,
-                'date' => $d,
-                'is_today' => $is_today
+            $yearly_data[] = [
+                'val' => $month_val,
+                'label' => date_i18n('M', strtotime($month_start)), // Jan, Feb
+                'full_date' => date_i18n('F Y', strtotime($month_start)),
+                'is_today' => ($i === 0) // Current month
             ];
         }
-        // Calculate Real Max for "Best of" logic
-        $real_max_val = 0;
-        foreach ($daily_data as $d) {
-            if ($d['val'] > $real_max_val) $real_max_val = $d['val'];
-        }
+        if ($max_yearly == 0) $max_yearly = 3600;
+        $max_yearly = ceil($max_yearly / 3600) * 3600; // Round to nearest hour for yearly
 
-        if ($max_daily == 0) $max_daily = 3600; // Prevent div by zero, default to 1h scale
-        $max_daily = ceil($max_daily / 1800) * 1800; // Round up to nearest 30min for nice scale
-
-        // --- RENDER HTML ---
-		?>
-		<div class="alezux-rendimiento-wrapper">
-            <div class="alezux-rendimiento-header">
-                <div class="alezux-rendimiento-title"><?php echo esc_html( $settings['title_text'] ); ?></div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                    <polyline points="7 7 17 7 17 17"></polyline>
-                </svg>
-            </div>
-
-            <div class="alezux-rendimiento-tabs">
-                <div class="alezux-tab-item active" data-tab="daily"><?php echo esc_html( $settings['tab_daily_label'] ); ?></div>
-                <div class="alezux-tab-item" data-tab="weekly"><?php echo esc_html( $settings['tab_weekly_label'] ); ?></div>
-                <div class="alezux-tab-item" data-tab="monthly"><?php echo esc_html( $settings['tab_monthly_label'] ); ?></div>
-            </div>
-
-            <div class="alezux-rendimiento-chart-area" id="chart-daily">
+        // Helper render function to avoid code duplication
+        $render_chart = function($id, $data_set, $max_val, $is_active = false) {
+             $style = $is_active ? '' : 'display:none;';
+             ?>
+             <div class="alezux-rendimiento-chart-area" id="<?php echo esc_attr($id); ?>" style="<?php echo $style; ?>">
                 <!-- Y Axis -->
                 <div class="alezux-axis-y">
                     <?php 
                         $steps = 4;
                         for ($i = $steps; $i >= 0; $i--) {
-                            $seconds = ($max_daily / $steps) * $i;
-                            echo '<span>' . gmdate("H:i:s", $seconds) . '</span>';
+                            $seconds = ($max_val / $steps) * $i;
+                            echo '<span>' . gmdate("H:i", $seconds) . '</span>';
                         }
                     ?>
                 </div>
@@ -433,24 +469,16 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                     ?>
                     
                     <div class="alezux-bars-container">
-                        <?php foreach($daily_data as $data): 
-                            $height_pct = ($data['val'] / $max_daily) * 100;
-                            $formatted_time = gmdate("H:i:s", $data['val']);
-                            $is_best = ($data['val'] > 0 && $data['val'] === $real_max_val);
+                        <?php foreach($data_set as $data): 
+                            $height_pct = ($data['val'] / $max_val) * 100;
+                            $formatted_time = ($data['val'] >= 3600) ? floor($data['val']/3600).'h '.floor(($data['val']%3600)/60).'m' : gmdate("i:s", $data['val']);
                         ?>
                             <div class="alezux-bar-column">
-                                <div class="alezux-bar-item <?php echo $data['is_today'] ? 'is-today' : ''; ?> <?php echo $is_best ? 'is-best' : ''; ?>" style="height: <?php echo $height_pct; ?>%;">
+                                <div class="alezux-bar-item <?php echo isset($data['is_today']) && $data['is_today'] ? 'is-today' : ''; ?>" style="height: <?php echo $height_pct; ?>%;">
                                     <div class="alezux-bar-fill"></div>
                                     <div class="alezux-bar-tooltip">
-                                        <?php if($is_best): ?>
-                                            <div class="tooltip-icon">🔥</div>
-                                        <?php endif; ?>
                                         <div class="tooltip-time"><?php echo $formatted_time; ?></div>
-                                        <?php if($is_best): ?>
-                                            <div class="tooltip-meta"><?php _e('Best of the week!', 'alezux-members'); ?></div>
-                                        <?php elseif($data['is_today']): ?>
-                                            <div class="tooltip-meta"><?php _e('Today', 'alezux-members'); ?></div>
-                                        <?php endif; ?>
+                                        <div class="tooltip-meta"><?php echo $data['full_date']; ?></div>
                                     </div>
                                 </div>
                                 <div class="alezux-axis-x-label"><?php echo $data['label']; ?></div>
@@ -459,15 +487,32 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                     </div>
                 </div>
             </div>
-            
-            <!-- Placeholders for Weekly/Monthly (Logic could be expanded similarly via JS or PHP) -->
-            <div class="alezux-rendimiento-chart-area" id="chart-weekly" style="display:none;">
-                <div style="padding: 40px; text-align: center; color: #999;"><?php _e('Weekly view coming soon', 'alezux-members'); ?></div>
-            </div>
-            <div class="alezux-rendimiento-chart-area" id="chart-monthly" style="display:none;">
-                <div style="padding: 40px; text-align: center; color: #999;"><?php _e('Monthly view coming soon', 'alezux-members'); ?></div>
+             <?php
+        };
+
+        // --- RENDER HTML ---
+		?>
+		<div class="alezux-rendimiento-wrapper">
+            <div class="alezux-rendimiento-header">
+                <div class="alezux-rendimiento-title"><?php echo esc_html( $settings['title_text'] ); ?></div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                    <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
             </div>
 
+            <div class="alezux-rendimiento-tabs">
+                <div class="alezux-tab-item active" data-tab="weekly"><?php echo esc_html( $settings['tab_daily_label'] ); ?></div>
+                <div class="alezux-tab-item" data-tab="monthly"><?php echo esc_html( $settings['tab_weekly_label'] ); ?></div>
+                <div class="alezux-tab-item" data-tab="yearly"><?php echo esc_html( $settings['tab_monthly_label'] ); ?></div>
+            </div>
+
+            <?php 
+                $render_chart('chart-weekly', $weekly_data, $max_weekly, true);
+                $render_chart('chart-monthly', $monthly_data, $max_monthly, false);
+                $render_chart('chart-yearly', $yearly_data, $max_yearly, false);
+            ?>
+            
 		</div>
 
         <script>
@@ -610,6 +655,11 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 margin-top: 8px;
                 font-size: 12px;
                 color: #999;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
             
             /* Tooltip */
@@ -640,14 +690,6 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 visibility: visible;
                 transform: translateX(-50%) translateY(-10px);
             }
-            
-            /* Always show tooltip for best day to match image style? Or just hover? 
-               Image shows it persistent. Let's make it persistent if it's the best day, 
-               but that might clutter if multiple widgets. Let's stick to hover + initial animation or just hover.
-               The image implies it's a hover state or selected state on the bar. 
-               Let's make it appear on hover AND if it is the 'is-best' one maybe show it by default? 
-               No, that might be annoying. Sticky hover is better.
-            */ 
             
             .tooltip-icon {
                 font-size: 16px;
