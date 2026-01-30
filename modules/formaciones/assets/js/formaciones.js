@@ -80,8 +80,8 @@ jQuery(document).ready(function ($) {
     });
 
     /**
-     * Time Tracking Logic for Study
-     * Detects HTML5 video/audio playback AND Vimeo/YouTube iframes to track time.
+     * Time Tracking Logic for Study - UNIVERSAL VERSION
+     * Supports HTML5, YouTube (API), Vimeo (API), and generic Iframe interaction.
      */
     (function () {
         let activeSeconds = 0;
@@ -90,171 +90,163 @@ jQuery(document).ready(function ($) {
         let lastSyncTime = Date.now();
         const SYNC_INTERVAL = 30000; // 30 seconds
 
-        // Flags for multiple players
-        let activePlayers = {
-            html5: false,
-            vimeo: false,
-            youtube: false
+        // State tracking
+        let activeSources = new Set();
+
+        const logState = (source, active) => {
+            if (active) activeSources.add(source);
+            else activeSources.delete(source);
+
+            const wasPlaying = isPlaying;
+            isPlaying = activeSources.size > 0;
+
+            // Debug only
+            // if (wasPlaying !== isPlaying) console.log('Alezux Tracker:', isPlaying ? 'Reconding...' : 'Paused', [...activeSources]);
         };
 
-        function updateMasterState() {
-            // If any player is active, we are playing
-            isPlaying = activePlayers.html5 || activePlayers.vimeo || activePlayers.youtube;
-            // distinct visual debugger
-            // console.log('Alezux Tracker State:', activePlayers, 'IsPlaying:', isPlaying);
-        }
+        // --- 1. HTML5 Native Video/Audio ---
+        $('video, audio').on('play', () => logState('html5', true))
+            .on('pause ended waiting', () => logState('html5', false));
 
-        function startTracking(source) {
-            activePlayers[source] = true;
-            updateMasterState();
-        }
-
-        function stopTracking(source) {
-            activePlayers[source] = false;
-            updateMasterState();
-        }
-
-        // --- 1. HTML5 Media Elements ---
-        $('video, audio').on('play', function () { startTracking('html5'); })
-            .on('pause ended', function () { stopTracking('html5'); });
-
-        // Check initial state
-        $('video, audio').each(function () {
-            if (!this.paused && !this.ended) {
-                startTracking('html5');
-            }
+        // --- 2. Generic Iframe Focus Fallback (For unknown players) ---
+        // If user clicks into an iframe, we assume they might be watching. 
+        // We stop assumtion if they click back out or blur window.
+        // This is a heuristic for "Any Player".
+        $(window).on('blur', function () {
+            setTimeout(function () {
+                if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                    // console.log('Focus lost to Iframe - assuming playback interactions');
+                    // We don't verify provider here, just generic fallback
+                    // But to avoid double counting with YT/Vimeo APIs, we verify src
+                    const src = document.activeElement.src || '';
+                    if (!src.includes('youtube') && !src.includes('vimeo')) {
+                        logState('generic-iframe', true);
+                    }
+                }
+            }, 100);
+        });
+        $(window).on('focus', function () {
+            // User came back to main window, assume interaction with generic iframe stopped or pausing?
+            // Actually, for generic iframe, it's hard to know when they stop. 
+            // We'll be conservative: if they focus back on body, stop generic count.
+            logState('generic-iframe', false);
         });
 
-        // --- 2. Vimeo Support (PostMessage API) ---
+
+        // --- 3. Vimeo API Support ---
         function initVimeo() {
-            const vimeoIframes = $('iframe[src*="vimeo.com"]');
+            const iframes = $('iframe[src*="vimeo.com"]');
+            if (iframes.length === 0) return;
 
-            if (vimeoIframes.length === 0) return;
-
-            // Listen for messages from Vimeo
-            window.addEventListener('message', function (e) {
-                // Validate origin somewhat (Vimeo usually sends from player.vimeo.com)
-                if (e.origin.indexOf('vimeo') === -1) return;
-
-                try {
-                    var data = JSON.parse(e.data);
-                } catch (err) { return; }
-
-                if (data.event === 'play') startTracking('vimeo');
-                if (data.event === 'pause' || data.event === 'finish') stopTracking('vimeo');
-                if (data.event === 'ready') {
-                    // Re-bind if a player reports ready late
-                    bindVimeoListeners();
-                }
-            });
-
-            function bindVimeoListeners() {
-                vimeoIframes.each(function () {
-                    const url = new URL(this.src);
-                    // Ensure api=1 parameter (Elementor/LearnDash usually add it, but allow JS interaction just in case)
-                    // Note: We can't change src easily without reloading iframe, assuming it supports API.
-
-                    // Send events
-                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), '*');
-                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'pause' }), '*');
-                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'finish' }), '*');
-                });
+            // Load Vimeo Player SDK
+            if (typeof Vimeo === 'undefined') {
+                $.getScript('https://player.vimeo.com/api/player.js').done(bindVimeo);
+            } else {
+                bindVimeo();
             }
 
-            // Bind immediately
-            bindVimeoListeners();
-            // And periodically check for new iframes (e.g. popups) or ready states? 
-            // For now, load once.
+            function bindVimeo() {
+                iframes.each(function () {
+                    const player = new Vimeo.Player(this);
+                    player.on('play', () => logState('vimeo', true));
+                    player.on('pause', () => logState('vimeo', false));
+                    player.on('ended', () => logState('vimeo', false));
+                    // Check initial status
+                    player.getPaused().then((paused) => {
+                        if (!paused) logState('vimeo', true);
+                    });
+                });
+            }
         }
         initVimeo();
 
-        // --- 3. YouTube Support (IFrame API) ---
-        // YouTube requires the IFrame API to be loaded and `enablejsapi=1` on the iframe.
+        // --- 4. YouTube API Support ---
         function initYouTube() {
-            // Function to check player state if we can access it
-            // This is tricky without fully taking over the iframe. 
-            // We rely on the global YT object or Poll for state if possible. 
+            const ytIframes = $('iframe[src*="youtube.com"], iframe[src*="youtu.be"]');
+            if (ytIframes.length === 0) return;
 
-            // Wait for YT API
-            var checkYT = setInterval(function () {
-                if (typeof YT !== 'undefined' && YT && YT.Player) {
-                    clearInterval(checkYT);
-                    bindYouTube();
+            // 4.1 Force 'enablejsapi=1' to allow tracking
+            ytIframes.each(function () {
+                let src = $(this).attr('src');
+                if (src && src.indexOf('enablejsapi=1') === -1) {
+                    const separator = src.indexOf('?') !== -1 ? '&' : '?';
+                    $(this).attr('src', src + separator + 'enablejsapi=1');
                 }
-            }, 1000);
+                // Ensure ID
+                if (!$(this).attr('id')) {
+                    $(this).attr('id', 'alezux-yt-' + Math.floor(Math.random() * 10000));
+                }
+            });
 
-            // Timeout after 10s to stop checking
-            setTimeout(function () { clearInterval(checkYT); }, 10000);
+            // 4.2 Load YT API
+            if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+                var tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                var firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-            function bindYouTube() {
-                $('iframe[src*="youtube.com"]').each(function () {
-                    var $iframe = $(this);
-                    // Try to interact existing player or create new light wrapper
-                    // Note: Creating 'new YT.Player' on an existing valid iframe ID usually hooks into it without reloading if configured right.
-                    if (!$iframe.attr('id')) {
-                        $iframe.attr('id', 'alezux-yt-' + Math.floor(Math.random() * 10000));
-                    }
+                // Queued Init
+                window.onYouTubeIframeAPIReady = function () {
+                    bindYouTubePlayers();
+                };
+            } else {
+                bindYouTubePlayers();
+            }
 
+            function bindYouTubePlayers() {
+                ytIframes.each(function () {
+                    const id = $(this).attr('id');
                     try {
-                        new YT.Player($iframe.attr('id'), {
+                        new YT.Player(id, {
                             events: {
                                 'onStateChange': onPlayerStateChange
                             }
                         });
-                    } catch (e) {
-                        console.warn('Alezux Tracker: Could not bind YouTube', e);
-                    }
+                    } catch (e) { console.error('YT Bind Error', e); }
                 });
             }
 
             function onPlayerStateChange(event) {
-                // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0, BUFFERING=3
                 if (event.data === YT.PlayerState.PLAYING) {
-                    startTracking('youtube');
+                    logState('youtube', true);
                 } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                    stopTracking('youtube');
+                    logState('youtube', false);
                 }
             }
         }
         initYouTube();
 
 
-        // --- Main Timer Loop ---
+        // --- Core Timer Loop ---
         setInterval(function () {
-            // Only count if playing AND tab is visible
+            // Only track if playing AND visible
             if (isPlaying && document.visibilityState === 'visible') {
                 activeSeconds++;
                 accumulatedSeconds++;
             }
+
+            // Sync
+            if (Date.now() - lastSyncTime > SYNC_INTERVAL && accumulatedSeconds > 0) {
+                syncTime();
+            }
         }, 1000);
 
-        // Sync function
         function syncTime() {
             if (accumulatedSeconds === 0) return;
-
-            const secondsToSend = accumulatedSeconds;
-            accumulatedSeconds = 0; // Reset immediately
+            const sec = accumulatedSeconds;
+            accumulatedSeconds = 0;
             lastSyncTime = Date.now();
 
             var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
-
             $.post(ajaxUrl, {
                 action: 'alezux_track_study_time',
-                seconds: secondsToSend,
-                date: new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+                seconds: sec,
+                date: new Date().toISOString().slice(0, 10)
             });
         }
 
-        // Save on unload / visibility change (mobile)
-        $(window).on('beforeunload', function () {
-            syncTime();
-        });
-
-        // Also sync on visibility hidden (user switches tabs)
-        document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'hidden') {
-                syncTime();
-            }
+        $(window).on('beforeunload visibilitychange', function () {
+            if (document.visibilityState === 'hidden') syncTime();
         });
 
     })();
