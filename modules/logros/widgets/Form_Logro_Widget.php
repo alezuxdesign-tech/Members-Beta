@@ -34,6 +34,10 @@ class Form_Logro_Widget extends Widget_Base {
 		return [ 'alezux-logros-js', 'jquery' ];
 	}
 
+	public function get_style_depends() {
+		return [ 'alezux-logros-css' ];
+	}
+
 	protected function register_controls() {
 
 		// --- TAB CONTENT: TEXTS ---

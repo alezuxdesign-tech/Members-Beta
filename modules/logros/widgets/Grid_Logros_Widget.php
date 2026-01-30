@@ -35,6 +35,10 @@ class Grid_Logros_Widget extends Widget_Base {
 		return [ 'alezux-logros-js', 'jquery' ];
 	}
 
+	public function get_style_depends() {
+		return [ 'alezux-logros-css' ];
+	}
+
 	protected function register_controls() {
 		// --- Sección de Diseño ---
 		$this->start_controls_section(

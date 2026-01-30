@@ -22,11 +22,9 @@ class Logros extends Module_Base {
 		// AJAX para guardar logro (Solo Admin)
 		add_action( 'wp_ajax_alezux_save_achievement', [ $this, 'ajax_save_achievement' ] );
 		
-		// Encolar scripts necesarios
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		// Asegurar carga en el editor de Elementor y frontend de Elementor
-		add_action( 'elementor/frontend/after_enqueue_styles', [ $this, 'enqueue_scripts' ] );
-		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		// Registrar scripts y estilos (Frontend + Admin para Editor Elementor)
+		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
 	}
 
 	public function register_elementor_category( $elements_manager ) {
@@ -47,11 +45,9 @@ class Logros extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Logros\Widgets\Grid_Logros_Widget() );
 	}
 
-	public function enqueue_scripts() {
-		wp_enqueue_script( 'jquery' );
-		
-		// Script para manejar el Popup y el Formulario
-		wp_enqueue_script(
+	public function register_assets() {
+		// Scripts
+		wp_register_script(
 			'alezux-logros-js',
 			$this->get_asset_url( 'assets/js/logros.js' ),
 			[ 'jquery' ],
@@ -64,8 +60,8 @@ class Logros extends Module_Base {
 			'nonce'    => wp_create_nonce( 'alezux_logros_nonce' ),
 		] );
 		
-		// Estilos para el popup y grid
-		wp_enqueue_style(
+		// Estilos
+		wp_register_style(
 			'alezux-logros-css',
 			$this->get_asset_url( 'assets/css/logros.css' ),
 			[],
