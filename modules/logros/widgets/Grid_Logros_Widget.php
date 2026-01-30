@@ -246,6 +246,18 @@ class Grid_Logros_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'content_padding',
+			[
+				'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-card-v2-body' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->add_control(
 			'heading_message_style',
 			[
@@ -329,6 +341,18 @@ class Grid_Logros_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-card-v2-avatar' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'avatar_border_radius',
+			[
+				'label' => esc_html__( 'Radio Avatar', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-card-v2-avatar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -651,18 +675,18 @@ class Grid_Logros_Widget extends Widget_Base {
 		</div>
 
 		<!-- Popup Estático para esta instancia -->
-		<div id="<?php echo esc_attr( $popup_id ); ?>" class="alezux-logro-popup-overlay" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9999; justify-content: center; align-items: center; background: rgba(0,0,0,0.8);">
-			<div class="alezux-logro-popup-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 600px; width: 90%; position: relative;">
-				<span class="alezux-popup-close" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px; color: #333;">&times;</span>
+		<div id="<?php echo esc_attr( $popup_id ); ?>" class="alezux-logro-popup-overlay">
+			<div class="alezux-logro-popup-content">
+				<span class="alezux-popup-close">&times;</span>
 				
-				<img class="popup-image-el" src="" style="width: 100%; max-height: 300px; object-fit: contain; margin-bottom: 15px; border-radius: 5px; background: #f0f0f0;">
+				<img class="popup-image-el" src="" alt="Logro Imagen">
 				
-				<div style="display: flex; align-items: center; margin-bottom: 15px;">
-					<img class="popup-avatar-el" src="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;">
-					<h4 class="popup-student-el" style="margin: 0; font-size: 1.1em;"></h4>
+				<div class="popup-student-wrapper">
+					<img class="popup-avatar-el" src="" alt="Avatar">
+					<h4 class="popup-student-el"></h4>
 				</div>
 				
-				<p class="popup-message-el" style="line-height: 1.6; color: #444; white-space: pre-wrap;"></p>
+				<p class="popup-message-el"></p>
 			</div>
 		</div>
 
