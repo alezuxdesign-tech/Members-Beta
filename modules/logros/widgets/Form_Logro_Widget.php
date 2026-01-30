@@ -841,7 +841,7 @@ class Form_Logro_Widget extends Widget_Base {
 					<div class="alezux-logro-upload-container">
 						<input type="hidden" name="image_id" class="alezux-logro-image-id" value="">
 						
-						<div class="alezux-upload-box">
+						<div class="alezux-upload-box" onclick="console.log('Alezux Debug: Inline click triggered on upload box');">
 							
                             <!-- Placeholder State -->
                             <div class="alezux-upload-placeholder">
