@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		margin: 20px;
 		max-width: 1200px;
 		font-family: 'Inter', system-ui, -apple-system, sans-serif;
+		padding-bottom: 80px; /* Margen para evitar solapamiento con footer WP */
 	}
 	.alezux-tabs {
 		display: flex;
@@ -99,22 +100,38 @@ if ( ! defined( 'ABSPATH' ) ) {
 		font-size: 14px;
 	}
 
-	/* Shortcodes Items */
+	/* Shortcodes Grid & Items - UPDATED */
+	.alezux-shortcodes-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 20px;
+		margin-top: 20px;
+	}
 	.alezux-shortcode-item {
 		display: flex;
+		flex-direction: column;
 		justify-content: space-between;
-		align-items: center;
-		padding: 20px;
+		padding: 25px;
 		background: #252525;
 		border-radius: 12px;
-		margin-bottom: 15px;
 		border: 1px solid #444;
 		transition: all 0.2s ease;
+		height: 100%;
+		box-sizing: border-box;
 	}
 	.alezux-shortcode-item:hover {
-		transform: translateY(-2px);
+		transform: translateY(-5px);
 		border-color: var(--alezux-primary, #6c5ce7);
 		background: #2a2a2a;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+	}
+	.alezux-shortcode-header {
+		display: flex; 
+		align-items: center; 
+		justify-content: space-between;
+		gap: 10px; 
+		margin-bottom: 15px;
+		flex-wrap: wrap;
 	}
 	.alezux-shortcode-tag {
 		font-family: 'Courier New', monospace;
@@ -125,24 +142,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 		font-size: 14px;
 		border: 1px solid #333;
 		display: inline-block;
+		word-break: break-all;
+	}
+	.alezux-module-badge {
+		font-size: 10px; 
+		text-transform: uppercase; 
+		letter-spacing: 1px; 
+		color: #777; 
+		border: 1px solid #333; 
+		padding: 3px 8px; 
+		border-radius: 100px;
+		white-space: nowrap;
 	}
 	.alezux-copy-btn {
 		background: #333;
 		color: white;
 		border: none;
-		padding: 8px 16px;
-		border-radius: 6px;
+		padding: 10px 20px;
+		border-radius: 8px;
 		cursor: pointer;
-		font-size: 13px;
+		font-size: 14px;
 		transition: all 0.2s ease;
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		justify-content: center;
+		gap: 8px;
 		font-weight: 500;
+		width: 100%;
+		margin-top: auto; /* Push to bottom */
 	}
 	.alezux-copy-btn:hover {
 		background: var(--alezux-primary, #6c5ce7);
-		transform: scale(1.05);
 	}
 	.alezux-copy-btn.copied {
 		background: #00b894;
@@ -258,12 +288,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<!-- TAB 2: SHORTCODES -->
 	<div id="tab-shortcodes" class="alezux-tab-panel" style="display: none;">
-		<div class="alezux-card">
-			<h2 class="alezux-title">🧩 Librería de Shortcodes</h2>
-			<p class="alezux-text">Utiliza estos códigos cortos para insertar los módulos de Alezux en tus páginas de Elementor o editor de bloques.</p>
+		<div class="alezux-card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+			<div style="background: #1a1a1a; padding: 30px; border-radius: 16px; border: 1px solid #333; margin-bottom: 20px;">
+				<h2 class="alezux-title">🧩 Librería de Shortcodes</h2>
+				<p class="alezux-text">Utiliza estos códigos cortos para insertar los módulos de Alezux en tus páginas de Elementor o editor de bloques.</p>
+			</div>
 			
 			<?php if ( empty( $shortcodes ) ) : ?>
-				<div style="padding: 40px; text-align: center; border: 1px dashed #444; border-radius: 10px; color: #666;">
+				<div style="padding: 40px; text-align: center; border: 1px dashed #444; border-radius: 10px; color: #666; background: #1a1a1a;">
 					<span class="dashicons dashicons-info" style="font-size: 30px; width: 30px; height: 30px; margin-bottom: 10px;"></span>
 					<p>No se encontraron shortcodes registrados.</p>
 				</div>
@@ -271,25 +303,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="alezux-shortcodes-list">
 					<?php foreach ( $shortcodes as $sc ) : ?>
 						<div class="alezux-shortcode-item">
-							<div style="flex: 1; padding-right: 20px;">
-								<div class="alezux-shortcode-header" style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+							<div style="width: 100%;">
+								<div class="alezux-shortcode-header">
 									<span class="alezux-shortcode-tag">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
-									<span style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #777; border: 1px solid #333; padding: 3px 8px; border-radius: 100px;"><?php echo esc_html( $sc['module'] ); ?></span>
+									<span class="alezux-module-badge"><?php echo esc_html( $sc['module'] ); ?></span>
 								</div>
-								<p class="alezux-text" style="margin: 0; font-size: 13px; color: #aaa;"><?php echo esc_html( $sc['description'] ); ?></p>
+								<p class="alezux-text" style="margin-bottom: 20px; font-size: 14px; color: #aaa; min-height: 40px;"><?php echo esc_html( $sc['description'] ); ?></p>
 							</div>
 							
 							<button class="alezux-copy-btn" onclick="copyToClipboard(this, '[<?php echo esc_js( $sc['tag'] ); ?>]')">
 								<span class="dashicons dashicons-admin-page"></span>
-								<span class="btn-text">Copiar</span>
+								<span class="btn-text">Copiar Shortcode</span>
 							</button>
 						</div>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
 		</div>
-	</div>
-
 	</div>
 
 	<!-- TAB 3: NOTIFICACIONES -->
