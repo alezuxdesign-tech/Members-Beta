@@ -202,7 +202,7 @@ class Form_Logro_Widget extends Widget_Base {
 				'name' => 'form_background',
 				'label' => esc_html__( 'Fondo', 'alezux-members' ),
 				'types' => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper',
+				'selector' => '{{WRAPPER}} .alezux-logro-form',
 			]
 		);
 
@@ -210,7 +210,7 @@ class Form_Logro_Widget extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name' => 'form_border',
-				'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper',
+				'selector' => '{{WRAPPER}} .alezux-logro-form',
 			]
 		);
 
@@ -221,7 +221,7 @@ class Form_Logro_Widget extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-logro-form-wrapper' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-logro-form' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -233,7 +233,7 @@ class Form_Logro_Widget extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-logro-form-wrapper' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-logro-form' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -242,7 +242,7 @@ class Form_Logro_Widget extends Widget_Base {
 			Group_Control_Box_Shadow::get_type(),
 			[
 				'name' => 'form_box_shadow',
-				'selector' => '{{WRAPPER}} .alezux-logro-form-wrapper',
+				'selector' => '{{WRAPPER}} .alezux-logro-form',
 			]
 		);
 
