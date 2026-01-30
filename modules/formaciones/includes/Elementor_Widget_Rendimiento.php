@@ -418,24 +418,44 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
         if ($max_weekly == 0) $max_weekly = 3600;
         $max_weekly = ceil($max_weekly / 1800) * 1800;
 
-        // 2. Monthly Data (Last 30 Days) - Kept as rolling window or should be Calendar Month?
-        // User requested "Semanal" -> Mon-Sun. "Anual" -> Jan-Dec.
-        // User didn't specify "Mensual", but "Semanal" was refined. Assuming Mensual stays as "Last 30 Days" per previous agreement, unless implied otherwise. 
-        // Plan said: "Mensual: Últimos 30 días". User approved plan.
-        // So I keep Monthly as is.
+        // 2. Monthly Data (Calendar Month: 1st to End of Month)
+        // User requested to see all days of the current month (e.g., Jan 1 to Jan 31).
+        $monthly_data = [];
+        $max_monthly = 0;
         
-        $monthly = $process_daily_data(30);
-        $monthly_data = $monthly['data'];
-        $max_monthly = $monthly['max'];
-        // Reduce labels for monthly view (show every 5th)
-        foreach ($monthly_data as $key => &$d) {
-             // Show label if index % 5 == 0 or last one.
-             if ($key % 5 !== 0 && $key !== 29) {
-                 $d['label'] = ''; 
-             } else {
-                 $d['label'] = date_i18n('d', strtotime($d['date'])); // Day number
-             }
+        $current_month_start_ts = strtotime(date('Y-m-01', $wp_local_timestamp));
+        $days_in_month = (int)date('t', $wp_local_timestamp); // e.g., 31
+        
+        for ($i = 0; $i < $days_in_month; $i++) {
+            $day_ts = strtotime("+$i days", $current_month_start_ts);
+            $d = date('Y-m-d', $day_ts);
+            
+            $val = isset($log[$d]) ? $log[$d] : 0;
+            if ($val > $max_monthly) $max_monthly = $val;
+            
+            $day_number = (int)date('j', $day_ts);
+            $is_today = ($d === date('Y-m-d', $wp_local_timestamp));
+            
+            // Label Logic: Show every 5th day AND the last day? 
+            // Or if user wants "all numbers" but said "depending on the day". 
+            // 31 labels might be too tight. Let's try showing every 2nd or 3rd day, or keep 5th but ensure last day is shown.
+            // Let's stick to every 3rd day to be more granular but not crowded, or 5th. 
+            // "me sale los numeros hasta el dia 30" -> implies they saw labels. 
+            // Let's show: 1, 5, 10, 15, 20, 25, 30...
+            $label = '';
+            if ($day_number === 1 || $day_number % 5 === 0 || $day_number === $days_in_month) { // Show 1, 5, 10, 15... and last day
+                $label = $day_number;
+            }
+
+            $monthly_data[] = [
+                'val' => $val,
+                'label' => $label,
+                'full_date' => date_i18n(get_option('date_format'), $day_ts),
+                'date' => $d,
+                'is_today' => $is_today
+            ];
         }
+
         if ($max_monthly == 0) $max_monthly = 3600;
         $max_monthly = ceil($max_monthly / 1800) * 1800;
 
