@@ -1,21 +1,21 @@
 jQuery(document).ready(function ($) {
 
+    console.log('Alezux Logros: JS Inicializado');
+
     /**
      * ALEZUX MEDIA UPLOADER LOGIC
-     * Handles opening the WP Media Library and interacting with the upload box.
      */
 
     var file_frame;
 
-    // --- Helper: Update UI when image is selected ---
     function updateUploadUI($box, attachment) {
+        console.log('Alezux Logros: Actualizando UI', attachment);
         var $container = $box.closest('.alezux-logro-upload-container');
         var $input = $container.find('.alezux-logro-image-id');
         var $previewBox = $box.find('.alezux-upload-preview');
         var $placeholder = $box.find('.alezux-upload-placeholder');
         var $previewImg = $box.find('.alezux-preview-img');
 
-        // Update Input ID
         if (attachment) {
             $input.val(attachment.id);
             var url = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
@@ -24,7 +24,6 @@ jQuery(document).ready(function ($) {
             $placeholder.hide();
             $previewBox.css('display', 'flex').hide().fadeIn();
         } else {
-            // Reset
             $input.val('');
             $previewImg.attr('src', '');
             $previewBox.hide();
@@ -33,31 +32,38 @@ jQuery(document).ready(function ($) {
     }
 
     // --- 1. Click Event on Upload Box ---
-    // Using body delegation to be absolutely sure we catch it even if DOM changes
     $('body').on('click', '.alezux-upload-box', function (event) {
+        console.log('Alezux Logros: Click detectado en .alezux-upload-box');
 
-        // Prevent default only if we are not clicking a remove button or something interactive inside that handles itself
         if ($(event.target).closest('.alezux-remove-img').length) {
+            console.log('Alezux Logros: Click en remover imagen');
             event.preventDefault();
-            // Logic handled below
             return;
         }
 
         event.preventDefault();
 
-        // Safety check for WP Media
-        if (typeof wp === 'undefined' || !wp.media) {
-            console.error('Alezux Members: WP Media Library is missing. Ensure you are logged in and wp_enqueue_media() is called.');
+        // Check wp object
+        if (typeof wp === 'undefined') {
+            console.error('Alezux Logros Error: Objeto "wp" no definido.');
+            alert('Error crítico: WordPress JS no cargado.');
             return;
         }
 
+        if (!wp.media) {
+            console.error('Alezux Logros Error: wp.media no definido. ¿wp_enqueue_media() fue llamado?');
+            console.log('Alezux Logros: Intentando fallback o revisión.');
+            alert('Error: Librería de medios no disponible.');
+            return;
+        }
+
+        console.log('Alezux Logros: wp.media disponible. Abriendo frame...');
+
         var $box = $(this);
 
-        // If the media frame already exists, reopen it.
         if (file_frame) {
             file_frame.open();
         } else {
-            // Create the media frame.
             file_frame = wp.media.frames.file_frame = wp.media({
                 title: 'Seleccionar Imagen del Logro',
                 button: {
@@ -67,11 +73,10 @@ jQuery(document).ready(function ($) {
             });
         }
 
-        // Remove previous 'select' handlers to avoid stacking
         file_frame.off('select');
 
-        // When an image is selected, run a callback.
         file_frame.on('select', function () {
+            console.log('Alezux Logros: Imagen seleccionada');
             var attachment = file_frame.state().get('selection').first().toJSON();
             updateUploadUI($box, attachment);
         });
@@ -79,16 +84,15 @@ jQuery(document).ready(function ($) {
         file_frame.open();
     });
 
-    // --- Handle Remove Image Button ---
     $('body').on('click', '.alezux-remove-img', function (e) {
+        console.log('Alezux Logros: Click directo en remove');
         e.preventDefault();
-        e.stopPropagation(); // Stop bubbling to box click
+        e.stopPropagation();
         var $box = $(this).closest('.alezux-upload-box');
         updateUploadUI($box, null);
     });
 
-
-    // --- 2. Visual Drag & Drop Feedback ---
+    // --- 2. Drag & Drop ---
     $(document).on('dragover', '.alezux-upload-box', function (e) {
         e.preventDefault();
         $(this).addClass('drag-over');
@@ -102,18 +106,17 @@ jQuery(document).ready(function ($) {
     $(document).on('drop', '.alezux-upload-box', function (e) {
         e.preventDefault();
         $(this).removeClass('drag-over');
-        // Trigger click to open media manager as simple fallback for drop
+        console.log('Alezux Logros: Drop detectado');
         $(this).trigger('click');
     });
 
-
-    // --- 3. Form Submission Handling ---
+    // --- 3. Submit ---
     $(document).on('submit', '#alezux-logro-form', function (e) {
+        console.log('Alezux Logros: Submit formulario');
         e.preventDefault();
 
-        // Ensure we are using the localized variables
         if (typeof alezux_logros_vars === 'undefined') {
-            console.error('Alezux Logros Vars not found');
+            console.error('Alezux Logros Error: Vars no definidas');
             return;
         }
 
@@ -136,31 +139,25 @@ jQuery(document).ready(function ($) {
             processData: false,
             contentType: false,
             success: function (res) {
+                console.log('Alezux Logros: Respuesta AJAX', res);
                 if (res.success) {
                     $response.html('<div class="alezux-success" style="padding:10px; background:#d1e7dd; color:#0f5132; border-radius:4px; margin-top:10px;"><i class="fas fa-check-circle"></i> ' + res.data.message + '</div>');
                     $form[0].reset();
-
-                    // Reset all upload boxes within this form
                     $form.find('.alezux-upload-box').each(function () {
                         updateUploadUI($(this), null);
                     });
-
                 } else {
                     $response.html('<div class="alezux-error" style="padding:10px; background:#f8d7da; color:#842029; border-radius:4px; margin-top:10px;"><i class="fas fa-exclamation-circle"></i> ' + (res.data.message || 'Error desconocido') + '</div>');
                 }
             },
             error: function (xhr, status, error) {
+                console.error('Alezux Logros: Error AJAX', error);
                 $response.html('<div class="alezux-error" style="padding:10px; background:#f8d7da; color:#842029; border-radius:4px; margin-top:10px;"><i class="fas fa-exclamation-triangle"></i> Error de conexión: ' + error + '</div>');
             },
             complete: function () {
                 $btn.prop('disabled', false).css('opacity', '1');
             }
         });
-    });
-
-    // Initialize logic on Elementor Frontend Load (for popup actions)
-    $(window).on('elementor/frontend/init', function () {
-        // Future Elementor specific hooks
     });
 
 });
