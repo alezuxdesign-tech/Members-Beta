@@ -235,4 +235,4 @@ function updateLogro(container) {
     });
 }
 
-});
+
