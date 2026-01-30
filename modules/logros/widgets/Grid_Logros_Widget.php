@@ -298,6 +298,7 @@ class Grid_Logros_Widget extends Widget_Base {
 
 		?>
 		<div class="alezux-logros-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+<?php 
 			// Bucle de logros
 			foreach ( $achievements as $logro ) : 
 				// Obtener datos
