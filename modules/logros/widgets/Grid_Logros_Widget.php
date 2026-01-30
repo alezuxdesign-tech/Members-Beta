@@ -98,7 +98,7 @@ class Grid_Logros_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-logro-card' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-logro-card-v2' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -107,7 +107,7 @@ class Grid_Logros_Widget extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name' => 'card_border',
-				'selector' => '{{WRAPPER}} .alezux-logro-card',
+				'selector' => '{{WRAPPER}} .alezux-logro-card-v2',
 			]
 		);
 
@@ -118,7 +118,7 @@ class Grid_Logros_Widget extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-logro-card' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-logro-card-v2' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -127,7 +127,7 @@ class Grid_Logros_Widget extends Widget_Base {
 			Group_Control_Box_Shadow::get_type(),
 			[
 				'name' => 'card_box_shadow',
-				'selector' => '{{WRAPPER}} .alezux-logro-card',
+				'selector' => '{{WRAPPER}} .alezux-logro-card-v2',
 			]
 		);
 
@@ -138,7 +138,7 @@ class Grid_Logros_Widget extends Widget_Base {
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', '%' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-logro-card' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-logro-card-v2' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -299,6 +299,15 @@ class Grid_Logros_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-card-v2-name' => 'color: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'student_date_typography',
+				'label' => 'Tipografía Fecha',
+				'selector' => '{{WRAPPER}} .alezux-card-v2-date',
 			]
 		);
 
