@@ -160,6 +160,7 @@ class Logros extends Module_Base {
 		$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
 		$course_filter = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
 		$limit = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 20;
+		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
 
 		$where_clauses = [ '1=1' ];
 		$params = [];
@@ -179,8 +180,9 @@ class Logros extends Module_Base {
 		$where_sql = implode( ' AND ', $where_clauses );
 		
 		// Ordenar por más reciente primero
-		$sql = "SELECT * FROM $table_name WHERE $where_sql ORDER BY created_at DESC LIMIT %d";
+		$sql = "SELECT * FROM $table_name WHERE $where_sql ORDER BY created_at DESC LIMIT %d OFFSET %d";
 		$params[] = $limit;
+		$params[] = $offset;
 
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
 		
@@ -190,6 +192,7 @@ class Logros extends Module_Base {
 			$user_info = get_userdata( $row->student_id );
 			$row->student_email = $user_info ? $user_info->user_email : '---';
 			$row->student_name = $user_info ? $user_info->display_name : '---';
+			$row->image_url = $row->image_id ? wp_get_attachment_image_url( $row->image_id, 'medium' ) : '';
 		}
 
 		wp_send_json_success( $results );
@@ -235,6 +238,7 @@ class Logros extends Module_Base {
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $id ) );
 
 		if ( $row ) {
+			$row->image_url = $row->image_id ? wp_get_attachment_image_url( $row->image_id, 'medium' ) : '';
 			wp_send_json_success( $row );
 		} else {
 			wp_send_json_error( [ 'message' => 'Logro no encontrado.' ] );
