@@ -194,6 +194,7 @@ class Logros extends Module_Base {
 			$row->student_name = $user_info ? $user_info->display_name : '---';
 			$row->student_avatar = $user_info ? get_avatar_url( $row->student_id ) : '';
 			$row->image_url = $row->image_id ? wp_get_attachment_image_url( $row->image_id, 'medium' ) : '';
+			$row->formatted_date = date_i18n( get_option( 'date_format' ), strtotime( $row->created_at ) );
 		}
 
 		wp_send_json_success( $results );

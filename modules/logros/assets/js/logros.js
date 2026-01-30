@@ -232,7 +232,7 @@ function renderCards(data, container) {
         // Header: Badge + Date (Date usually right aligned but simplified here to match design flow)
         html += '<div class="alezux-card-header">';
         html += '<span class="alezux-course-badge">' + (item.course_title || 'Sin Curso') + '</span>';
-        html += '<span class="alezux-card-date">' + (item.created_at || '') + '</span>';
+        html += '<span class="alezux-card-date">' + (item.formatted_date || item.created_at || '') + '</span>';
         html += '</div>';
 
         // Message body
