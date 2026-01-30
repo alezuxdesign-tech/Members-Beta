@@ -275,15 +275,21 @@ class Form_Logro_Widget extends Widget_Base {
 				</div>
 
 				<div class="alezux-logro-form-group">
-					<label><?php esc_html_e( 'Imagen del Logro', 'alezux-members' ); ?></label>
-					<div class="alezux-logro-image-upload">
+					<label style="display:block; margin-bottom:8px; font-weight:600;"><?php esc_html_e( 'Imagen del Logro', 'alezux-members' ); ?></label>
+					<div class="alezux-logro-upload-container">
 						<input type="hidden" id="logro-image-id" name="image_id" value="">
-						<div id="logro-image-preview" style="margin-bottom: 10px; max-width: 100px; display: none;">
-							<img src="" style="width: 100%; border-radius: 8px;">
+						
+						<!-- Area visual clickeable -->
+						<div id="alezux-upload-trigger" class="alezux-upload-box">
+							<div class="alezux-upload-placeholder">
+								<i class="eicon-image-bold" aria-hidden="true"></i>
+								<span><?php esc_html_e( 'Haz clic para subir imagen', 'alezux-members' ); ?></span>
+							</div>
+							<div class="alezux-upload-preview" style="display: none;">
+								<img id="alezux-preview-img" src="" alt="Preview">
+								<span class="alezux-remove-img" title="<?php esc_html_e( 'Eliminar imagen', 'alezux-members' ); ?>"><i class="eicon-close"></i></span>
+							</div>
 						</div>
-						<button type="button" id="btn-upload-logro-img" class="button button-secondary">
-							<?php esc_html_e( 'Subir Foto', 'alezux-members' ); ?>
-						</button>
 					</div>
 				</div>
 

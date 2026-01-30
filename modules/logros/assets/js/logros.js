@@ -4,8 +4,15 @@ jQuery(document).ready(function ($) {
 
     // Media Uploader
     var file_frame;
-    $('#btn-upload-logro-img').on('click', function (event) {
+
+    // Handle click on the generic upload trigger box
+    $('#alezux-upload-trigger').on('click', function (event) {
         event.preventDefault();
+
+        // If clicking on remove button, do nothing (handled separately)
+        if ($(event.target).closest('.alezux-remove-img').length) {
+            return;
+        }
 
         // If the media frame already exists, reopen it.
         if (file_frame) {
@@ -30,12 +37,24 @@ jQuery(document).ready(function ($) {
             $('#logro-image-id').val(attachment.id);
 
             // Show Preview
-            var url = attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
-            $('#logro-image-preview img').attr('src', url);
-            $('#logro-image-preview').show();
+            var url = attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
+            $('#alezux-preview-img').attr('src', url);
+
+            // Toggle visibility
+            $('.alezux-upload-placeholder').hide();
+            $('.alezux-upload-preview').fadeIn();
         });
 
         file_frame.open();
+    });
+
+    // Remove Image
+    $('.alezux-remove-img').on('click', function (e) {
+        e.stopPropagation(); // prevent opening media manager
+        $('#logro-image-id').val('');
+        $('.alezux-upload-preview').hide();
+        $('.alezux-upload-placeholder').fadeIn();
+        $('#alezux-preview-img').attr('src', '');
     });
 
     // Form Submission
@@ -63,8 +82,11 @@ jQuery(document).ready(function ($) {
                 if (res.success) {
                     $response.html('<div class="alezux-success" style="color: green; margin-top: 10px;">' + res.data.message + '</div>');
                     $form[0].reset();
-                    $('#logro-image-preview').hide();
+                    // Reset Upload Box
                     $('#logro-image-id').val('');
+                    $('.alezux-upload-preview').hide();
+                    $('.alezux-upload-placeholder').show();
+                    $('#alezux-preview-img').attr('src', '');
                 } else {
                     $response.html('<div class="alezux-error" style="color: red; margin-top: 10px;">' + res.data.message + '</div>');
                 }
@@ -104,10 +126,8 @@ jQuery(document).ready(function ($) {
     });
 
     $(document).on('click', '.alezux-popup-close, .alezux-logro-popup-overlay', function (e) {
-        // Close if clicked on overlay (this) or close button
         if (e.target === this || $(e.target).hasClass('alezux-popup-close')) {
             $(this).closest('.alezux-logro-popup-overlay').fadeOut(200);
-            // If 'this' is the overlay
             if ($(this).hasClass('alezux-logro-popup-overlay')) {
                 $(this).fadeOut(200);
             }
