@@ -81,7 +81,7 @@ jQuery(document).ready(function ($) {
 
     /**
      * Time Tracking Logic for Study
-     * Detects HTML5 video/audio playback and tracks time.
+     * Detects HTML5 video/audio playback AND Vimeo/YouTube iframes to track time.
      */
     (function () {
         let activeSeconds = 0;
@@ -90,35 +90,141 @@ jQuery(document).ready(function ($) {
         let lastSyncTime = Date.now();
         const SYNC_INTERVAL = 30000; // 30 seconds
 
-        function startTracking() {
-            isPlaying = true;
+        // Flags for multiple players
+        let activePlayers = {
+            html5: false,
+            vimeo: false,
+            youtube: false
+        };
+
+        function updateMasterState() {
+            // If any player is active, we are playing
+            isPlaying = activePlayers.html5 || activePlayers.vimeo || activePlayers.youtube;
+            // distinct visual debugger
+            // console.log('Alezux Tracker State:', activePlayers, 'IsPlaying:', isPlaying);
         }
 
-        function stopTracking() {
-            isPlaying = false;
+        function startTracking(source) {
+            activePlayers[source] = true;
+            updateMasterState();
         }
 
-        // Detect HTML5 Media Elements
-        $('video, audio').on('play', startTracking).on('pause ended', stopTracking);
+        function stopTracking(source) {
+            activePlayers[source] = false;
+            updateMasterState();
+        }
 
-        // Initial check if any media is already playing (autostart)
+        // --- 1. HTML5 Media Elements ---
+        $('video, audio').on('play', function () { startTracking('html5'); })
+            .on('pause ended', function () { stopTracking('html5'); });
+
+        // Check initial state
         $('video, audio').each(function () {
             if (!this.paused && !this.ended) {
-                isPlaying = true;
+                startTracking('html5');
             }
         });
 
-        // Main Timer Loop
+        // --- 2. Vimeo Support (PostMessage API) ---
+        function initVimeo() {
+            const vimeoIframes = $('iframe[src*="vimeo.com"]');
+
+            if (vimeoIframes.length === 0) return;
+
+            // Listen for messages from Vimeo
+            window.addEventListener('message', function (e) {
+                // Validate origin somewhat (Vimeo usually sends from player.vimeo.com)
+                if (e.origin.indexOf('vimeo') === -1) return;
+
+                try {
+                    var data = JSON.parse(e.data);
+                } catch (err) { return; }
+
+                if (data.event === 'play') startTracking('vimeo');
+                if (data.event === 'pause' || data.event === 'finish') stopTracking('vimeo');
+                if (data.event === 'ready') {
+                    // Re-bind if a player reports ready late
+                    bindVimeoListeners();
+                }
+            });
+
+            function bindVimeoListeners() {
+                vimeoIframes.each(function () {
+                    const url = new URL(this.src);
+                    // Ensure api=1 parameter (Elementor/LearnDash usually add it, but allow JS interaction just in case)
+                    // Note: We can't change src easily without reloading iframe, assuming it supports API.
+
+                    // Send events
+                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), '*');
+                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'pause' }), '*');
+                    this.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'finish' }), '*');
+                });
+            }
+
+            // Bind immediately
+            bindVimeoListeners();
+            // And periodically check for new iframes (e.g. popups) or ready states? 
+            // For now, load once.
+        }
+        initVimeo();
+
+        // --- 3. YouTube Support (IFrame API) ---
+        // YouTube requires the IFrame API to be loaded and `enablejsapi=1` on the iframe.
+        function initYouTube() {
+            // Function to check player state if we can access it
+            // This is tricky without fully taking over the iframe. 
+            // We rely on the global YT object or Poll for state if possible. 
+
+            // Wait for YT API
+            var checkYT = setInterval(function () {
+                if (typeof YT !== 'undefined' && YT && YT.Player) {
+                    clearInterval(checkYT);
+                    bindYouTube();
+                }
+            }, 1000);
+
+            // Timeout after 10s to stop checking
+            setTimeout(function () { clearInterval(checkYT); }, 10000);
+
+            function bindYouTube() {
+                $('iframe[src*="youtube.com"]').each(function () {
+                    var $iframe = $(this);
+                    // Try to interact existing player or create new light wrapper
+                    // Note: Creating 'new YT.Player' on an existing valid iframe ID usually hooks into it without reloading if configured right.
+                    if (!$iframe.attr('id')) {
+                        $iframe.attr('id', 'alezux-yt-' + Math.floor(Math.random() * 10000));
+                    }
+
+                    try {
+                        new YT.Player($iframe.attr('id'), {
+                            events: {
+                                'onStateChange': onPlayerStateChange
+                            }
+                        });
+                    } catch (e) {
+                        console.warn('Alezux Tracker: Could not bind YouTube', e);
+                    }
+                });
+            }
+
+            function onPlayerStateChange(event) {
+                // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0, BUFFERING=3
+                if (event.data === YT.PlayerState.PLAYING) {
+                    startTracking('youtube');
+                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                    stopTracking('youtube');
+                }
+            }
+        }
+        initYouTube();
+
+
+        // --- Main Timer Loop ---
         setInterval(function () {
             // Only count if playing AND tab is visible
             if (isPlaying && document.visibilityState === 'visible') {
                 activeSeconds++;
                 accumulatedSeconds++;
-            }
-
-            // Auto sync every 30s if we have data
-            if (Date.now() - lastSyncTime > SYNC_INTERVAL && accumulatedSeconds > 0) {
-                syncTime();
             }
         }, 1000);
 
@@ -131,10 +237,6 @@ jQuery(document).ready(function ($) {
             lastSyncTime = Date.now();
 
             var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
-
-            // Use navigator.sendBeacon if available for unload events, otherwise standard AJAX
-            // But for interval, standard AJAX is fine.
-            // Note: jQuery AJAX might fail on unload, but we'll try best effort.
 
             $.post(ajaxUrl, {
                 action: 'alezux_track_study_time',
@@ -152,9 +254,6 @@ jQuery(document).ready(function ($) {
         document.addEventListener('visibilitychange', function () {
             if (document.visibilityState === 'hidden') {
                 syncTime();
-                // If it was playing, it might pause automatically depending on browser, 
-                // but we keep the isPlaying flag as is because the browser pauses the video usually.
-                // However, we stop counting because of the visibility check in the loop.
             }
         });
 
