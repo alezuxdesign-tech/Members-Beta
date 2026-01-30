@@ -483,7 +483,8 @@
 }
 
 /* Responsive: Stack on mobile */
-@media (max-width: 768px) {
+/* Responsive: Stack on mobile and tablet */
+@media (max-width: 1024px) {
     .alezux-logro-card {
         flex-direction: column;
     }
