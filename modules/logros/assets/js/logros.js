@@ -51,12 +51,14 @@ jQuery(document).ready(function ($) {
         };
     })();
 
-    function loadLogros() {
-        var container = $('#alezux-logros-table-container');
-        var search = $('#alezux-logro-search').val();
-        var course_id = $('#alezux-logro-course-filter').val();
+    function loadLogros(container) {
+        var tableContainer = container.find('#alezux-logros-table-container');
+        var search = container.find('#alezux-logro-search').val();
+        var course_id = container.find('#alezux-logro-course-filter').val();
 
-        container.html('<div class="alezux-loading">Cargando registros...</div>');
+        console.log('Loading Logros...', { search, course_id });
+
+        tableContainer.html('<div class="alezux-loading">Cargando registros...</div>');
 
         $.ajax({
             url: alezux_logros_vars.ajax_url,
@@ -69,9 +71,9 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 if (response.success) {
-                    renderTable(response.data);
+                    renderTable(response.data, container);
                 } else {
-                    container.html('<div class="alezux-error">' + response.data.message + '</div>');
+                    tableContainer.html('<div class="alezux-error">' + response.data.message + '</div>');
                 }
             },
             error: function () {
@@ -80,11 +82,11 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function renderTable(data) {
-        var container = $('#alezux-logros-table-container');
+    function renderTable(data, container) {
+        var tableContainer = container.find('#alezux-logros-table-container');
 
         if (data.length === 0) {
-            container.html('<div class="alezux-no-results">No se encontraron logros.</div>');
+            tableContainer.html('<div class="alezux-no-results">No se encontraron logros.</div>');
             return;
         }
 
@@ -116,10 +118,10 @@ jQuery(document).ready(function ($) {
         });
 
         html += '</tbody></table>';
-        container.html(html);
+        tableContainer.html(html);
     }
 
-    function deleteLogro(id) {
+    function deleteLogro(id, container) {
         $.ajax({
             url: alezux_logros_vars.ajax_url,
             type: 'POST',
@@ -130,7 +132,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 if (response.success) {
-                    loadLogros(); // Reload table
+                    loadLogros(container); // Reload table
                 } else {
                     alert(response.data.message);
                 }
@@ -167,7 +169,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function updateLogro() {
+    function updateLogro(container) {
         var form = $('#alezux-logro-edit-form');
         var formData = form.serialize();
 
@@ -181,7 +183,8 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 if (response.success) {
                     $('#alezux-logro-edit-modal').fadeOut();
-                    loadLogros(); // Reload table
+                    if (container) loadLogros(container); // Reload table
+                    else location.reload();
                     alert('Logro actualizado correctamente.');
                 } else {
                     alert(response.data.message);
