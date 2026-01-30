@@ -32,10 +32,12 @@ jQuery(document).ready(function ($) {
     }
 
     // --- 1. Click Event on Upload Box ---
+    // We bind to the specific box, but also ensure clicks on children bubble up or are handled.
     $(document).on('click', '.alezux-upload-box', function (event) {
         event.preventDefault();
+        event.stopPropagation(); // Stop bubbling to prevent double triggers if nested
 
-        // Check if removing image
+        // Check if removing image (clicking 'X')
         if ($(event.target).closest('.alezux-remove-img').length) {
             updateUploadUI($(this), null);
             return;
@@ -43,17 +45,14 @@ jQuery(document).ready(function ($) {
 
         // Safety check for WP Media
         if (typeof wp === 'undefined' || !wp.media) {
-            console.error('Alezux Members: WP Media Library is not missing. Ensure user is admin or script is enqueued.');
-            alert('Error: La librería de medios no está disponible.');
+            console.error('Alezux Members: WP Media Library is missing.');
+            alert('Error: La librería de medios no está disponible. Asegúrate de estar logueado como administrador.');
             return;
         }
 
         var $box = $(this);
 
         // If the media frame already exists, reopen it.
-        // Note: strictly, we should create a new frame if we want individual settings, 
-        // but for a single generic image picker, reusing is fine. 
-        // We just need to know which box triggered it.
         if (file_frame) {
             file_frame.open();
         } else {
@@ -65,11 +64,9 @@ jQuery(document).ready(function ($) {
                 },
                 multiple: false
             });
-
-
         }
 
-        // Remove previous 'select' handlers to avoid multiple firings on different boxes
+        // Remove previous 'select' handlers
         file_frame.off('select');
 
         // When an image is selected, run a callback.
