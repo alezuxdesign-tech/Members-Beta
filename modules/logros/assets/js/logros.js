@@ -5,8 +5,8 @@ jQuery(document).ready(function ($) {
     // Media Uploader
     var file_frame;
 
-    // Handle click on the generic upload trigger box
-    $('#alezux-upload-trigger').on('click', function (event) {
+    // Handle click on the generic upload trigger box (USING DELEGATION)
+    $(document).on('click', '#alezux-upload-trigger', function (event) {
         event.preventDefault();
 
         // If clicking on remove button, do nothing (handled separately)
@@ -42,23 +42,25 @@ jQuery(document).ready(function ($) {
 
             // Toggle visibility
             $('.alezux-upload-placeholder').hide();
-            $('.alezux-upload-preview').fadeIn();
+            $('.alezux-upload-preview').css('display', 'flex').hide().fadeIn(); // Flex for centering
         });
 
         file_frame.open();
     });
 
-    // Remove Image
-    $('.alezux-remove-img').on('click', function (e) {
+    // Remove Image (USING DELEGATION)
+    $(document).on('click', '.alezux-remove-img', function (e) {
+        e.preventDefault();
         e.stopPropagation(); // prevent opening media manager
+
         $('#logro-image-id').val('');
         $('.alezux-upload-preview').hide();
         $('.alezux-upload-placeholder').fadeIn();
         $('#alezux-preview-img').attr('src', '');
     });
 
-    // Form Submission
-    $('#alezux-logro-form').on('submit', function (e) {
+    // Form Submission (USING DELEGATION)
+    $(document).on('submit', '#alezux-logro-form', function (e) {
         e.preventDefault();
 
         var $form = $(this);
@@ -135,7 +137,7 @@ jQuery(document).ready(function ($) {
     });
 
     // Prevent close when clicking content
-    $('.alezux-logro-popup-content').on('click', function (e) {
+    $(document).on('click', '.alezux-logro-popup-content', function (e) {
         e.stopPropagation();
     });
 
