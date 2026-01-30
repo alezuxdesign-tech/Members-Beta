@@ -1,8 +1,4 @@
-/* =========================================
-   Alezux Members - Premium Logros Form Styles
-   ========================================= */
-
-/* --- Wrapper & Container --- */
+/*Wrapper del Formulario */
 .alezux-logro-form-wrapper {
     max-width: 800px;
     margin: 0 auto;
@@ -12,172 +8,176 @@
 .alezux-logro-form {
     display: flex;
     flex-direction: column;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-    /* Soft Premium Shadow */
-    padding: 40px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    /* Force white background and ensure visibility */
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+    padding: 40px !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    position: relative;
+    z-index: 10;
 }
 
 .alezux-logro-form-group {
-    margin-bottom: 24px;
+    margin-bottom: 24px !important;
     position: relative;
 }
 
 .alezux-logro-form label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    font-size: 14px;
-    color: #374151;
+    margin-bottom: 8px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #374151 !important;
     /* Dark Gray */
     letter-spacing: 0.02em;
 }
 
-/* --- Inputs & Textarea --- */
+/* Inputs y Selects */
 .alezux-logro-input {
-    width: 100%;
-    padding: 14px 16px;
-    background-color: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 15px;
-    color: #1f2937;
+    width: 100% !important;
+    padding: 14px 16px !important;
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    color: #1f2937 !important;
     transition: all 0.3s ease;
-    box-sizing: border-box;
-    outline: none;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box !important;
+    outline: none !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+    height: auto !important;
+    min-height: 45px;
+    /* Ensure height for selects */
 }
 
 .alezux-logro-input:focus {
-    background-color: #fff;
-    border-color: #3b82f6;
+    background-color: #ffffff !important;
+    border-color: #3b82f6 !important;
     /* Blue-500 */
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
     /* Focus Ring */
 }
 
-.alezux-logro-input::placeholder {
-    color: #9ca3af;
-}
-
 textarea.alezux-logro-input {
-    min-height: 120px;
+    min-height: 120px !important;
     resize: vertical;
     line-height: 1.6;
 }
 
-/* --- Select Styling Override --- */
+/* Select Styling Override */
 select.alezux-logro-input {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 1rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
+    /* Attempt to remove default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 1rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.5em 1.5em !important;
+    padding-right: 2.5rem !important;
 }
 
-/* --- Upload Box (Premium Design) --- */
+/* Caja de carga (Upload Box) */
 .alezux-upload-box {
-    border: 2px dashed #d1d5db;
-    background-color: #f8fafc;
-    border-radius: 16px;
-    padding: 40px 20px;
-    text-align: center;
+    border: 2px dashed #d1d5db !important;
+    background-color: #f8fafc !important;
+    border-radius: 16px !important;
+    padding: 40px 20px !important;
+    text-align: center !important;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 240px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 240px !important;
     overflow: hidden;
 }
 
 .alezux-upload-box:hover {
-    background-color: #f1f5f9;
-    border-color: #94a3b8;
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
     transform: translateY(-2px);
-}
-
-/* Drag & Drop Highlight State */
-.alezux-upload-box.drag-over {
-    border-color: #3b82f6;
-    background-color: #eff6ff;
-    /* light blue bg */
-    transform: scale(1.01);
 }
 
 /* Content Placeholder */
 .alezux-upload-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
     width: 100%;
     z-index: 2;
 }
 
+/* FORCE ICON SIZE RESTRICTION */
 .alezux-upload-icon i,
 .alezux-upload-icon svg {
-    font-size: 48px;
-    color: #64748b;
+    font-size: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    color: #64748b !important;
     /* Slate-500 */
-    margin-bottom: 8px;
-    transition: color 0.3s ease;
+    margin-bottom: 8px !important;
+    display: inline-block !important;
+    line-height: 1 !important;
+    fill: #64748b !important;
+    /* For SVGs */
 }
 
-.alezux-upload-box:hover .alezux-upload-icon i {
-    color: #3b82f6;
-    /* Blue on hover */
+.alezux-upload-box:hover .alezux-upload-icon i,
+.alezux-upload-box:hover .alezux-upload-icon svg {
+    color: #3b82f6 !important;
+    fill: #3b82f6 !important;
 }
 
 .alezux-upload-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1.3;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
 }
 
 .alezux-upload-subtitle {
-    font-size: 14px;
-    font-weight: 400;
-    color: #64748b;
-    max-width: 280px;
-    line-height: 1.5;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    max-width: 280px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
 }
 
-/* Fake Button */
+/* Fake Button Look */
 .alezux-upload-button-wrapper {
-    margin-top: 10px;
+    margin-top: 10px !important;
 }
 
 .alezux-upload-btn-fake {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #0f172a;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 20px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
     pointer-events: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
 
 .alezux-upload-box:hover .alezux-upload-btn-fake {
-    background-color: #3b82f6;
-    color: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
 }
 
-/* --- Preview Image --- */
+/* Preview de imagen ya subida */
 .alezux-upload-preview {
     position: relative;
     width: 100%;
@@ -186,139 +186,77 @@ select.alezux-logro-input {
     justify-content: center;
     align-items: center;
     z-index: 5;
-    animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    background: transparent !important;
 }
 
 .alezux-upload-preview img {
-    max-height: 220px;
-    max-width: 100%;
-    object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    max-height: 220px !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Remove Button */
 .alezux-remove-img {
     position: absolute;
-    top: -12px;
-    right: -12px;
-    background: #ef4444;
-    /* Red-500 */
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 10px;
+    right: 10px;
+    background: #ef4444 !important;
+    color: #fff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
-    font-size: 14px;
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px !important;
     z-index: 10;
 }
 
-.alezux-remove-img:hover {
-    background: #dc2626;
-    /* Red-600 */
-    transform: scale(1.1) rotate(90deg);
-}
-
-/* --- Actions & Submit Button --- */
+/* Boton Submit */
 .alezux-logro-form-actions {
-    margin-top: 32px;
-    display: flex;
-    justify-content: flex-end;
+    margin-top: 32px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
 }
 
 .alezux-logro-submit {
-    padding: 14px 32px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    /* Blue Gradient */
-    color: white;
-    border: none;
-    border-radius: 10px;
+    padding: 14px 32px !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 16px !important;
+    font-weight: 600 !important;
     box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.025em;
-    position: relative;
-    overflow: hidden;
 }
 
 .alezux-logro-submit:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
-.alezux-logro-submit:active {
-    transform: translateY(0);
-}
-
-.alezux-logro-submit:disabled {
-    background: #94a3b8;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* --- Response Messaging --- */
+/* Mensajes de respuesta */
 #alezux-logro-response {
     margin-top: 20px;
-    font-size: 14px;
-    font-weight: 500;
     border-radius: 8px;
     overflow: hidden;
 }
 
-.alezux-success,
-.alezux-error {
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .alezux-success {
-    background-color: #ecfdf5;
-    /* Green-50 */
-    color: #047857;
-    /* Green-700 */
-    border: 1px solid #a7f3d0;
-    border-left: 4px solid #10b981;
+    background-color: #ecfdf5 !important;
+    color: #047857 !important;
+    padding: 15px !important;
+    border-left: 5px solid #10b981 !important;
 }
 
 .alezux-error {
-    background-color: #fef2f2;
-    /* Red-50 */
-    color: #b91c1c;
-    /* Red-700 */
-    border: 1px solid #fecaca;
-    border-left: 4px solid #ef4444;
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+    padding: 15px !important;
+    border-left: 5px solid #ef4444 !important;
 }

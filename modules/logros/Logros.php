@@ -65,7 +65,7 @@ class Logros extends Module_Base {
 			'alezux-logros-css',
 			$this->get_asset_url( 'assets/css/logros.css' ),
 			[],
-			ALEZUX_MEMBERS_VERSION
+			time() // Force reload for dev
 		);
 	}
 
