@@ -76,7 +76,7 @@ class Formaciones extends Module_Base {
 			'alezux-formaciones-js',
 			$this->get_asset_url( 'assets/js/formaciones.js' ),
 			[ 'jquery' ],
-			'1.0.0',
+			'1.0.0' . time(),
 			true
 		);
 
