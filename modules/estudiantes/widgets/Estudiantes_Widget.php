@@ -354,8 +354,85 @@ class Estudiantes_Widget extends Widget_Base {
 			<div class="alezux-estudiantes-pagination" 
 				 data-total-pages="<?php echo esc_attr( $total_pages ); ?>" 
 				 data-current-page="1">
-				<!-- Pagination rendered via JS -->
+			<!-- Pagination rendered via JS -->
 			</div>
+
+            <!-- MODAL DE GESTIÓN (Hidden default) -->
+            <div id="alezux-management-modal-overlay" class="alezux-management-modal-overlay">
+                <div class="alezux-management-modal">
+                    <div class="alezux-modal-header">
+                        <h3 class="alezux-modal-title"><?php esc_html_e( 'Gestionar Estudiante', 'alezux-members' ); ?></h3>
+                        <button id="alezux-modal-close" class="alezux-modal-close">&times;</button>
+                    </div>
+                    <div class="alezux-modal-body">
+                        <!-- Loading State -->
+                        <div id="alezux-modal-loading" style="text-align:center; padding: 40px;">
+                            <i class="fa fa-spinner fa-spin" style="font-size: 30px; color: #6366f1;"></i>
+                        </div>
+
+                        <!-- Content State -->
+                        <div id="alezux-modal-content" style="display:none;">
+                            <input type="hidden" id="alezux-manage-user-id" value="">
+
+                            <!-- 1. Editar Datos -->
+                            <div class="alezux-section-title"><?php esc_html_e( 'Información Personal', 'alezux-members' ); ?></div>
+                            <div class="alezux-manage-form-grid">
+                                <div>
+                                    <label class="alezux-form-label"><?php esc_html_e( 'Nombre', 'alezux-members' ); ?></label>
+                                    <input type="text" id="manage-first-name" class="alezux-form-control">
+                                </div>
+                                <div>
+                                    <label class="alezux-form-label"><?php esc_html_e( 'Apellido', 'alezux-members' ); ?></label>
+                                    <input type="text" id="manage-last-name" class="alezux-form-control">
+                                </div>
+                                <div class="alezux-full-width">
+                                    <label class="alezux-form-label"><?php esc_html_e( 'Correo Electrónico', 'alezux-members' ); ?></label>
+                                    <input type="email" id="manage-email" class="alezux-form-control">
+                                </div>
+                                <div class="alezux-full-width" style="margin-top:10px;">
+                                    <button class="alezux-btn alezux-btn-primary" id="btn-save-student-data">
+                                        <?php esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?> <i class="fa fa-spinner alezux-spinner"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 2. Seguridad (Password & Block) -->
+                            <div class="alezux-section-title"><?php esc_html_e( 'Seguridad y Acceso', 'alezux-members' ); ?></div>
+                            <div class="alezux-manage-form-grid">
+                                <div>
+                                    <button class="alezux-btn alezux-btn-warning alezux-btn-block" id="btn-reset-password">
+                                        <i class="fa fa-key"></i> <?php esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
+                                    </button>
+                                    <small style="display:block; margin-top:5px; color:#888; font-size:11px;">
+                                        Genera una nueva y la envía por correo.
+                                    </small>
+                                </div>
+                                <div>
+                                    <button class="alezux-btn alezux-btn-danger alezux-btn-block" id="btn-block-user">
+                                        <i class="fa fa-ban"></i> <span id="lbl-block-user"><?php esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 3. Cursos -->
+                            <div class="alezux-section-title"><?php esc_html_e( 'Cursos Activos', 'alezux-members' ); ?></div>
+                            <ul id="list-enrolled-courses" class="alezux-course-list">
+                                <!-- Populated via JS -->
+                            </ul>
+                            <div id="no-enrolled-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php esc_html_e( 'No tiene cursos activos.', 'alezux-members' ); ?></div>
+
+                            <div class="alezux-section-title"><?php esc_html_e( 'Cursos Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
+                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px;">
+                                <ul id="list-available-courses" class="alezux-course-list">
+                                    <!-- Populated via JS -->
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 		</div>
 		<?php
 	}

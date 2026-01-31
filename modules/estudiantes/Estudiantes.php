@@ -25,18 +25,24 @@ class Estudiantes extends Module_Base {
 		add_action( 'wp_ajax_alezux_search_students', [ $this, 'ajax_search_students' ] );
 		add_action( 'wp_ajax_alezux_register_student', [ $this, 'ajax_register_student' ] );
 		add_action( 'wp_ajax_alezux_register_batch_csv', [ $this, 'ajax_register_batch_csv' ] );
+		// New Management Hooks
+		add_action( 'wp_ajax_alezux_get_student_details', [ $this, 'ajax_get_student_details' ] );
+		add_action( 'wp_ajax_alezux_update_student', [ $this, 'ajax_update_student' ] );
+		add_action( 'wp_ajax_alezux_reset_password', [ $this, 'ajax_reset_password' ] );
+		add_action( 'wp_ajax_alezux_update_course_access', [ $this, 'ajax_update_course_access' ] );
+		add_action( 'wp_ajax_alezux_toggle_block_user', [ $this, 'ajax_toggle_block_user' ] );
 	}
 
 	public function register_assets() {
 		// Estilos
-		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.3' );
-		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.3' );
-		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.3' ); // Se registra pero no se encola globalmente
+		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.4' );
+		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.4' );
+		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.4' ); // Se registra pero no se encola globalmente
 
 		// Scripts
-		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.3', true );
-		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.3', true );
-		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.3', true );
+		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.4', true );
+		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.4', true );
+		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.4', true );
 
 		// Localize Scripts (Variables comunes)
 		$vars = [
