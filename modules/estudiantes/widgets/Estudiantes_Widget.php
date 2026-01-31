@@ -498,16 +498,71 @@ class Estudiantes_Widget extends Widget_Base {
 			]
 		);
 
+		$this->start_controls_tabs( 'tabs_modal_close_style' );
+		
+		$this->start_controls_tab(
+			'tab_modal_close_normal',
+			[
+				'label' => \esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
 		$this->add_control(
 			'modal_close_color',
 			[
-				'label'     => \esc_html__( 'Color Icono Cerrar', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Icono', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'.alezux-modal-close' => 'color: {{VALUE}};',
 				],
 			]
 		);
+
+		$this->add_control(
+			'modal_close_bg_color',
+			[
+				'label'     => \esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-close' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_modal_close_hover',
+			[
+				'label' => \esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'modal_close_color_hover',
+			[
+				'label'     => \esc_html__( 'Color Icono', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-close:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_close_bg_color_hover',
+			[
+				'label'     => \esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-close:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
 		$this->end_controls_section();
 
@@ -625,45 +680,34 @@ class Estudiantes_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'modal_btn_typo',
-				'label'    => \esc_html__( 'Tipografía Botones', 'alezux-members' ),
-				'selector' => '.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn',
-			]
-		);
-		
-		$this->add_control(
-			'modal_btn_radius',
-			[
-				'label'      => \esc_html__( 'Radio Borde Botones', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
-				'selectors'  => [
-					'.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'modal_btn_padding',
-			[
-				'label'      => \esc_html__( 'Padding Botones', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em' ],
-				'selectors'  => [
-					'.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
+		// --- Botón Primario ---
 		$this->add_control(
 			'heading_btn_primary',
 			[
-				'label'     => \esc_html__( 'Botón Primario (Aceptar/Guardar)', 'alezux-members' ),
+				'label'     => \esc_html__( 'Botón Guardar (Primario)', 'alezux-members' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_btn_primary_typo',
+				'selector' => '.alezux-btn-primary',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_btn_primary' );
+
+		$this->start_controls_tab( 'tab_btn_primary_normal', [ 'label' => \esc_html__( 'Normal', 'alezux-members' ) ] );
+
+		$this->add_control(
+			'modal_btn_primary_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-primary' => 'color: {{VALUE}};' ],
 			]
 		);
 
@@ -672,29 +716,64 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-primary' => 'background-color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-primary' => 'background-color: {{VALUE}};' ],
 			]
 		);
 
+		$this->end_controls_tab();
+
+		$this->start_controls_tab( 'tab_btn_primary_hover', [ 'label' => \esc_html__( 'Hover', 'alezux-members' ) ] );
+
 		$this->add_control(
-			'modal_btn_primary_text',
+			'modal_btn_primary_text_hover',
 			[
 				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-primary' => 'color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-primary:hover' => 'color: {{VALUE}};' ],
 			]
 		);
 
 		$this->add_control(
+			'modal_btn_primary_bg_hover',
+			[
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-primary:hover' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// --- Botón Warning ---
+		$this->add_control(
 			'heading_btn_warning',
 			[
-				'label'     => \esc_html__( 'Botón Alerta (Reset)', 'alezux-members' ),
+				'label'     => \esc_html__( 'Botón Reset Password (Warning)', 'alezux-members' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_btn_warning_typo',
+				'selector' => '.alezux-btn-warning',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_btn_warning' );
+
+		$this->start_controls_tab( 'tab_btn_warning_normal', [ 'label' => \esc_html__( 'Normal', 'alezux-members' ) ] );
+
+		$this->add_control(
+			'modal_btn_warning_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-warning' => 'color: {{VALUE}};' ],
 			]
 		);
 
@@ -703,29 +782,64 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-warning' => 'background-color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-warning' => 'background-color: {{VALUE}};' ],
 			]
 		);
 
+		$this->end_controls_tab();
+
+		$this->start_controls_tab( 'tab_btn_warning_hover', [ 'label' => \esc_html__( 'Hover', 'alezux-members' ) ] );
+
 		$this->add_control(
-			'modal_btn_warning_text',
+			'modal_btn_warning_text_hover',
 			[
 				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-warning' => 'color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-warning:hover' => 'color: {{VALUE}};' ],
 			]
 		);
 
 		$this->add_control(
+			'modal_btn_warning_bg_hover',
+			[
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-warning:hover' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		// --- Botón Danger ---
+		$this->add_control(
 			'heading_btn_danger',
 			[
-				'label'     => \esc_html__( 'Botón Peligro (Bloquear)', 'alezux-members' ),
+				'label'     => \esc_html__( 'Botón Bloquear (Peligro)', 'alezux-members' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_btn_danger_typo',
+				'selector' => '.alezux-btn-danger',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_btn_danger' );
+
+		$this->start_controls_tab( 'tab_btn_danger_normal', [ 'label' => \esc_html__( 'Normal', 'alezux-members' ) ] );
+
+		$this->add_control(
+			'modal_btn_danger_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-danger' => 'color: {{VALUE}};' ],
 			]
 		);
 
@@ -734,22 +848,35 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-danger' => 'background-color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-danger' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab( 'tab_btn_danger_hover', [ 'label' => \esc_html__( 'Hover', 'alezux-members' ) ] );
+
+		$this->add_control(
+			'modal_btn_danger_text_hover',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [ '.alezux-btn-danger:hover' => 'color: {{VALUE}};' ],
 			]
 		);
 
 		$this->add_control(
-			'modal_btn_danger_text',
+			'modal_btn_danger_bg_hover',
 			[
-				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'.alezux-btn-danger' => 'color: {{VALUE}};',
-				],
+				'selectors' => [ '.alezux-btn-danger:hover' => 'background-color: {{VALUE}};' ],
 			]
 		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
 		$this->end_controls_section();
 	}
