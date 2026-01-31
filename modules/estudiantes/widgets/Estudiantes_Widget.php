@@ -358,7 +358,7 @@ class Estudiantes_Widget extends Widget_Base {
 			</div>
 
             <!-- MODAL DE GESTIÓN (Hidden default) -->
-            <div id="alezux-management-modal-overlay" class="alezux-management-modal-overlay">
+            <div id="alezux-management-modal-overlay" class="alezux-management-modal-overlay" style="display:none;">
                 <div class="alezux-management-modal">
                     <div class="alezux-modal-header">
                         <h3 class="alezux-modal-title"><?php esc_html_e( 'Gestionar Estudiante', 'alezux-members' ); ?></h3>
