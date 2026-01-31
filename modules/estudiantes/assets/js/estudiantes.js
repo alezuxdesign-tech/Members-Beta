@@ -133,6 +133,12 @@ jQuery(document).ready(function ($) {
                     <td class="col-correo">
                         ${student.email}
                     </td>
+                    <td class="col-progreso">
+                        <div class="alezux-progress-wrapper" style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+                            <div class="alezux-progress-bar" style="width: ${student.progress}%; height: 100%; background: #4CAF50;"></div>
+                        </div>
+                        <div style="font-size: 10px; color: #888; margin-top: 4px;">${student.progress}% Completado</div>
+                    </td>
                     <td class="col-estado">
                         <span class="${student.status_class}">
                             <i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
@@ -451,9 +457,11 @@ jQuery(document).ready(function ($) {
         } else {
             $('#no-enrolled-msg').hide();
             enrolled.forEach(function (c) {
+                var studyTime = c.study_time_formatted || '0h 0m';
+                var timeHtml = `<span style="font-size: 11px; color: #aaa; margin-left: 10px;"><i class="fa fa-clock-o"></i> ${studyTime}</span>`;
                 var item = `
                     <li class="alezux-course-item">
-                        <span>${c.title}</span>
+                        <span>${c.title} ${timeHtml}</span>
                         <div class="alezux-course-actions">
                             <button class="btn-remove-access" data-course-id="${c.id}">Quitar Acceso</button>
                         </div>

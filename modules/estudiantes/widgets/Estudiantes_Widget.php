@@ -931,8 +931,9 @@ class Estudiantes_Widget extends Widget_Base {
 						<tr>
 							<th><?php \esc_html_e( 'FOTO', 'alezux-members' ); ?></th>
 							<th><?php \esc_html_e( 'NOMBRE', 'alezux-members' ); ?></th>
-							<th><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
-							<th><?php \esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
+								<th class="col-correo"><?php \esc_html_e( 'Correo', 'alezux-members' ); ?></th>
+								<th class="col-progreso"><?php \esc_html_e( 'Progreso', 'alezux-members' ); ?></th>
+								<th class="col-estado"><?php \esc_html_e( 'Estado', 'alezux-members' ); ?></th>
 							<th><?php \esc_html_e( 'FUNCIONES', 'alezux-members' ); ?></th>
 						</tr>
 					</thead>

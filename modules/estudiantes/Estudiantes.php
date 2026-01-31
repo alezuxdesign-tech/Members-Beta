@@ -35,14 +35,14 @@ class Estudiantes extends Module_Base {
 
 	public function register_assets() {
 		// Estilos
-		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.8' );
-		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.8' );
-		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.8' ); // Se registra pero no se encola globalmente
+		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.1.0' );
+		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.1.0' );
+		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.1.0' ); // Se registra pero no se encola globalmente
 
 		// Scripts
-		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.8', true );
-		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.8', true );
-		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.8', true );
+		\wp_enqueue_script( 'alezux-estudiantes-js', $this->get_asset_url( 'assets/js/estudiantes.js' ), [ 'jquery' ], '1.1.0', true );
+		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.1.0', true );
+		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.1.0', true );
 
 		// Localize Scripts (Variables comunes)
 		$vars = [
@@ -124,18 +124,38 @@ class Estudiantes extends Module_Base {
 		$total_users = $user_query->get_total();
 		$total_pages = ceil( $total_users / $limit );
 
-		$data = [];
-		foreach ( $students as $student ) {
-			$data[] = [
-				'id'           => $student->ID,
-				'name'         => $student->display_name,
-				'username'     => $student->user_nicename,
-				'email'        => $student->user_email,
-				'avatar_url'   => \get_avatar_url( $student->ID ),
-				'status_label' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'Bloqueado' : 'OK',
-				'status_class' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'status-inactive' : 'status-active',
-			];
-		}
+		    $data = [];
+    foreach ( $students as $student ) {
+        // Calculate Average Progress
+        $progress = 0;
+        $total_courses = 0;
+        $user_progress = \get_user_meta( $student->ID, '_sfwd_course_progress', true );
+        
+        if ( is_array( $user_progress ) ) {
+            foreach ( $user_progress as $course_id => $p_data ) {
+                if ( ! empty( $p_data['total'] ) && $p_data['total'] > 0 ) {
+                    $completed = isset( $p_data['completed'] ) ? intval( $p_data['completed'] ) : 0;
+                    $total = intval( $p_data['total'] );
+                    $percentage = ($completed / $total) * 100;
+                    $progress += $percentage;
+                    $total_courses++;
+                }
+            }
+        }
+        
+        $avg_progress = ($total_courses > 0) ? round( $progress / $total_courses ) : 0;
+
+        $data[] = [
+            'id'           => $student->ID,
+            'name'         => $student->display_name,
+            'username'     => $student->user_nicename,
+            'email'        => $student->user_email,
+            'avatar_url'   => \get_avatar_url( $student->ID ),
+            'status_label' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'Bloqueado' : 'OK',
+            'status_class' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'status-inactive' : 'status-active',
+            'progress'     => $avg_progress,
+        ];
+    }
 
 		\wp_send_json_success( [
 			'students'     => $data,
@@ -379,7 +399,28 @@ class Estudiantes extends Module_Base {
 				$course_info = [
 					'id'    => $course->ID,
 					'title' => $course->post_title,
+                    'study_seconds' => 0,
+                    'study_time_formatted' => '0h 0m'
 				];
+
+                // Fetch Study Time from DB
+                global $wpdb;
+                $table_name = $wpdb->prefix . 'alezux_study_log';
+                // Check if table exists first to avoid errors
+                if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+                    $seconds = $wpdb->get_var( $wpdb->prepare(
+                        "SELECT SUM(seconds) FROM $table_name WHERE user_id = %d AND course_id = %d",
+                        $user->ID,
+                        $course->ID
+                    ) );
+                    
+                    if ( $seconds ) {
+                        $course_info['study_seconds'] = intval( $seconds );
+                        $hours = floor( $seconds / 3600 );
+                        $mins = floor( ($seconds % 3600) / 60 );
+                        $course_info['study_time_formatted'] = "{$hours}h {$mins}m";
+                    }
+                }
 
 				if ( $has_access ) {
 					$enrolled[] = $course_info;
