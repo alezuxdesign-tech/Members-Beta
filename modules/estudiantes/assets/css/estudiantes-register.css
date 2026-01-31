@@ -67,78 +67,123 @@
 }
 
 /* =========================================
-   Toast Notifications
+   Alezux Check/Status Modal (Purple Style)
    ========================================= */
 .alezux-toast-container {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    /* Backdrop blur/dark */
+    backdrop-filter: blur(5px);
+    z-index: 99999;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-    /* Allows clicking through the container */
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    animation: alezuxFadeInBackdrop 0.3s forwards;
 }
 
 .alezux-toast {
-    background: #1a1a1a;
+    background: #5f2eea;
+    /* Purple from visual reference approx */
+    background: linear-gradient(135deg, #6f3bf5 0%, #5b2add 100%);
     color: #fff;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 5px solid #6c5ce7;
-    /* Default Primary */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    min-width: 300px;
+    padding: 30px 40px;
+    border-radius: 20px;
+    /* Large radius */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    border: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    opacity: 0;
-    transform: translateX(50px);
-    animation: alezuxSlideIn 0.3s forwards;
-    pointer-events: auto;
-    /* Re-enable clicks for toasts */
-    font-size: 14px;
-    font-weight: 500;
+    gap: 15px;
+    transform: scale(0.9);
+    animation: alezuxPopScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.alezux-toast.success {
-    border-left-color: #2ecc71;
-}
-
+/* Variant overrides */
 .alezux-toast.error {
-    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+    /* Reddish for errors */
+}
+
+/* Typography matches image */
+.alezux-toast-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.alezux-toast-message {
+    font-size: 15px;
+    font-weight: 400;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+/* Close Button (The 'Accept' action) */
+.alezux-toast-action-btn {
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.alezux-toast-action-btn:hover {
+    background: #fff;
+    color: #5f2eea;
+}
+
+.alezux-toast.error .alezux-toast-action-btn:hover {
+    color: #ff4757;
 }
 
 .alezux-toast-close {
-    background: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
     border: none;
-    color: #888;
-    font-size: 18px;
+    color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
-    margin-left: 15px;
-    padding: 0;
-    line-height: 1;
+    font-size: 20px;
 }
 
 .alezux-toast-close:hover {
     color: #fff;
 }
 
-.alezux-toast.hiding {
-    animation: alezuxFadeOut 0.3s forwards;
-}
+/* Animations */
+@keyframes alezuxFadeInBackdrop {
+    from {
+        opacity: 0;
+    }
 
-@keyframes alezuxSlideIn {
     to {
         opacity: 1;
-        transform: translateX(0);
     }
 }
 
-@keyframes alezuxFadeOut {
-    to {
+@keyframes alezuxPopScale {
+    from {
         opacity: 0;
-        transform: translateX(20px);
+        transform: scale(0.8) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
