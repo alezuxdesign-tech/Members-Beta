@@ -1,4 +1,5 @@
 jQuery(document).ready(function ($) {
+    console.log('[Estudiantes] JS Loaded and Ready (v1.0.5)');
     var timer;
 
     // Search Logic
@@ -17,6 +18,7 @@ jQuery(document).ready(function ($) {
     $(document).on('click', '.btn-gestionar', function (e) {
         e.preventDefault();
         var userId = $(this).data('student-id');
+        console.log('[Estudiantes] Click en gestionar. User ID:', userId);
 
         $('#alezux-management-modal-overlay').fadeIn(200).css('display', 'flex');
         $('#alezux-modal-loading').show();
