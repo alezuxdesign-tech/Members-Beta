@@ -67,12 +67,10 @@ jQuery(document).ready(function ($) {
 
     // Input de Búsqueda
     $(document).on('input', '.alezux-estudiantes-search input', function () {
-        console.log('[Estudiantes] Input detectado:', $(this).val());
         clearTimeout(searchTimer);
         currentSearch = $(this).val();
 
         searchTimer = setTimeout(function () {
-            console.log('[Estudiantes] Enviando búsqueda AJAX...');
             loadStudents(1, currentSearch);
         }, 500); // Debounce
     });
