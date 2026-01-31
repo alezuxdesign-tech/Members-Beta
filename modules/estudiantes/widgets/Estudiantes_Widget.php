@@ -944,6 +944,21 @@ class Estudiantes_Widget extends Widget_Base {
 								$name = $student->display_name;
 								$email = $student->user_email;
 								
+								// Calcular Progreso
+								$avg_progress = 0;
+								if ( function_exists( 'learndash_user_get_enrolled_courses' ) && function_exists( 'learndash_course_get_user_progress' ) ) {
+									$user_courses = \learndash_user_get_enrolled_courses( $student->ID );
+									if ( ! empty( $user_courses ) ) {
+										$total_progress = 0;
+										foreach ( $user_courses as $course_id ) {
+											$progress = \learndash_course_get_user_progress( $student->ID, $course_id );
+											$percentage = isset( $progress['percentage'] ) ? intval( $progress['percentage'] ) : 0;
+											$total_progress += $percentage;
+										}
+										$avg_progress = intval( $total_progress / count( $user_courses ) );
+									}
+								}
+
 								$is_blocked = (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true );
 								if ( $is_blocked ) {
 									$status_label = \esc_html__( 'Bloqueado', 'alezux-members' );
@@ -963,6 +978,12 @@ class Estudiantes_Widget extends Widget_Base {
 								</td>
 								<td class="col-correo">
 									<?php echo \esc_html( $email ); ?>
+								</td>
+								<td class="col-progreso">
+									<div class="alezux-progress-wrapper" style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+										<div class="alezux-progress-bar" style="width: <?php echo \esc_attr( $avg_progress ); ?>%; height: 100%; background: #4CAF50;"></div>
+									</div>
+									<div style="font-size: 10px; color: #888; margin-top: 4px;"><?php echo \esc_html( $avg_progress ); ?>% Completado</div>
 								</td>
 								<td class="col-estado">
 									<span class="<?php echo \esc_attr( $status_class ); ?>">
