@@ -66,11 +66,13 @@ jQuery(document).ready(function ($) {
     var currentSearch = '';
 
     // Input de Búsqueda
-    $('.alezux-estudiantes-search input').on('input', function () {
+    $(document).on('input', '.alezux-estudiantes-search input', function () {
+        console.log('[Estudiantes] Input detectado:', $(this).val());
         clearTimeout(searchTimer);
         currentSearch = $(this).val();
 
         searchTimer = setTimeout(function () {
+            console.log('[Estudiantes] Enviando búsqueda AJAX...');
             loadStudents(1, currentSearch);
         }, 500); // Debounce
     });
