@@ -116,11 +116,16 @@ jQuery(document).ready(function ($) {
         $tableBody.empty();
 
         if (students.length === 0) {
-            $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">No se encontraron estudiantes.</td></tr>');
+            $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">No se encontraron estudiantes.</td></tr>');
             return;
         }
 
+        console.log('[Estudiantes] Renderizando tabla con', students.length, 'estudiantes.');
+
         students.forEach(function (student) {
+            // Debug individual student data
+            console.log('[Estudiantes] Estudiante:', student.name, 'Progreso:', student.progress);
+
             var row = `
                 <tr>
                     <td class="col-foto">
