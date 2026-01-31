@@ -59,6 +59,143 @@ jQuery(document).ready(function ($) {
     }
 
     // ==========================================================
+    // BÚSQUEDA Y PAGINACIÓN (AJAX)
+    // ==========================================================
+
+    var searchTimer;
+    var currentSearch = '';
+
+    // Input de Búsqueda
+    $('.alezux-estudiantes-search input').on('input', function () {
+        clearTimeout(searchTimer);
+        currentSearch = $(this).val();
+
+        searchTimer = setTimeout(function () {
+            loadStudents(1, currentSearch);
+        }, 500); // Debounce
+    });
+
+    // Cargar Estudiantes
+    function loadStudents(page, search) {
+        var $tableBody = $('.alezux-estudiantes-table tbody');
+        var $pagination = $('.alezux-estudiantes-pagination');
+
+        // Estilo de carga (Simple opacity)
+        $tableBody.css('opacity', '0.5');
+
+        $.ajax({
+            url: alezux_estudiantes_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'alezux_search_students',
+                nonce: alezux_estudiantes_vars.nonce,
+                page: page,
+                search: search,
+                limit: $('.alezux-estudiantes-wrapper').data('limit') || 10
+            },
+            success: function (response) {
+                if (response.success) {
+                    renderTable(response.data.students);
+                    renderPagination(response.data.total_pages, response.data.current_page);
+                } else {
+                    $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Error al cargar datos.</td></tr>');
+                }
+            },
+            error: function () {
+                $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Error de conexión.</td></tr>');
+            },
+            complete: function () {
+                $tableBody.css('opacity', '1');
+            }
+        });
+    }
+
+    // Render Tabla
+    function renderTable(students) {
+        var $tableBody = $('.alezux-estudiantes-table tbody');
+        $tableBody.empty();
+
+        if (students.length === 0) {
+            $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">No se encontraron estudiantes.</td></tr>');
+            return;
+        }
+
+        students.forEach(function (student) {
+            var row = `
+                <tr>
+                    <td class="col-foto">
+                        <img src="${student.avatar_url}" alt="${student.name}">
+                    </td>
+                    <td class="col-nombre">
+                        ${student.name}
+                        <div style="font-size: 12px; color: #999;">@${student.username}</div>
+                    </td>
+                    <td class="col-correo">
+                        ${student.email}
+                    </td>
+                    <td class="col-estado">
+                        <span class="${student.status_class}">
+                            <i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
+                            ${student.status_label}
+                        </span>
+                    </td>
+                    <td class="col-funciones">
+                        <button class="btn-gestionar" data-student-id="${student.id}">
+                            <i class="fa fa-cog"></i> Gestionar
+                        </button>
+                    </td>
+                </tr>
+            `;
+            $tableBody.append(row);
+        });
+    }
+
+    // Render Paginación
+    function renderPagination(totalPages, currentPage) {
+        var $container = $('.alezux-estudiantes-pagination');
+        $container.empty();
+
+        if (totalPages <= 1) return;
+
+        var html = '';
+        var prevPage = Math.max(1, currentPage - 1);
+        var nextPage = Math.min(totalPages, currentPage + 1);
+
+        // Prev
+        html += `<span class="page-link prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}"><i class="fa fa-chevron-left"></i></span>`;
+
+        // Pages
+        for (var i = 1; i <= totalPages; i++) {
+            if (i == currentPage) {
+                html += `<span class="page-link active">${i}</span>`;
+            } else if (i <= currentPage + 2 && i >= currentPage - 2) {
+                html += `<span class="page-link" data-page="${i}">${i}</span>`;
+            } else if (i == currentPage + 3 || i == currentPage - 3) {
+                html += `<span class="page-link dots">...</span>`;
+            }
+        }
+
+        // Next
+        html += `<span class="page-link next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}"><i class="fa fa-chevron-right"></i></span>`;
+
+        $container.html(html);
+    }
+
+    // Evento Click Paginación
+    $(document).on('click', '.alezux-estudiantes-pagination .page-link', function () {
+        if ($(this).hasClass('disabled') || $(this).hasClass('active') || $(this).hasClass('dots')) return;
+
+        var page = $(this).data('page');
+        loadStudents(page, currentSearch);
+    });
+
+    // Iniciar Paginación Inicial (si PHP renderizó páginas)
+    var initialTotalPages = $('.alezux-estudiantes-pagination').data('total-pages');
+    if (initialTotalPages) {
+        renderPagination(initialTotalPages, 1);
+    }
+
+    // ==========================================================
     // GESTIÓN DE ESTUDIANTES (MODAL)
     // ==========================================================
 
