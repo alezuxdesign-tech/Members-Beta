@@ -29,14 +29,14 @@ class Estudiantes extends Module_Base {
 
 	public function register_assets() {
 		// Estilos
-		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.0' );
-		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.0' );
-		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.0' ); // Se registra pero no se encola globalmente
+		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.1' );
+		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.1' );
+		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.1' ); // Se registra pero no se encola globalmente
 
 		// Scripts
-		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.0', true );
-		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.0', true );
-		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.0', true );
+		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.1', true );
+		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.1', true );
+		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.1', true );
 
 		// Localize Scripts (Variables comunes)
 		$vars = [
@@ -156,6 +156,11 @@ class Estudiantes extends Module_Base {
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
 			wp_send_json_error( [ 'message' => 'Email inválido.' ] );
+		}
+
+		// Verificamos si email o usuario ya existen ANTES de intentar registrar
+		if ( \email_exists( $email ) || \username_exists( $email ) ) {
+			\wp_send_json_error( [ 'message' => 'El correo electrónico ya está registrado.' ] );
 		}
 
 		$result = $this->register_single_student( [
