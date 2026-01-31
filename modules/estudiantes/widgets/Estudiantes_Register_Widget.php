@@ -291,6 +291,7 @@ class Estudiantes_Register_Widget extends Widget_Base {
 		$this->end_controls_tab();
 		$this->end_controls_tabs();
 
+        $this->end_controls_section();
 
 		// --- ESTILO: ALERTAS / MODAL ---
 		$this->start_controls_section(
