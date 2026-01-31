@@ -229,9 +229,72 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'label'     => \esc_html__( 'Fondo Filas Impares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
+		$this->add_control(
+			'heading_table_text_style',
+			[
+				'label'     => \esc_html__( 'Texto y Contenido', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'table_text_color',
+			[
+				'label'     => \esc_html__( 'Color Texto General', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(odd) td' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-estudiantes-table td' => 'color: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'table_text_typography',
+				'label'    => \esc_html__( 'Tipografía General', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-estudiantes-table td',
+			]
+		);
+
+		$this->add_control(
+			'table_name_color',
+			[
+				'label'     => \esc_html__( 'Color Nombre Estudiante', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .estudiante-nombre' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'table_name_typography',
+				'label'    => \esc_html__( 'Tipografía Nombre', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .estudiante-nombre',
+			]
+		);
+
+		$this->add_control(
+			'table_username_color',
+			[
+				'label'     => \esc_html__( 'Color Usuario (@handle)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .estudiante-usuario' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'table_username_typography',
+				'label'    => \esc_html__( 'Tipografía Usuario', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .estudiante-usuario',
 			]
 		);
 
