@@ -278,7 +278,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$total_pages = ceil( $total_users / $limit );
 
 		?>
-		?>
+
 		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>">
 			<!-- Header -->
 			<div class="alezux-estudiantes-header">
