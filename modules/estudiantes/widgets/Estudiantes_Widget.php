@@ -18,7 +18,7 @@ class Estudiantes_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Tabla de Estudiantes', 'alezux-members' );
+		return \esc_html__( 'Tabla de Estudiantes', 'alezux-members' );
 	}
 
 	public function get_icon() {
@@ -42,7 +42,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_content_header',
 			[
-				'label' => esc_html__( 'Cabecera', 'alezux-members' ),
+				'label' => \esc_html__( 'Cabecera', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -50,20 +50,20 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'header_title',
 			[
-				'label'       => esc_html__( 'Título', 'alezux-members' ),
+				'label'       => \esc_html__( 'Título', 'alezux-members' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'Centro de Mando Académico', 'alezux-members' ),
-				'placeholder' => esc_html__( 'Escribe el título aquí', 'alezux-members' ),
+				'default'     => \esc_html__( 'Centro de Mando Académico', 'alezux-members' ),
+				'placeholder' => \esc_html__( 'Escribe el título aquí', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'header_description',
 			[
-				'label'       => esc_html__( 'Descripción', 'alezux-members' ),
+				'label'       => \esc_html__( 'Descripción', 'alezux-members' ),
 				'type'        => Controls_Manager::TEXTAREA,
-				'default'     => esc_html__( 'Gestión de accesos, datos personales y seguridad.', 'alezux-members' ),
-				'placeholder' => esc_html__( 'Escribe la descripción aquí', 'alezux-members' ),
+				'default'     => \esc_html__( 'Gestión de accesos, datos personales y seguridad.', 'alezux-members' ),
+				'placeholder' => \esc_html__( 'Escribe la descripción aquí', 'alezux-members' ),
 			]
 		);
 
@@ -73,7 +73,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_header',
 			[
-				'label' => esc_html__( 'Estilo Cabecera', 'alezux-members' ),
+				'label' => \esc_html__( 'Estilo Cabecera', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -81,7 +81,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'header_bg_color',
 			[
-				'label'     => esc_html__( 'Color Fondo Cabecera', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Fondo Cabecera', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-header' => 'background-color: {{VALUE}};',
@@ -92,7 +92,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'header_title_color',
 			[
-				'label'     => esc_html__( 'Color Título', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Título', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-title' => 'color: {{VALUE}};',
@@ -104,7 +104,7 @@ class Estudiantes_Widget extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'header_title_typography',
-				'label'    => esc_html__( 'Tipografía Título', 'alezux-members' ),
+				'label'    => \esc_html__( 'Tipografía Título', 'alezux-members' ),
 				'selector' => '{{WRAPPER}} .alezux-estudiantes-title',
 			]
 		);
@@ -112,7 +112,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'header_desc_color',
 			[
-				'label'     => esc_html__( 'Color Descripción', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Descripción', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-desc' => 'color: {{VALUE}};',
@@ -135,7 +135,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_table',
 			[
-				'label' => esc_html__( 'Tabla', 'alezux-members' ),
+				'label' => \esc_html__( 'Tabla', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -143,7 +143,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'table_header_bg',
 			[
-				'label'     => esc_html__( 'Fondo Cabecera', 'alezux-members' ),
+				'label'     => \esc_html__( 'Fondo Cabecera', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-table th' => 'background-color: {{VALUE}};',
@@ -154,7 +154,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'table_header_color',
 			[
-				'label'     => esc_html__( 'Color Texto Cabecera', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Texto Cabecera', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-table th' => 'color: {{VALUE}};',
@@ -166,7 +166,7 @@ class Estudiantes_Widget extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name'     => 'table_header_typography',
-				'label'    => esc_html__( 'Tipografía Cabecera', 'alezux-members' ),
+				'label'    => \esc_html__( 'Tipografía Cabecera', 'alezux-members' ),
 				'selector' => '{{WRAPPER}} .alezux-estudiantes-table th',
 			]
 		);
@@ -174,7 +174,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'table_row_even_bg',
 			[
-				'label'     => esc_html__( 'Fondo Filas Pares', 'alezux-members' ),
+				'label'     => \esc_html__( 'Fondo Filas Pares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(even) td' => 'background-color: {{VALUE}};',
@@ -185,7 +185,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'table_row_odd_bg',
 			[
-				'label'     => esc_html__( 'Fondo Filas Impares', 'alezux-members' ),
+				'label'     => \esc_html__( 'Fondo Filas Impares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(odd) td' => 'background-color: {{VALUE}};',
@@ -199,7 +199,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_btn',
 			[
-				'label' => esc_html__( 'Botón Gestionar', 'alezux-members' ),
+				'label' => \esc_html__( 'Botón Gestionar', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -207,7 +207,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'btn_bg_color',
 			[
-				'label'     => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .btn-gestionar' => 'background-color: {{VALUE}};',
@@ -218,7 +218,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'btn_text_color',
 			[
-				'label'     => esc_html__( 'Color Texto', 'alezux-members' ),
+				'label'     => \esc_html__( 'Color Texto', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .btn-gestionar' => 'color: {{VALUE}};',
@@ -237,7 +237,7 @@ class Estudiantes_Widget extends Widget_Base {
 		$this->add_control(
 			'btn_border_radius',
 			[
-				'label'      => esc_html__( 'Radio de Borde', 'alezux-members' ),
+				'label'      => \esc_html__( 'Radio de Borde', 'alezux-members' ),
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
@@ -278,16 +278,17 @@ class Estudiantes_Widget extends Widget_Base {
 		$total_pages = ceil( $total_users / $limit );
 
 		?>
-		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo esc_attr( $limit ); ?>">
+		?>
+		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>">
 			<!-- Header -->
 			<div class="alezux-estudiantes-header">
 				<div class="alezux-header-content">
-					<h2 class="alezux-estudiantes-title"><?php echo esc_html( $settings['header_title'] ); ?></h2>
-					<p class="alezux-estudiantes-desc"><?php echo esc_html( $settings['header_description'] ); ?></p>
+					<h2 class="alezux-estudiantes-title"><?php echo \esc_html( $settings['header_title'] ); ?></h2>
+					<p class="alezux-estudiantes-desc"><?php echo \esc_html( $settings['header_description'] ); ?></p>
 				</div>
 				<div class="alezux-estudiantes-search">
 					<i class="fa fa-search search-icon"></i>
-					<input type="text" placeholder="<?php esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
+					<input type="text" placeholder="<?php \esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
 				</div>
 			</div>
 
@@ -296,17 +297,17 @@ class Estudiantes_Widget extends Widget_Base {
 				<table class="alezux-estudiantes-table">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'FOTO', 'alezux-members' ); ?></th>
-							<th><?php esc_html_e( 'NOMBRE', 'alezux-members' ); ?></th>
-							<th><?php esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
-							<th><?php esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
-							<th><?php esc_html_e( 'FUNCIONES', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'FOTO', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'NOMBRE', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'FUNCIONES', 'alezux-members' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php if ( ! empty( $students ) ) : ?>
 							<?php foreach ( $students as $student ) : 
-								$avatar_url = get_avatar_url( $student->ID );
+								$avatar_url = \get_avatar_url( $student->ID );
 								$name = $student->display_name;
 								$email = $student->user_email;
 								// Estado simulado 'OK' o 'Activo' por ahora
@@ -317,24 +318,24 @@ class Estudiantes_Widget extends Widget_Base {
 							?>
 							<tr>
 								<td class="col-foto">
-									<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $name ); ?>">
+									<img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>">
 								</td>
 								<td class="col-nombre">
-									<?php echo esc_html( $name ); ?>
-									<div style="font-size: 12px; color: #999;"><?php echo '@' . esc_html( $student->user_nicename ); ?></div>
+									<?php echo \esc_html( $name ); ?>
+									<div style="font-size: 12px; color: #999;"><?php echo '@' . \esc_html( $student->user_nicename ); ?></div>
 								</td>
 								<td class="col-correo">
-									<?php echo esc_html( $email ); ?>
+									<?php echo \esc_html( $email ); ?>
 								</td>
 								<td class="col-estado">
-									<span class="<?php echo esc_attr( $status_class ); ?>">
+									<span class="<?php echo \esc_attr( $status_class ); ?>">
 										<i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
-										<?php echo esc_html( $status_label ); ?>
+										<?php echo \esc_html( $status_label ); ?>
 									</span>
 								</td>
 								<td class="col-funciones">
-									<button class="btn-gestionar" data-student-id="<?php echo esc_attr( $student->ID ); ?>">
-										<i class="fa fa-cog"></i> <?php esc_html_e( 'Gestionar', 'alezux-members' ); ?>
+									<button class="btn-gestionar" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
+										<i class="fa fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>
 									</button>
 								</td>
 							</tr>
@@ -342,7 +343,7 @@ class Estudiantes_Widget extends Widget_Base {
 						<?php else : ?>
 							<tr>
 								<td colspan="5" style="text-align:center; padding: 20px;">
-									<?php esc_html_e( 'No se encontraron estudiantes.', 'alezux-members' ); ?>
+									<?php \esc_html_e( 'No se encontraron estudiantes.', 'alezux-members' ); ?>
 								</td>
 							</tr>
 						<?php endif; ?>
@@ -352,7 +353,7 @@ class Estudiantes_Widget extends Widget_Base {
 			
 			<!-- Pagination -->
 			<div class="alezux-estudiantes-pagination" 
-				 data-total-pages="<?php echo esc_attr( $total_pages ); ?>" 
+				 data-total-pages="<?php echo \esc_attr( $total_pages ); ?>" 
 				 data-current-page="1">
 			<!-- Pagination rendered via JS -->
 			</div>
@@ -361,7 +362,7 @@ class Estudiantes_Widget extends Widget_Base {
             <div id="alezux-management-modal-overlay" class="alezux-management-modal-overlay" style="display:none;">
                 <div class="alezux-management-modal">
                     <div class="alezux-modal-header">
-                        <h3 class="alezux-modal-title"><?php esc_html_e( 'Gestionar Estudiante', 'alezux-members' ); ?></h3>
+                        <h3 class="alezux-modal-title"><?php \esc_html_e( 'Gestionar Estudiante', 'alezux-members' ); ?></h3>
                         <button id="alezux-modal-close" class="alezux-modal-close">&times;</button>
                     </div>
                     <div class="alezux-modal-body">
@@ -375,33 +376,33 @@ class Estudiantes_Widget extends Widget_Base {
                             <input type="hidden" id="alezux-manage-user-id" value="">
 
                             <!-- 1. Editar Datos -->
-                            <div class="alezux-section-title"><?php esc_html_e( 'Información Personal', 'alezux-members' ); ?></div>
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Información Personal', 'alezux-members' ); ?></div>
                             <div class="alezux-manage-form-grid">
                                 <div>
-                                    <label class="alezux-form-label"><?php esc_html_e( 'Nombre', 'alezux-members' ); ?></label>
+                                    <label class="alezux-form-label"><?php \esc_html_e( 'Nombre', 'alezux-members' ); ?></label>
                                     <input type="text" id="manage-first-name" class="alezux-form-control">
                                 </div>
                                 <div>
-                                    <label class="alezux-form-label"><?php esc_html_e( 'Apellido', 'alezux-members' ); ?></label>
+                                    <label class="alezux-form-label"><?php \esc_html_e( 'Apellido', 'alezux-members' ); ?></label>
                                     <input type="text" id="manage-last-name" class="alezux-form-control">
                                 </div>
                                 <div class="alezux-full-width">
-                                    <label class="alezux-form-label"><?php esc_html_e( 'Correo Electrónico', 'alezux-members' ); ?></label>
+                                    <label class="alezux-form-label"><?php \esc_html_e( 'Correo Electrónico', 'alezux-members' ); ?></label>
                                     <input type="email" id="manage-email" class="alezux-form-control">
                                 </div>
                                 <div class="alezux-full-width" style="margin-top:10px;">
                                     <button class="alezux-btn alezux-btn-primary" id="btn-save-student-data">
-                                        <?php esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?> <i class="fa fa-spinner alezux-spinner"></i>
+                                        <?php \esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?> <i class="fa fa-spinner alezux-spinner"></i>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- 2. Seguridad (Password & Block) -->
-                            <div class="alezux-section-title"><?php esc_html_e( 'Seguridad y Acceso', 'alezux-members' ); ?></div>
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Seguridad y Acceso', 'alezux-members' ); ?></div>
                             <div class="alezux-manage-form-grid">
                                 <div>
                                     <button class="alezux-btn alezux-btn-warning alezux-btn-block" id="btn-reset-password">
-                                        <i class="fa fa-key"></i> <?php esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
+                                        <i class="fa fa-key"></i> <?php \esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
                                     </button>
                                     <small style="display:block; margin-top:5px; color:#888; font-size:11px;">
                                         Genera una nueva y la envía por correo.
@@ -409,19 +410,19 @@ class Estudiantes_Widget extends Widget_Base {
                                 </div>
                                 <div>
                                     <button class="alezux-btn alezux-btn-danger alezux-btn-block" id="btn-block-user">
-                                        <i class="fa fa-ban"></i> <span id="lbl-block-user"><?php esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
+                                        <i class="fa fa-ban"></i> <span id="lbl-block-user"><?php \esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- 3. Cursos -->
-                            <div class="alezux-section-title"><?php esc_html_e( 'Cursos Activos', 'alezux-members' ); ?></div>
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Cursos Activos', 'alezux-members' ); ?></div>
                             <ul id="list-enrolled-courses" class="alezux-course-list">
                                 <!-- Populated via JS -->
                             </ul>
-                            <div id="no-enrolled-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php esc_html_e( 'No tiene cursos activos.', 'alezux-members' ); ?></div>
+                            <div id="no-enrolled-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php \esc_html_e( 'No tiene cursos activos.', 'alezux-members' ); ?></div>
 
-                            <div class="alezux-section-title"><?php esc_html_e( 'Cursos Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Cursos Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
                             <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px;">
                                 <ul id="list-available-courses" class="alezux-course-list">
                                     <!-- Populated via JS -->
@@ -429,6 +430,21 @@ class Estudiantes_Widget extends Widget_Base {
                             </div>
 
                         </div>
+                    </div>
+                </div>
+            </div>
+
+			<!-- SYSTEM ALERT MODAL -->
+            <div id="alezux-alert-modal-overlay" class="alezux-management-modal-overlay" style="display:none; z-index: 10001;">
+                <div class="alezux-alert-modal">
+                    <div class="alezux-alert-icon" id="alezux-alert-icon">
+                        <i class="fa fa-info-circle"></i>
+                    </div>
+                    <h3 id="alezux-alert-title">Título Alerta</h3>
+                    <p id="alezux-alert-message">Mensaje de alerta</p>
+                    <div class="alezux-alert-actions">
+                        <button id="alezux-alert-cancel" class="alezux-btn alezux-btn-secondary" style="display:none;"><?php \esc_html_e( 'Cancelar', 'alezux-members' ); ?></button>
+                        <button id="alezux-alert-confirm" class="alezux-btn alezux-btn-primary"><?php \esc_html_e( 'Aceptar', 'alezux-members' ); ?></button>
                     </div>
                 </div>
             </div>

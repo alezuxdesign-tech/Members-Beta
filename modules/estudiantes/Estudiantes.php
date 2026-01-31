@@ -11,38 +11,38 @@ class Estudiantes extends Module_Base {
 
 	public function init() {
 		// Registrar Shortcodes
-		add_shortcode( 'alezux_estudiantes_total', [ $this, 'shortcode_total_students' ] );
-		add_shortcode( 'alezux_estudiantes_nuevos_mes', [ $this, 'shortcode_new_students_month' ] );
+		\add_shortcode( 'alezux_estudiantes_total', [ $this, 'shortcode_total_students' ] );
+		\add_shortcode( 'alezux_estudiantes_nuevos_mes', [ $this, 'shortcode_new_students_month' ] );
 
 		// Registrar Widgets de Elementor
-		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
+		\add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 		
 		// Registrar scripts y estilos
-		add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
+		\add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+		\add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
 
 		// AJAX Endpoints
-		add_action( 'wp_ajax_alezux_search_students', [ $this, 'ajax_search_students' ] );
-		add_action( 'wp_ajax_alezux_register_student', [ $this, 'ajax_register_student' ] );
-		add_action( 'wp_ajax_alezux_register_batch_csv', [ $this, 'ajax_register_batch_csv' ] );
+		\add_action( 'wp_ajax_alezux_search_students', [ $this, 'ajax_search_students' ] );
+		\add_action( 'wp_ajax_alezux_register_student', [ $this, 'ajax_register_student' ] );
+		\add_action( 'wp_ajax_alezux_register_batch_csv', [ $this, 'ajax_register_batch_csv' ] );
 		// New Management Hooks
-		add_action( 'wp_ajax_alezux_get_student_details', [ $this, 'ajax_get_student_details' ] );
-		add_action( 'wp_ajax_alezux_update_student', [ $this, 'ajax_update_student' ] );
-		add_action( 'wp_ajax_alezux_reset_password', [ $this, 'ajax_reset_password' ] );
-		add_action( 'wp_ajax_alezux_update_course_access', [ $this, 'ajax_update_course_access' ] );
-		add_action( 'wp_ajax_alezux_toggle_block_user', [ $this, 'ajax_toggle_block_user' ] );
+		\add_action( 'wp_ajax_alezux_get_student_details', [ $this, 'ajax_get_student_details' ] );
+		\add_action( 'wp_ajax_alezux_update_student', [ $this, 'ajax_update_student' ] );
+		\add_action( 'wp_ajax_alezux_reset_password', [ $this, 'ajax_reset_password' ] );
+		\add_action( 'wp_ajax_alezux_update_course_access', [ $this, 'ajax_update_course_access' ] );
+		\add_action( 'wp_ajax_alezux_toggle_block_user', [ $this, 'ajax_toggle_block_user' ] );
 	}
 
 	public function register_assets() {
 		// Estilos
-		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.5' );
-		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.5' );
-		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.5' ); // Se registra pero no se encola globalmente
+		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.0.6' );
+		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.0.6' );
+		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.0.6' ); // Se registra pero no se encola globalmente
 
 		// Scripts
-		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.5', true );
-		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.5', true );
-		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.5', true );
+		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.0.6', true );
+		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.0.6', true );
+		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.0.6', true );
 
 		// Localize Scripts (Variables comunes)
 		$vars = [
@@ -74,7 +74,7 @@ class Estudiantes extends Module_Base {
 	}
 
 	public function shortcode_total_students() {
-		$result = count_users();
+		$result = \count_users();
 		return $result['total_users'];
 	}
 
@@ -94,15 +94,15 @@ class Estudiantes extends Module_Base {
 	 */
 	public function ajax_search_students() {
         // ... (existing code)
-        check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
-		if ( ! current_user_can( 'edit_users' ) ) {
-			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		if ( ! \current_user_can( 'edit_users' ) ) {
+			\wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
 		}
 
-		$search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
-		$page   = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
-		$limit  = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 10;
+		$search = isset( $_POST['search'] ) ? \sanitize_text_field( $_POST['search'] ) : '';
+		$page   = isset( $_POST['page'] ) ? \intval( $_POST['page'] ) : 1;
+		$limit  = isset( $_POST['limit'] ) ? \intval( $_POST['limit'] ) : 10;
 		$offset = ( $page - 1 ) * $limit;
 
 		$args = [
@@ -131,13 +131,13 @@ class Estudiantes extends Module_Base {
 				'name'         => $student->display_name,
 				'username'     => $student->user_nicename,
 				'email'        => $student->user_email,
-				'avatar_url'   => get_avatar_url( $student->ID ),
+				'avatar_url'   => \get_avatar_url( $student->ID ),
 				'status_label' => 'OK',
 				'status_class' => 'status-active',
 			];
 		}
 
-		wp_send_json_success( [
+		\wp_send_json_success( [
 			'students'     => $data,
 			'total_pages'  => $total_pages,
 			'current_page' => $page,
@@ -149,19 +149,19 @@ class Estudiantes extends Module_Base {
 	 * AJAX Handler: Registro Manual de 1 Estudiante
 	 */
 	public function ajax_register_student() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
-		if ( ! current_user_can( 'edit_users' ) ) {
-			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		if ( ! \current_user_can( 'edit_users' ) ) {
+			\wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
 		}
 
-		$first_name = isset( $_POST['first_name'] ) ? sanitize_text_field( $_POST['first_name'] ) : '';
-		$last_name  = isset( $_POST['last_name'] ) ? sanitize_text_field( $_POST['last_name'] ) : '';
-		$email      = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-		$course_id  = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
+		$first_name = isset( $_POST['first_name'] ) ? \sanitize_text_field( $_POST['first_name'] ) : '';
+		$last_name  = isset( $_POST['last_name'] ) ? \sanitize_text_field( $_POST['last_name'] ) : '';
+		$email      = isset( $_POST['email'] ) ? \sanitize_email( $_POST['email'] ) : '';
+		$course_id  = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
 
-		if ( empty( $email ) || ! is_email( $email ) ) {
-			wp_send_json_error( [ 'message' => 'Email inválido.' ] );
+		if ( empty( $email ) || ! \is_email( $email ) ) {
+			\wp_send_json_error( [ 'message' => 'Email inválido.' ] );
 		}
 
 		// Verificamos si email o usuario ya existen ANTES de intentar registrar
@@ -176,28 +176,28 @@ class Estudiantes extends Module_Base {
 			'course_id'  => $course_id,
 		] );
 
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+		if ( \is_wp_error( $result ) ) {
+			\wp_send_json_error( [ 'message' => $result->get_error_message() ] );
 		}
 
-		wp_send_json_success( [ 'message' => 'Estudiante registrado correctamente.' ] );
+		\wp_send_json_success( [ 'message' => 'Estudiante registrado correctamente.' ] );
 	}
 
 	/**
 	 * AJAX Handler: Registro Batch CSV (Procesa lote pequeño)
 	 */
 	public function ajax_register_batch_csv() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
-		if ( ! current_user_can( 'edit_users' ) ) {
-			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		if ( ! \current_user_can( 'edit_users' ) ) {
+			\wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
 		}
 
 		$students  = isset( $_POST['students'] ) ? $_POST['students'] : []; // Array de {name, email, ...}
-		$course_id = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
+		$course_id = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
 
-		if ( empty( $students ) || ! is_array( $students ) ) {
-			wp_send_json_error( [ 'message' => 'No hay datos para procesar.' ] );
+		if ( empty( $students ) || ! \is_array( $students ) ) {
+			\wp_send_json_error( [ 'message' => 'No hay datos para procesar.' ] );
 		}
 
 		$success_count = 0;
@@ -206,23 +206,23 @@ class Estudiantes extends Module_Base {
 		foreach ( $students as $student_data ) {
 			// Mapeo básico CSV (asumimos frontend envía claves normalizadas)
 			$data = [
-				'first_name' => isset( $student_data['first_name'] ) ? sanitize_text_field( $student_data['first_name'] ) : '',
-				'last_name'  => isset( $student_data['last_name'] ) ? sanitize_text_field( $student_data['last_name'] ) : '',
-				'email'      => isset( $student_data['email'] ) ? sanitize_email( $student_data['email'] ) : '',
+				'first_name' => isset( $student_data['first_name'] ) ? \sanitize_text_field( $student_data['first_name'] ) : '',
+				'last_name'  => isset( $student_data['last_name'] ) ? \sanitize_text_field( $student_data['last_name'] ) : '',
+				'email'      => isset( $student_data['email'] ) ? \sanitize_email( $student_data['email'] ) : '',
 				'course_id'  => $course_id,
 			];
 
 			if ( empty( $data['email'] ) ) continue;
 
 			$res = $this->register_single_student( $data );
-			if ( ! is_wp_error( $res ) ) {
+			if ( ! \is_wp_error( $res ) ) {
 				$success_count++;
 			} else {
 				$errors[] = $data['email'] . ': ' . $res->get_error_message();
 			}
 		}
 
-		wp_send_json_success( [
+		\wp_send_json_success( [
 			'processed' => count( $students ),
 			'success'   => $success_count,
 			'errors'    => $errors,
@@ -238,31 +238,31 @@ class Estudiantes extends Module_Base {
 		$last_name  = $data['last_name'];
 		$course_id  = $data['course_id'];
 
-		$user = get_user_by( 'email', $email );
+		$user = \get_user_by( 'email', $email );
 		$is_new_user = false;
 		$password = '';
 
 		if ( ! $user ) {
 			// Crear usuario
-			$password = wp_generate_password( 12, true );
-			$username = sanitize_user( current( explode( '@', $email ) ), true );
+			$password = \wp_generate_password( 12, true );
+			$username = \sanitize_user( current( explode( '@', $email ) ), true );
 			
 			// Asegurar username único
 			$base_username = $username;
 			$i = 1;
-			while ( username_exists( $username ) ) {
+			while ( \username_exists( $username ) ) {
 				$username = $base_username . $i;
 				$i++;
 			}
 
-			$user_id = wp_create_user( $username, $password, $email );
+			$user_id = \wp_create_user( $username, $password, $email );
 
-			if ( is_wp_error( $user_id ) ) {
+			if ( \is_wp_error( $user_id ) ) {
 				return $user_id;
 			}
 
 			// Actualizar meta
-			wp_update_user( [
+			\wp_update_user( [
 				'ID' => $user_id,
 				'first_name' => $first_name,
 				'last_name'  => $last_name,
@@ -270,7 +270,7 @@ class Estudiantes extends Module_Base {
 			] );
 
 			$is_new_user = true;
-			$user = get_user_by( 'id', $user_id );
+			$user = \get_user_by( 'id', $user_id );
 		} else {
 			// Usuario existe, solo matricularemos
 			$user_id = $user->ID;
@@ -278,7 +278,7 @@ class Estudiantes extends Module_Base {
 
 		// Asignar Curso LearnDash
 		if ( $course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
-			ld_update_course_access( $user_id, $course_id, false ); // false = add access
+			\ld_update_course_access( $user_id, $course_id, false ); // false = add access
 		}
 
 		// Enviar Email
@@ -296,19 +296,19 @@ class Estudiantes extends Module_Base {
 	 * Enviar Correo con Credenciales
 	 */
 	private function send_new_user_email( $user, $password, $course_id ) {
-		$site_name = get_bloginfo( 'name' );
-		$site_url  = home_url(); // URL para ingresar
-		$login_url = wp_login_url(); // O URL personalizada de login
+		$site_name = \get_bloginfo( 'name' );
+		$site_url  = \home_url(); // URL para ingresar
+		$login_url = \wp_login_url(); // O URL personalizada de login
 		
 		$course_title = '';
 		if ( $course_id ) {
-			$course = get_post( $course_id );
+			$course = \get_post( $course_id );
 			if ( $course ) $course_title = $course->post_title;
 		}
 
 		$subject = "Bienvenido a $site_name - Tus Credenciales de Acceso";
 		
-		$message  = "<p>Hola <strong>" . esc_html( $user->first_name ) . "</strong>,</p>";
+		$message  = "<p>Hola <strong>" . \esc_html( $user->first_name ) . "</strong>,</p>";
 		$message .= "<p>Se ha creado tu cuenta en <strong>$site_name</strong> exitosamente.</p>";
 		
 		if ( $course_title ) {
@@ -318,8 +318,8 @@ class Estudiantes extends Module_Base {
 		$message .= "<p>Aquí tienes tus datos de acceso:</p>";
 		$message .= "<ul>";
 		$message .= "<li><strong>URL de Acceso:</strong> <a href='$login_url'>$login_url</a></li>";
-		$message .= "<li><strong>Usuario:</strong> " . esc_html( $user->user_login ) . "</li>";
-		$message .= "<li><strong>Contraseña:</strong> " . esc_html( $password ) . "</li>";
+		$message .= "<li><strong>Usuario:</strong> " . \esc_html( $user->user_login ) . "</li>";
+		$message .= "<li><strong>Contraseña:</strong> " . \esc_html( $password ) . "</li>";
 		$message .= "</ul>";
 		$message .= "<p>Te recomendamos cambiar tu contraseña al ingresar.</p>";
 		$message .= "<p>¡Nos vemos dentro!</p>";
@@ -329,24 +329,24 @@ class Estudiantes extends Module_Base {
 		$domain = $_SERVER['SERVER_NAME'];
 		$headers[] = "From: $site_name <no-reply@$domain>";
 
-		wp_mail( $user->user_email, $subject, $message, $headers );
+		\wp_mail( $user->user_email, $subject, $message, $headers );
 	}
 
 	/**
 	 * AJAX Handler: Obtener detalles del estudiante para el Modal
 	 */
 	public function ajax_get_student_details() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 		
-		if ( ! current_user_can( 'edit_users' ) ) {
-			wp_send_json_error( [ 'message' => 'No autorizado' ] );
+		if ( ! \current_user_can( 'edit_users' ) ) {
+			\wp_send_json_error( [ 'message' => 'No autorizado' ] );
 		}
 
-		$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
-		$user = get_user_by( 'id', $user_id );
+		$user_id = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$user = \get_user_by( 'id', $user_id );
 
 		if ( ! $user ) {
-			wp_send_json_error( [ 'message' => 'Usuario no encontrado' ] );
+			\wp_send_json_error( [ 'message' => 'Usuario no encontrado' ] );
 		}
 
 		// 1. Datos Básicos
@@ -355,7 +355,7 @@ class Estudiantes extends Module_Base {
 			'first_name' => $user->first_name,
 			'last_name'  => $user->last_name,
 			'email'      => $user->user_email,
-			'is_blocked' => (bool) get_user_meta( $user->ID, 'alezux_is_blocked', true ),
+			'is_blocked' => (bool) \get_user_meta( $user->ID, 'alezux_is_blocked', true ),
 		];
 
 		// 2. Cursos (LearnDash)
@@ -363,7 +363,7 @@ class Estudiantes extends Module_Base {
 		$available = [];
 
 		// Obtener todos los cursos
-		$all_courses = get_posts( [
+		$all_courses = \get_posts( [
 			'post_type'      => 'sfwd-courses',
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
@@ -373,7 +373,7 @@ class Estudiantes extends Module_Base {
 			foreach ( $all_courses as $course ) {
 				$has_access = false;
 				if ( function_exists( 'sfwd_lms_has_access' ) ) {
-					$has_access = sfwd_lms_has_access( $course->ID, $user->ID );
+					$has_access = \sfwd_lms_has_access( $course->ID, $user->ID );
 				}
 
 				$course_info = [
@@ -392,98 +392,98 @@ class Estudiantes extends Module_Base {
 		$data['enrolled_courses']  = $enrolled;
 		$data['available_courses'] = $available;
 
-		wp_send_json_success( $data );
+		\wp_send_json_success( $data );
 	}
 
 	/**
 	 * AJAX Handler: Actualizar datos del estudiante
 	 */
 	public function ajax_update_student() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
-		if ( ! current_user_can( 'edit_users' ) ) {
-			wp_send_json_error( [ 'message' => 'No autorizado' ] );
+		if ( ! \current_user_can( 'edit_users' ) ) {
+			\wp_send_json_error( [ 'message' => 'No autorizado' ] );
 		}
 
-		$user_id    = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
-		$first_name = isset( $_POST['first_name'] ) ? sanitize_text_field( $_POST['first_name'] ) : '';
-		$last_name  = isset( $_POST['last_name'] ) ? sanitize_text_field( $_POST['last_name'] ) : '';
-		$email      = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+		$user_id    = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$first_name = isset( $_POST['first_name'] ) ? \sanitize_text_field( $_POST['first_name'] ) : '';
+		$last_name  = isset( $_POST['last_name'] ) ? \sanitize_text_field( $_POST['last_name'] ) : '';
+		$email      = isset( $_POST['email'] ) ? \sanitize_email( $_POST['email'] ) : '';
 
-		if ( ! get_user_by( 'id', $user_id ) ) {
-			wp_send_json_error( [ 'message' => 'Usuario inválido' ] );
+		if ( ! \get_user_by( 'id', $user_id ) ) {
+			\wp_send_json_error( [ 'message' => 'Usuario inválido' ] );
 		}
 
 		// Verificar email duplicado (si cambió)
-		$user = get_user_by( 'id', $user_id );
-		if ( $email !== $user->user_email && email_exists( $email ) ) {
-			wp_send_json_error( [ 'message' => 'El correo ya está en uso por otro usuario.' ] );
+		$user = \get_user_by( 'id', $user_id );
+		if ( $email !== $user->user_email && \email_exists( $email ) ) {
+			\wp_send_json_error( [ 'message' => 'El correo ya está en uso por otro usuario.' ] );
 		}
 
-		$updated = wp_update_user( [
+		$updated = \wp_update_user( [
 			'ID'         => $user_id,
 			'first_name' => $first_name,
 			'last_name'  => $last_name,
 			'user_email' => $email,
 		] );
 
-		if ( is_wp_error( $updated ) ) {
-			wp_send_json_error( [ 'message' => $updated->get_error_message() ] );
+		if ( \is_wp_error( $updated ) ) {
+			\wp_send_json_error( [ 'message' => $updated->get_error_message() ] );
 		}
 
-		wp_send_json_success( [ 'message' => 'Datos actualizados correctamente.' ] );
+		\wp_send_json_success( [ 'message' => 'Datos actualizados correctamente.' ] );
 	}
 
 	/**
 	 * AJAX Handler: Reset Password
 	 */
 	public function ajax_reset_password() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
-		if ( ! current_user_can( 'edit_users' ) ) wp_send_json_error( [ 'message' => 'No autorizado' ] );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		if ( ! \current_user_can( 'edit_users' ) ) \wp_send_json_error( [ 'message' => 'No autorizado' ] );
 
-		$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
-		$user = get_user_by( 'id', $user_id );
+		$user_id = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$user = \get_user_by( 'id', $user_id );
 
-		if ( ! $user ) wp_send_json_error( [ 'message' => 'Usuario no encontrado' ] );
+		if ( ! $user ) \wp_send_json_error( [ 'message' => 'Usuario no encontrado' ] );
 
 		// Generar password
-		$new_pass = wp_generate_password( 12, true );
-		wp_set_password( $new_pass, $user_id );
+		$new_pass = \wp_generate_password( 12, true );
+		\wp_set_password( $new_pass, $user_id );
 
 		// Enviar email (reusamos lógica o mandamos uno específico)
 		// Por simplicidad, mandamos uno específico aquí
-		$site_name = get_bloginfo( 'name' );
+		$site_name = \get_bloginfo( 'name' );
 		$subject = "Nueva contraseña para $site_name";
-		$message = "<p>Hola " . esc_html( $user->first_name ) . ",</p>";
+		$message = "<p>Hola " . \esc_html( $user->first_name ) . ",</p>";
 		$message .= "<p>Un administrador ha restablecido tu contraseña.</p>";
-		$message .= "<p><strong>Nueva contraseña:</strong> " . esc_html( $new_pass ) . "</p>";
+		$message .= "<p><strong>Nueva contraseña:</strong> " . \esc_html( $new_pass ) . "</p>";
 		$message .= "<p>Te recomendamos cambiarla al ingresar.</p>";
 
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-		wp_mail( $user->user_email, $subject, $message, $headers );
+		\wp_mail( $user->user_email, $subject, $message, $headers );
 
-		wp_send_json_success( [ 'message' => 'Contraseña restablecida y enviada por correo.' ] );
+		\wp_send_json_success( [ 'message' => 'Contraseña restablecida y enviada por correo.' ] );
 	}
 
 	/**
 	 * AJAX Handler: Bloquear / Desbloquear
 	 */
 	public function ajax_toggle_block_user() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
-		if ( ! current_user_can( 'edit_users' ) ) wp_send_json_error( [ 'message' => 'No autorizado' ] );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		if ( ! \current_user_can( 'edit_users' ) ) \wp_send_json_error( [ 'message' => 'No autorizado' ] );
 
-		$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
-		$action  = isset( $_POST['block_action'] ) ? sanitize_text_field( $_POST['block_action'] ) : ''; // 'block' or 'unblock'
+		$user_id = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$action  = isset( $_POST['block_action'] ) ? \sanitize_text_field( $_POST['block_action'] ) : ''; // 'block' or 'unblock'
 
-		if ( ! get_user_by( 'id', $user_id ) ) wp_send_json_error( [ 'message' => 'Usuario inválido' ] );
+		if ( ! \get_user_by( 'id', $user_id ) ) \wp_send_json_error( [ 'message' => 'Usuario inválido' ] );
 
 		if ( $action === 'block' ) {
-			update_user_meta( $user_id, 'alezux_is_blocked', 1 );
+			\update_user_meta( $user_id, 'alezux_is_blocked', 1 );
 			// Opcional: Podrías cambiar el rol a 'subscriber' sin caps o similar, pero meta es mas seguro para lógica custom
-			wp_send_json_success( [ 'message' => 'Usuario bloqueado.' ] );
+			\wp_send_json_success( [ 'message' => 'Usuario bloqueado.' ] );
 		} else {
-			delete_user_meta( $user_id, 'alezux_is_blocked' );
-			wp_send_json_success( [ 'message' => 'Usuario desbloqueado.' ] );
+			\delete_user_meta( $user_id, 'alezux_is_blocked' );
+			\wp_send_json_success( [ 'message' => 'Usuario desbloqueado.' ] );
 		}
 	}
 
@@ -491,23 +491,23 @@ class Estudiantes extends Module_Base {
 	 * AJAX Handler: Actualizar acceso cursos
 	 */
 	public function ajax_update_course_access() {
-		check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
-		if ( ! current_user_can( 'edit_users' ) ) wp_send_json_error( [ 'message' => 'No autorizado' ] );
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		if ( ! \current_user_can( 'edit_users' ) ) \wp_send_json_error( [ 'message' => 'No autorizado' ] );
 
-		$user_id   = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
-		$course_id = isset( $_POST['course_id'] ) ? intval( $_POST['course_id'] ) : 0;
-		$action    = isset( $_POST['access_action'] ) ? sanitize_text_field( $_POST['access_action'] ) : ''; // 'add' or 'remove'
+		$user_id   = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$course_id = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
+		$action    = isset( $_POST['access_action'] ) ? \sanitize_text_field( $_POST['access_action'] ) : ''; // 'add' or 'remove'
 
 		if ( ! function_exists( 'ld_update_course_access' ) ) {
-			wp_send_json_error( [ 'message' => 'LearnDash no activo' ] );
+			\wp_send_json_error( [ 'message' => 'LearnDash no activo' ] );
 		}
 
 		if ( $action === 'add' ) {
-			ld_update_course_access( $user_id, $course_id, false ); // false = add
-			wp_send_json_success( [ 'message' => 'Acceso concedido.' ] );
+			\ld_update_course_access( $user_id, $course_id, false ); // false = add
+			\wp_send_json_success( [ 'message' => 'Acceso concedido.' ] );
 		} else {
-			ld_update_course_access( $user_id, $course_id, true ); // true = remove
-			wp_send_json_success( [ 'message' => 'Acceso revocado.' ] );
+			\ld_update_course_access( $user_id, $course_id, true ); // true = remove
+			\wp_send_json_success( [ 'message' => 'Acceso revocado.' ] );
 		}
 	}
 }
