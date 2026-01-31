@@ -32,35 +32,45 @@ jQuery(document).ready(function ($) {
             window.alezuxShowToast = function (message, type) {
                 var $container = $('.alezux-toast-container');
                 if ($container.length === 0) {
-                    $('body').append('<div class="alezux-toast-container"></div>');
+                    $('body').append('<div class="alezux-toast-container" style="display:none"></div>');
                     $container = $('.alezux-toast-container');
                 }
 
-                var typeClass = type === 'success' ? 'success' : (type === 'error' ? 'error' : '');
-                var $toast = $('<div class="alezux-toast ' + typeClass + '">' +
-                    '<span>' + message + '</span>' +
+                // Show container (backdrop)
+                $container.fadeIn(200).css('display', 'flex');
+
+                var typeClass = type === 'success' ? 'success' : 'error';
+                var titleText = type === 'success' ? '¡Excelente!' : '¡Atención!';
+
+                // Limpiar alertas previas
+                $container.empty();
+
+                var $toast = $(
+                    '<div class="alezux-toast ' + typeClass + '">' +
                     '<button class="alezux-toast-close">&times;</button>' +
-                    '</div>');
+                    '<h3 class="alezux-toast-title">' + titleText + '</h3>' +
+                    '<div class="alezux-toast-message">' + message + '</div>' +
+                    '<button class="alezux-toast-action-btn">Entendido</button>' +
+                    '</div>'
+                );
 
                 $container.append($toast);
 
-                // Auto remove
-                var timeout = setTimeout(function () {
-                    removeToast($toast);
-                }, 5000);
-
-                // Manual close
-                $toast.find('.alezux-toast-close').on('click', function () {
-                    clearTimeout(timeout);
-                    removeToast($toast);
-                });
-
-                function removeToast($t) {
-                    $t.addClass('hiding');
-                    $t.on('animationend', function () {
-                        $t.remove();
+                // Interactions
+                var closeAlert = function () {
+                    $container.fadeOut(200, function () {
+                        $container.empty();
                     });
-                }
+                };
+
+                $toast.find('.alezux-toast-close, .alezux-toast-action-btn').on('click', closeAlert);
+
+                // Close on backdrop click
+                $container.on('click', function (e) {
+                    if (e.target === this) {
+                        closeAlert();
+                    }
+                });
             };
         }
 
