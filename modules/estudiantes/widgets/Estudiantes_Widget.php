@@ -229,6 +229,12 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'label'     => \esc_html__( 'Fondo Filas Impares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(odd) td' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->add_control(
 			'heading_table_text_style',
 			[
