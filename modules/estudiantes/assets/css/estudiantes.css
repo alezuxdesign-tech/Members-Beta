@@ -241,3 +241,180 @@
    Nuevos Widgets Styles (Registro & CSV)
    ========================================= */
 /* Los estilos específicos se han movido a estudiantes-register.css y estudiantes-csv.css */
+
+/* Management Modal Styles */
+.alezux-management-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.alezux-management-modal {
+    background: #1e1e1e;
+    width: 600px;
+    max-width: 95%;
+    max-height: 90vh;
+    border-radius: 12px;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.alezux-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #252525;
+}
+
+.alezux-modal-title {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.alezux-modal-close {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.alezux-modal-close:hover {
+    color: #fff;
+}
+
+.alezux-modal-body {
+    padding: 24px;
+    color: #e5e5e5;
+}
+
+.alezux-section-title {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #a1a1aa;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 24px;
+}
+
+.alezux-section-title:first-child {
+    margin-top: 0;
+}
+
+/* Form Grid */
+.alezux-manage-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.alezux-full-width {
+    grid-column: span 2;
+}
+
+/* List Styles */
+.alezux-course-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alezux-course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.alezux-course-actions button {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+}
+
+.btn-remove-access {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.btn-remove-access:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+.btn-grant-access {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+.btn-grant-access:hover {
+    background: rgba(16, 185, 129, 0.3);
+}
+
+/* Buttons */
+.alezux-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.alezux-btn-primary {
+    background: #6366f1;
+    color: white;
+}
+
+.alezux-btn-primary:hover {
+    background: #4f46e5;
+}
+
+.alezux-btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.alezux-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.alezux-btn-block {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Spinner */
+.alezux-spinner {
+    animation: fa-spin 1s infinite linear;
+    display: none;
+}
