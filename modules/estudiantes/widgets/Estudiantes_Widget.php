@@ -128,6 +128,48 @@ class Estudiantes_Widget extends Widget_Base {
 				'selector' => '{{WRAPPER}} .alezux-estudiantes-desc',
 			]
 		);
+		
+		$this->add_control(
+			'heading_search_style',
+			[
+				'label'     => \esc_html__( 'Buscador', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'search_bg_color',
+			[
+				'label'     => \esc_html__( 'Fondo Buscador', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-estudiantes-search input' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'search_text_color',
+			[
+				'label'     => \esc_html__( 'Color Texto Buscador', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-estudiantes-search input' => 'color: {{VALUE}};',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'search_border_color',
+			[
+				'label'     => \esc_html__( 'Borde Buscador', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-estudiantes-search input' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
 
 		$this->end_controls_section();
 
@@ -193,6 +235,115 @@ class Estudiantes_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'heading_table_cells',
+			[
+				'label'     => \esc_html__( 'Celdas y Bordes', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'cell_padding',
+			[
+				'label'      => \esc_html__( 'Padding Celdas', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-estudiantes-table th, {{WRAPPER}} .alezux-estudiantes-table td' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'table_border',
+				'label'    => \esc_html__( 'Borde Tabla', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-estudiantes-wrapper',
+			]
+		);
+
+		$this->add_control(
+			'heading_avatar_style',
+			[
+				'label'     => \esc_html__( 'Avatar', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'avatar_size',
+			[
+				'label' => \esc_html__( 'Tamaño Avatar', 'alezux-members' ),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 20,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .col-foto img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_status_style',
+			[
+				'label'     => \esc_html__( 'Estados', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'status_active_color',
+			[
+				'label'     => \esc_html__( 'Color Activo (Texto)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .status-active' => 'color: {{VALUE}}; border-color: {{VALUE}};',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'status_active_bg',
+			[
+				'label'     => \esc_html__( 'Color Activo (Fondo)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .status-active' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'status_inactive_color',
+			[
+				'label'     => \esc_html__( 'Color Inactivo (Texto)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .status-inactive' => 'color: {{VALUE}}; border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'status_inactive_bg',
+			[
+				'label'     => \esc_html__( 'Color Inactivo (Fondo)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .status-inactive' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- Sección Botón Gestionar ---
@@ -242,6 +393,360 @@ class Estudiantes_Widget extends Widget_Base {
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
 					'{{WRAPPER}} .btn-gestionar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- SECCIÓN ESTILO MODAL: GENERAL ---
+		$this->start_controls_section(
+			'section_style_modal',
+			[
+				'label' => \esc_html__( 'Modal: General y Header', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'modal_overlay_bg',
+			[
+				'label'     => \esc_html__( 'Fondo Overlay', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-management-modal-overlay' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_bg_color',
+			[
+				'label'     => \esc_html__( 'Fondo Modal', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-management-modal, .alezux-alert-modal' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'modal_border',
+				'label'    => \esc_html__( 'Borde Modal', 'alezux-members' ),
+				'selector' => '.alezux-management-modal, .alezux-alert-modal',
+			]
+		);
+		
+		$this->add_control(
+			'modal_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'.alezux-management-modal, .alezux-alert-modal' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'modal_shadow',
+				'selector' => '.alezux-management-modal, .alezux-alert-modal',
+			]
+		);
+
+		$this->add_control(
+			'heading_modal_header',
+			[
+				'label'     => \esc_html__( 'Cabecera Modal', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'modal_header_bg',
+			[
+				'label'     => \esc_html__( 'Fondo Header', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-header' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_title_color',
+			[
+				'label'     => \esc_html__( 'Color Título', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_title_typo',
+				'selector' => '.alezux-modal-title',
+			]
+		);
+
+		$this->add_control(
+			'modal_close_color',
+			[
+				'label'     => \esc_html__( 'Color Icono Cerrar', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-modal-close' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- SECCIÓN ESTILO MODAL: FORMULARIOS ---
+		$this->start_controls_section(
+			'section_style_modal_form',
+			[
+				'label' => \esc_html__( 'Modal: Etiquetas e Inputs', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'modal_label_color',
+			[
+				'label'     => \esc_html__( 'Color Etiquetas', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-form-label, .alezux-section-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_label_typo',
+				'label'    => \esc_html__( 'Tipografía Etiquetas', 'alezux-members' ),
+				'selector' => '.alezux-form-label, .alezux-section-title',
+			]
+		);
+
+		$this->add_control(
+			'heading_modal_inputs',
+			[
+				'label'     => \esc_html__( 'Campos de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_input_typo',
+				'selector' => '.alezux-form-control',
+			]
+		);
+
+		$this->add_control(
+			'modal_input_bg',
+			[
+				'label'     => \esc_html__( 'Fondo Input', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-form-control' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_input_color',
+			[
+				'label'     => \esc_html__( 'Color Texto Input', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-form-control' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_input_border_color',
+			[
+				'label'     => \esc_html__( 'Color Borde Input', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-form-control' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'modal_input_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde Input', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'.alezux-form-control' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_input_padding',
+			[
+				'label'      => \esc_html__( 'Padding Input', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em' ],
+				'selectors'  => [
+					'.alezux-form-control' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- SECCIÓN ESTILO MODAL: BOTONES ---
+		$this->start_controls_section(
+			'section_style_modal_buttons',
+			[
+				'label' => \esc_html__( 'Modal: Botones', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'modal_btn_typo',
+				'label'    => \esc_html__( 'Tipografía Botones', 'alezux-members' ),
+				'selector' => '.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn',
+			]
+		);
+		
+		$this->add_control(
+			'modal_btn_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde Botones', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_padding',
+			[
+				'label'      => \esc_html__( 'Padding Botones', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em' ],
+				'selectors'  => [
+					'.alezux-management-modal .alezux-btn, .alezux-alert-modal .alezux-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_btn_primary',
+			[
+				'label'     => \esc_html__( 'Botón Primario (Aceptar/Guardar)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_primary_bg',
+			[
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-primary' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_primary_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-primary' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_btn_warning',
+			[
+				'label'     => \esc_html__( 'Botón Alerta (Reset)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_warning_bg',
+			[
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-warning' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_warning_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-warning' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_btn_danger',
+			[
+				'label'     => \esc_html__( 'Botón Peligro (Bloquear)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_danger_bg',
+			[
+				'label'     => \esc_html__( 'Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-danger' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'modal_btn_danger_text',
+			[
+				'label'     => \esc_html__( 'Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'.alezux-btn-danger' => 'color: {{VALUE}};',
 				],
 			]
 		);
