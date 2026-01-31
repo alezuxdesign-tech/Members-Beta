@@ -132,8 +132,8 @@ class Estudiantes extends Module_Base {
 				'username'     => $student->user_nicename,
 				'email'        => $student->user_email,
 				'avatar_url'   => \get_avatar_url( $student->ID ),
-				'status_label' => 'OK',
-				'status_class' => 'status-active',
+				'status_label' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'Bloqueado' : 'OK',
+				'status_class' => (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true ) ? 'status-inactive' : 'status-active',
 			];
 		}
 

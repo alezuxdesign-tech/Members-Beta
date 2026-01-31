@@ -310,11 +310,15 @@ class Estudiantes_Widget extends Widget_Base {
 								$avatar_url = \get_avatar_url( $student->ID );
 								$name = $student->display_name;
 								$email = $student->user_email;
-								// Estado simulado 'OK' o 'Activo' por ahora
-								// Se podría integrar lógica real de actividad si existiera
-								$status = 'Active'; 
-								$status_label = 'OK';
-								$status_class = 'status-active';
+								
+								$is_blocked = (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true );
+								if ( $is_blocked ) {
+									$status_label = \esc_html__( 'Bloqueado', 'alezux-members' );
+									$status_class = 'status-inactive'; // Asumimos que existe o se estilizará igual que 'error'
+								} else {
+									$status_label = 'OK';
+									$status_class = 'status-active';
+								}
 							?>
 							<tr>
 								<td class="col-foto">
