@@ -502,57 +502,63 @@
 backdrop-filter: blur(8px);
 }
 
-/* Study Time Pill Style */
+/* Mod/* Study Time Pill Style - Refined */
 .alezux-time-pill {
     display: inline-flex;
     align-items: center;
-    background: #111827;
-    /* Dark background */
-    border: 1px solid #1f2937;
-    border-radius: 9999px;
-    /* Pill shape */
-    padding: 6px 16px 6px 6px;
-    /* Right padding for text */
-    gap: 12px;
-    margin-left: 15px;
+    background: #0f172a;
+    /* Slate 900 */
+    border: 1px solid #1e293b;
+    /* Slate 800 */
+    border-radius: 30px;
+    padding: 4px 12px 4px 4px;
+    gap: 10px;
+    margin-left: 12px;
     vertical-align: middle;
+    white-space: nowrap;
+    /* Prevent wrapping */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .alezux-time-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: #1f2937;
-    /* Lighter circle */
+    width: 28px;
+    height: 28px;
+    background: #1e293b;
+    /* Slate 800 */
     border-radius: 50%;
     color: #3b82f6;
-    /* Blue icon */
-    font-size: 14px;
+    /* Blue 500 */
+    font-size: 13px;
+    flex-shrink: 0;
+    /* Don't shrink */
 }
 
 .alezux-time-content {
     display: flex;
     flex-direction: column;
-    line-height: 1.1;
+    justify-content: center;
+    line-height: 1;
+    text-align: left;
 }
 
 .alezux-time-label {
-    font-size: 10px;
+    font-size: 9px;
     text-transform: uppercase;
-    color: #6b7280;
-    /* Muted text */
+    color: #94a3b8;
+    /* Slate 400 */
     font-weight: 600;
+    margin-bottom: 2px;
     letter-spacing: 0.5px;
 }
 
 .alezux-time-value {
-    font-size: 14px;
-    color: #f3f4f6;
-    /* White text */
+    font-size: 13px;
+    color: #f8fafc;
+    /* Slate 50 */
     font-weight: 700;
-    font-family: 'Courier New', Courier, monospace;
-    /* Tech/Hacker vibe */
-    letter-spacing: -0.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    letter-spacing: -0.3px;
 }
