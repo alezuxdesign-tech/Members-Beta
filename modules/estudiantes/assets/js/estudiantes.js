@@ -463,10 +463,23 @@ jQuery(document).ready(function ($) {
             $('#no-enrolled-msg').hide();
             enrolled.forEach(function (c) {
                 var studyTime = c.study_time_formatted || '0h 0m';
-                var timeHtml = `<span style="font-size: 11px; color: #aaa; margin-left: 10px;"><i class="fa fa-clock-o"></i> ${studyTime}</span>`;
+                var timeHtml = `
+                    <div class="alezux-time-pill">
+                        <div class="alezux-time-icon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        <div class="alezux-time-content">
+                            <span class="alezux-time-label">TIEMPO TOTAL</span>
+                            <span class="alezux-time-value">${studyTime}</span>
+                        </div>
+                    </div>
+                `;
                 var item = `
                     <li class="alezux-course-item">
-                        <span>${c.title} ${timeHtml}</span>
+                        <div style="display: flex; align-items: center;">
+                             <span style="font-weight: 500; font-size: 15px; color: #fff;">${c.title}</span>
+                             ${timeHtml}
+                        </div>
                         <div class="alezux-course-actions">
                             <button class="btn-remove-access" data-course-id="${c.id}">Quitar Acceso</button>
                         </div>
