@@ -210,7 +210,7 @@ jQuery(document).ready(function ($) {
     // GESTIÓN DE ESTUDIANTES (MODAL)
     // ==========================================================
 
-    function loadStudentInfo(userId) {
+    function loadStudentInfo(userId, iconUrl) {
         $('#alezux-modal-loading').show();
         $('#alezux-modal-content').hide();
 
@@ -235,7 +235,7 @@ jQuery(document).ready(function ($) {
                     updateBlockButton(data.is_blocked);
 
                     // Render Courses Lists
-                    renderCoursesLists(data.enrolled_courses, data.available_courses);
+                    renderCoursesLists(data.enrolled_courses, data.available_courses, iconUrl);
 
                     $('#alezux-modal-loading').hide();
                     $('#alezux-modal-content').fadeIn();
@@ -255,12 +255,19 @@ jQuery(document).ready(function ($) {
     $(document).on('click', '.btn-gestionar', function (e) {
         e.preventDefault();
         var userId = $(this).data('student-id');
+
+        // Capturar URL del icono personalizado desde el wrapper
+        var iconUrl = $(this).closest('.alezux-estudiantes-wrapper').data('time-icon');
+
         console.log('[Estudiantes] Gestionando usuario ID:', userId);
+
+        // Store iconUrl in modal data for reuse if needed (e.g. course updates)
+        $('#alezux-management-modal-overlay').data('current-icon', iconUrl);
 
         $('#alezux-manage-user-id').val(userId);
         $('#alezux-management-modal-overlay').fadeIn(200).css('display', 'flex');
 
-        loadStudentInfo(userId);
+        loadStudentInfo(userId, iconUrl);
     });
 
     // Cerrar Modal
@@ -394,11 +401,6 @@ jQuery(document).ready(function ($) {
             });
         } else {
             // Confirmación para AGREGAR (opcional, pero consistente)
-            // showAlezuxConfirm('Conceder Acceso', '¿Dar acceso al curso: <b>' + courseName + '</b>?', function() {
-            //      executeCourseUpdate();
-            // });
-            // Por UX, agregar suele ser directo, pero el usuario pidió modal para todo.
-            // Voy a poner modal también para agregar para cumplir "Todas las alertas tienen que ser personalizatas".
             showAlezuxConfirm('Conceder Acceso', '¿Conceder acceso al curso: <b>' + courseName + '</b>?', function () {
                 executeCourseUpdate();
             });
@@ -420,7 +422,9 @@ jQuery(document).ready(function ($) {
                     if (response.success) {
                         showAlezuxAlert('Curso Actualizado', response.data.message, 'success');
                         // RECARGAR DATOS DEL ESTUDIANTE PARA ACTUALIZAR LISTAS
-                        loadStudentInfo(userId);
+                        // Retrieve stored icon
+                        var iconUrl = $('#alezux-management-modal-overlay').data('current-icon');
+                        loadStudentInfo(userId, iconUrl);
                     } else {
                         showAlezuxAlert('Error', response.data.message, 'error');
                         $btn.prop('disabled', false).text(originalText);
@@ -450,7 +454,7 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    function renderCoursesLists(enrolled, available) {
+    function renderCoursesLists(enrolled, available, iconUrl) {
         var $enrolledList = $('#list-enrolled-courses');
         var $availableList = $('#list-available-courses');
 
@@ -463,10 +467,19 @@ jQuery(document).ready(function ($) {
             $('#no-enrolled-msg').hide();
             enrolled.forEach(function (c) {
                 var studyTime = c.study_time_formatted || '0h 0m';
+
+                // Determinar HTML del icono (Imagen vs Fuente)
+                var iconHtml = '';
+                if (iconUrl && iconUrl.trim() !== '') {
+                    iconHtml = '<img src="' + iconUrl + '" alt="Icono" style="display:block;">';
+                } else {
+                    iconHtml = '<i class="far fa-clock"></i>';
+                }
+
                 var timeHtml = `
                     <div class="alezux-time-pill">
                         <div class="alezux-time-icon">
-                            <i class="far fa-clock"></i>
+                            ${iconHtml}
                         </div>
                         <div class="alezux-time-content">
                             <span class="alezux-time-label">TIEMPO TOTAL</span>

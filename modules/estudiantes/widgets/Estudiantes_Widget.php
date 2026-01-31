@@ -490,6 +490,38 @@ class Estudiantes_Widget extends Widget_Base {
 			]
 		);
 
+		// ICONO PERSONALIZADO (IMAGEN)
+		$this->add_control(
+			'time_pill_custom_icon',
+			[
+				'label'   => \esc_html__( 'Icono Personalizado (Imagen)', 'alezux-members' ),
+				'type'    => Controls_Manager::MEDIA,
+				'default' => [
+					'url' => '',
+				],
+			]
+		);
+
+		$this->add_control(
+			'time_icon_image_size',
+			[
+				'label' => \esc_html__( 'Tamaño Imagen', 'alezux-members' ),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-icon img' => 'width: {{SIZE}}{{UNIT}}; height: auto;',
+				],
+				'condition' => [
+					'time_pill_custom_icon[url]!' => '',
+				],
+			]
+		);
+
 		// TEXTO ETIQUETA
 		$this->add_control(
 			'heading_time_label',
@@ -1232,9 +1264,12 @@ class Estudiantes_Widget extends Widget_Base {
 
 		$total_pages = ceil( $total_users / $limit );
 
+		// Custom Icon logic
+		$custom_icon_url = ! empty( $settings['time_pill_custom_icon']['url'] ) ? $settings['time_pill_custom_icon']['url'] : '';
+
 		?>
 
-		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>">
+		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>" data-time-icon="<?php echo \esc_url( $custom_icon_url ); ?>">
 			<!-- Header -->
 			<div class="alezux-estudiantes-header">
 				<div class="alezux-header-content">
