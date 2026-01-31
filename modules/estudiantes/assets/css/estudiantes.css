@@ -498,11 +498,7 @@
     background: #52525b;
 }
 
-/* Modal Z-Index fix */
-backdrop-filter: blur(8px);
-}
-
-/* Mod/* Study Time Pill Style - Refined */
+/* Study Time Pill Style - Refined */
 .alezux-time-pill {
     display: inline-flex;
     align-items: center;
