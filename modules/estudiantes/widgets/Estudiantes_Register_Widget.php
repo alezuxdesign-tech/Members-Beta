@@ -291,6 +291,113 @@ class Estudiantes_Register_Widget extends Widget_Base {
 		$this->end_controls_tab();
 		$this->end_controls_tabs();
 
+
+		// --- ESTILO: ALERTAS / MODAL ---
+		$this->start_controls_section(
+			'section_style_alerts',
+			[
+				'label' => esc_html__( 'Alertas / Modal', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'alert_bg_color',
+			[
+				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '', // JS fallback: linear-gradient
+				'description' => 'Deja vacío para usar el degradado violeta por defecto.',
+			]
+		);
+
+		$this->add_control(
+			'alert_heading_title',
+			[
+				'label' => esc_html__( 'Título', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'alert_title_color',
+			[
+				'label' => esc_html__( 'Color Título', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'alert_title_typography',
+				'selector' => '.alezux-toast-title', // Selector dummy, used for PHP retrieval mostly
+			]
+		);
+
+		$this->add_control(
+			'alert_heading_message',
+			[
+				'label' => esc_html__( 'Mensaje', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'alert_message_color',
+			[
+				'label' => esc_html__( 'Color Mensaje', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'alert_message_typography',
+				'selector' => '.alezux-toast-message',
+			]
+		);
+
+		$this->add_control(
+			'alert_heading_button',
+			[
+				'label' => esc_html__( 'Botón "Entendido"', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'alert_btn_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => 'rgba(255, 255, 255, 0.2)',
+			]
+		);
+
+		$this->add_control(
+			'alert_btn_text_color',
+			[
+				'label' => esc_html__( 'Color Texto Botón', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'alert_btn_typography',
+				'selector' => '.alezux-toast-action-btn',
+			]
+		);
+
 		$this->end_controls_section();
 
 	}
@@ -306,11 +413,28 @@ class Estudiantes_Register_Widget extends Widget_Base {
 			'order' => 'ASC',
 		] );
 
+		// Prepare Alert Config for JS
+		$alert_config = [
+			'bgColor'    => $settings['alert_bg_color'],
+			'titleColor' => $settings['alert_title_color'],
+			'msgColor'   => $settings['alert_message_color'],
+			'btnBg'      => $settings['alert_btn_bg_color'],
+			'btnColor'   => $settings['alert_btn_text_color'],
+			// Typography needs manual extraction if not using selectors, 
+			// but for now we pass colors mainly. Typography is complex to pass via JSON safely for JS injection 
+			// without complex parsing. We will try to rely on direct styles helper if needed or just CSS.
+			// Actually, let's pass simplest typography props or rely on inline style injection in JS.
+			'titleSize'  => isset($settings['alert_title_typography_font_size']['size']) ? $settings['alert_title_typography_font_size']['size'] . $settings['alert_title_typography_font_size']['unit'] : '',
+			'titleWeight'=> $settings['alert_title_typography_font_weight'],
+			'msgSize'    => isset($settings['alert_message_typography_font_size']['size']) ? $settings['alert_message_typography_font_size']['size'] . $settings['alert_message_typography_font_size']['unit'] : '',
+			'btnSize'    => isset($settings['alert_btn_typography_font_size']['size']) ? $settings['alert_btn_typography_font_size']['size'] . $settings['alert_btn_typography_font_size']['unit'] : '',
+		];
+
 		?>
 		<div class="alezux-register-form">
 			<h3 class="alezux-register-title"><?php echo esc_html( $settings['title_text'] ); ?></h3>
 			
-			<form id="alezux-manual-register-form">
+			<form id="alezux-manual-register-form" data-alert-config='<?php echo json_encode( $alert_config ); ?>'>
 				<div class="alezux-form-group">
 					<label class="alezux-form-label"><?php echo esc_html( $settings['label_firstname'] ); ?></label>
 					<input type="text" name="first_name" class="alezux-form-control" required placeholder="<?php esc_attr_e( 'Nombre del estudiante', 'alezux-members' ); ?>">

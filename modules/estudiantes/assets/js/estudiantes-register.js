@@ -36,21 +36,47 @@ jQuery(document).ready(function ($) {
                     $container = $('.alezux-toast-container');
                 }
 
+
+                // Read Custom Config from Form Data
+                var $form = $('#alezux-manual-register-form');
+                // Use default empty object if undefined
+                var config = $form.data('alert-config') || {};
+
                 // Show container (backdrop)
                 $container.fadeIn(200).css('display', 'flex');
 
                 var typeClass = type === 'success' ? 'success' : 'error';
                 var titleText = type === 'success' ? '¡Excelente!' : '¡Atención!';
 
+                // Build inline styles from config
+                var modalStyle = '';
+                if (config.bgColor) {
+                    modalStyle += 'background: ' + config.bgColor + ';';
+                }
+
+                var titleStyle = '';
+                if (config.titleColor) titleStyle += 'color: ' + config.titleColor + ';';
+                if (config.titleSize) titleStyle += 'font-size: ' + config.titleSize + ';';
+                if (config.titleWeight) titleStyle += 'font-weight: ' + config.titleWeight + ';';
+
+                var msgStyle = '';
+                if (config.msgColor) msgStyle += 'color: ' + config.msgColor + ';';
+                if (config.msgSize) msgStyle += 'font-size: ' + config.msgSize + ';';
+
+                var btnStyle = '';
+                if (config.btnBg) btnStyle += 'background-color: ' + config.btnBg + ';';
+                if (config.btnColor) btnStyle += 'color: ' + config.btnColor + ';';
+                if (config.btnSize) btnStyle += 'font-size: ' + config.btnSize + ';';
+
                 // Limpiar alertas previas
                 $container.empty();
 
                 var $toast = $(
-                    '<div class="alezux-toast ' + typeClass + '">' +
+                    '<div class="alezux-toast ' + typeClass + '" style="' + modalStyle + '">' +
                     '<button class="alezux-toast-close">&times;</button>' +
-                    '<h3 class="alezux-toast-title">' + titleText + '</h3>' +
-                    '<div class="alezux-toast-message">' + message + '</div>' +
-                    '<button class="alezux-toast-action-btn">Entendido</button>' +
+                    '<h3 class="alezux-toast-title" style="' + titleStyle + '">' + titleText + '</h3>' +
+                    '<div class="alezux-toast-message" style="' + msgStyle + '">' + message + '</div>' +
+                    '<button class="alezux-toast-action-btn" style="' + btnStyle + '">Entendido</button>' +
                     '</div>'
                 );
 
