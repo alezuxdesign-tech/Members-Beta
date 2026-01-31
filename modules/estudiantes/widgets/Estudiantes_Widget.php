@@ -346,6 +346,123 @@ class Estudiantes_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// --- Sección Estilo Barra de Progreso ---
+		$this->start_controls_section(
+			'section_style_progress',
+			[
+				'label' => \esc_html__( 'Barra de Progreso', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'progress_container_heading',
+			[
+				'label'     => \esc_html__( 'Contenedor', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'progress_container_height',
+			[
+				'label' => \esc_html__( 'Alto', 'alezux-members' ),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [ 'min' => 2, 'max' => 20 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-wrapper' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_container_bg',
+			[
+				'label'     => \esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-wrapper' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_container_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-progress-wrapper' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_bar_heading',
+			[
+				'label'     => \esc_html__( 'Barra de Relleno', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'progress_fill_color',
+			[
+				'label'     => \esc_html__( 'Color Relleno', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-bar' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_fill_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde Relleno', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-progress-bar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_text_heading',
+			[
+				'label'     => \esc_html__( 'Texto (% Completado)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'progress_text_color',
+			[
+				'label'     => \esc_html__( 'Color Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-progress-text' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'progress_text_typography',
+				'selector' => '{{WRAPPER}} .alezux-progress-text',
+			]
+		);
+
+		$this->end_controls_section();
+
 		// --- Sección Botón Gestionar ---
 		$this->start_controls_section(
 			'section_style_btn',
@@ -980,10 +1097,10 @@ class Estudiantes_Widget extends Widget_Base {
 									<?php echo \esc_html( $email ); ?>
 								</td>
 								<td class="col-progreso">
-									<div class="alezux-progress-wrapper" style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
-										<div class="alezux-progress-bar" style="width: <?php echo \esc_attr( $avg_progress ); ?>%; height: 100%; background: #4CAF50;"></div>
+									<div class="alezux-progress-wrapper" style="width: 100%;">
+										<div class="alezux-progress-bar" style="width: <?php echo \esc_attr( $avg_progress ); ?>%;"></div>
 									</div>
-									<div style="font-size: 10px; color: #888; margin-top: 4px;"><?php echo \esc_html( $avg_progress ); ?>% Completado</div>
+									<div class="alezux-progress-text"><?php echo \esc_html( $avg_progress ); ?>% Completado</div>
 								</td>
 								<td class="col-estado">
 									<span class="<?php echo \esc_attr( $status_class ); ?>">

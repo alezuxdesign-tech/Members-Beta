@@ -139,10 +139,10 @@ jQuery(document).ready(function ($) {
                         ${student.email}
                     </td>
                     <td class="col-progreso">
-                        <div class="alezux-progress-wrapper" style="width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
-                            <div class="alezux-progress-bar" style="width: ${student.progress}%; height: 100%; background: #4CAF50;"></div>
+                        <div class="alezux-progress-wrapper" style="width: 100%;">
+                            <div class="alezux-progress-bar" style="width: ${student.progress}%;"></div>
                         </div>
-                        <div style="font-size: 10px; color: #888; margin-top: 4px;">${student.progress}% Completado</div>
+                        <div class="alezux-progress-text">${student.progress}% Completado</div>
                     </td>
                     <td class="col-estado">
                         <span class="${student.status_class}">
