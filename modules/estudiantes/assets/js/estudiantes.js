@@ -466,7 +466,7 @@ jQuery(document).ready(function ($) {
                 var timeHtml = `
                     <div class="alezux-time-pill">
                         <div class="alezux-time-icon">
-                            <i class="fa fa-clock-o"></i>
+                            <i class="far fa-clock"></i>
                         </div>
                         <div class="alezux-time-content">
                             <span class="alezux-time-label">TIEMPO TOTAL</span>

@@ -415,6 +415,143 @@ class Estudiantes_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// ==========================================================
+		// ESTILO PÍLDORA TIEMPO DE ESTUDIO
+		// ==========================================================
+		$this->start_controls_section(
+			'section_style_time_pill',
+			[
+				'label' => \esc_html__( 'Tiempo de Estudio (Píldora)', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'time_pill_bg',
+			[
+				'label'     => \esc_html__( 'Fondo Píldora', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-pill' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'time_pill_border',
+				'label'    => \esc_html__( 'Borde Píldora', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-time-pill',
+			]
+		);
+
+		$this->add_control(
+			'time_pill_radius',
+			[
+				'label'      => \esc_html__( 'Radio Borde', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-time-pill' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		// ICONO
+		$this->add_control(
+			'heading_time_icon',
+			[
+				'label'     => \esc_html__( 'Icono', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'time_icon_color',
+			[
+				'label'     => \esc_html__( 'Color Icono', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-icon' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'time_icon_bg',
+			[
+				'label'     => \esc_html__( 'Fondo Icono', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-icon' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		// TEXTO ETIQUETA
+		$this->add_control(
+			'heading_time_label',
+			[
+				'label'     => \esc_html__( 'Etiqueta (TIEMPO TOTAL)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'time_label_color',
+			[
+				'label'     => \esc_html__( 'Color Etiqueta', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'time_label_typography',
+				'label'    => \esc_html__( 'Tipografía Etiqueta', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-time-label',
+			]
+		);
+
+		// TEXTO VALOR
+		$this->add_control(
+			'heading_time_value',
+			[
+				'label'     => \esc_html__( 'Valor (0h 0m)', 'alezux-members' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'time_value_color',
+			[
+				'label'     => \esc_html__( 'Color Valor', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-time-value' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'time_value_typography',
+				'label'    => \esc_html__( 'Tipografía Valor', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-time-value',
+			]
+		);
+
+		$this->end_controls_section();
+
 		// --- Sección Estilo Barra de Progreso ---
 		$this->start_controls_section(
 			'section_style_progress',
