@@ -75,8 +75,13 @@ class Estudiantes extends Module_Base {
 	}
 
 	public function shortcode_total_students() {
-		$result = \count_users();
-		return $result['total_users'];
+		$args = [
+			'role__in'    => [ 'subscriber', 'student' ],
+			'number'      => 1, // Limit fetching
+			'count_total' => true,
+		];
+		$user_query = new \WP_User_Query( $args );
+		return $user_query->get_total();
 	}
 
 	public function shortcode_new_students_month() {
