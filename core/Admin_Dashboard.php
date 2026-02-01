@@ -14,6 +14,7 @@ class Admin_Dashboard {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_post_alezux_save_settings', [ $this, 'save_settings' ] );
 		add_action( 'admin_post_alezux_send_test_notification', [ $this, 'send_test_notification' ] );
+        add_action( 'admin_post_alezux_simulate_webhook', [ $this, 'handle_simulate_webhook' ] );
 		// Fix Icono Globalmente
 		add_action( 'admin_head', [ $this, 'print_menu_icon_styles' ] );
 	}
@@ -161,4 +162,91 @@ class Admin_Dashboard {
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=notification_sent' ) );
 		exit;
 	}
+
+    public function handle_simulate_webhook() {
+        if ( ! isset( $_POST['alezux_sim_nonce'] ) || ! wp_verify_nonce( $_POST['alezux_sim_nonce'], 'alezux_simulate_action' ) ) {
+            wp_die( 'Seguridad inválida.' );
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'No tienes permisos.' );
+        }
+
+        $email = sanitize_email( $_POST['sim_email'] );
+        
+        global $wpdb;
+        $plan = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}alezux_finanzas_plans LIMIT 1" );
+        
+        // Si no hay plan, creamos uno dummy rápido
+        if ( ! $plan ) {
+            $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+            // Verificar si la tabla existe antes de insertar, aunque debería
+            if($wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans) {
+                $wpdb->insert( $table_plans, [
+                    'name' => 'Plan Simulado',
+                    'course_id' => 0,
+                    'stripe_product_id' => 'prod_mock',
+                    'stripe_price_id' => 'price_mock',
+                    'total_quotas' => 4,
+                    'quota_amount' => 50.00
+                ] );
+                $plan_id = $wpdb->insert_id;
+            } else {
+                wp_die('Error: La tabla de planes no existe. Reinstala el módulo de Finanzas.');
+            }
+        } else {
+            $plan_id = $plan->id;
+        }
+
+        // Payload Mock
+        $payload = [
+            'id' => 'evt_sim_' . time(),
+            'object' => 'event',
+            'type' => 'checkout.session.completed',
+            'data' => [
+                'object' => [
+                    'id' => 'cs_sim_' . time(),
+                    'object' => 'checkout.session',
+                    'customer_details' => [ 'email' => $email ],
+                    'subscription' => 'sub_sim_' . time(),
+                    'metadata' => [ 'plan_id' => $plan_id ],
+                    'amount_total' => 5000,
+                    'payment_intent' => 'pi_sim_' . time()
+                ]
+            ]
+        ];
+
+        // Enviar al endpoint local
+        $url = get_rest_url( null, 'alezux/v1/stripe-webhook' );
+        
+        // Self request
+        $response = wp_remote_post( $url, [
+            'body' => json_encode( $payload ),
+            'headers' => [ 'Content-Type' => 'application/json' ],
+            'timeout' => 5,
+            'sslverify' => false 
+        ] );
+
+        $result = 'failed';
+        if ( ! is_wp_error( $response ) ) {
+            $code = wp_remote_retrieve_response_code( $response );
+            if ( $code === 200 ) {
+                $result = 'success';
+            } else {
+                // Loguear error para debug
+                error_log('Simulacion Fallida HTTP Code: ' . $code . ' Body: ' . wp_remote_retrieve_body($response));
+            }
+        } else {
+             error_log('Simulacion Fallida WP Error: ' . $response->get_error_message());
+        }
+
+        // Redirigir de vuelta a settings
+        $redirect_url = add_query_arg( 
+            [ 'page' => 'alezux-members', 'sim_result' => $result ], 
+            admin_url( 'admin.php' ) 
+        );
+        
+        wp_redirect( $redirect_url );
+        exit;
+    }
 }
