@@ -53,8 +53,8 @@ class Finanzas extends Module_Base {
  
  		// Hooks
  		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
-        // \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        // \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
+        \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
