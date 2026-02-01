@@ -67,10 +67,10 @@ class Database_Installer {
 
 		// Configurar Keys iniciales si no existen (Seed)
         if ( ! get_option( 'alezux_stripe_public_key' ) ) {
-            update_option( 'alezux_stripe_public_key', 'pk_test_51SvmL2JHByAQgtvu2YpnigdJn5TGC8cetVa6EIp4FgjmVWLdbFlg8HqpwWhvLHexxhGlFAsGVjsLknGneRZqH0KV00Zvxo4MXN' );
+            update_option( 'alezux_stripe_public_key', '' );
         }
         if ( ! get_option( 'alezux_stripe_secret_key' ) ) {
-            update_option( 'alezux_stripe_secret_key', 'sk_test_51SvmL2JHByAQgtvuJh2ftVT7LR3JIwie9hp52u4os667XOAu0PZJMOPy6xYPQvu8NWM4OXtSyRgFin3a3Azk40pX00mPn5LVdf' );
+            update_option( 'alezux_stripe_secret_key', '' );
         }
 
 		update_option( self::OPTION_NAME, self::DB_VERSION );
