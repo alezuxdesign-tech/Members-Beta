@@ -26,7 +26,7 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
 		return [ 'alezux-members' ];
 	}
 
-	protected function register_controls() {
+	protected function register_widget_controls() {
 		
         $this->start_controls_section(
 			'style_section',
