@@ -365,6 +365,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
+	<!-- TAB 4: FINANZAS -->
+	<div id="tab-finanzas" class="alezux-tab-panel" style="display: none;">
+		<div class="alezux-card">
+			<h2 class="alezux-title">💳 Configuración de Pagos</h2>
+			<p class="alezux-text">Gestiona las credenciales de Stripe para permitir la creación de planes de pago y suscripciones.</p>
+
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
+				<input type="hidden" name="action" value="alezux_save_settings">
+				<?php wp_nonce_field( 'alezux_save_settings_action', 'alezux_settings_nonce' ); ?>
+				
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">Stripe Public Key</label>
+					<input type="text" name="alezux_stripe_public_key" 
+						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+						   value="<?php echo esc_attr( get_option('alezux_stripe_public_key') ); ?>" placeholder="pk_test_...">
+				</div>
+
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">Stripe Secret Key</label>
+					<input type="password" name="alezux_stripe_secret_key" 
+						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+						   value="<?php echo esc_attr( get_option('alezux_stripe_secret_key') ); ?>" placeholder="sk_test_...">
+				</div>
+
+				<div style="margin-top: 20px; text-align: right;">
+					<button type="submit" class="button button-primary" 
+							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						Guardar Credenciales
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
 </div>
 
 <script>
