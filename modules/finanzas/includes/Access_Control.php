@@ -7,6 +7,32 @@ if ( ! \defined( 'ABSPATH' ) ) {
 
 class Access_Control {
 
+    public static function init() {
+        \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
+    }
+
+    /**
+     * Filtra el acceso al contenido de LearnDash.
+     *
+     * @param bool $access   Si el usuario tiene acceso (True default).
+     * @param int  $post_id  ID del Post.
+     * @param int  $user_id  ID del Usuario.
+     * @return bool
+     */
+    public static function filter_content_access( $access, $post_id, $user_id ) {
+        // Si LearnDash ya dijo que NO (por otras razones), respetamos.
+        if ( ! $access ) {
+            return $access;
+        }
+
+        // Verificamos nuestras reglas de Cuotas
+        if ( self::is_post_locked( $post_id, $user_id ) ) {
+            return false; // Bloqueado por Finanzas
+        }
+
+        return $access;
+    }
+
     /**
      * Verifica si un post (lección/tópico) está bloqueado para el usuario actual
      * basado en reglas de Finanzas (Cuotas).

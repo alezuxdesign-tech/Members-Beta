@@ -42,6 +42,15 @@ class Finanzas extends Module_Base {
 
         // Inicializar Webhooks API
         \Alezux_Members\Modules\Finanzas\Includes\Webhook_Handler::init();
+        
+        // Inicializar Control de Acceso (Hooks LearnDash)
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Access_Control' ) ) {
+            \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
+        }
+
+        // Dashboard UI
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';
+        \Alezux_Members\Modules\Finanzas\Includes\Finance_Dashboard::init();
 
 		// Instalación de Tablas al activar (o usar otro hook si es carga dinámica)
 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
