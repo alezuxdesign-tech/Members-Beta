@@ -26,10 +26,14 @@ class Finanzas extends Module_Base {
 
 	private function includes() {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
 		// require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 	}
 
 	private function init_hooks() {
+		// Inicializar manejadores AJAX
+		\Alezux_Members\Modules\Finanzas\Includes\Ajax_Handler::init();
+
 		// Instalación de Tablas al activar (o usar otro hook si es carga dinámica)
 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
 		
@@ -38,7 +42,7 @@ class Finanzas extends Module_Base {
 
 	public function register_widgets( $widgets_manager ) {
 		require_once( ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php' );
-		$widgets_manager->register( new \Alezux_Create_Plan_Widget() );
+		$widgets_manager->register( new Widgets\Create_Plan_Widget() );
 	}
 }
 
