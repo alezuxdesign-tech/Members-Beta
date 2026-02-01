@@ -389,6 +389,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 						   value="<?php echo esc_attr( get_option('alezux_stripe_secret_key') ); ?>" placeholder="sk_test_...">
 				</div>
 
+				<div class="alezux-form-group">
+					<label class="alezux-form-label">Webhook Signing Secret (Opcional por ahora)</label>
+					<input type="password" name="alezux_stripe_webhook_secret" 
+						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+						   value="<?php echo esc_attr( get_option('alezux_stripe_webhook_secret') ); ?>" placeholder="whsec_...">
+                    <p style="font-size:12px; color:#aaa; margin-top:5px;">Obtén esto en Stripe Dashboard > Developers > Webhooks tras añadir el endpoint.</p>
+				</div>
+
 				<div style="margin-top: 20px; text-align: right;">
 					<button type="submit" class="button button-primary" 
 							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">

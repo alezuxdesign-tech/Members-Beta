@@ -123,6 +123,9 @@ class Admin_Dashboard {
 		if ( isset( $_POST['alezux_stripe_secret_key'] ) ) {
 			update_option( 'alezux_stripe_secret_key', sanitize_text_field( $_POST['alezux_stripe_secret_key'] ) );
 		}
+        if ( isset( $_POST['alezux_stripe_webhook_secret'] ) ) {
+			update_option( 'alezux_stripe_webhook_secret', sanitize_text_field( $_POST['alezux_stripe_webhook_secret'] ) );
+		}
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );
 		exit;

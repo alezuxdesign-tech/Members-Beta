@@ -29,6 +29,7 @@ class Finanzas extends Module_Base {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
 	}
 
 	private function init_hooks() {
@@ -37,6 +38,9 @@ class Finanzas extends Module_Base {
         
         // Inicializar Configuración Admin
         \Alezux_Members\Modules\Finanzas\Includes\Admin_Settings::init();
+
+        // Inicializar Webhooks API
+        \Alezux_Members\Modules\Finanzas\Includes\Webhook_Handler::init();
 
 		// Instalación de Tablas al activar (o usar otro hook si es carga dinámica)
 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
