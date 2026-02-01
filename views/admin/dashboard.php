@@ -404,7 +404,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</button>
 				</div>
 			</form>
-		</div>
+
+			<hr style="margin: 30px 0; border: 0; border-top: 1px solid #333;">
+
+			<!-- Simulación Check -->
+			<div style="background: rgba(233, 30, 99, 0.1); border: 1px solid #e91e63; border-radius: 12px; padding: 25px;">
+				<h2 class="alezux-title" style="color: #e91e63; font-size: 20px;">⚡ Simulador de Webhook (Test)</h2>
+				<p class="alezux-text">Esta herramienta simula una respuesta de pago exitosa desde Stripe. Úsala para verificar que tu sistema crea usuarios y envía correos correctamente.</p>
+				
+				<?php if ( isset( $_GET['sim_result'] ) ) : ?>
+					<?php if ( $_GET['sim_result'] == 'success' ) : ?>
+						<div style="background: #27ae60; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
+							✅ <strong>Prueba Exitosa:</strong> El webhook simulado fue procesado correctamente.
+						</div>
+					<?php else : ?>
+						<div style="background: #c0392b; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
+							❌ <strong>Error:</strong> Hubo un problema procesando el webhook. Revisa los logs de error.
+						</div>
+					<?php endif; ?>
+				<?php endif; ?>
+
+				<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST" style="margin-top: 20px;">
+					<input type="hidden" name="action" value="alezux_simulate_webhook">
+					<?php wp_nonce_field( 'alezux_simulate_action', 'alezux_sim_nonce' ); ?>
+					
+					<div class="alezux-form-group">
+						<label class="alezux-form-label">Email de Prueba</label>
+						<input type="email" name="sim_email" 
+							   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; max-width: 400px; box-sizing: border-box;"
+							   value="stikecool@gmail.com" required>
+					</div>
+
+					<button type="submit" class="button button-primary" 
+							style="background: #e91e63; border-color: #c2185b; padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						🚀 Disparar Pago Simulado
+					</button>
+					<p style="font-size: 12px; color: #777; margin-top: 10px;">Esto es solo una simulación interna, no contactará a Stripe ni realizará cargos reales.</p>
+				</form>
+			</div>
 	</div>
 
 </div>
