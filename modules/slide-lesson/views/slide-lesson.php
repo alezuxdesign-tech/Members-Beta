@@ -65,9 +65,21 @@ $render_icon = function( $setting_key, $default_class ) use ( $settings ) {
 			
 			<div class="alezux-slide-wrapper">
 				<?php foreach ( $group_lessons as $lesson ) : ?>
-					<?php if ( ! empty( $lesson['image_url'] ) ) : ?>
-						<div class="alezux-slide-item">
-							<a href="<?php echo esc_url( $lesson['permalink'] ); ?>" class="alezux-slide-link" title="<?php echo esc_attr( $lesson['title'] ); ?>">
+						<?php if ( ! empty( $lesson['image_url'] ) ) : 
+						$is_locked = ! empty( $lesson['is_locked'] );
+						$item_classes = 'alezux-slide-item ' . ( $is_locked ? 'is-locked' : '' );
+						$link_url = $is_locked ? 'javascript:void(0);' : esc_url( $lesson['permalink'] );
+						$link_classes = 'alezux-slide-link ' . ( $is_locked ? 'locked-cursor' : '' );
+					?>
+						<div class="<?php echo esc_attr( $item_classes ); ?>">
+							<a href="<?php echo $link_url; ?>" class="<?php echo esc_attr( $link_classes ); ?>" title="<?php echo esc_attr( $lesson['title'] ); ?>">
+								
+								<?php if ( $is_locked ) : ?>
+									<div class="alezux-lock-overlay">
+										<i class="fas fa-lock alezux-lock-icon"></i>
+									</div>
+								<?php endif; ?>
+
 								<img src="<?php echo esc_url( $lesson['image_url'] ); ?>" alt="<?php echo esc_attr( $lesson['title'] ); ?>" loading="lazy" />
 								<div class="alezux-slide-content">
 									<span class="alezux-slide-title"><?php echo esc_html( $lesson['title'] ); ?></span>
