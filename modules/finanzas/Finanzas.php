@@ -32,8 +32,25 @@ class Finanzas extends Module_Base {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
         require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
 	}
+	// The includes method is largely replaced by direct requires in init_hooks or removed.
+	// private function includes() {
+	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
+	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
+	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
+	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
+	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
+    //     require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
+	// }
 
 	private function init_hooks() {
+		// Incluir archivos necesarios
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php'; // Moved here from includes()
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php'; // Moved here from includes()
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php'; // Moved here from includes()
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php'; // Moved here from includes()
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; // Moved here from includes()
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // Moved here from includes()
+
 		// Inicializar manejadores AJAX
 		\Alezux_Members\Modules\Finanzas\Includes\Ajax_Handler::init();
         
@@ -48,19 +65,26 @@ class Finanzas extends Module_Base {
             \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
         }
 
-        // Dashboard UI
+        // Widgets Files (Include but register in 'elementor/widgets/register' hook)
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_History_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Subscriptions_List_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
+
+        // Dashboard UI (Legacy/Admin Page - Disabled but file kept for reference logic)
         require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';
         \Alezux_Members\Modules\Finanzas\Includes\Finance_Dashboard::init();
 
 		// Instalación de Tablas al activar (o usar otro hook si es carga dinámica)
 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
 		
-		\add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        // Registrar Widgets Elementor
+        \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        
+        // Encolar Estilos de Widgets
+        \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
-		require_once( ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php' );
-		$widgets_manager->register( new Widgets\Create_Plan_Widget() );
-	}
 }
 

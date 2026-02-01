@@ -13,6 +13,8 @@ class Finance_Dashboard {
     }
 
     public static function add_menu_page() {
+        // Desactivado por solicitud del usuario (Prefiere Widgets)
+        /*
         \add_submenu_page(
             'alezux-members',
             'Ventas y Suscripciones',
@@ -21,6 +23,7 @@ class Finance_Dashboard {
             'alezux-finanzas-sales',
             [ __CLASS__, 'render_dashboard' ]
         );
+        */
     }
 
     public static function render_dashboard() {

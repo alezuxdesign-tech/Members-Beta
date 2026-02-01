@@ -1,0 +1,56 @@
+.alezux-subs-wrapper {
+    overflow-x: auto;
+}
+
+.alezux-subs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.alezux-subs-table th,
+.alezux-subs-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.alezux-subs-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.alezux-status-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff;
+}
+
+.status-active {
+    background-color: #28a745;
+}
+
+.status-past_due {
+    background-color: #dc3545;
+}
+
+.status-completed {
+    background-color: #007bff;
+}
+
+.status-canceled {
+    background-color: #6c757d;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}

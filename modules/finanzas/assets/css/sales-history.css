@@ -1,0 +1,48 @@
+.alezux-sales-wrapper {
+    overflow-x: auto;
+}
+
+.alezux-sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.alezux-sales-table th,
+.alezux-sales-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.alezux-sales-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.alezux-status-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff;
+}
+
+.status-succeeded {
+    background-color: #28a745;
+}
+
+.status-failed {
+    background-color: #dc3545;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
