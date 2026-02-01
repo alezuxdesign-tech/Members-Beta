@@ -874,10 +874,16 @@ class Slide_Lesson_Widget extends Widget_Base {
 					}
 				}
 				
+				$is_locked = false;
+                if ( class_exists( '\Alezux_Members\Modules\Finanzas\Includes\Access_Control' ) ) {
+                    $is_locked = \Alezux_Members\Modules\Finanzas\Includes\Access_Control::is_post_locked( $lesson_id );
+                }
+
 				$lessons[] = [
 					'title'     => get_the_title(),
 					'permalink' => $permalink,
 					'image_url' => get_the_post_thumbnail_url( $lesson_id, 'full' ),
+                    'is_locked' => $is_locked
 				];
 			}
 			wp_reset_postdata();

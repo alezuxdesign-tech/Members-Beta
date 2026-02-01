@@ -30,6 +30,7 @@ class Finanzas extends Module_Base {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
 	}
 
 	private function init_hooks() {
