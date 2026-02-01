@@ -10,6 +10,7 @@ class Admin_Settings {
     public static function init() {
         \add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
         \add_action( 'admin_init', [ __CLASS__, 'register_settings' ] );
+        \add_action( 'admin_post_alezux_simulate_webhook', [ __CLASS__, 'handle_simulate_webhook' ] );
     }
 
     public static function add_settings_page() {
@@ -59,6 +60,40 @@ class Admin_Settings {
 
                 <?php \submit_button(); ?>
             </form>
+
+            <hr style="margin: 30px 0;">
+
+            <!-- Simulación Check -->
+            <div class="card" style="max-width: 600px; padding: 20px; border-left: 4px solid #e91e63;">
+                <h2 style="color: #e91e63;">⚡ Simulador de Webhook (Test)</h2>
+                <p>Usa esta herramienta para simular un pago exitoso y verificar que:</p>
+                <ol>
+                    <li>Se crea el usuario y suscripción.</li>
+                    <li>Se envía el email de bienvenida.</li>
+                </ol>
+
+                <?php
+                if ( isset( $_GET['sim_result'] ) ) {
+                    if ( $_GET['sim_result'] == 'success' ) {
+                        echo '<div class="notice notice-success inline" style="margin: 10px 0;"><p>✅ <strong>Prueba Exitosa:</strong> Webhook simulado correctamente.</p></div>';
+                    } else {
+                        echo '<div class="notice notice-error inline" style="margin: 10px 0;"><p>❌ <strong>Error:</strong> Revisa los logs.</p></div>';
+                    }
+                }
+                ?>
+
+                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+                    <input type="hidden" name="action" value="alezux_simulate_webhook">
+                    <?php wp_nonce_field( 'alezux_simulate_action', 'alezux_sim_nonce' ); ?>
+                    
+                    <p>
+                        <label><strong>Email de Prueba:</strong></label><br>
+                        <input type="email" name="sim_email" value="stikecool@gmail.com" class="regular-text" required>
+                    </p>
+                    <button type="submit" class="button button-secondary">🚀 Simular Pago Ahora</button>
+                    <p class="description">Esto no tocará tu cuenta bancaria real.</p>
+                </form>
+            </div>
         </div>
         <?php
     }
