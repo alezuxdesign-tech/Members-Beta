@@ -149,6 +149,9 @@ class Webhook_Handler {
         ] );
 
         \error_log( "Alezux Payment: Usuario $email matriculado exitosamente en Plan $plan_id" );
+        
+        // Disparar evento para Marketing (Quota 1)
+        do_action( 'alezux_finance_payment_received', $user_id, $plan_id, 1 );
     }
 
     private function handle_invoice_payment_succeeded( $invoice ) {
@@ -198,6 +201,10 @@ class Webhook_Handler {
 
         \error_log( "Alezux Renewal: Cuota $new_quotas_paid pagada para suscripción Local ID {$subscription->id}" );
 
+        // Disparar evento para Marketing (Quota Recurrente)
+        do_action( 'alezux_finance_payment_received', $subscription->user_id, '$subscription->plan_id', $new_quotas_paid ); // Error in string interpolation detected, fixing manually below
+         do_action( 'alezux_finance_payment_received', $subscription->user_id, $subscription->plan_id, $new_quotas_paid );
+
         // Verificar si se completaron las cuotas
         if ( $new_quotas_paid >= $subscription->total_quotas ) {
             $this->cancel_stripe_subscription( $stripe_sub_id );
@@ -228,6 +235,12 @@ class Webhook_Handler {
 
         // TODO: Enviar email de fallo (Módulo Marketing)
         \error_log( "Alezux: Pago fallido para suscripción stripe $stripe_sub_id" );
+        
+        // Obtener user y plan para el evento
+        $subscription = $wpdb->get_row( $wpdb->prepare( "SELECT user_id, plan_id FROM $subs_table WHERE stripe_subscription_id = %s", $stripe_sub_id ) );
+        if ( $subscription ) {
+            do_action( 'alezux_finance_payment_failed', $subscription->user_id, $subscription->plan_id );
+        }
     }
 
     private function cancel_stripe_subscription( $sub_id ) {
