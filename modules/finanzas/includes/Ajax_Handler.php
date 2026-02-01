@@ -33,8 +33,8 @@ class Ajax_Handler {
             $steps = \learndash_get_course_steps( $course_id );
             foreach ( $steps as $step_id ) {
                 $post = \get_post( $step_id );
-                // Solo incluimos lecciones y tópicos principales, no quices
-                if ( $post->post_type === 'sfwd-lessons' || $post->post_type === 'sfwd-topic' ) {
+                // Solo incluimos lecciones (sfwd-lessons), los tópicos se omiten
+                if ( $post->post_type === 'sfwd-lessons' ) {
                     // OMITIR Separadores visuales
                     if ( strpos( $post->post_title, '[Separador' ) !== false ) {
                         continue;
