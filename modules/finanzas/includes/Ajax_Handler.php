@@ -35,6 +35,11 @@ class Ajax_Handler {
                 $post = \get_post( $step_id );
                 // Solo incluimos lecciones y tópicos principales, no quices
                 if ( $post->post_type === 'sfwd-lessons' || $post->post_type === 'sfwd-topic' ) {
+                    // OMITIR Separadores visuales
+                    if ( strpos( $post->post_title, '[Separador' ) !== false ) {
+                        continue;
+                    }
+
                     $modules[] = [
                         'id' => $post->ID,
                         'title' => $post->post_title,
@@ -63,12 +68,23 @@ class Ajax_Handler {
         $total_quotas = \intval( $_POST['total_quotas'] );
         $rules = isset($_POST['rules']) ? $_POST['rules'] : [];
 
-        // AQUÍ VA LA INTEGRACIÓN CON STRIPE REAL (PENDIENTE)
-        // Por ahora simularemos la respuesta exitosa para probar el UI.
+        // Integración con Stripe
+        $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
         
-        // Simulación:
-        $fake_stripe_prod_id = 'prod_TEST_' . \uniqid();
-        $fake_stripe_price_id = 'price_TEST_' . \uniqid();
+        // Determinar intervalo
+        $interval = $_POST['frequency'] ?? 'month';
+        if ( $total_quotas == 1 ) {
+            $interval = 'contado'; // Lógica especial para pago único
+        }
+
+        $stripe_result = $stripe->create_plan( $plan_name, $quota_amount, $interval );
+
+        if ( \is_wp_error( $stripe_result ) ) {
+             \wp_send_json_error( 'Error de Stripe: ' . $stripe_result->get_error_message() );
+        }
+
+        $stripe_prod_id = $stripe_result['product_id'];
+        $stripe_price_id = $stripe_result['price_id'];
 
         // Guardar en DB
         global $wpdb;
@@ -79,8 +95,8 @@ class Ajax_Handler {
             [ 
                 'name' => $plan_name, 
                 'course_id' => $course_id,
-                'stripe_product_id' => $fake_stripe_prod_id,
-                'stripe_price_id' => $fake_stripe_price_id,
+                'stripe_product_id' => $stripe_prod_id,
+                'stripe_price_id' => $stripe_price_id,
                 'total_quotas' => $total_quotas,
                 'quota_amount' => $quota_amount,
                 'access_rules' => \json_encode( $rules ),
@@ -90,9 +106,9 @@ class Ajax_Handler {
         $plan_id = $wpdb->insert_id;
 
         if ( $plan_id ) {
-            \wp_send_json_success( [ 'plan_id' => $plan_id, 'message' => 'Plan creado y guardado en DB (Simulación Stripe).' ] );
+            \wp_send_json_success( [ 'plan_id' => $plan_id, 'message' => 'Plan creado correctamene en Stripe y WordPress.' ] );
         } else {
-            \wp_send_json_error( 'Error al guardar en base de datos.' );
+            \wp_send_json_error( 'Error al guardar en base de datos local.' );
         }
 	}
 }

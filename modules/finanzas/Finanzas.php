@@ -26,8 +26,10 @@ class Finanzas extends Module_Base {
 
 	private function includes() {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
+	private function includes() {
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
-		// require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
+		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 	}
 
 	private function init_hooks() {
