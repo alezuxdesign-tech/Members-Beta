@@ -275,6 +275,9 @@ class Finance_Dashboard {
                 ld_update_course_access( $user_id, $plan->course_id );
             }
 
+            // Marketing Hook (Quota 1)
+            do_action( 'alezux_finance_payment_received', $user_id, $plan_id, 1 );
+
         } else {
             // Actualizar existente
             $subscription_id = $subscription->id;
@@ -290,7 +293,11 @@ class Finance_Dashboard {
                 'status' => $status,
                 'last_payment_date' => current_time( 'mysql' ),
                 'next_payment_date' => date( 'Y-m-d H:i:s', strtotime( '+1 month' ) )
+                'next_payment_date' => date( 'Y-m-d H:i:s', strtotime( '+1 month' ) )
             ], [ 'id' => $subscription_id ] );
+
+            // Marketing Hook (Quota Recurrente)
+            do_action( 'alezux_finance_payment_received', $user_id, $plan_id, $current_quota );
         }
 
         // 3. Registrar Transacción
