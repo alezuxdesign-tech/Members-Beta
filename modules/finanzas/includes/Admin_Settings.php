@@ -10,7 +10,6 @@ class Admin_Settings {
     public static function init() {
         \add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
         \add_action( 'admin_init', [ __CLASS__, 'register_settings' ] );
-        \add_action( 'admin_post_alezux_simulate_webhook', [ __CLASS__, 'handle_simulate_webhook' ] );
     }
 
     public static function add_settings_page() {
@@ -98,75 +97,4 @@ class Admin_Settings {
         <?php
     }
 
-    public static function handle_simulate_webhook() {
-        if ( ! isset( $_POST['alezux_sim_nonce'] ) || ! \wp_verify_nonce( $_POST['alezux_sim_nonce'], 'alezux_simulate_action' ) ) {
-            \wp_die( 'Seguridad inválida.' );
-        }
-
-        $email = \sanitize_email( $_POST['sim_email'] );
-        
-        global $wpdb;
-        $plan = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}alezux_finanzas_plans LIMIT 1" );
-        
-        // Si no hay plan, creamos uno dummy rápido
-        if ( ! $plan ) {
-            $wpdb->insert( $wpdb->prefix . 'alezux_finanzas_plans', [
-                'name' => 'Plan Simulado',
-                'course_id' => 0,
-                'stripe_product_id' => 'prod_mock',
-                'stripe_price_id' => 'price_mock',
-                'total_quotas' => 4,
-                'quota_amount' => 50.00
-            ] );
-            $plan_id = $wpdb->insert_id;
-        } else {
-            $plan_id = $plan->id;
-        }
-
-        // Payload Mock
-        $payload = [
-            'id' => 'evt_sim_' . time(),
-            'object' => 'event',
-            'type' => 'checkout.session.completed',
-            'data' => [
-                'object' => [
-                    'id' => 'cs_sim_' . time(),
-                    'object' => 'checkout.session',
-                    'customer_details' => [ 'email' => $email ],
-                    'subscription' => 'sub_sim_' . time(),
-                    'metadata' => [ 'plan_id' => $plan_id ],
-                    'amount_total' => 5000,
-                    'payment_intent' => 'pi_sim_' . time()
-                ]
-            ]
-        ];
-
-        // Enviar al endpoint local
-        $url = \get_rest_url( null, 'alezux/v1/stripe-webhook' );
-        
-        // Self request
-        $response = \wp_remote_post( $url, [
-            'body' => \json_encode( $payload ),
-            'headers' => [ 'Content-Type' => 'application/json' ],
-            'timeout' => 5,
-            'sslverify' => false 
-        ] );
-
-        $result = 'failed';
-        if ( ! \is_wp_error( $response ) ) {
-            $code = \wp_remote_retrieve_response_code( $response );
-            if ( $code === 200 ) {
-                $result = 'success';
-            }
-        }
-
-        // Redirigir de vuelta a settings
-        $redirect_url = \add_query_arg( 
-            [ 'page' => 'alezux-finanzas-settings', 'sim_result' => $result ], 
-            \admin_url( 'admin.php' ) 
-        );
-        
-        \wp_redirect( $redirect_url );
-        exit;
-    }
 }
