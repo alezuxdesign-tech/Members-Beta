@@ -47,20 +47,14 @@ class Finanzas extends Module_Base {
             \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
         }
 
-        // Widgets Elementor Files
-        require_once ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php';
-        require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_History_Widget.php';
-        require_once ALEZUX_FINANZAS_PATH . 'widgets/Subscriptions_List_Widget.php';
-        require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
-
         // Dashboard legacy (opcional, mantener por si acaso se necesita lógica interna)
-        require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';
-        \Alezux_Members\Modules\Finanzas\Includes\Finance_Dashboard::init();
-
-		// Hooks
-		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
-        \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
+        // require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';
+        // \Alezux_Members\Modules\Finanzas\Includes\Finance_Dashboard::init();
+ 
+ 		// Hooks
+ 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
+        // \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+        // \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
@@ -68,18 +62,25 @@ class Finanzas extends Module_Base {
 			return;
 		}
         
+        // Incluir archivos de widgets aquí para asegurar que Elementor está cargado
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_History_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Subscriptions_List_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
+
         // Registrar Widgets
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
             $widgets_manager->register( new Widgets\Create_Plan_Widget() );
         }
         
-        // Widgets Fase 6
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Sales_History_Widget' ) ) {
             $widgets_manager->register( new Widgets\Sales_History_Widget() );
         }
+        
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Subscriptions_List_Widget' ) ) {
             $widgets_manager->register( new Widgets\Subscriptions_List_Widget() );
         }
+        
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Manual_Payment_Widget' ) ) {
             $widgets_manager->register( new Widgets\Manual_Payment_Widget() );
         }
