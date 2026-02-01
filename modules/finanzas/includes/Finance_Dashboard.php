@@ -10,11 +10,12 @@ class Finance_Dashboard {
     public static function init() {
         \add_action( 'admin_menu', [ __CLASS__, 'add_menu_page' ] );
         \add_action( 'admin_post_alezux_manual_payment', [ __CLASS__, 'handle_manual_payment' ] );
+        \add_action( 'admin_post_alezux_simulate_webhook', [ __CLASS__, 'handle_simulate_webhook' ] );
     }
 
     public static function add_menu_page() {
         // Desactivado por solicitud del usuario (Prefiere Widgets)
-        /*
+        // Reactivado temporalmente para Pruebas
         \add_submenu_page(
             'alezux-members',
             'Ventas y Suscripciones',
@@ -23,7 +24,6 @@ class Finance_Dashboard {
             'alezux-finanzas-sales',
             [ __CLASS__, 'render_dashboard' ]
         );
-        */
     }
 
     public static function render_dashboard() {
@@ -36,10 +36,20 @@ class Finance_Dashboard {
                 <a href="?page=alezux-finanzas-sales&tab=sales" class="nav-tab <?php echo $active_tab == 'sales' ? 'nav-tab-active' : ''; ?>">Ventas (Transacciones)</a>
                 <a href="?page=alezux-finanzas-sales&tab=subscriptions" class="nav-tab <?php echo $active_tab == 'subscriptions' ? 'nav-tab-active' : ''; ?>">Suscripciones Activas</a>
                 <a href="?page=alezux-finanzas-sales&tab=manual" class="nav-tab <?php echo $active_tab == 'manual' ? 'nav-tab-active' : ''; ?>">Registro Manual</a>
+                <a href="?page=alezux-finanzas-sales&tab=simulation" class="nav-tab <?php echo $active_tab == 'simulation' ? 'nav-tab-active' : ''; ?>" style="color:#e91e63;">⚡ Simulación (Test)</a>
             </h2>
 
             <div class="alezux-tab-content">
                 <?php
+                if ( isset( $_GET['sim_result'] ) ) {
+                    $res = $_GET['sim_result'];
+                    if ( $res == 'success' ) {
+                        echo '<div class="notice notice-success inline"><p>✅ <strong>Simulación Exitosa:</strong> El webhook fue enviado recuperado y procesado (HTTP 200).</p></div>';
+                    } else {
+                        echo '<div class="notice notice-error inline"><p>❌ <strong>Error en Simulación:</strong> Revisa el log de errores.</p></div>';
+                    }
+                }
+
                 switch ( $active_tab ) {
                     case 'sales':
                         self::render_sales_tab();
@@ -49,6 +59,9 @@ class Finance_Dashboard {
                         break;
                     case 'manual':
                         self::render_manual_entry_tab();
+                        break;
+                    case 'simulation':
+                        self::render_simulation_tab();
                         break;
                 }
                 ?>
@@ -212,6 +225,35 @@ class Finance_Dashboard {
         <?php
     }
 
+    private static function render_simulation_tab() {
+        ?>
+        <h3>⚡ Simulador de Webhook Stripe</h3>
+        <p>Esta herramienta simula que Stripe ha enviado una confirmación de pago exitosa (checkout.session.completed).</p>
+        <p>Utilízalo para verificar que:</p>
+        <ol>
+            <li>Se crea el usuario (si no existe).</li>
+            <li>Se matricula en el curso y se activa el plan.</li>
+            <li>Se envía el correo de bienvenida.</li>
+        </ol>
+
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+            <input type="hidden" name="action" value="alezux_simulate_webhook">
+            <?php wp_nonce_field( 'alezux_simulate_action', 'alezux_sim_nonce' ); ?>
+            
+            <table class="form-table">
+                <tr>
+                    <th scope="row"><label for="sim_email">Email de Prueba *</label></th>
+                    <td>
+                        <input type="email" name="sim_email" id="sim_email" class="regular-text" value="stikecool@gmail.com" required>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <button type="submit" class="button button-primary button-large" style="background:#e91e63;border-color:#c2185b;">🚀 Disparar Pago Simulado</button>
+        </form>
+        <?php
+    }
+
     public static function handle_manual_payment() {
         if ( ! isset( $_POST['alezux_nonce'] ) || ! wp_verify_nonce( $_POST['alezux_nonce'], 'alezux_manual_payment_action' ) ) {
             wp_die( 'Seguridad inválida.' );
@@ -293,7 +335,6 @@ class Finance_Dashboard {
                 'status' => $status,
                 'last_payment_date' => current_time( 'mysql' ),
                 'next_payment_date' => date( 'Y-m-d H:i:s', strtotime( '+1 month' ) )
-                'next_payment_date' => date( 'Y-m-d H:i:s', strtotime( '+1 month' ) )
             ], [ 'id' => $subscription_id ] );
 
             // Marketing Hook (Quota Recurrente)
@@ -313,6 +354,69 @@ class Finance_Dashboard {
 
         // Redireccionar con éxito
         wp_redirect( admin_url( 'admin.php?page=alezux-finanzas-sales&message=success_manual_pay' ) );
+        exit;
+    }
+
+    public static function handle_simulate_webhook() {
+        if ( ! isset( $_POST['alezux_sim_nonce'] ) || ! wp_verify_nonce( $_POST['alezux_sim_nonce'], 'alezux_simulate_action' ) ) {
+            wp_die( 'Seguridad inválida.' );
+        }
+
+        $email = sanitize_email( $_POST['sim_email'] );
+        
+        global $wpdb;
+        $plan = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}alezux_finanzas_plans LIMIT 1" );
+        
+        // Si no hay plan, creamos uno dummy rápido
+        if ( ! $plan ) {
+            $wpdb->insert( $wpdb->prefix . 'alezux_finanzas_plans', [
+                'name' => 'Plan Simulado',
+                'course_id' => 0,
+                'stripe_product_id' => 'prod_mock',
+                'stripe_price_id' => 'price_mock',
+                'total_quotas' => 4,
+                'quota_amount' => 50.00
+            ] );
+            $plan_id = $wpdb->insert_id;
+        } else {
+            $plan_id = $plan->id;
+        }
+
+        // Payload Mock
+        $payload = [
+            'id' => 'evt_sim_' . time(),
+            'object' => 'event',
+            'type' => 'checkout.session.completed',
+            'data' => [
+                'object' => [
+                    'id' => 'cs_sim_' . time(),
+                    'object' => 'checkout.session',
+                    'customer_details' => [ 'email' => $email ],
+                    'subscription' => 'sub_sim_' . time(),
+                    'metadata' => [ 'plan_id' => $plan_id ],
+                    'amount_total' => 5000,
+                    'payment_intent' => 'pi_sim_' . time()
+                ]
+            ]
+        ];
+
+        // Enviar al endpoint local
+        $url = get_rest_url( null, 'alezux/v1/stripe-webhook' );
+        $response = wp_remote_post( $url, [
+            'body' => json_encode( $payload ),
+            'headers' => [ 'Content-Type' => 'application/json' ],
+            'timeout' => 5,
+            'sslverify' => false // Localhost suele fallar SSL
+        ] );
+
+        if ( is_wp_error( $response ) ) {
+            wp_die( 'Error enviando webhook: ' . $response->get_error_message() );
+        }
+
+        $code = wp_remote_retrieve_response_code( $response );
+        $result = ($code === 200) ? 'success' : 'failed';
+
+        wp_redirect( admin_url( 'admin.php?page=alezux-finanzas-sales&tab=simulation&sim_result=' . $result ) );
         exit;
     }
 }
