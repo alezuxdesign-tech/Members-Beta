@@ -25,39 +25,21 @@ class Finanzas extends Module_Base {
 	}
 
 	private function includes() {
+		// La lógica de inclusión se ha movido a init_hooks para asegurar el orden de carga
+	}
+
+	private function init_hooks() {
+		// Incluir archivos necesarios
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
         require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
-	}
-	// The includes method is largely replaced by direct requires in init_hooks or removed.
-	// private function includes() {
-	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php';
-	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
-	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
-	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
-	// 	require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
-    //     require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
-	// }
 
-	private function init_hooks() {
-		// Incluir archivos necesarios
-		require_once ALEZUX_FINANZAS_PATH . 'includes/Database_Installer.php'; // Moved here from includes()
-		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php'; // Moved here from includes()
-		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php'; // Moved here from includes()
-		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php'; // Moved here from includes()
-		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; // Moved here from includes()
-        require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // Moved here from includes()
-
-		// Inicializar manejadores AJAX
+		// Inicializar manejadores
 		\Alezux_Members\Modules\Finanzas\Includes\Ajax_Handler::init();
-        
-        // Inicializar Configuración Admin
         \Alezux_Members\Modules\Finanzas\Includes\Admin_Settings::init();
-
-        // Inicializar Webhooks API
         \Alezux_Members\Modules\Finanzas\Includes\Webhook_Handler::init();
         
         // Inicializar Control de Acceso (Hooks LearnDash)
@@ -65,26 +47,48 @@ class Finanzas extends Module_Base {
             \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
         }
 
-        // Widgets Files (Include but register in 'elementor/widgets/register' hook)
+        // Widgets Elementor Files
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Create_Plan_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_History_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Subscriptions_List_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
 
-        // Dashboard UI (Legacy/Admin Page - Disabled but file kept for reference logic)
+        // Dashboard legacy (opcional, mantener por si acaso se necesita lógica interna)
         require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';
         \Alezux_Members\Modules\Finanzas\Includes\Finance_Dashboard::init();
 
-		// Instalación de Tablas al activar (o usar otro hook si es carga dinámica)
+		// Hooks
 		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
-		
-        // Registrar Widgets Elementor
         \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
-        
-        // Encolar Estilos de Widgets
         \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
+        if ( ! did_action( 'elementor/loaded' ) ) {
+			return;
+		}
+        
+        // Registrar Widgets
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Create_Plan_Widget() );
+        }
+        
+        // Widgets Fase 6
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Sales_History_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Sales_History_Widget() );
+        }
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Subscriptions_List_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Subscriptions_List_Widget() );
+        }
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Manual_Payment_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Manual_Payment_Widget() );
+        }
+	}
+
+    public function enqueue_widget_styles() {
+        wp_register_style( 'alezux-sales-history-css', ALEZUX_FINANZAS_URL . 'assets/css/sales-history.css', [], '1.0.0' );
+        wp_register_style( 'alezux-subs-list-css', ALEZUX_FINANZAS_URL . 'assets/css/subscriptions-list.css', [], '1.0.0' );
+        wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );
+    }
 }
 
