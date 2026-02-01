@@ -116,6 +116,14 @@ class Admin_Dashboard {
 			update_option( 'alezux_box_shadow', sanitize_text_field( $_POST['alezux_box_shadow'] ) );
 		}
 
+		// Guardar Keys de Stripe
+		if ( isset( $_POST['alezux_stripe_public_key'] ) ) {
+			update_option( 'alezux_stripe_public_key', sanitize_text_field( $_POST['alezux_stripe_public_key'] ) );
+		}
+		if ( isset( $_POST['alezux_stripe_secret_key'] ) ) {
+			update_option( 'alezux_stripe_secret_key', sanitize_text_field( $_POST['alezux_stripe_secret_key'] ) );
+		}
+
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );
 		exit;
 	}

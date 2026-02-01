@@ -207,6 +207,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-settings')" class="alezux-tab-link active" id="link-tab-settings">Configuración Global</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-shortcodes')" class="alezux-tab-link" id="link-tab-shortcodes">Shortcodes</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-notifications')" class="alezux-tab-link" id="link-tab-notifications">Notificaciones</a>
+		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-finanzas')" class="alezux-tab-link" id="link-tab-finanzas">Finanzas</a>
 	</div>
 
 	<!-- TAB 1: CONFIGURACION -->
