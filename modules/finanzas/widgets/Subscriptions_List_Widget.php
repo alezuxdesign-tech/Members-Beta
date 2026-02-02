@@ -377,7 +377,8 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Color Email', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}}; word-break: break-word; overflow-wrap: anywhere;',
+                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}}; word-break: break-all; white-space: normal; display: block; max-width: 100%;',
+                    '{{WRAPPER}} .alezux-student-text' => 'min-width: 0; flex: 1;', 
                 ],
             ]
         );
