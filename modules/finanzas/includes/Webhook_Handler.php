@@ -75,6 +75,7 @@ class Webhook_Handler {
         $plan_id = $session->metadata->plan_id ?? 0;
         
         $amount = ( isset( $session->amount_total ) ) ? ( $session->amount_total / 100 ) : 0;
+        $currency = ( isset( $session->currency ) ) ? strtoupper( $session->currency ) : 'USD';
         $transaction_ref = $session->payment_intent ?? $session->id;
 
         // Delegar a Enrollment Manager
@@ -84,7 +85,8 @@ class Webhook_Handler {
                 $plan_id, 
                 $stripe_subscription_id, 
                 $amount, 
-                $transaction_ref
+                $transaction_ref,
+                $currency
             );
         }
     }

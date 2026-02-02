@@ -17,9 +17,11 @@ class Enrollment_Manager {
      * @param string $transaction_ref ID de referencia (PaymentIntent o Session ID)
      * @return int|false ID del usuario o false si falla
      */
-    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '' ) {
+    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD' ) {
         global $wpdb;
         
+        error_log( "Alezux Enrollment: Iniciando para $email - Plan $plan_id - Ref $transaction_ref" );
+
         // 1. Gestionar Usuario (Buscar o Crear)
         $user = get_user_by( 'email', $email );
         $is_new_user = false;
@@ -79,9 +81,6 @@ class Enrollment_Manager {
 
         if ( ! $existing_sub ) {
             // Si es pago único (no hay stripe_sub_id o plan dice contado), marcamos como completed o active
-            // Por defecto active, si es contado y cuotas=1 -> completed (lógica futura)
-            // Por ahora active para simplificar.
-            
             $wpdb->insert( $subs_table, [
                 'user_id' => $user_id,
                 'plan_id' => $plan_id,
@@ -104,18 +103,27 @@ class Enrollment_Manager {
         $existing_trans = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $trans_table WHERE transaction_ref = %s", $transaction_ref ) );
         
         if ( ! $existing_trans ) {
-            $wpdb->insert( $trans_table, [
+            $inserted = $wpdb->insert( $trans_table, [
                 'subscription_id' => $subscription_id,
                 'plan_id' => $plan_id, // Redundante pero útil
                 'user_id' => $user_id,
                 'amount' => $amount,
+                'currency' => $currency,
                 'method' => 'stripe',
                 'transaction_ref' => $transaction_ref,
-                'status' => 'succeeded'
+                'status' => 'succeeded',
+                'created_at' => current_time( 'mysql' )
             ] );
             
-            // IMPORTANTE: Disparar evento para Marketing solo si es nueva transacción
-            do_action( 'alezux_finance_payment_received', $user_id, $plan_id, 1 );
+            if ( $inserted ) {
+                error_log( "Alezux Transaction: Insertada transacción $transaction_ref para usuario $user_id" );
+                // IMPORTANTE: Disparar evento para Marketing solo si es nueva transacción
+                do_action( 'alezux_finance_payment_received', $user_id, $plan_id, 1 );
+            } else {
+                error_log( "Alezux Error: Fallo al insertar transacción. DB Error: " . $wpdb->last_error );
+            }
+        } else {
+            error_log( "Alezux Info: Transacción $transaction_ref ya existía. Omitiendo insert." );
         }
 
         return $user_id;
