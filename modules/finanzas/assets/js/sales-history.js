@@ -208,7 +208,15 @@ jQuery(document).ready(function ($) {
                 mode: "range",
                 dateFormat: "Y-m-d",
                 locale: "es", // Spanish locale
+                onChange: function (selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        $clearDateBtn.show();
+                    } else {
+                        $clearDateBtn.hide();
+                    }
+                },
                 onClose: function (selectedDates, dateStr, instance) {
+                    // Button visibility handled in onChange, but verify ensuring sync
                     if (selectedDates.length > 0) {
                         $clearDateBtn.show();
                     } else {
