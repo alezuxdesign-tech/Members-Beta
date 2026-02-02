@@ -38,42 +38,52 @@ class Subscriptions_List_Widget extends Widget_Base {
 
 	protected function register_controls() {
 
+		// Content Section
 		$this->start_controls_section(
 			'content_section',
 			[
 				'label' => esc_html__( 'Configuración', 'alezux-members' ),
-				'tab' => Controls_Manager::TAB_CONTENT,
+				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
-        
-        $this->add_control(
-			'view_mode',
+
+		$this->add_control(
+			'limit',
 			[
-				'label' => esc_html__( 'Vista Inicial', 'alezux-members' ),
-				'type' => Controls_Manager::SELECT,
-				'default' => 'subscriptions',
-				'options' => [
-					'subscriptions' => esc_html__( 'Suscripciones de Usuarios', 'alezux-members' ),
-				],
+				'label'   => esc_html__( 'Límite de registros', 'alezux-members' ),
+				'type'    => Controls_Manager::NUMBER,
+				'min'     => 1,
+				'max'     => 100,
+				'step'    => 1,
+				'default' => 10,
 			]
 		);
 
 		$this->end_controls_section();
 
-        // --- ESTILO: CONTENEDOR PRINCIPAL ---
+        // 1. DISEÑO DE LA TABLA (Tabla y Encabezados)
         $this->start_controls_section(
-            'style_section_container',
+            'style_section_table',
             [
-                'label' => esc_html__('Contenedor Principal', 'alezux-members'),
+                'label' => esc_html__('Diseño de la Tabla', 'alezux-members'),
                 'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'table_container_heading',
+            [
+                'label' => esc_html__('Contenedor & Cuerpo', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
             ]
         );
 
         $this->add_group_control(
             \Elementor\Group_Control_Background::get_type(),
             [
-                'name' => 'container_background',
-                'label' => esc_html__('Fondo', 'alezux-members'),
+                'name' => 'table_background',
+                'label' => esc_html__('Fondo Tabla', 'alezux-members'),
                 'types' => ['classic', 'gradient'],
                 'selector' => '{{WRAPPER}} .alezux-subs-list-app, {{WRAPPER}} .alezux-subs-wrapper',
             ]
@@ -82,160 +92,59 @@ class Subscriptions_List_Widget extends Widget_Base {
         $this->add_group_control(
             \Elementor\Group_Control_Border::get_type(),
             [
-                'name' => 'container_border',
-                'label' => esc_html__('Borde', 'alezux-members'),
-                'selector' => '{{WRAPPER}} .alezux-subs-list-app, {{WRAPPER}} .alezux-subs-wrapper',
+                'name' => 'table_border',
+                'label' => esc_html__('Borde Tabla', 'alezux-members'),
+                'selector' => '{{WRAPPER}} .alezux-subs-list-app',
             ]
         );
 
         $this->add_control(
-            'container_border_radius',
+            'table_radius',
             [
-                'label' => esc_html__('Radio del Borde', 'alezux-members'),
+                'label' => esc_html__('Radio de Borde', 'alezux-members'),
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
                 'selectors' => [
                     '{{WRAPPER}} .alezux-subs-list-app' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                    '{{WRAPPER}} .alezux-subs-wrapper' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}; overflow: hidden;',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            \Elementor\Group_Control_Box_Shadow::get_type(),
-            [
-                'name' => 'container_box_shadow',
-                'label' => esc_html__('Sombra de Caja', 'alezux-members'),
-                'selector' => '{{WRAPPER}} .alezux-subs-list-app, {{WRAPPER}} .alezux-subs-wrapper',
-            ]
-        );
-
-        $this->add_responsive_control(
-            'container_padding',
-            [
-                'label' => esc_html__('Relleno (Padding)', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-list-app' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-
-        // --- ESTILO: BUSCADOR ---
-        $this->start_controls_section(
-            'style_section_search',
-            [
-                'label' => esc_html__('Buscador', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_control(
-            'search_icon_color',
-            [
-                'label' => esc_html__('Color Icono', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-search-wrapper .dashicons-search' => 'color: {{VALUE}} !important;',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'search_text_color',
-            [
-                'label' => esc_html__('Color Texto', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} #alezux-subs-search' => 'color: {{VALUE}};',
                 ],
             ]
         );
 
          $this->add_control(
-            'search_placeholder_color',
+            'table_row_bg',
             [
-                'label' => esc_html__('Color Placeholder', 'alezux-members'),
+                'label' => esc_html__('Fondo Filas (Alterno)', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} #alezux-subs-search::placeholder' => 'color: {{VALUE}};',
-                    '{{WRAPPER}} #alezux-subs-search::-webkit-input-placeholder' => 'color: {{VALUE}};',
+                 'selectors' => [
+                    '{{WRAPPER}} .alezux-subs-table tbody tr:nth-child(even)' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
 
         $this->add_control(
-            'search_bg_color',
+            'table_header_heading',
             [
-                'label' => esc_html__('Color Fondo', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} #alezux-subs-search' => 'background-color: {{VALUE}} !important;',
-                ],
+                'label' => esc_html__('Encabezados (Títulos)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
             ]
         );
 
         $this->add_control(
-            'search_border_color',
+            'header_bg_color',
             [
-                'label' => esc_html__('Color Borde', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} #alezux-subs-search' => 'border-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'search_typography',
-                'selector' => '{{WRAPPER}} #alezux-subs-search',
-            ]
-        );
-
-         $this->add_control(
-            'search_border_radius',
-            [
-                'label' => esc_html__('Radio del Borde', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} #alezux-subs-search' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-
-        // --- ESTILO: ENCABEZADO TABLA ---
-        $this->start_controls_section(
-            'style_section_thead',
-            [
-                'label' => esc_html__('Tabla: Encabezado', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_control(
-            'thead_bg_color',
-            [
-                'label' => esc_html__('Color Fondo', 'alezux-members'),
+                'label' => esc_html__('Color Fondo Encabezado', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .alezux-subs-table thead th' => 'background-color: {{VALUE}};',
-                    '{{WRAPPER}} .alezux-subs-table thead' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
 
         $this->add_control(
-            'thead_text_color',
+            'header_text_color',
             [
-                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'label' => esc_html__('Color Texto Encabezado', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .alezux-subs-table thead th' => 'color: {{VALUE}};',
@@ -246,149 +155,28 @@ class Subscriptions_List_Widget extends Widget_Base {
         $this->add_group_control(
             \Elementor\Group_Control_Typography::get_type(),
             [
-                'name' => 'thead_typography',
+                'name' => 'header_typography',
                 'selector' => '{{WRAPPER}} .alezux-subs-table thead th',
             ]
         );
 
-        $this->add_responsive_control(
-            'thead_padding',
-            [
-                'label' => esc_html__('Relleno (Padding)', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table thead th' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
         $this->end_controls_section();
 
-        // --- ESTILO: CUERPO TABLA ---
-        $this->start_controls_section(
-            'style_section_tbody',
-            [
-                'label' => esc_html__('Tabla: Cuerpo', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
 
-        $this->add_control(
-            'tbody_bg_color',
-            [
-                'label' => esc_html__('Color Fondo Filas', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'background-color: {{VALUE}};',
-                    '{{WRAPPER}} .alezux-subs-table tbody tr' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'tbody_bg_hover_color',
-            [
-                'label' => esc_html__('Color Fondo Hover', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody tr:hover td' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-         $this->add_control(
-            'tbody_text_color',
-            [
-                'label' => esc_html__('Color Texto General', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-         $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'tbody_typography',
-                'selector' => '{{WRAPPER}} .alezux-subs-table tbody td',
-            ]
-        );
-
-        $this->add_control(
-            'tbody_border_color',
-            [
-                'label' => esc_html__('Color Bordes Separadores', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'border-bottom-color: {{VALUE}};',
-                    '{{WRAPPER}} .alezux-subs-table thead th' => 'border-bottom-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'tbody_padding',
-            [
-                'label' => esc_html__('Relleno (Padding)', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-
-        // --- ESTILO: ESTUDIANTE ---
+        // 2. ESTUDIANTE
         $this->start_controls_section(
             'style_section_student',
             [
-                'label' => esc_html__('Estudiante', 'alezux-members'),
+                'label' => esc_html__('Estudiante (Avatar, Nombre, Email)', 'alezux-members'),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
 
         $this->add_control(
-            'student_name_color',
+            'student_avatar_heading',
             [
-                'label' => esc_html__('Color Nombre', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .student-name' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'student_name_typography',
-                'label' => 'Tipografía Nombre',
-                'selector' => '{{WRAPPER}} .student-name',
-            ]
-        );
-
-        $this->add_control(
-            'student_email_color',
-            [
-                'label' => esc_html__('Color Email', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}}; word-break: break-all; white-space: normal; display: block; max-width: 100%;',
-                    '{{WRAPPER}} .alezux-student-text' => 'min-width: 0; flex: 1;', 
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'student_email_typography',
-                'label' => 'Tipografía Email',
-                'selector' => '{{WRAPPER}} .student-email',
+                'label' => esc_html__('Avatar', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
             ]
         );
 
@@ -410,285 +198,88 @@ class Subscriptions_List_Widget extends Widget_Base {
             ]
         );
 
-        $this->end_controls_section();
-
-         // --- ESTILO: PROGRESO ---
-         $this->start_controls_section(
-            'style_section_progress',
-            [
-                'label' => esc_html__('Progreso', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->add_control(
-            'progress_label_color',
-            [
-                'label' => esc_html__('Color Texto Etiquetas', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .progress-Label span' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
          $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'progress_label_typography',
-                'selector' => '{{WRAPPER}} .progress-Label span',
-            ]
-        );
-
-        $this->add_control(
-            'progress_bg_color',
-            [
-                'label' => esc_html__('Color Fondo Barra', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'progress_fill_color',
-            [
-                'label' => esc_html__('Color Relleno Barra', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-progress-bar-fill' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'progress_height',
-            [
-                'label' => esc_html__('Altura Barra', 'alezux-members'),
-                'type' => Controls_Manager::SLIDER,
-                'size_units' => [ 'px' ],
-                'range' => [
-                    'px' => [
-                        'min' => 2,
-                        'max' => 30,
-                    ],
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'height: {{SIZE}}{{UNIT}};',
-                     '{{WRAPPER}} .alezux-progress-bar-fill' => 'height: 100%;',
-                ],
-            ]
-        );
-
-         $this->add_control(
-            'progress_radius',
-            [
-                'label' => esc_html__('Redondeo', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                    '{{WRAPPER}} .alezux-progress-bar-fill' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-
-        $this->end_controls_section();
-
-        // --- ESTILO: ESTADO (BADGES) ---
-         $this->start_controls_section(
-            'style_section_badges',
-            [
-                'label' => esc_html__('Estado (Badges)', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
-        
-        $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'badge_typography',
-                'selector' => '{{WRAPPER}} .alezux-status-badge',
-            ]
-        );
-
-        $this->add_control(
-            'badge_padding',
-             [
-                'label' => esc_html__('Relleno', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-status-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'badge_radius',
-             [
-                'label' => esc_html__('Redondeo', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-status-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-        
-        // Colores por estado
-        $this->add_control('heading_badge_active', ['type' => Controls_Manager::HEADING, 'label' => 'Activo']);
-        $this->add_control('badge_active_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_active_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'background-color: {{VALUE}};']]);
-
-        $this->add_control('heading_badge_completed', ['type' => Controls_Manager::HEADING, 'label' => 'Completado']);
-        $this->add_control('badge_completed_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_completed_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'background-color: {{VALUE}};']]);
-
-        $this->add_control('heading_badge_past_due', ['type' => Controls_Manager::HEADING, 'label' => 'Vencido']);
-        $this->add_control('badge_past_due_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_past_due_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'background-color: {{VALUE}};']]);
-
-         $this->add_control('heading_badge_canceled', ['type' => Controls_Manager::HEADING, 'label' => 'Cancelado']);
-        $this->add_control('badge_canceled_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-canceled' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_canceled_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-canceled' => 'background-color: {{VALUE}};']]);
-
-
-        $this->end_controls_section();
-
-
-        // --- ESTILO: BOTONES ---
-        $this->start_controls_section(
-            'style_section_buttons',
-            [
-                'label' => esc_html__('Botones Acciones', 'alezux-members'),
-                'tab'   => Controls_Manager::TAB_STYLE,
-            ]
-        );
-
-        $this->start_controls_tabs( 'tabs_button_style' );
-
-        $this->start_controls_tab(
-            'tab_button_normal',
-            [
-                'label' => esc_html__( 'Normal', 'alezux-members' ),
-            ]
-        );
-
-        $this->add_control(
-            'button_text_color',
-            [
-                'label' => esc_html__( 'Color Texto', 'alezux-members' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'button_bg_color',
-            [
-                'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-        
-        $this->add_group_control(
             \Elementor\Group_Control_Border::get_type(),
             [
-                'name' => 'button_border',
-                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
-            ]
-        );
-
-        $this->end_controls_tab();
-
-        $this->start_controls_tab(
-            'tab_button_hover',
-            [
-                'label' => esc_html__( 'Hover', 'alezux-members' ),
+                'name' => 'student_avatar_border',
+                'label' => esc_html__('Borde Avatar', 'alezux-members'),
+                'selector' => '{{WRAPPER}} .alezux-student-avatar',
             ]
         );
 
         $this->add_control(
-            'button_hover_text_color',
+            'student_avatar_radius',
             [
-                'label' => esc_html__( 'Color Texto', 'alezux-members' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay:hover' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'button_hover_bg_color',
-            [
-                'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay:hover' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'button_hover_border_color',
-            [
-                'label' => esc_html__( 'Color Borde', 'alezux-members' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay:hover' => 'border-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->end_controls_tab();
-
-        $this->end_controls_tabs();
-
-         $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
-            [
-                'name' => 'button_typography',
-                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
-                 'separator' => 'before',
-            ]
-        );
-
-        $this->add_control(
-            'button_radius',
-             [
-                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'label' => esc_html__('Radio Avatar', 'alezux-members'),
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-student-avatar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
 
         $this->add_control(
-            'button_padding',
-             [
-                'label' => esc_html__('Relleno', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', 'em'],
+            'student_name_heading',
+            [
+                'label' => esc_html__('Nombre', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'student_name_color',
+            [
+                'label' => esc_html__('Color Nombre', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .student-name' => 'color: {{VALUE}};',
                 ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'student_name_typography',
+                'selector' => '{{WRAPPER}} .student-name',
+            ]
+        );
+
+        $this->add_control(
+            'student_email_heading',
+            [
+                'label' => esc_html__('Email', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'student_email_color',
+            [
+                'label' => esc_html__('Color Email', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}}; word-break: break-all; white-space: normal; display: block; max-width: 100%;',
+                    '{{WRAPPER}} .alezux-student-text' => 'min-width: 0; flex: 1;',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'student_email_typography',
+                'selector' => '{{WRAPPER}} .student-email',
             ]
         );
 
         $this->end_controls_section();
 
-        // --- ESTILO: MONTO ---
+
+        // 3. MONTO
         $this->start_controls_section(
             'style_section_amount',
             [
@@ -717,18 +308,345 @@ class Subscriptions_List_Widget extends Widget_Base {
             ]
         );
 
-        $this->add_control(
-            'amount_bg_color',
+        $this->end_controls_section();
+
+        // 4. ESTADO
+        $this->start_controls_section(
+            'style_section_badges',
             [
-                'label' => esc_html__('Color Fondo Celda', 'alezux-members'),
+                'label' => esc_html__('Estado (Badges)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+        
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'badge_typography',
+                'selector' => '{{WRAPPER}} .alezux-status-badge',
+            ]
+        );
+
+        $this->add_control(
+            'badge_radius',
+             [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-status-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'badge_padding',
+             [
+                'label' => esc_html__('Relleno', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-status-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+        
+        // Colores por estado
+        $this->add_control('heading_badge_active', ['type' => Controls_Manager::HEADING, 'label' => 'Activo', 'separator' => 'before']);
+        $this->add_control('badge_active_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_active_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'background-color: {{VALUE}};']]);
+
+        $this->add_control('heading_badge_completed', ['type' => Controls_Manager::HEADING, 'label' => 'Completado', 'separator' => 'before']);
+        $this->add_control('badge_completed_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_completed_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'background-color: {{VALUE}};']]);
+
+        $this->add_control('heading_badge_past_due', ['type' => Controls_Manager::HEADING, 'label' => 'Vencido', 'separator' => 'before']);
+        $this->add_control('badge_past_due_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_past_due_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'background-color: {{VALUE}};']]);
+
+        $this->add_control('heading_badge_canceled', ['type' => Controls_Manager::HEADING, 'label' => 'Cancelado', 'separator' => 'before']);
+        $this->add_control('badge_canceled_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-canceled' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_canceled_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-canceled' => 'background-color: {{VALUE}};']]);
+
+        $this->end_controls_section();
+
+
+        // 5. PROGRESO
+         $this->start_controls_section(
+            'style_section_progress',
+            [
+                'label' => esc_html__('Progreso', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'progress_label_typography',
+                'label' => 'Tipografía Etiquetas',
+                'selector' => '{{WRAPPER}} .progress-Label span',
+            ]
+        );
+        
+        $this->add_control(
+            'progress_label_color',
+            [
+                'label' => esc_html__('Color Etiquetas', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .col-amount' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .progress-Label span' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+         $this->add_responsive_control(
+            'progress_height',
+            [
+                'label' => esc_html__('Altura Barra', 'alezux-members'),
+                'type' => Controls_Manager::SLIDER,
+                'range' => [
+                    'px' => [
+                        'min' => 2,
+                        'max' => 50,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'height: {{SIZE}}{{UNIT}};',
+                     '{{WRAPPER}} .alezux-progress-bar-fill' => 'height: 100%;',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'progress_radius',
+            [
+                'label' => esc_html__('Redondeo Barra', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-progress-bar-fill' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'progress_bg_heading',
+            [
+                'label' => esc_html__('Fondo de la Barra (Contenedor)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'progress_container_bg',
+                'label' => esc_html__('Fondo Contenedor', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-progress-bar-bg',
+            ]
+        );
+
+        $this->add_control(
+            'progress_fill_heading',
+            [
+                'label' => esc_html__('Relleno de la Barra (Progreso)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'progress_fill_bg',
+                'label' => esc_html__('Fondo Relleno', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-progress-bar-fill',
+            ]
+        );
+
+        $this->end_controls_section();
+
+        // 6. VENCIMIENTO
+        $this->start_controls_section(
+            'style_section_duedate',
+            [
+                'label' => esc_html__('Vencimiento', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'duedate_color',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .col-next-payment' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .date-val' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'duedate_typography',
+                'selector' => '{{WRAPPER}} .col-next-payment, {{WRAPPER}} .date-val',
+            ]
+        );
+         $this->add_control(
+            'duedate_meta_color',
+            [
+                'label' => esc_html__('Color Meta Info', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .date-meta' => 'color: {{VALUE}};',
                 ],
             ]
         );
 
         $this->end_controls_section();
+
+
+        // 7. ACCIONES (BOTONES)
+        $this->start_controls_section(
+            'style_section_actions',
+            [
+                'label' => esc_html__('Acciones (Botones)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        // Usamos el Button Widget nativo de Elementor si es posible, si no, manual
+        // Manual simulation of Elementor button controls for consistency
+        $this->start_controls_tabs( 'tabs_button_style' );
+
+        $this->start_controls_tab(
+            'tab_button_normal',
+            [
+                'label' => esc_html__( 'Normal', 'alezux-members' ),
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'button_typography',
+                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
+            ]
+        );
+
+        $this->add_control(
+            'button_text_color',
+            [
+                'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'button_background',
+                'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'button_border',
+                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
+            ]
+        );
+
+        $this->add_control(
+            'button_border_radius',
+            [
+                'label' => esc_html__( 'Radio Borde', 'alezux-members' ),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%' ],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+         $this->add_control(
+            'button_padding',
+            [
+                'label' => esc_html__( 'Relleno', 'alezux-members' ),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', 'em', '%' ],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-btn-manual-pay' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'tab_button_hover',
+            [
+                'label' => esc_html__( 'Hover', 'alezux-members' ),
+            ]
+        );
+
+        $this->add_control(
+            'button_hover_color',
+            [
+                'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-btn-manual-pay:hover' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'button_background_hover',
+                'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay:hover',
+            ]
+        );
+
+        $this->add_control(
+            'button_hover_border_color',
+            [
+                'label' => esc_html__( 'Color Borde', 'alezux-members' ),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-btn-manual-pay:hover' => 'border-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+         $this->add_group_control(
+            \Elementor\Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'button_box_shadow',
+                'selector' => '{{WRAPPER}} .alezux-btn-manual-pay',
+            ]
+        );
+
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+
+        $this->end_controls_section();    
 
 	}
 
