@@ -29,11 +29,11 @@ class Subscriptions_List_Widget extends Widget_Base {
 	}
 
 	public function get_script_depends() {
-		return [ 'alezux-plans-manager-js' ];
+		return [ 'alezux-subs-list-js' ];
 	}
 
     public function get_style_depends() {
-		return [ 'alezux-sales-history-css' ]; // Reutilizar estilos de tabla
+		return [ 'alezux-sales-history-css', 'alezux-subs-list-css' ]; 
 	}
 
 	protected function register_controls() {
@@ -51,10 +51,9 @@ class Subscriptions_List_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Vista Inicial', 'alezux-members' ),
 				'type' => Controls_Manager::SELECT,
-				'default' => 'plans',
+				'default' => 'subscriptions',
 				'options' => [
-					'plans' => esc_html__( 'Gestor de Planes', 'alezux-members' ),
-                    // 'subscriptions' => esc_html__( 'Suscripciones de Usuarios', 'alezux-members' ), // Deshabilitado temporalmente si solo quiere planes
+					'subscriptions' => esc_html__( 'Suscripciones de Usuarios', 'alezux-members' ),
 				],
 			]
 		);
@@ -64,59 +63,42 @@ class Subscriptions_List_Widget extends Widget_Base {
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
-        
-        // Obtener cursos para filtro (Select options)
-        global $wpdb;
-        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
-        $courses_ids = $wpdb->get_col("SELECT DISTINCT course_id FROM $t_plans");
-        $courses = [];
-        if ( ! empty( $courses_ids ) ) {
-            foreach( $courses_ids as $cid ) {
-                $c_title = get_the_title( $cid );
-                if( $c_title ) $courses[ $cid ] = $c_title;
-            }
-        }
         ?>
-        <div class="alezux-plans-manager-app">
+        <div class="alezux-subs-list-app">
             
             <div class="alezux-filter-bar">
                 <div class="alezux-filter-item search-item">
-                     <label>Buscar Plan</label>
-                     <input type="text" id="alezux-plans-search" placeholder="Buscar por nombre...">
-                </div>
-                <div class="alezux-filter-item">
-                     <label>Filtrar por Curso</label>
-                     <select id="alezux-plans-course">
-                         <option value="0">Todos</option>
-                         <?php foreach($courses as $id => $title): ?>
-                            <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
-                         <?php endforeach; ?>
-                     </select>
+                     <label>Buscar Suscripción</label>
+                     <input type="text" id="alezux-subs-search" placeholder="Nombre o email...">
                 </div>
             </div>
 
-            <div class="alezux-loading-plans" style="display:none; text-align:center; padding:20px;">
-                <i class="eicon-loading eicon-animation-spin"></i> Cargando planes...
+            <div class="alezux-loading-subs" style="display:none; text-align:center; padding:20px;">
+                <i class="eicon-loading eicon-animation-spin"></i> Cargando suscripciones...
             </div>
 
-            <table class="alezux-plans-table alezux-sales-table"> <!-- Reutilizando estilos sales-table -->
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre del Plan</th>
-                        <th>Curso Asociado</th>
-                        <th>Precio</th>
-                        <th>Cuotas</th>
-                        <th>Frecuencia</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- AJAX Content -->
-                </tbody>
-            </table>
+            <div class="alezux-subs-wrapper">
+                <table class="alezux-subs-table alezux-sales-table"> 
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Estudiante</th>
+                            <th>Plan</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Progreso</th>
+                            <th>Próximo Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AJAX Content -->
+                    </tbody>
+                </table>
+            </div>
 
         </div>
+        <?php
+	}
         <?php
 	}
 }

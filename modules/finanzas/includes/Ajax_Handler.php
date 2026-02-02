@@ -12,6 +12,7 @@ class Ajax_Handler {
 		\add_action( 'wp_ajax_alezux_create_stripe_plan', [ __CLASS__, 'create_stripe_plan' ] );
         \add_action( 'wp_ajax_alezux_get_sales_history', [ __CLASS__, 'get_sales_history' ] );
         \add_action( 'wp_ajax_alezux_get_plans_list', [ __CLASS__, 'get_plans_list' ] );
+        \add_action( 'wp_ajax_alezux_get_subscriptions_list', [ __CLASS__, 'get_subscriptions_list' ] );
         \add_action( 'wp_ajax_alezux_delete_plan', [ __CLASS__, 'delete_plan' ] );
 	}
 
@@ -314,5 +315,70 @@ class Ajax_Handler {
         } else {
             \wp_send_json_error( 'No se pudo eliminar el plan o no existe.' );
         }
+    }
+
+    public static function get_subscriptions_list() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        global $wpdb;
+        $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
+        
+        $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $t_users = $wpdb->users;
+
+        $sql = "SELECT s.*, u.display_name, u.user_email, p.name as plan_name, p.total_quotas, p.quota_amount 
+                FROM $t_subs s
+                LEFT JOIN $t_users u ON s.user_id = u.ID
+                LEFT JOIN $t_plans p ON s.plan_id = p.id
+                WHERE 1=1";
+        
+        $args = [];
+
+        if ( ! empty( $search ) ) {
+            $sql .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s)";
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
+        }
+
+        $sql .= " ORDER BY s.created_at DESC";
+
+        if ( ! empty( $args ) ) {
+            $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
+        } else {
+            $results = $wpdb->get_results( $sql );
+        }
+
+        $data = [];
+        foreach ( $results as $row ) {
+            // Calcular próximo pago
+            $next_payment = '-';
+            if ( $row->status === 'active' && $row->next_payment_date ) {
+                $next_payment = \date_i18n( \get_option( 'date_format' ), \strtotime( $row->next_payment_date ) );
+                
+                // Si está vencido
+                if ( \strtotime( $row->next_payment_date ) < \time() ) {
+                    $next_payment .= ' <span style="color:red;">(Atrasado)</span>';
+                }
+            } elseif ( $row->status === 'completed' ) {
+                $next_payment = 'Pagado Totalmente';
+            }
+
+            $data[] = [
+                'id' => $row->id,
+                'student' => $row->display_name ? $row->display_name . ' (' . $row->user_email . ')' : 'Usuario Eliminado',
+                'plan' => $row->plan_name,
+                'amount' => '$' . $row->quota_amount,
+                'status' => $row->status,
+                'progress' => $row->quotas_paid . ' / ' . $row->total_quotas,
+                'next_payment' => $next_payment,
+                'stripe_id' => $row->stripe_subscription_id
+            ];
+        }
+
+        \wp_send_json_success( $data );
     }
 }
