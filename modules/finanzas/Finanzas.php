@@ -218,7 +218,14 @@ class Finanzas extends Module_Base {
                 );
 
                 if ( $user_id ) {
+                    // Auto-Login si no está logueado
+                    if ( ! is_user_logged_in() ) {
+                        wp_set_current_user( $user_id );
+                        wp_set_auth_cookie( $user_id );
+                    }
+
                     // Redirigir al curso o dashboard
+
                     // Obtener course_id del plan para redirigir
                     global $wpdb;
                     $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
