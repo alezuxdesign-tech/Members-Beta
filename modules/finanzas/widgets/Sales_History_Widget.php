@@ -186,52 +186,91 @@ class Sales_History_Widget extends Widget_Base {
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
-        $limit = $settings['limit'];
-
-        global $wpdb;
-        $table_trans = $wpdb->prefix . 'alezux_finanzas_transactions';
         
-        // Solo administradores deberian ver esto, pero por si acaso check
-        // if ( ! current_user_can('manage_options') ) return;
-
-        $results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_trans ORDER BY created_at DESC LIMIT %d", $limit ) );
-
-        if ( empty( $results ) ) {
-            echo '<p>No se encontraron transacciones.</p>';
-            return;
+        // Obtener cursos para el filtro
+        global $wpdb;
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $courses_ids = $wpdb->get_col("SELECT DISTINCT course_id FROM $t_plans");
+        $courses = [];
+        
+        if ( ! empty( $courses_ids ) ) {
+            foreach( $courses_ids as $cid ) {
+                $c_title = get_the_title( $cid );
+                if( $c_title ) {
+                    $courses[ $cid ] = $c_title;
+                }
+            }
         }
-
         ?>
-        <div class="alezux-sales-wrapper">
-            <table class="alezux-sales-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Método</th>
-                        <th>Monto</th>
-                        <th>Ref</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ( $results as $row ) : 
-                        $user_info = get_userdata( $row->user_id );
-                        $user_name = $user_info ? $user_info->user_login : 'ID: ' . $row->user_id;
-                    ?>
+        <div class="alezux-sales-history-app">
+            
+            <!-- Barra de Filtros -->
+            <div class="alezux-filter-bar">
+                <div class="alezux-filter-item search-item">
+                    <label>Buscar (Alumno, Ref, Email)</label>
+                    <input type="text" id="alezux-sales-search" placeholder="Escribe para buscar...">
+                </div>
+                
+                <div class="alezux-filter-item">
+                    <label>Filtrar por Curso</label>
+                    <select id="alezux-filter-course">
+                        <option value="0">Todos los Cursos</option>
+                        <?php foreach($courses as $id => $title): ?>
+                            <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="alezux-filter-item">
+                    <label>Estado</label>
+                    <select id="alezux-filter-status">
+                         <option value="">Todos</option>
+                         <option value="succeeded">Completado</option>
+                         <option value="pending">Pendiente</option>
+                         <option value="failed">Fallido</option>
+                         <option value="refunded">Reembolsado</option>
+                    </select>
+                </div>
+
+                <div class="alezux-filter-item" style="max-width: 100px;">
+                    <label>Filas</label>
+                    <select id="alezux-limit-select">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="alezux-loading">
+                <i class="eicon-loading eicon-animation-spin"></i> Cargando transacciones...
+            </div>
+
+            <!-- Tabla Container -->
+            <div class="table-responsive">
+                <table class="alezux-sales-table">
+                    <thead>
                         <tr>
-                            <td><?php echo esc_html( $row->id ); ?></td>
-                            <td><?php echo esc_html( $user_name ); ?></td>
-                            <td><?php echo esc_html( ucfirst( $row->method ) ); ?></td>
-                            <td><?php echo esc_html( $row->amount . ' ' . $row->currency ); ?></td>
-                            <td><?php echo esc_html( $row->transaction_ref ); ?></td>
-                            <td><span class="alezux-status-badge status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( $row->status ); ?></span></td>
-                            <td><?php echo esc_html( $row->created_at ); ?></td>
+                            <th>ID</th>
+                            <th>Alumno</th>
+                            <th>Método</th>
+                            <th>Monto</th>
+                            <th>Curso / Plan</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <!-- Content via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="alezux-pagination"></div>
+
         </div>
         <?php
 	}

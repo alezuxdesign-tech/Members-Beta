@@ -211,9 +211,21 @@ class Finanzas extends Module_Base {
 	}
 
     public function enqueue_widget_styles() {
-        wp_register_style( 'alezux-sales-history-css', ALEZUX_FINANZAS_URL . 'assets/css/sales-history.css', [], '1.0.0' );
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/sales-history.css' ) ) {
+            wp_register_style( 'alezux-sales-history-css', ALEZUX_FINANZAS_URL . 'assets/css/sales-history.css', [], '1.0' );
+        }
+        
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-history.js' ) ) {
+            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], '1.0', true );
+            
+            wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
+            ] );
+        }
         wp_register_style( 'alezux-subs-list-css', ALEZUX_FINANZAS_URL . 'assets/css/subscriptions-list.css', [], '1.0.0' );
-        wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/manual-payment.css' ) ) {
+            wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );
+        }
     }
 }
-

@@ -10,6 +10,7 @@ class Ajax_Handler {
 	public static function init() {
 		\add_action( 'wp_ajax_alezux_get_course_modules', [ __CLASS__, 'get_course_modules' ] );
 		\add_action( 'wp_ajax_alezux_create_stripe_plan', [ __CLASS__, 'create_stripe_plan' ] );
+        \add_action( 'wp_ajax_alezux_get_sales_history', [ __CLASS__, 'get_sales_history' ] );
 	}
 
 	public static function get_course_modules() {
@@ -112,4 +113,111 @@ class Ajax_Handler {
             \wp_send_json_error( 'Error al guardar en base de datos local.' );
         }
 	}
+
+    public static function get_sales_history() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        global $wpdb;
+
+        // Parametros DataTables / Custom
+        $page = isset($_POST['page']) ? \intval($_POST['page']) : 1;
+        $limit = isset($_POST['limit']) ? \intval($_POST['limit']) : 10;
+        $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
+        $filter_course = isset($_POST['filter_course']) ? \intval($_POST['filter_course']) : 0;
+        $filter_status = isset($_POST['filter_status']) ? \sanitize_text_field($_POST['filter_status']) : '';
+        
+        $offset = ($page - 1) * $limit;
+
+        // Tablas
+        $t_trans = $wpdb->prefix . 'alezux_finanzas_transactions';
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $t_users = $wpdb->users;
+        
+        // Query Base
+        $sql = "SELECT SQL_CALC_FOUND_ROWS 
+                    t.*, 
+                    u.display_name as user_name, 
+                    u.user_email, 
+                    p.name as plan_name, 
+                    p.total_quotas, 
+                    p.frequency,
+                    s.quotas_paid as sub_quotas_paid,
+                    s.status as sub_status
+                FROM $t_trans t
+                LEFT JOIN $t_users u ON t.user_id = u.ID
+                LEFT JOIN $t_plans p ON t.plan_id = p.id
+                LEFT JOIN $t_subs s ON t.subscription_id = s.id
+                WHERE 1=1";
+
+        $args = [];
+
+        // Filtros
+        if ( ! empty($search) ) {
+            $sql .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s OR t.transaction_ref LIKE %s)";
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
+        }
+
+        if ( $filter_course > 0 ) {
+            // Nota: El filtro pide por curso, pero transaction tiene plan_id. Join con plan tiene course_id.
+            $sql .= " AND p.course_id = %d";
+            $args[] = $filter_course;
+        }
+        
+        if ( ! empty($filter_status) ) {
+            $sql .= " AND t.status = %s";
+            $args[] = $filter_status;
+        }
+
+        // Orden y Paginación
+        $sql .= " ORDER BY t.created_at DESC";
+        $sql .= " LIMIT %d OFFSET %d";
+        $args[] = $limit;
+        $args[] = $offset;
+
+        $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
+        $total_rows = $wpdb->get_var( "SELECT FOUND_ROWS()" );
+
+        // Formatear resultados
+        $data = [];
+        foreach ($results as $row) {
+            
+            // Logica "Recurrente (1/5)" vs "Contado"
+            $payment_desc = 'Pago Único';
+            if ( $row->total_quotas > 1 ) {
+                 // Intentar calcular cuota actual aproximada: 
+                 // Si sub_quotas_paid es 3, y esta es la ultima transaccion, quizas es la 3.
+                 // Simplificación: Mostrar X/Total basado en subscription actual 
+                 // OMEJOR: Contado vs Suscripción
+                 $payment_desc = "Recurrente ({$row->sub_quotas_paid}/{$row->total_quotas})";
+            } elseif ( $row->total_quotas == 1 ) {
+                 $payment_desc = 'De Contado';
+            }
+
+            $data[] = [
+                'id' => $row->id,
+                'student' => $row->user_name ? $row->user_name . ' (' . $row->user_email . ')' : 'Usuario Eliminado',
+                'method' => ucfirst($row->method),
+                'amount' => $row->amount . ' ' . $row->currency,
+                'course' => $row->plan_name, // O nombre del curso si preferimos
+                'quotas_desc' => $payment_desc,
+                'status' => $row->status,
+                'date' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $row->created_at ) ),
+                'ref' => $row->transaction_ref
+            ];
+        }
+
+        \wp_send_json_success( [
+            'rows' => $data,
+            'total' => (int)$total_rows,
+            'pages' => ceil($total_rows / $limit),
+            'current_page' => $page
+        ] );
+    }
 }
