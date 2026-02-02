@@ -115,12 +115,21 @@ class Access_Control {
         // Check rule match
         $required_quota = 0;
         foreach ( $access_rules as $quota_key => $module_ids ) {
+            // Defensive Check: Ensure module_ids is actually an array
+            if ( ! \is_array( $module_ids ) ) {
+                error_log( "Alezux Debug: Skipping invalid rule key $quota_key (content not array)" );
+                continue;
+            }
+
             if ( \in_array( $post_id, $module_ids ) ) {
                  // Debug specific line
-                 error_log("Alezux Debug: Match found in $quota_key");
-                 // Usamos FILTER_SANITIZE_NUMBER_INT con namespace global explícito y valor entero si existe constante
-                 $filter_const = defined('\FILTER_SANITIZE_NUMBER_INT') ? \FILTER_SANITIZE_NUMBER_INT : 519;
-                 $required_quota = (int) filter_var( $quota_key, $filter_const );
+                 error_log( "Alezux Debug: Match found in $quota_key" );
+                 
+                 // SAFER ALTERNATIVE: Use regex instead of filter_var to avoid constant issues
+                 // Remove non-numeric characters
+                 $numeric_part = preg_replace( '/[^0-9]/', '', $quota_key );
+                 $required_quota = (int) $numeric_part;
+                 
                  break;
             }
         }
