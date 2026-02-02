@@ -63,6 +63,7 @@ class Access_Control {
 
         // Si es admin o editor, pase libre
         if ( \user_can( $user_id, 'edit_posts' ) ) {
+            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkgreen;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: User is Admin/Editor. Access Granted.</div>";
             return false; 
         }
 
@@ -73,6 +74,7 @@ class Access_Control {
         }
         
         if ( ! $course_id ) {
+            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkred;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Course ID found.</div>";
             return false; // No es contenido LearnDash, no gestionamos bloqueo aquí
         }
 
@@ -83,6 +85,7 @@ class Access_Control {
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $plans_table WHERE course_id = %d LIMIT 1", $course_id ) );
 
         if ( ! $plan ) {
+            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Plan found for Course $course_id.</div>";
             return false; // El curso no tiene restricciones de pago por cuotas en nuestro sistema
         }
 
@@ -90,6 +93,7 @@ class Access_Control {
         $access_rules = \json_decode( $plan->access_rules, true );
         
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
+            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Rules found in Plan.</div>";
             return false; // No hay reglas definidas, acceso libre
         }
 
@@ -123,8 +127,7 @@ class Access_Control {
             }
         }
 
-        // DEBUG VISUAL EN PANTALLA (Moved up to show even if quota is 0)
-        // Also fixed undefined $subscription usage by moving it after DB query or defining default
+        // DEBUG VISUAL EN PANTALLA
         $subscription = null; // Initialize for debug safety
         
         // 4. Retrieve Subscription for Debug and Logic
@@ -138,7 +141,7 @@ class Access_Control {
             echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative; border:2px solid red;'>";
             echo "<h3>Alezux Debug</h3>";
             echo "Post ID: $post_id <br>";
-            echo "Parent ID: $parent_id <br>";
+            echo "Parent ID (Lesson): $parent_id <br>";
             echo "User ID: $user_id <br>";
             echo "Course ID: $course_id <br>";
             echo "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
@@ -154,11 +157,11 @@ class Access_Control {
         }
 
         if ( $required_quota === 0 ) {
+            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>BLOCK: Quota 0 (No rule matched).</div>";
             return false; 
         }
 
         if ( ! $subscription ) {
-             // Debug visual moved up, logic remains
             return true; // Bloqueado
         }
 
