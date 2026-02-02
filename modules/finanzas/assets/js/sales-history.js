@@ -185,6 +185,22 @@ jQuery(document).ready(function ($) {
         fetchSales();
     });
 
+    const $clearDateBtn = $wrapper.find('#alezux-clear-date');
+
+    // ... (rest of variable definitions)
+
+    // Event listener for clear date button
+    $clearDateBtn.on('click', function () {
+        if ($dateFilter.length && $dateFilter[0]._flatpickr) {
+            const fp = $dateFilter[0]._flatpickr;
+            fp.clear(); // Clear flatpickr
+        }
+        $dateFilter.val(''); // Force clear input
+        $(this).hide(); // Hide button
+        currentPage = 1;
+        fetchSales();
+    });
+
     // Initialize Flatpickr if available
     if ($dateFilter.length > 0) {
         if (typeof flatpickr !== 'undefined') {
@@ -193,6 +209,11 @@ jQuery(document).ready(function ($) {
                 dateFormat: "Y-m-d",
                 locale: "es", // Spanish locale
                 onClose: function (selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        $clearDateBtn.show();
+                    } else {
+                        $clearDateBtn.hide();
+                    }
                     currentPage = 1;
                     fetchSales();
                 }

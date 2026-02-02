@@ -453,6 +453,7 @@ class Sales_History_Widget extends Widget_Base {
                          <div class="alezux-search-wrapper date-wrapper">
                             <span class="dashicons dashicons-calendar-alt"></span>
                             <input type="text" id="alezux-filter-date" class="alezux-table-search-input alezux-date-picker" placeholder="Fecha">
+                            <span id="alezux-clear-date" class="dashicons dashicons-dismiss alezux-clear-icon" title="Limpiar fecha"></span>
                          </div>
                     </div>
 

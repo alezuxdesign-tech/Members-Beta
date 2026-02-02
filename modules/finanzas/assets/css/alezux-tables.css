@@ -59,6 +59,23 @@
     line-height: 1;
 }
 
+.alezux-clear-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #cbd5e0;
+    font-size: 16px;
+    cursor: pointer;
+    display: none;
+    /* Hidden by default */
+    z-index: 10;
+}
+
+.alezux-clear-icon:hover {
+    color: #fff;
+}
+
 /* Inline Filters Container */
 .alezux-filters-inline {
     display: flex;
