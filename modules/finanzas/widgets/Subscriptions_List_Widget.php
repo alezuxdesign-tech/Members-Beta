@@ -33,7 +33,7 @@ class Subscriptions_List_Widget extends Widget_Base {
 	}
 
     public function get_style_depends() {
-		return [ 'alezux-subs-list-css' ]; 
+		return [ 'alezux-finanzas-tables-css' ]; 
 	}
 
 	protected function register_controls() {

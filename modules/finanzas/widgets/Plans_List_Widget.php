@@ -33,7 +33,7 @@ class Plans_List_Widget extends Widget_Base {
 	}
 
     public function get_style_depends() {
-		return [ 'alezux-plans-manager-css' ]; 
+		return [ 'alezux-finanzas-tables-css' ]; 
 	}
 
 	protected function register_controls() {
@@ -58,6 +58,26 @@ class Plans_List_Widget extends Widget_Base {
 			]
 		);
 
+        $this->add_control(
+			'table_title',
+			[
+				'label' => esc_html__( 'Título de la Tabla', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Planes', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe un título', 'alezux-members' ),
+			]
+		);
+
+        $this->add_control(
+			'table_description',
+			[
+				'label' => esc_html__( 'Descripción', 'alezux-members' ),
+				'type' => Controls_Manager::TEXTAREA,
+				'default' => esc_html__( 'Administra los planes de suscripción.', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe una descripción', 'alezux-members' ),
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -78,14 +98,29 @@ class Plans_List_Widget extends Widget_Base {
         ?>
         <div class="alezux-plans-manager-app">
             
-            <div class="alezux-filter-bar">
-                <div class="alezux-filter-item search-item">
-                     <label>Buscar Plan</label>
-                     <input type="text" id="alezux-plans-search" placeholder="Buscar por nombre...">
+            <div class="alezux-table-header">
+                <div class="alezux-header-left">
+                    <h3 class="alezux-table-title"><?php echo esc_html($settings['table_title']); ?></h3>
+                    <?php if ( ! empty( $settings['table_description'] ) ) : ?>
+                        <p class="alezux-table-desc"><?php echo esc_html($settings['table_description']); ?></p>
+                    <?php endif; ?>
                 </div>
+
+                <div class="alezux-header-right">
+                    <div class="alezux-filter-item search-item">
+                         <div class="alezux-search-wrapper">
+                            <span class="dashicons dashicons-search"></span>
+                            <input type="text" id="alezux-plans-search" placeholder="Buscar por nombre...">
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros adicionales debajo o integrados si caben -->
+            <div class="alezux-filters-secondary" style="margin-bottom: 20px; display:flex; justify-content: flex-end; gap: 15px;">
                 <div class="alezux-filter-item">
-                     <label>Filtrar por Curso</label>
-                     <select id="alezux-plans-course">
+                     <label style="display:block; font-size:12px; color:#718096; margin-bottom:5px;">Filtrar por Curso</label>
+                     <select id="alezux-plans-course" style="padding: 8px; border-radius:6px; background:#121620; border:1px solid #2d3748; color:#fff;">
                          <option value="0">Todos</option>
                          <?php foreach($courses as $id => $title): ?>
                             <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>

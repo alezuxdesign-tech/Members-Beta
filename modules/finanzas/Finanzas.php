@@ -319,10 +319,14 @@ class Finanzas extends Module_Base {
     public function enqueue_widget_styles() {
         $version = '1.0.0.' . time(); // Cache busting safe
 
-        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/sales-history.css' ) ) {
-            wp_register_style( 'alezux-sales-history-css', ALEZUX_FINANZAS_URL . 'assets/css/sales-history.css', [], '1.0' );
+        // Unified Table Styles
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/alezux-tables.css' ) ) {
+             wp_register_style( 'alezux-finanzas-tables-css', ALEZUX_FINANZAS_URL . 'assets/css/alezux-tables.css', [], $version );
         }
         
+        // Legacy handles alias (to prevent break if usage is missed) - Optional but safer to update widgets
+        // But for now, I will just register the javascripts.
+
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-history.js' ) ) {
             wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], '1.0', true );
             
@@ -338,8 +342,6 @@ class Finanzas extends Module_Base {
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
-            
-            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], $version );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
@@ -349,8 +351,6 @@ class Finanzas extends Module_Base {
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
         }
-
-        wp_register_style( 'alezux-subs-list-css', ALEZUX_FINANZAS_URL . 'assets/css/subscriptions-list.css', [], $version );
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/manual-payment.css' ) ) {
             wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );

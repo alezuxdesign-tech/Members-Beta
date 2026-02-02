@@ -31,7 +31,7 @@ class Sales_History_Widget extends Widget_Base {
 	}
 
     public function get_style_depends() {
-		return [ 'alezux-sales-history-css' ];
+		return [ 'alezux-finanzas-tables-css' ];
 	}
 
     public function get_script_depends() {
@@ -45,6 +45,26 @@ class Sales_History_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Configuración', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+        $this->add_control(
+			'table_title',
+			[
+				'label' => esc_html__( 'Título de la Tabla', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Historial de Ventas', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe un título', 'alezux-members' ),
+			]
+		);
+
+        $this->add_control(
+			'table_description',
+			[
+				'label' => esc_html__( 'Descripción', 'alezux-members' ),
+				'type' => Controls_Manager::TEXTAREA,
+				'default' => esc_html__( 'Registro de todas las transacciones.', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe una descripción', 'alezux-members' ),
 			]
 		);
 
@@ -208,17 +228,33 @@ class Sales_History_Widget extends Widget_Base {
         ?>
         <div class="alezux-sales-history-app">
             
-            <!-- Barra de Filtros -->
-            <div class="alezux-filter-bar">
-                <div class="alezux-filter-item search-item">
-                    <label>Buscar (Alumno, Ref, Email)</label>
-                    <input type="text" id="alezux-sales-search" placeholder="Escribe para buscar...">
+            <!-- Cabecera Estándar -->
+            <div class="alezux-table-header">
+                <div class="alezux-header-left">
+                    <h3 class="alezux-table-title"><?php echo esc_html($settings['table_title']); ?></h3>
+                    <?php if ( ! empty( $settings['table_description'] ) ) : ?>
+                        <p class="alezux-table-desc"><?php echo esc_html($settings['table_description']); ?></p>
+                    <?php endif; ?>
                 </div>
+
+                <div class="alezux-header-right" style="flex-wrap: wrap; justify-content: flex-end;">
+                     <!-- Search -->
+                    <div class="alezux-filter-item search-item">
+                         <div class="alezux-search-wrapper">
+                            <span class="dashicons dashicons-search"></span>
+                            <input type="text" id="alezux-sales-search" placeholder="Buscar transacción...">
+                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Barra de Filtros Secundaria (Debajo del título para no saturar header) -->
+            <div class="alezux-filters-secondary" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; justify-content: flex-end; align-items: flex-end;">
                 
                 <div class="alezux-filter-item">
-                    <label>Filtrar por Curso</label>
-                    <select id="alezux-filter-course">
-                        <option value="0">Todos los Cursos</option>
+                    <label style="display:block; font-size:12px; color:#718096; margin-bottom:5px;">Curso</label>
+                    <select id="alezux-filter-course" style="padding: 8px; border-radius:6px; background:#121620; border:1px solid #2d3748; color:#fff;">
+                        <option value="0">Todos</option>
                         <?php foreach($courses as $id => $title): ?>
                             <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
                         <?php endforeach; ?>
@@ -226,25 +262,26 @@ class Sales_History_Widget extends Widget_Base {
                 </div>
 
                 <div class="alezux-filter-item">
-                    <label>Estado</label>
-                    <select id="alezux-filter-status">
-                         <option value="">Todos</option>
-                         <option value="succeeded">Completado</option>
-                         <option value="pending">Pendiente</option>
-                         <option value="failed">Fallido</option>
-                         <option value="refunded">Reembolsado</option>
+                    <label style="display:block; font-size:12px; color:#718096; margin-bottom:5px;">Estado</label>
+                    <select id="alezux-filter-status" style="padding: 8px; border-radius:6px; background:#121620; border:1px solid #2d3748; color:#fff;">
+                            <option value="">Todos</option>
+                            <option value="succeeded">Completado</option>
+                            <option value="pending">Pendiente</option>
+                            <option value="failed">Fallido</option>
+                            <option value="refunded">Reembolsado</option>
                     </select>
                 </div>
 
                 <div class="alezux-filter-item" style="max-width: 100px;">
-                    <label>Filas</label>
-                    <select id="alezux-limit-select">
+                    <label style="display:block; font-size:12px; color:#718096; margin-bottom:5px;">Filas</label>
+                    <select id="alezux-limit-select" style="padding: 8px; border-radius:6px; background:#121620; border:1px solid #2d3748; color:#fff;">
                         <option value="10">10</option>
                         <option value="20" selected>20</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
                 </div>
+
             </div>
 
             <!-- Loading -->
