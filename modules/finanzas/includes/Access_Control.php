@@ -71,7 +71,7 @@ class Access_Control {
         
         // return false; // Descomentar esto si sigue fallando para probar solo hasta aqui.
 
-        /* 
+        
         // PASO 1: LearnDash Check
         $course_id = 0;
         if ( \function_exists( 'learndash_get_course_id' ) ) {
@@ -82,7 +82,7 @@ class Access_Control {
             return false; 
         }
         error_log( "Alezux Debug: Course ID identified: $course_id" );
-        */
+        
 
         /*
         // PASO 2: DB Plan Check
