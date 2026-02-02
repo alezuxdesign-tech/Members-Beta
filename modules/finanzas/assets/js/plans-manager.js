@@ -1,10 +1,10 @@
 jQuery(document).ready(function ($) {
 
-    if ($('.alezux-plans-manager-app').length === 0) return;
+    if ($('.alezux-plans-app').length === 0) return;
 
-    const $wrapper = $('.alezux-plans-manager-app');
-    const $tbody = $wrapper.find('.alezux-plans-table tbody');
-    const $spinner = $wrapper.find('.alezux-loading-plans');
+    const $wrapper = $('.alezux-plans-app');
+    const $tbody = $wrapper.find('.alezux-finanzas-table tbody');
+    const $spinner = $wrapper.find('.alezux-loading');
     const $searchInput = $wrapper.find('#alezux-plans-search');
     const $courseFilter = $wrapper.find('#alezux-plans-course');
 

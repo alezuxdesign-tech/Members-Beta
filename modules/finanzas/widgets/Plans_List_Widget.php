@@ -96,7 +96,7 @@ class Plans_List_Widget extends Widget_Base {
             }
         }
         ?>
-        <div class="alezux-plans-manager-app">
+        <div class="alezux-finanzas-app alezux-plans-app">
             
             <div class="alezux-table-header">
                 <div class="alezux-header-left">
@@ -110,17 +110,17 @@ class Plans_List_Widget extends Widget_Base {
                     <div class="alezux-filter-item search-item">
                          <div class="alezux-search-wrapper">
                             <span class="dashicons dashicons-search"></span>
-                            <input type="text" id="alezux-plans-search" placeholder="Buscar por nombre...">
+                            <input type="text" id="alezux-plans-search" class="alezux-table-search-input" placeholder="Buscar por nombre...">
                          </div>
                     </div>
                 </div>
             </div>
 
             <!-- Filtros adicionales debajo o integrados si caben -->
-            <div class="alezux-filters-secondary" style="margin-bottom: 20px; display:flex; justify-content: flex-end; gap: 15px;">
+            <div class="alezux-filters-secondary">
                 <div class="alezux-filter-item">
-                     <label style="display:block; font-size:12px; color:#718096; margin-bottom:5px;">Filtrar por Curso</label>
-                     <select id="alezux-plans-course" style="padding: 8px; border-radius:6px; background:#121620; border:1px solid #2d3748; color:#fff;">
+                     <label>Filtrar por Curso</label>
+                     <select id="alezux-plans-course">
                          <option value="0">Todos</option>
                          <?php foreach($courses as $id => $title): ?>
                             <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
@@ -129,11 +129,12 @@ class Plans_List_Widget extends Widget_Base {
                 </div>
             </div>
 
-            <div class="alezux-loading-plans" style="display:none; text-align:center; padding:20px;">
+            <div class="alezux-loading">
                 <i class="eicon-loading eicon-animation-spin"></i> Cargando planes...
             </div>
 
-            <table class="alezux-plans-table">
+            <div class="alezux-table-wrapper">
+            <table class="alezux-finanzas-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -149,6 +150,7 @@ class Plans_List_Widget extends Widget_Base {
                     <!-- AJAX Content -->
                 </tbody>
             </table>
+            </div>
 
         </div>
         <?php

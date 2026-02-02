@@ -5,6 +5,8 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Background;
+use Elementor\Group_Control_Box_Shadow;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -105,7 +107,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'name' => 'table_background',
                 'label' => esc_html__('Fondo Tabla', 'alezux-members'),
                 'types' => ['classic', 'gradient'],
-                'selector' => '{{WRAPPER}} .alezux-subs-list-app, {{WRAPPER}} .alezux-subs-wrapper',
+                'selector' => '{{WRAPPER}} .alezux-finanzas-app, {{WRAPPER}} .alezux-table-wrapper',
             ]
         );
 
@@ -114,7 +116,7 @@ class Subscriptions_List_Widget extends Widget_Base {
             [
                 'name' => 'table_border',
                 'label' => esc_html__('Borde Tabla', 'alezux-members'),
-                'selector' => '{{WRAPPER}} .alezux-subs-list-app',
+                'selector' => '{{WRAPPER}} .alezux-finanzas-app',
             ]
         );
 
@@ -125,7 +127,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-list-app' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-finanzas-app' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -137,8 +139,8 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Fondo Filas (General)', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                  'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody tr' => 'background-color: {{VALUE}};',
-                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-finanzas-table tbody tr' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-finanzas-table tbody td' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -149,7 +151,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Fondo Filas (Alterno)', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                  'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table tbody tr:nth-child(even)' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-finanzas-table tbody tr:nth-child(even)' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -169,7 +171,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Color Fondo Encabezado', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table thead th' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-finanzas-table thead th' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -180,7 +182,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Color Texto Encabezado', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .alezux-subs-table thead th' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-finanzas-table thead th' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -189,7 +191,7 @@ class Subscriptions_List_Widget extends Widget_Base {
             \Elementor\Group_Control_Typography::get_type(),
             [
                 'name' => 'header_typography',
-                'selector' => '{{WRAPPER}} .alezux-subs-table thead th',
+                'selector' => '{{WRAPPER}} .alezux-finanzas-table thead th',
             ]
         );
 
@@ -894,7 +896,7 @@ class Subscriptions_List_Widget extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
         ?>
-        <div class="alezux-subs-list-app">
+        <div class="alezux-finanzas-app alezux-subs-app">
             
             <div class="alezux-table-header">
                 <div class="alezux-header-left">
@@ -908,18 +910,18 @@ class Subscriptions_List_Widget extends Widget_Base {
                     <div class="alezux-filter-item search-item">
                          <div class="alezux-search-wrapper">
                             <span class="dashicons dashicons-search"></span>
-                            <input type="text" id="alezux-subs-search" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
+                            <input type="text" id="alezux-subs-search" class="alezux-table-search-input" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
                          </div>
                     </div>
                 </div>
             </div>
 
-            <div class="alezux-loading-subs" style="display:none;">
-                <i class="eicon-loading eicon-animation-spin"></i> <?php esc_html_e('Cargando suscripciones...', 'alezux-members'); ?>
-            </div>
+            <div class="alezux-loading" style="display:none;">
+        <i class="eicon-loading eicon-animation-spin"></i> <?php esc_html_e('Cargando suscripciones...', 'alezux-members'); ?>
+    </div>        </div>
 
-            <div class="alezux-subs-wrapper">
-                <table class="alezux-subs-table alezux-sales-table"> 
+            <div class="alezux-table-wrapper">
+                <table class="alezux-finanzas-table"> 
                     <thead>
                         <tr>
 

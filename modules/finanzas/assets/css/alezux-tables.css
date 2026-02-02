@@ -1,15 +1,13 @@
-/* Dark Theme Container */
-.alezux-subs-list-app {
+/* Dark Theme Container - Generic for all finance widgets */
+.alezux-finanzas-app {
     background-color: #0b0e14;
-    /* Dark Background matching image */
     color: #a0aec0;
     font-family: 'Inter', sans-serif;
-    /* Modern Font */
-
     border-radius: 10px;
+    padding: 20px;
+    /* Added internal padding */
 }
 
-/* Header & Search */
 /* Header & Search Layout */
 .alezux-table-header {
     display: flex;
@@ -47,6 +45,7 @@
 
 .alezux-search-wrapper {
     position: relative;
+    width: 300px;
 }
 
 .alezux-search-wrapper .dashicons {
@@ -57,38 +56,71 @@
     color: #718096;
 }
 
-#alezux-subs-search {
+/* Generic Search Input Class */
+.alezux-table-search-input {
     background-color: #121620;
     border: 1px solid #2d3748;
     color: #fff;
     padding: 10px 15px 10px 40px;
     /* Padding left for icon */
     border-radius: 8px;
-    width: 300px;
+    width: 100%;
     font-size: 14px;
     transition: all 0.2s ease;
 }
 
-#alezux-subs-search:focus {
+.alezux-table-search-input:focus {
     border-color: #5a8dee;
     outline: none;
     box-shadow: 0 0 0 2px rgba(90, 141, 238, 0.2);
 }
 
+/* Secondary Filters (Selects) */
+.alezux-filters-secondary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.alezux-filter-item label {
+    display: block;
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 5px;
+}
+
+.alezux-filter-item select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #121620;
+    border: 1px solid #2d3748;
+    color: #fff;
+    font-size: 13px;
+    min-width: 140px;
+}
+
+.alezux-filter-item select:focus {
+    border-color: #5a8dee;
+    outline: none;
+}
+
 /* Table Structure */
-.alezux-subs-wrapper {
+.alezux-table-wrapper {
     overflow-x: auto;
     margin-top: 20px;
 }
 
-.alezux-subs-table {
+.alezux-finanzas-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 14px;
 }
 
-.alezux-subs-table th {
+.alezux-finanzas-table th {
     text-transform: uppercase;
     font-size: 12px;
     color: #718096;
@@ -99,11 +131,20 @@
     text-align: left;
 }
 
-.alezux-subs-table td {
+.alezux-finanzas-table td {
     padding: 15px;
     vertical-align: middle;
     border-bottom: 1px solid #1a202c;
     color: #fff;
+}
+
+/* Loading State */
+.alezux-loading {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    color: #a0aec0;
+    font-size: 14px;
 }
 
 /* Columns Specifics */
@@ -191,13 +232,16 @@
     border-color: rgba(40, 167, 69, 0.2);
 }
 
-.status-completed {
+.status-completed,
+.status-succeeded {
     background-color: rgba(56, 88, 233, 0.15);
     color: #5a8dee;
     border-color: rgba(56, 88, 233, 0.2);
 }
 
-.status-past_due {
+.status-past_due,
+.status-failed,
+.status-refunded {
     background-color: rgba(220, 53, 69, 0.15);
     color: #dc3545;
     border-color: rgba(220, 53, 69, 0.2);
@@ -233,11 +277,9 @@
 .alezux-progress-bar-fill {
     height: 100%;
     background-color: #00d27a;
-    /* Greenish/Teal */
     border-radius: 2px;
 }
 
-/* If completed, blue bar */
 .status-completed .alezux-progress-bar-fill {
     background-color: #5a8dee;
 }
@@ -273,7 +315,8 @@
 }
 
 /* Actions */
-.alezux-btn-manual-pay {
+.alezux-btn-manual-pay,
+.alezux-action-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
     color: #fff;
@@ -287,11 +330,21 @@
     gap: 6px;
     transition: opacity 0.2s;
     box-shadow: 0 4px 6px rgba(118, 75, 162, 0.3);
+    text-decoration: none;
 }
 
-.alezux-btn-manual-pay:hover {
+.alezux-btn-manual-pay:hover,
+.alezux-action-btn:hover {
     opacity: 0.9;
     color: #fff;
+}
+
+.alezux-btn-danger,
+.btn-delete {
+    background: #e53e3e;
+    /* Red for delete */
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);
 }
 
 .alezux-no-action {
@@ -304,21 +357,14 @@
 /* Modal Dark Theme fixes */
 .alezux-modal {
     display: none;
-    /* Hidden by default */
     position: fixed;
-    /* Stay in place */
     z-index: 99999;
-    /* Sit on top */
     left: 0;
     top: 0;
     width: 100%;
-    /* Full width */
     height: 100%;
-    /* Full height */
     overflow: auto;
-    /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.6);
-    /* Black w/ opacity */
     backdrop-filter: blur(5px);
     justify-content: center;
     align-items: center;

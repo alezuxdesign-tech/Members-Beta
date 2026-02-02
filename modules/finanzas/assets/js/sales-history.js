@@ -1,10 +1,10 @@
 jQuery(document).ready(function ($) {
 
     // Solo si existe el contenedor
-    if ($('.alezux-sales-history-app').length === 0) return;
+    if ($('.alezux-sales-app').length === 0) return;
 
-    const $wrapper = $('.alezux-sales-history-app');
-    const $tbody = $wrapper.find('.alezux-sales-table tbody');
+    const $wrapper = $('.alezux-sales-app');
+    const $tbody = $wrapper.find('.alezux-finanzas-table tbody');
     const $pagination = $wrapper.find('.alezux-pagination');
     const $spinner = $wrapper.find('.alezux-loading');
 
