@@ -431,7 +431,8 @@ class Ajax_Handler {
         );
 
         // 2. Actualizar Suscripción
-        $new_quotas_paid = $sub->quotas_paid + 1;
+        $current_quotas_paid = (int) $sub->quotas_paid;
+        $new_quotas_paid = $current_quotas_paid + 1;
         $new_status = $sub->status;
 
         // Si estaba atrasado, lo reactivamos (asumiendo que pagó lo pendiente)
