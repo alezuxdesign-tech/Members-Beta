@@ -55,8 +55,8 @@ jQuery(document).ready(function ($) {
                     <td>${row.next_payment}</td>
                     <td>
                         <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual">
-                            <i class="eicon-wallet"></i>
-                        </button>
+                    <span class="dashicons dashicons-money-alt"></span>
+                </button>
                     </td>
                 </tr>
             `;
