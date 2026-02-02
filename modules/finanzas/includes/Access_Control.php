@@ -57,13 +57,16 @@ class Access_Control {
      * @return bool True si está bloqueado, False si tiene acceso libre
      */
     public static function is_post_locked( $post_id, $user_id = null ) {
+        // FORCE DEBUG MODE DETECTION
+        $debug_mode = isset( $_GET['alezux_debug'] );
+
         if ( ! $user_id ) {
             $user_id = \get_current_user_id();
         }
 
         // Si es admin o editor, pase libre
         if ( \user_can( $user_id, 'edit_posts' ) ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkgreen;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: User is Admin/Editor. Access Granted.</div>";
+            if ( $debug_mode ) \wp_die( "DEBUG: User is Admin/Editor. Access Granted. (ID: $user_id)" );
             return false; 
         }
 
@@ -74,7 +77,7 @@ class Access_Control {
         }
         
         if ( ! $course_id ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkred;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Course ID found.</div>";
+            if ( $debug_mode ) \wp_die( "DEBUG: No Course ID found for Post $post_id." );
             return false; // No es contenido LearnDash, no gestionamos bloqueo aquí
         }
 
@@ -85,7 +88,7 @@ class Access_Control {
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $plans_table WHERE course_id = %d LIMIT 1", $course_id ) );
 
         if ( ! $plan ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Plan found for Course $course_id.</div>";
+            if ( $debug_mode ) \wp_die( "DEBUG: No Plan found for Course $course_id in table $plans_table." );
             return false; // El curso no tiene restricciones de pago por cuotas en nuestro sistema
         }
 
@@ -93,7 +96,7 @@ class Access_Control {
         $access_rules = \json_decode( $plan->access_rules, true );
         
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>DEBUG: No Rules found in Plan.</div>";
+            if ( $debug_mode ) \wp_die( "DEBUG: No Rules found in Plan ID " . $plan->id );
             return false; // No hay reglas definidas, acceso libre
         }
 
@@ -137,27 +140,28 @@ class Access_Control {
             $user_id, $plan->id 
         ) );
 
-        if ( isset( $_GET['alezux_debug'] ) ) {
-            echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative; border:2px solid red;'>";
-            echo "<h3>Alezux Debug</h3>";
-            echo "Post ID: $post_id <br>";
-            echo "Parent ID (Lesson): $parent_id <br>";
-            echo "User ID: $user_id <br>";
-            echo "Course ID: $course_id <br>";
-            echo "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
-            echo "Required Quota: $required_quota <br>";
-            echo "User Subscription: " . ($subscription ? 'FOUND' : 'NOT FOUND') . "<br>";
+        if ( $debug_mode ) {
+            $msg = "<div style='background:white; color:black; padding:20px; border:2px solid red;'>";
+            $msg .= "<h3>Alezux Debug (WP_DIE MODE)</h3>";
+            $msg .= "Post ID: $post_id <br>";
+            $msg .= "Parent ID (Lesson): $parent_id <br>";
+            $msg .= "User ID: $user_id <br>";
+            $msg .= "Course ID: $course_id <br>";
+            $msg .= "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
+            $msg .= "Required Quota: $required_quota <br>";
+            $msg .= "User Subscription: " . ($subscription ? 'FOUND' : 'NOT FOUND') . "<br>";
             if ( $subscription ) {
-                echo "Sub Status: " . $subscription->status . "<br>";
-                echo "Quotas Paid: " . $subscription->quotas_paid . "<br>";
+                $msg .= "Sub Status: " . $subscription->status . "<br>";
+                $msg .= "Quotas Paid: " . $subscription->quotas_paid . "<br>";
             }
-            echo "<strong>RESULT: " . ($subscription && $subscription->quotas_paid < $required_quota ? 'LOCKED' : 'UNLOCKED') . "</strong>";
-            echo "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
-            echo "</div>";
+            $msg .= "<strong>RESULT: " . ($subscription && $subscription->quotas_paid < $required_quota ? 'LOCKED' : 'UNLOCKED') . "</strong>";
+            $msg .= "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
+            $msg .= "</div>";
+            
+            \wp_die( $msg );
         }
 
         if ( $required_quota === 0 ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "<div style='background:darkorange;color:white;z-index:9999;position:relative;padding:10px;'>BLOCK: Quota 0 (No rule matched).</div>";
             return false; 
         }
 
