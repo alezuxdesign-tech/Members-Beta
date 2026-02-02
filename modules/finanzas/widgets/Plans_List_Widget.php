@@ -33,7 +33,7 @@ class Plans_List_Widget extends Widget_Base {
 	}
 
     public function get_style_depends() {
-		return [ 'alezux-sales-history-css' ]; // Reutilizar estilos de tabla
+		return [ 'alezux-plans-manager-css' ]; 
 	}
 
 	protected function register_controls() {
@@ -98,7 +98,7 @@ class Plans_List_Widget extends Widget_Base {
                 <i class="eicon-loading eicon-animation-spin"></i> Cargando planes...
             </div>
 
-            <table class="alezux-plans-table alezux-sales-table"> <!-- Reutilizando estilos sales-table -->
+            <table class="alezux-plans-table">
                 <thead>
                     <tr>
                         <th>ID</th>

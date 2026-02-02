@@ -322,6 +322,8 @@ class Finanzas extends Module_Base {
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
+            
+            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], '1.0.0' );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
