@@ -998,15 +998,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                         }
                     }
                     
-                    // 2. Fallback a lógica antigua (WooCommerce/URL personalizada de LearnDash) si NO hay plan detectado
-                    // Si el plan_id existe, la linea anterior ya sobreescribió el link, así que este IF no debería romperlo
-                    // a menos que queramos dar prioridad a la URL custom de LearnDash.
-                    // Asumiremos que si hay Plan de Finanzas, ese es el prioritario.
-                    if ( empty( $plan_id ) ) {
-                        if ( ( 'closed' === $price_type || 'buynow' === $price_type ) && ! empty( $custom_url ) ) {
-                             $button_link = $custom_url;
-                        }
-                    }
+
                 }
 
 				// Renderizar Tarjeta
