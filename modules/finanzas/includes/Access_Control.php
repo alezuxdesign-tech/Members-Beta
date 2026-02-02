@@ -109,14 +109,18 @@ class Access_Control {
             return false; 
         }
         
-        return false; // BREAKPOINT: Stop before loop
+        // return false; // BREAKPOINT: Stop before loop
 
-        /*
+        
         // Check rule match
         $required_quota = 0;
         foreach ( $access_rules as $quota_key => $module_ids ) {
             if ( \in_array( $post_id, $module_ids ) ) {
-                 $required_quota = (int) filter_var( $quota_key, \FILTER_SANITIZE_NUMBER_INT );
+                 // Debug specific line
+                 error_log("Alezux Debug: Match found in $quota_key");
+                 // Usamos FILTER_SANITIZE_NUMBER_INT con namespace global explícito y valor entero si existe constante
+                 $filter_const = defined('\FILTER_SANITIZE_NUMBER_INT') ? \FILTER_SANITIZE_NUMBER_INT : 519;
+                 $required_quota = (int) filter_var( $quota_key, $filter_const );
                  break;
             }
         }
@@ -124,7 +128,8 @@ class Access_Control {
         if ( $required_quota === 0 ) {
             return false; 
         }
-        */
+        
+        return false; // BREAKPOINT: Stop before Step 4
         
 
         /*
