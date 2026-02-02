@@ -183,7 +183,16 @@ class Access_Control {
                 $msg .= "Sub Status: " . $subscription->status . "<br>";
                 $msg .= "Quotas Paid: " . $subscription->quotas_paid . "<br>";
             }
-            $msg .= "<strong>RESULT: " . ($subscription && $subscription->quotas_paid < $required_quota ? 'LOCKED' : 'UNLOCKED') . "</strong>";
+            
+            // Logic Check for Visual Label
+            $is_locked_visual = false;
+            if ( ! $subscription ) {
+                $is_locked_visual = true;
+            } elseif ( $subscription->status !== 'completed' && $subscription->quotas_paid < $required_quota ) {
+                $is_locked_visual = true;
+            }
+
+            $msg .= "<strong>RESULT: " . ($is_locked_visual ? '<span style="color:red">LOCKED</span>' : '<span style="color:green">UNLOCKED</span>') . "</strong>";
             $msg .= "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
             $msg .= "</div>";
             
