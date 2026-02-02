@@ -56,6 +56,7 @@ class Finanzas extends Module_Base {
         \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
         \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
         \add_action( 'template_redirect', [ $this, 'handle_checkout_redirect' ] );
+        \add_action( 'template_redirect', [ $this, 'handle_payment_return' ] ); // Nuevo hook
 	}
 
     /**
@@ -80,8 +81,8 @@ class Finanzas extends Module_Base {
             // URLs de retorno
             $current_url = home_url( add_query_arg( [], $GLOBALS['wp']->request ) ); // URL actual base (aproximada) o home
             // Mejor redirigir a una página de "Gracias" o al dashboard. Por defecto al home + status
-            $success_url = home_url( '/?payment_success=true&session_id={CHECKOUT_SESSION_ID}' ); 
-            $cancel_url  = home_url( '/?payment_canceled=true' );
+            $success_url = home_url( '/?alezux_payment_success=true&session_id={CHECKOUT_SESSION_ID}' ); 
+            $cancel_url  = home_url( '/?alezux_payment_canceled=true' );
 
             // Si el usuario está logueado, pasamos su email para autocompletar en Stripe
             $customer_email = null;
@@ -93,12 +94,16 @@ class Finanzas extends Module_Base {
             // Determinar modo (payment vs subscription) basado en frecuencia o cuotas
             $mode = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 ) ? 'payment' : 'subscription';
 
+            // Generar metadata
+            $metadata = [ 'plan_id' => $plan_id ];
+
             $session = $users_access->create_checkout_session( 
                 $plan->stripe_price_id, 
                 $success_url, 
                 $cancel_url, 
                 $customer_email,
-                $mode
+                $mode,
+                $metadata
             );
 
             if ( is_wp_error( $session ) ) {
@@ -109,6 +114,66 @@ class Finanzas extends Module_Base {
             if ( isset( $session->url ) ) {
                 wp_redirect( $session->url );
                 exit;
+            }
+        }
+    }
+
+    /**
+     * Maneja el retorno exitoso desde Stripe para matriculación inmediata.
+     */
+    public function handle_payment_return() {
+        if ( isset( $_GET['alezux_payment_success'] ) && isset( $_GET['session_id'] ) ) {
+            $session_id = sanitize_text_field( $_GET['session_id'] );
+            
+            $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
+            $session = $stripe->get_checkout_session( $session_id );
+
+            if ( is_wp_error( $session ) ) {
+               wp_die( 'Error verificando pago: ' . $session->get_error_message() );
+            }
+
+            if ( $session->payment_status !== 'paid' ) {
+                wp_die( 'El pago no se ha completado o está pendiente de confirmación.' );
+            }
+
+            // Recopilar datos
+            $email = $session->customer_details->email;
+            $plan_id = $session->metadata->plan_id ?? 0;
+            $amount = ( isset( $session->amount_total ) ) ? ( $session->amount_total / 100 ) : 0;
+            $transaction_ref = $session->payment_intent ?? $session->id;
+            $stripe_subscription_id = $session->subscription ?? null;
+
+             // Delegar a Enrollment Manager
+            if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager' ) ) {
+                $user_id = \Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager::enroll_user( 
+                    $email, 
+                    $plan_id, 
+                    $stripe_subscription_id, 
+                    $amount, 
+                    $transaction_ref
+                );
+
+                if ( $user_id ) {
+                    // Redirigir al curso o dashboard
+                    // Obtener course_id del plan para redirigir
+                    global $wpdb;
+                    $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+                    $course_id = $wpdb->get_var( $wpdb->prepare( "SELECT course_id FROM $table_plans WHERE id = %d", $plan_id ) );
+
+                    if ( $course_id ) {
+                        $course_url = get_permalink( $course_id );
+                        if ( $course_url ) {
+                            wp_redirect( $course_url );
+                            exit;
+                        }
+                    }
+                    
+                    // Fallback home
+                    wp_redirect( home_url() );
+                    exit;
+                }
+            } else {
+                 wp_die( 'Error interno: Enrollment Manager no cargado.' );
             }
         }
     }
