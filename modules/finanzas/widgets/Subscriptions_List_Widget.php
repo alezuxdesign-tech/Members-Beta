@@ -110,6 +110,19 @@ class Subscriptions_List_Widget extends Widget_Base {
             ]
         );
 
+
+        $this->add_control(
+            'table_row_bg_general',
+            [
+                'label' => esc_html__('Fondo Filas (General)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                 'selectors' => [
+                    '{{WRAPPER}} .alezux-subs-table tbody tr' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-subs-table tbody td' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
          $this->add_control(
             'table_row_bg',
             [
