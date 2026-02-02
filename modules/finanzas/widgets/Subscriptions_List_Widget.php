@@ -59,6 +59,26 @@ class Subscriptions_List_Widget extends Widget_Base {
 			]
 		);
 
+        $this->add_control(
+			'table_title',
+			[
+				'label' => esc_html__( 'Título de la Tabla', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Suscripciones', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe un título', 'alezux-members' ),
+			]
+		);
+
+        $this->add_control(
+			'table_description',
+			[
+				'label' => esc_html__( 'Descripción', 'alezux-members' ),
+				'type' => Controls_Manager::TEXTAREA,
+				'default' => esc_html__( 'Gestiona las suscripciones de los estudiantes.', 'alezux-members' ),
+                'placeholder' => esc_html__( 'Escribe una descripción', 'alezux-members' ),
+			]
+		);
+
 		$this->end_controls_section();
 
         // 1. DISEÑO DE LA TABLA (Tabla y Encabezados)
@@ -876,12 +896,21 @@ class Subscriptions_List_Widget extends Widget_Base {
         ?>
         <div class="alezux-subs-list-app">
             
-            <div class="alezux-filter-bar">
-                <div class="alezux-filter-item search-item">
-                     <div class="alezux-search-wrapper">
-                        <span class="dashicons dashicons-search"></span>
-                        <input type="text" id="alezux-subs-search" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
-                     </div>
+            <div class="alezux-table-header">
+                <div class="alezux-header-left">
+                    <h3 class="alezux-table-title"><?php echo esc_html($settings['table_title']); ?></h3>
+                    <?php if ( ! empty( $settings['table_description'] ) ) : ?>
+                        <p class="alezux-table-desc"><?php echo esc_html($settings['table_description']); ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="alezux-header-right">
+                    <div class="alezux-filter-item search-item">
+                         <div class="alezux-search-wrapper">
+                            <span class="dashicons dashicons-search"></span>
+                            <input type="text" id="alezux-subs-search" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
+                         </div>
+                    </div>
                 </div>
             </div>
 
