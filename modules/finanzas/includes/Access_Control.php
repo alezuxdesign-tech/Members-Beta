@@ -87,11 +87,23 @@ class Access_Control {
         }
 
         // 3. Revisar reglas de acceso del Plan (JSON)
-        // Estructura esperada: { "quota_1": [id1, id2], "quota_2": [id3, id4] }
         $access_rules = \json_decode( $plan->access_rules, true );
         
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
             return false; // No hay reglas definidas, acceso libre
+        }
+
+        // Hierarchy Check: Detect Parent Lesson (for Topics)
+        $parent_id = 0;
+        if ( \function_exists( 'learndash_get_lesson_id' ) ) {
+            $parent_id = \learndash_get_lesson_id( $post_id );
+        }
+        if ( ! $parent_id ) {
+            $parent_id = \wp_get_post_parent_id( $post_id );
+        }
+        // Avoid self-reference or course-reference
+        if ( $parent_id == $post_id || $parent_id == $course_id ) {
+            $parent_id = 0;
         }
 
         // Buscamos en qué cuota está restringido este post específico
@@ -102,7 +114,8 @@ class Access_Control {
                 continue;
             }
 
-            if ( \in_array( $post_id, $module_ids ) ) {
+            // Check if CURRENT POST or PARENT POST is in the rule
+            if ( \in_array( $post_id, $module_ids ) || ( $parent_id && \in_array( $parent_id, $module_ids ) ) ) {
                  // SAFER ALTERNATIVE: Use regex instead of filter_var to avoid constant issues
                  $numeric_part = preg_replace( '/[^0-9]/', '', $quota_key );
                  $required_quota = (int) $numeric_part;
@@ -110,43 +123,53 @@ class Access_Control {
             }
         }
 
-        // DEBUG VISUAL EN PANTALLA
-        if ( isset( $_GET['alezux_debug'] ) ) {
-            echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative; border:2px solid red;'>";
-            echo "<h3>Alezux Debug</h3>";
-            echo "Post ID: $post_id <br>";
-            echo "User ID: $user_id <br>";
-            echo "Course ID: $course_id <br>";
-            echo "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
-            echo "Required Quota for this content: $required_quota <br>";
-            echo "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
-            echo "</div>";
-        }
-
-        // PASO 4: Subscription Check
+        // DEBUG VISUAL EN PANTALLA (Moved up to show even if quota is 0)
+        // Also fixed undefined $subscription usage by moving it after DB query or defining default
+        $subscription = null; // Initialize for debug safety
+        
+        // 4. Retrieve Subscription for Debug and Logic
         $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
         $subscription = $wpdb->get_row( $wpdb->prepare( 
             "SELECT * FROM $subs_table WHERE user_id = %d AND plan_id = %d AND status IN ('active', 'completed') LIMIT 1", 
             $user_id, $plan->id 
         ) );
 
+        if ( isset( $_GET['alezux_debug'] ) ) {
+            echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative; border:2px solid red;'>";
+            echo "<h3>Alezux Debug</h3>";
+            echo "Post ID: $post_id <br>";
+            echo "Parent ID: $parent_id <br>";
+            echo "User ID: $user_id <br>";
+            echo "Course ID: $course_id <br>";
+            echo "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
+            echo "Required Quota: $required_quota <br>";
+            echo "User Subscription: " . ($subscription ? 'FOUND' : 'NOT FOUND') . "<br>";
+            if ( $subscription ) {
+                echo "Sub Status: " . $subscription->status . "<br>";
+                echo "Quotas Paid: " . $subscription->quotas_paid . "<br>";
+            }
+            echo "<strong>RESULT: " . ($subscription && $subscription->quotas_paid < $required_quota ? 'LOCKED' : 'UNLOCKED') . "</strong>";
+            echo "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
+            echo "</div>";
+        }
+
+        if ( $required_quota === 0 ) {
+            return false; 
+        }
+
         if ( ! $subscription ) {
-             // Debug visual
-            if ( isset( $_GET['alezux_debug'] ) ) echo "BLOCK: No subscription.<br>";
+             // Debug visual moved up, logic remains
             return true; // Bloqueado
         }
 
         if ( $subscription->status === 'completed' ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "ALLOW: Subscription completed.<br>";
             return false; 
         }
 
         if ( $subscription->quotas_paid >= $required_quota ) {
-            if ( isset( $_GET['alezux_debug'] ) ) echo "ALLOW: Quotas paid " . $subscription->quotas_paid . " >= Required $required_quota.<br>";
             return false; 
         }
 
-        if ( isset( $_GET['alezux_debug'] ) ) echo "BLOCK: Not enough quotas.<br>";
         return true; // Le faltan cuotas. BLOQUEADO.
     }
 }
