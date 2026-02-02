@@ -57,9 +57,6 @@ class Access_Control {
      * @return bool True si está bloqueado, False si tiene acceso libre
      */
     public static function is_post_locked( $post_id, $user_id = null ) {
-        // DEBUG: Inicio
-        error_log( "Alezux Debug: is_post_locked start for Post $post_id User $user_id" );
-
         if ( ! $user_id ) {
             $user_id = \get_current_user_id();
         }
@@ -68,81 +65,57 @@ class Access_Control {
         if ( \user_can( $user_id, 'edit_posts' ) ) {
             return false; 
         }
-        
-        // return false; // Descomentar esto si sigue fallando para probar solo hasta aqui.
 
-        
-        // PASO 1: LearnDash Check
+        // 1. Identificar el Curso del Post
         $course_id = 0;
         if ( \function_exists( 'learndash_get_course_id' ) ) {
             $course_id = \learndash_get_course_id( $post_id );
         }
         
-        
         if ( ! $course_id ) {
-            return false; 
+            return false; // No es contenido LearnDash, no gestionamos bloqueo aquí
         }
-        error_log( "Alezux Debug: Course ID identified: $course_id" );
-        
 
-        
-        // PASO 2: DB Plan Check
         global $wpdb;
         $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+        
+        // 2. Verificar si el curso tiene un Plan asociado en nuestro sistema
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $plans_table WHERE course_id = %d LIMIT 1", $course_id ) );
 
         if ( ! $plan ) {
-            return false; 
+            return false; // El curso no tiene restricciones de pago por cuotas en nuestro sistema
         }
-        error_log( "Alezux Debug: Plan identified: " . $plan->id );
-        
-        if ( ! $plan ) {
-            return false; 
-        }
-        error_log( "Alezux Debug: Plan identified: " . $plan->id );
-        
-        // PASO 3: JSON Decode
+
+        // 3. Revisar reglas de acceso del Plan (JSON)
+        // Estructura esperada: { "quota_1": [id1, id2], "quota_2": [id3, id4] }
         $access_rules = \json_decode( $plan->access_rules, true );
-        error_log( "Alezux Debug: Rules decoded: " . print_r( $access_rules, true ) );
-
+        
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
-            return false; 
+            return false; // No hay reglas definidas, acceso libre
         }
-        
-        // return false; // BREAKPOINT: Stop before loop
 
-        
-        // Check rule match
+        // Buscamos en qué cuota está restringido este post específico
         $required_quota = 0;
         foreach ( $access_rules as $quota_key => $module_ids ) {
             // Defensive Check: Ensure module_ids is actually an array
             if ( ! \is_array( $module_ids ) ) {
-                error_log( "Alezux Debug: Skipping invalid rule key $quota_key (content not array)" );
                 continue;
             }
 
             if ( \in_array( $post_id, $module_ids ) ) {
-                 // Debug specific line
-                 error_log( "Alezux Debug: Match found in $quota_key" );
-                 
                  // SAFER ALTERNATIVE: Use regex instead of filter_var to avoid constant issues
-                 // Remove non-numeric characters
                  $numeric_part = preg_replace( '/[^0-9]/', '', $quota_key );
                  $required_quota = (int) $numeric_part;
-                 
                  break;
             }
         }
 
         if ( $required_quota === 0 ) {
+            // El post no está en ninguna regla de restricción explícita
             return false; 
         }
-        
-        return false; // BREAKPOINT: Stop before Step 4
-        
 
-        /*
-        // PASO 4: Subscription Check
+        // 4. Verificar estado del usuario (Suscripción)
         $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
         $subscription = $wpdb->get_row( $wpdb->prepare( 
             "SELECT * FROM $subs_table WHERE user_id = %d AND plan_id = %d AND status IN ('active', 'completed') LIMIT 1", 
@@ -150,20 +123,19 @@ class Access_Control {
         ) );
 
         if ( ! $subscription ) {
-            return true; // Bloqueado
+            // Curso tiene plan, Post requiere cuota, Usuario NO tiene suscripción activa
+            return true; // Bloqueado.
         }
 
         if ( $subscription->status === 'completed' ) {
-            return false; 
+            return false; // Pagó todo, acceso total.
         }
 
+        // 5. Comparar Cuotas
         if ( $subscription->quotas_paid >= $required_quota ) {
-            return false; 
+            return false; // Tiene suficientes cuotas pagadas
         }
 
-        return true; 
-        */
-
-        return false; // Default a 'permitido' mientras debugueamos
+        return true; // Le faltan cuotas. BLOQUEADO.
     }
 }
