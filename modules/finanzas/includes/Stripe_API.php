@@ -84,7 +84,7 @@ class Stripe_API {
     /**
      * Crea una Sesión de Checkout.
      */
-    public function create_checkout_session( $price_id, $success_url, $cancel_url, $customer_email = null, $mode = 'subscription' ) {
+    public function create_checkout_session( $price_id, $success_url, $cancel_url, $customer_email = null, $mode = 'subscription', $metadata = [] ) {
         if ( empty( $this->secret_key ) ) {
             return new \WP_Error( 'stripe_error', 'Falta la Secret Key de Stripe.' );
         }
@@ -100,6 +100,10 @@ class Stripe_API {
             ],
             'mode' => $mode,
         ];
+
+        if ( ! empty( $metadata ) ) {
+            $payload['metadata'] = $metadata;
+        }
 
         if ( ! empty( $customer_email ) ) {
             $payload['customer_email'] = $customer_email;
