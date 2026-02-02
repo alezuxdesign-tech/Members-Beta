@@ -96,8 +96,9 @@ class Access_Control {
         }
         error_log( "Alezux Debug: Plan identified: " . $plan->id );
         
+        return false; // BREAKPOINT: Stop before processing rules
 
-        
+        /*
         // PASO 3: JSON Decode
         $access_rules = \json_decode( $plan->access_rules, true );
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
@@ -116,6 +117,7 @@ class Access_Control {
         if ( $required_quota === 0 ) {
             return false; 
         }
+        */
         
 
         /*
