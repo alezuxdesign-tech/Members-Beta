@@ -66,10 +66,24 @@ class Finanzas extends Module_Base {
      * Maneja la redirección al Checkout de Stripe cuando se detecta ?alezux_action=checkout
      */
     public function handle_checkout_redirect() {
-        if ( isset( $_GET['alezux_action'] ) && $_GET['alezux_action'] === 'checkout' && isset( $_GET['plan_id'] ) ) {
-            $plan_id = intval( $_GET['plan_id'] );
+        if ( isset( $_GET['alezux_action'] ) && $_GET['alezux_action'] === 'checkout' ) {
+            $plan_id = 0;
             
-            // 1. Obtener datos del plan
+            // 1. Buscar Plan ID
+            if ( ! empty( $_GET['token'] ) ) {
+                global $wpdb;
+                $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+                $token = sanitize_text_field( $_GET['token'] );
+                $plan_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table_plans WHERE token = %s", $token ) );
+            } elseif ( ! empty( $_GET['plan_id'] ) ) {
+                $plan_id = intval( $_GET['plan_id'] );
+            }
+
+            if ( ! $plan_id ) {
+                wp_die( 'Error: Enlace de pago inválido (Token no encontrado o ID faltante).', 'Error de Checkout' );
+            }
+
+            // 2. Obtener datos del plan
             global $wpdb;
             $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
             $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_plans WHERE id = %d", $plan_id ) );
