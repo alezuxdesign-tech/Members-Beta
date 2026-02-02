@@ -381,4 +381,80 @@ class Ajax_Handler {
 
         \wp_send_json_success( $data );
     }
+
+    public static function manual_subscription_payment() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        $sub_id = isset($_POST['subscription_id']) ? \intval($_POST['subscription_id']) : 0;
+        $amount = isset($_POST['amount']) ? \floatval($_POST['amount']) : 0;
+        $note = isset($_POST['note']) ? \sanitize_textarea_field($_POST['note']) : '';
+
+        if ( !$sub_id || !$amount ) {
+            \wp_send_json_error( 'Datos incompletos.' );
+        }
+
+        global $wpdb;
+        $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $t_sales = $wpdb->prefix . 'alezux_finanzas_sales_history';
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+
+        // Obtener suscripción actual
+        $sub = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $t_subs WHERE id = %d", $sub_id ) );
+
+        if ( !$sub ) {
+            \wp_send_json_error( 'Suscripción no encontrada.' );
+        }
+
+        // Obtener detalles del plan para saber total de cuotas
+        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT total_quotas FROM $t_plans WHERE id = %d", $sub->plan_id ) );
+        $total_quotas = $plan ? $plan->total_quotas : 0;
+
+        // 1. Insertar en Historial de Ventas
+        $wpdb->insert(
+            $t_sales,
+            [
+                'user_id' => $sub->user_id,
+                'plan_id' => $sub->plan_id,
+                'amount' => $amount,
+                'currency' => 'USD', // Asumido
+                'status' => 'succeeded',
+                'payment_method' => 'manual', // Importante para diferenciar
+                'stripe_payment_id' => 'MANUAL_' . \time(), // ID ficticio único
+                'created_at' => \current_time( 'mysql' )
+            ]
+        );
+
+        // 2. Actualizar Suscripción
+        $new_quotas_paid = $sub->quotas_paid + 1;
+        $new_status = $sub->status;
+
+        // Si estaba atrasado, lo reactivamos (asumiendo que pagó lo pendiente)
+        if ( $sub->status === 'past_due' || $sub->status === 'canceled' ) {
+            $new_status = 'active';
+        }
+
+        // Verificar si completó el plan
+        if ( $new_quotas_paid >= $total_quotas ) {
+            $new_status = 'completed';
+        }
+
+        // Actualizar fecha de update y quotas
+        $wpdb->update(
+            $t_subs,
+            [
+                'quotas_paid' => $new_quotas_paid,
+                'status' => $new_status,
+                'updated_at' => \current_time( 'mysql' )
+            ],
+            [ 'id' => $sub_id ]
+        );
+
+        // Opcional: Agregar nota interna (si tuviéramos tabla de notas) o log
+        
+        \wp_send_json_success( 'Pago registrado y suscripción actualizada.' );
+    }
 }

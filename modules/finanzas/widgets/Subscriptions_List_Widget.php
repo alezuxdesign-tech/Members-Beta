@@ -88,12 +88,34 @@ class Subscriptions_List_Widget extends Widget_Base {
                             <th>Estado</th>
                             <th>Progreso</th>
                             <th>Próximo Pago</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- AJAX Content -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Modal de Pago Manual -->
+            <div id="alezux-manual-pay-modal" class="alezux-modal" style="display:none;">
+                <div class="alezux-modal-content">
+                    <span class="alezux-close-modal">&times;</span>
+                    <h3>Registrar Pago Manual</h3>
+                    <p>Suscripción ID: <span id="modal-sub-id"></span></p>
+                    
+                    <div class="alezux-form-group">
+                        <label>Monto ($)</label>
+                        <input type="number" id="manual-pay-amount" step="0.01" placeholder="Ej: 50.00">
+                    </div>
+
+                    <div class="alezux-form-group">
+                        <label>Motivo / Nota</label>
+                        <textarea id="manual-pay-note" placeholder="Ej: Transferencia Bancaria #1234"></textarea>
+                    </div>
+
+                    <button id="btn-confirm-manual-pay" class="alezux-btn-primary">Registrar Pago</button>
+                </div>
             </div>
 
         </div>

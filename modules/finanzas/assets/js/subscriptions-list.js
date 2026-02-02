@@ -53,11 +53,72 @@ jQuery(document).ready(function ($) {
                     <td><span class="alezux-status-badge ${statusClass}">${row.status.toUpperCase()}</span></td>
                     <td>${row.progress}</td>
                     <td>${row.next_payment}</td>
+                    <td>
+                        <button class="alezux-btn-manual-pay" data-id="${row.id}" title="Pago Manual">
+                            <i class="eicon-wallet"></i>
+                        </button>
+                    </td>
                 </tr>
             `;
             $tbody.append(html);
         });
     }
+
+    // Modal Logic
+    const $modal = $('#alezux-manual-pay-modal');
+    const $closeModal = $('.alezux-close-modal');
+    const $btnConfirm = $('#btn-confirm-manual-pay');
+    let currentSubId = 0;
+
+    // Abrir Modal
+    $(document).on('click', '.alezux-btn-manual-pay', function () {
+        currentSubId = $(this).data('id');
+        $('#modal-sub-id').text(currentSubId);
+        $('#manual-pay-amount').val('');
+        $('#manual-pay-note').val('');
+        $modal.show();
+    });
+
+    // Cerrar Modal
+    $closeModal.on('click', function () {
+        $modal.hide();
+    });
+
+    $(window).on('click', function (event) {
+        if ($(event.target).is($modal)) {
+            $modal.hide();
+        }
+    });
+
+    // Confirmar Pago
+    $btnConfirm.on('click', function () {
+        const amount = $('#manual-pay-amount').val();
+        const note = $('#manual-pay-note').val();
+
+        if (!amount || !note) {
+            alert('Por favor ingrese monto y motivo.');
+            return;
+        }
+
+        $btnConfirm.text('Procesando...').prop('disabled', true);
+
+        $.post(alezux_finanzas_vars.ajax_url, {
+            action: 'alezux_manual_subs_payment',
+            nonce: alezux_finanzas_vars.nonce,
+            subscription_id: currentSubId,
+            amount: amount,
+            note: note
+        }, function (response) {
+            $btnConfirm.text('Registrar Pago').prop('disabled', false);
+            if (response.success) {
+                alert('Pago registrado correctamente.');
+                $modal.hide();
+                fetchSubscriptions(); // Recargar tabla
+            } else {
+                alert('Error: ' + response.data);
+            }
+        });
+    });
 
     // Filtros
     let timeout = null;
