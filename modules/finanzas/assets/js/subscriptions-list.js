@@ -1,10 +1,10 @@
 jQuery(document).ready(function ($) {
 
-    if ($('.alezux-subs-list-app').length === 0) return;
+    if ($('.alezux-subs-app').length === 0) return;
 
-    const $wrapper = $('.alezux-subs-list-app');
-    const $tbody = $wrapper.find('.alezux-subs-table tbody');
-    const $spinner = $wrapper.find('.alezux-loading-subs');
+    const $wrapper = $('.alezux-subs-app');
+    const $tbody = $wrapper.find('.alezux-finanzas-table tbody');
+    const $spinner = $wrapper.find('.alezux-loading');
     const $searchInput = $wrapper.find('#alezux-subs-search');
 
     function fetchSubscriptions() {

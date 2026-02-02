@@ -108,7 +108,7 @@ class Sales_History_Widget extends Widget_Base {
 					'size' => 100,
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-sales-table' => 'width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-finanzas-table' => 'width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -118,7 +118,7 @@ class Sales_History_Widget extends Widget_Base {
 			[
 				'name' => 'table_border',
 				'label' => esc_html__( 'Borde Tabla', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-sales-table',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-table',
 			]
 		);
 
@@ -139,7 +139,7 @@ class Sales_History_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-sales-table th' => 'background-color: {{VALUE}}',
+					'{{WRAPPER}} .alezux-finanzas-table th' => 'background-color: {{VALUE}}',
 				],
 			]
 		);
@@ -150,7 +150,7 @@ class Sales_History_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-sales-table th' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .alezux-finanzas-table th' => 'color: {{VALUE}}',
 				],
 			]
 		);
@@ -159,7 +159,7 @@ class Sales_History_Widget extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'header_typography',
-				'selector' => '{{WRAPPER}} .alezux-sales-table th',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-table th',
 			]
 		);
 
@@ -180,7 +180,7 @@ class Sales_History_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-sales-table td' => 'color: {{VALUE}}',
+					'{{WRAPPER}} .alezux-finanzas-table td' => 'color: {{VALUE}}',
 				],
 			]
 		);
@@ -189,7 +189,7 @@ class Sales_History_Widget extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'cell_typography',
-				'selector' => '{{WRAPPER}} .alezux-sales-table td',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-table td',
 			]
 		);
 
@@ -199,7 +199,7 @@ class Sales_History_Widget extends Widget_Base {
 				'label' => esc_html__( 'Color Filas Pares', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-sales-table tr:nth-child(even)' => 'background-color: {{VALUE}}',
+					'{{WRAPPER}} .alezux-finanzas-table tr:nth-child(even)' => 'background-color: {{VALUE}}',
 				],
 			]
 		);
