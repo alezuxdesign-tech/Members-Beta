@@ -450,8 +450,7 @@ class Ajax_Handler {
             $t_subs,
             [
                 'quotas_paid' => $new_quotas_paid,
-                'status' => $new_status,
-                'updated_at' => \current_time( 'mysql' )
+                'status' => $new_status
             ],
             [ 'id' => $sub_id ]
         );
