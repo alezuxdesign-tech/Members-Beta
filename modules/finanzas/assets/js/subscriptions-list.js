@@ -111,9 +111,10 @@ jQuery(document).ready(function ($) {
             amount: amount,
             note: note
         }, function (response) {
+            console.log("Respuesta Pago Manual:", response);
             $btnConfirm.text('Registrar Pago').prop('disabled', false);
             if (response.success) {
-                alert('Pago registrado correctamente.');
+                alert('Pago registrado correctamente.\nDebug: ' + JSON.stringify(response.data.debug));
                 $modal.hide();
                 fetchSubscriptions(); // Recargar tabla
             } else {
