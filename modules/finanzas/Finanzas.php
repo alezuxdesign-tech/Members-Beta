@@ -55,7 +55,59 @@ class Finanzas extends Module_Base {
  		\add_action( 'admin_init', array( __NAMESPACE__ . '\\Includes\\Database_Installer', 'check_updates' ) );
         \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
         \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
+        \add_action( 'template_redirect', [ $this, 'handle_checkout_redirect' ] );
 	}
+
+    /**
+     * Maneja la redirección al Checkout de Stripe cuando se detecta ?alezux_action=checkout
+     */
+    public function handle_checkout_redirect() {
+        if ( isset( $_GET['alezux_action'] ) && $_GET['alezux_action'] === 'checkout' && isset( $_GET['plan_id'] ) ) {
+            $plan_id = intval( $_GET['plan_id'] );
+            
+            // 1. Obtener datos del plan
+            global $wpdb;
+            $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+            $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_plans WHERE id = %d", $plan_id ) );
+
+            if ( ! $plan || empty( $plan->stripe_price_id ) ) {
+                wp_die( 'Error: Plan no encontrado o configuración inválida.', 'Error de Checkout' );
+            }
+
+            // 2. Crear sesión de Stripe
+            $users_access = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
+            
+            // URLs de retorno
+            $current_url = home_url( add_query_arg( [], $GLOBALS['wp']->request ) ); // URL actual base (aproximada) o home
+            // Mejor redirigir a una página de "Gracias" o al dashboard. Por defecto al home + status
+            $success_url = home_url( '/?payment_success=true&session_id={CHECKOUT_SESSION_ID}' ); 
+            $cancel_url  = home_url( '/?payment_canceled=true' );
+
+            // Si el usuario está logueado, pasamos su email para autocompletar en Stripe
+            $customer_email = null;
+            if ( is_user_logged_in() ) {
+                $current_user = wp_get_current_user();
+                $customer_email = $current_user->user_email;
+            }
+
+            $session = $users_access->create_checkout_session( 
+                $plan->stripe_price_id, 
+                $success_url, 
+                $cancel_url, 
+                $customer_email 
+            );
+
+            if ( is_wp_error( $session ) ) {
+                wp_die( 'Error de Stripe: ' . $session->get_error_message() );
+            }
+
+            // 3. Redirigir a Stripe
+            if ( isset( $session->url ) ) {
+                wp_redirect( $session->url );
+                exit;
+            }
+        }
+    }
 
 	public function register_widgets( $widgets_manager ) {
         if ( ! did_action( 'elementor/loaded' ) ) {

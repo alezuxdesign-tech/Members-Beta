@@ -975,17 +975,38 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 				$description = get_the_excerpt();
 
                 // Lógica de Acceso y Enlaces
+                // Lógica de Acceso y Enlaces
 				$user_id = get_current_user_id();
-				$has_access = sfwd_lms_has_access( $post_id, $user_id );
+				$has_access = \sfwd_lms_has_access( $post_id, $user_id );
 				
 				$button_text = $has_access ? $settings['button_text_access'] : $settings['button_text_purchase'];
                 
-                // Si NO tiene acceso y hay una URL personalizada (ej. WooCommerce para cursos Closed), usar esa URL
-                // Si tiene acceso, siempre usar el permalink del curso
+                // Enlace por defecto (ir al curso)
                 $button_link = get_the_permalink();
                 
-                if ( ! $has_access && ( 'closed' === $price_type || 'buynow' === $price_type ) && ! empty( $custom_url ) ) {
-                    $button_link = $custom_url;
+                if ( ! $has_access ) {
+                    // 1. Integración con Módulo Finanzas: Buscar si existe un plan para este curso
+                    global $wpdb;
+                    $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+                    // Check if table exists to prevent errors if module not installed
+                    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
+                        $plan_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table_plans WHERE course_id = %d LIMIT 1", $post_id ) );
+                        
+                        if ( $plan_id ) {
+                             // Si hay plan, generar URL de checkout directo
+                             $button_link = home_url( '/?alezux_action=checkout&plan_id=' . $plan_id );
+                        }
+                    }
+                    
+                    // 2. Fallback a lógica antigua (WooCommerce/URL personalizada de LearnDash) si NO hay plan detectado
+                    // Si el plan_id existe, la linea anterior ya sobreescribió el link, así que este IF no debería romperlo
+                    // a menos que queramos dar prioridad a la URL custom de LearnDash.
+                    // Asumiremos que si hay Plan de Finanzas, ese es el prioritario.
+                    if ( empty( $plan_id ) ) {
+                        if ( ( 'closed' === $price_type || 'buynow' === $price_type ) && ! empty( $custom_url ) ) {
+                             $button_link = $custom_url;
+                        }
+                    }
                 }
 
 				// Renderizar Tarjeta
