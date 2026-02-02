@@ -93,6 +93,9 @@ class Ajax_Handler {
         global $wpdb;
         $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
         
+        // Generar Token Único
+        $token = bin2hex( random_bytes( 16 ) );
+
         $wpdb->insert( 
             $table_plans, 
             [ 
@@ -103,6 +106,7 @@ class Ajax_Handler {
                 'total_quotas' => $total_quotas,
                 'quota_amount' => $quota_amount,
                 'frequency'    => $interval,
+                'token'        => $token,
                 'access_rules' => \json_encode( $rules ),
             ] 
         );
@@ -115,6 +119,7 @@ class Ajax_Handler {
             \wp_send_json_error( 'Error al guardar en base de datos local.' );
         }
 	}
+
 
     public static function get_sales_history() {
         \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
@@ -236,10 +241,6 @@ class Ajax_Handler {
         
         $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
         
-        // Query manual para JOIN con posts (usando $wpdb->posts no funciona directamente en string interpolated sin prefix real a veces, pero post table es standard)
-        // Mejor usar get_posts o query simple. Join con posts table standard.
-        // Asumiendo prefijo wp_
-        
         $sql = "SELECT p.* FROM $t_plans p WHERE 1=1";
         $args = [];
 
@@ -265,12 +266,19 @@ class Ajax_Handler {
         foreach ( $results as $row ) {
             $course_title = get_the_title( $row->course_id );
             
-            // Generar Link Directo Seguro (Token)
-            if ( ! empty( $row->token ) ) {
-                $buy_link = home_url( '/?alezux_buy_token=' . $row->token );
-            } else {
-                 $buy_link = home_url( '/?alezux_buy_plan=' . $row->id );
+            // AUTO-MIGRACIÓN: Si no tiene token, generarlo y guardarlo ahora mismo.
+            $token = $row->token;
+            if ( empty( $token ) ) {
+                $token = bin2hex( random_bytes( 16 ) );
+                $wpdb->update( 
+                    $t_plans, 
+                    [ 'token' => $token ], 
+                    [ 'id' => $row->id ] 
+                );
             }
+
+            // Generar Link Directo Seguro
+            $buy_link = home_url( '/?alezux_buy_token=' . $token );
 
             $data[] = [
                 'id' => $row->id,
