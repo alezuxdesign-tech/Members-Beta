@@ -7,6 +7,10 @@ jQuery(document).ready(function ($) {
     const $spinner = $wrapper.find('.alezux-loading');
     const $searchInput = $wrapper.find('#alezux-plans-search');
     const $courseFilter = $wrapper.find('#alezux-plans-course');
+    const $limitSelect = $wrapper.find('#alezux-limit-select');
+    const $pagination = $wrapper.find('.alezux-pagination');
+
+    let currentPage = 1;
 
     function fetchPlans() {
         $tbody.css('opacity', '0.5');
@@ -16,7 +20,9 @@ jQuery(document).ready(function ($) {
             action: 'alezux_get_plans_list',
             nonce: alezux_finanzas_vars.nonce,
             search: $searchInput.val(),
-            course_id: $courseFilter.val()
+            course_id: $courseFilter.val(),
+            limit: $limitSelect.val(),
+            paged: currentPage
         };
 
         $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
@@ -24,7 +30,8 @@ jQuery(document).ready(function ($) {
             $tbody.css('opacity', '1');
 
             if (response.success) {
-                renderTable(response.data);
+                renderTable(response.data.rows || response.data); // Handle both array and object responses
+                renderPagination(response.data.total_pages || 1);
             } else {
                 $tbody.html('<tr><td colspan="7">Error: ' + response.data + '</td></tr>');
             }
@@ -62,16 +69,63 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Filtros
+    // Event Listeners
     let timeout = null;
     $searchInput.on('keyup', function () {
         clearTimeout(timeout);
-        timeout = setTimeout(fetchPlans, 500);
+        timeout = setTimeout(function () {
+            currentPage = 1;
+            fetchPlans();
+        }, 500);
     });
 
-    $courseFilter.on('change', fetchPlans);
+    $courseFilter.on('change', function () {
+        currentPage = 1;
+        fetchPlans();
+    });
 
-    // Acciones
+    $limitSelect.on('change', function () {
+        currentPage = 1;
+        fetchPlans();
+    });
+
+    $pagination.on('click', '.page-btn', function () {
+        if ($(this).hasClass('active') || $(this).hasClass('disabled')) return;
+        currentPage = $(this).data('page');
+        fetchPlans();
+    });
+
+    function renderPagination(totalPages) {
+        $pagination.empty();
+        if (totalPages <= 1) return;
+
+        let html = '';
+
+        // Previous
+        if (currentPage > 1) {
+            html += `<button class="page-btn" data-page="${currentPage - 1}">«</button>`;
+        }
+
+        // Pages
+        for (let i = 1; i <= totalPages; i++) {
+            // Show first, last, current, and surrounding pages
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                const activeClass = i === currentPage ? 'active' : '';
+                html += `<button class="page-btn ${activeClass}" data-page="${i}">${i}</button>`;
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                html += `<span class="page-dots">...</span>`;
+            }
+        }
+
+        // Next
+        if (currentPage < totalPages) {
+            html += `<button class="page-btn" data-page="${currentPage + 1}">»</button>`;
+        }
+
+        $pagination.html(html);
+    }
+
+    // Acciones existing...
     $tbody.on('click', '.btn-delete-plan', function () {
         const id = $(this).data('id');
         if (confirm('¿Estás seguro de eliminar este plan? Esto no eliminará las suscripciones activas en Stripe, pero lo quitará de la base de datos local.')) {

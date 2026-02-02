@@ -97,7 +97,7 @@ class Plans_List_Widget extends Widget_Base {
         }
         ?>
         <div class="alezux-finanzas-app alezux-plans-app">
-            
+            <!-- Header: Title + Controls -->
             <div class="alezux-table-header">
                 <div class="alezux-header-left">
                     <h3 class="alezux-table-title"><?php echo esc_html($settings['table_title']); ?></h3>
@@ -107,31 +107,35 @@ class Plans_List_Widget extends Widget_Base {
                 </div>
 
                 <div class="alezux-header-right">
-                    <div class="alezux-filter-item search-item">
-                         <div class="alezux-search-wrapper">
-                            <span class="dashicons dashicons-search"></span>
-                            <input type="text" id="alezux-plans-search" class="alezux-table-search-input" placeholder="Buscar por nombre...">
+                    <div class="alezux-filters-inline">
+                         <!-- Search -->
+                         <div class="alezux-filter-item search-item">
+                            <div class="alezux-search-wrapper">
+                                <span class="dashicons dashicons-search"></span>
+                                <input type="text" id="alezux-plans-search" class="alezux-table-search-input" placeholder="Buscar por nombre...">
+                            </div>
+                         </div>
+                         
+                         <!-- Course Filter (Inline) -->
+                         <div class="alezux-filter-item">
+                             <select id="alezux-plans-course">
+                                 <option value="0">Todos los Cursos</option>
+                                 <?php foreach($courses as $id => $title): ?>
+                                    <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
+                                 <?php endforeach; ?>
+                             </select>
                          </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Filtros adicionales debajo o integrados si caben -->
-            <div class="alezux-filters-secondary">
-                <div class="alezux-filter-item">
-                     <label>Filtrar por Curso</label>
-                     <select id="alezux-plans-course">
-                         <option value="0">Todos</option>
-                         <?php foreach($courses as $id => $title): ?>
-                            <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
-                         <?php endforeach; ?>
-                     </select>
                 </div>
             </div>
 
             <div class="alezux-loading">
                 <i class="eicon-loading eicon-animation-spin"></i> Cargando planes...
             </div>
+            
+            <div class="alezux-table-wrapper">
+            <!-- ... table content ... -->
+
 
             <div class="alezux-table-wrapper">
             <table class="alezux-finanzas-table">
@@ -150,6 +154,21 @@ class Plans_List_Widget extends Widget_Base {
                     <!-- AJAX Content -->
                 </tbody>
             </table>
+            </div>
+
+            <!-- Footer: Pagination + Rows Filter -->
+            <div class="alezux-table-footer">
+                <div class="alezux-pagination"></div>
+                
+                <div class="alezux-footer-filter">
+                    <label>Filas:</label>
+                    <select id="alezux-limit-select">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
 
         </div>

@@ -238,33 +238,49 @@ class Ajax_Handler {
         }
 
         global $wpdb;
-        $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
-        $course_id = isset($_POST['course_id']) ? \intval($_POST['course_id']) : 0;
-        
-        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
-        
-        $sql = "SELECT p.* FROM $t_plans p WHERE 1=1";
-        $args = [];
+    $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
+    $course_id = isset($_POST['course_id']) ? \intval($_POST['course_id']) : 0;
+    
+    // Pagination params
+    $limit = isset($_POST['limit']) ? \intval($_POST['limit']) : 20;
+    $paged = isset($_POST['paged']) ? \intval($_POST['paged']) : 1;
+    if ($limit < 1) $limit = 20;
+    if ($paged < 1) $paged = 1;
+    $offset = ($paged - 1) * $limit;
+    
+    $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+    
+    // Base SQL
+    $where_sql = " WHERE 1=1";
+    $args = [];
 
-        if ( ! empty( $search ) ) {
-            $sql .= " AND p.name LIKE %s";
-            $args[] = '%' . $wpdb->esc_like($search) . '%';
-        }
+    if ( ! empty( $search ) ) {
+        $where_sql .= " AND p.name LIKE %s";
+        $args[] = '%' . $wpdb->esc_like($search) . '%';
+    }
 
-        if ( $course_id > 0 ) {
-            $sql .= " AND p.course_id = %d";
-            $args[] = $course_id;
-        }
+    if ( $course_id > 0 ) {
+        $where_sql .= " AND p.course_id = %d";
+        $args[] = $course_id;
+    }
 
-        $sql .= " ORDER BY p.id DESC";
+    // Get Total Count
+    $count_sql = "SELECT COUNT(*) FROM $t_plans p $where_sql";
+    if ( ! empty( $args ) ) {
+        $total_plans = $wpdb->get_var( $wpdb->prepare( $count_sql, $args ) );
+    } else {
+        $total_plans = $wpdb->get_var( $count_sql );
+    }
+    
+    // Get Rows
+    $sql = "SELECT p.* FROM $t_plans p $where_sql ORDER BY p.id DESC LIMIT %d OFFSET %d";
+    $args[] = $limit;
+    $args[] = $offset;
 
-        if ( ! empty( $args ) ) {
-            $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
-        } else {
-            $results = $wpdb->get_results( $sql );
-        }
+    // Execute query with args
+    $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
 
-        $data = [];
+    $data = [];
         foreach ( $results as $row ) {
             $course_title = get_the_title( $row->course_id );
             
