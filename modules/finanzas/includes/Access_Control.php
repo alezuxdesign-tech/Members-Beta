@@ -8,7 +8,8 @@ if ( ! \defined( 'ABSPATH' ) ) {
 class Access_Control {
 
     public static function init() {
-        \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
+        // Desactivado temporalmente para debugging error 500
+        // \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
     }
 
     /**
@@ -89,16 +90,14 @@ class Access_Control {
         foreach ( $access_rules as $quota_key => $module_ids ) {
             if ( \in_array( $post_id, $module_ids ) ) {
                 // extraemos el numero de "quota_X"
-                 $required_quota = (int) filter_var( $quota_key, FILTER_SANITIZE_NUMBER_INT );
+                 $required_quota = (int) filter_var( $quota_key, \FILTER_SANITIZE_NUMBER_INT );
                  break;
             }
         }
 
         if ( $required_quota === 0 ) {
             // El post no está en ninguna regla de restricción explícita
-            // Opción A: Bloquear todo lo que no esté explícito (Restrictivo) -> return true;
-            // Opción B: Permitir lo que no esté explícito (Permisivo) -> return false;
-            // Usaremos Permisivo por defecto, solo bloqueamos lo que se marque en el creador de planes.
+            // Opción B: Permitir lo que no esté explícito (Permisivo).
             return false; 
         }
 
@@ -111,7 +110,7 @@ class Access_Control {
 
         if ( ! $subscription ) {
             // Curso tiene plan, Post requiere cuota, Usuario NO tiene suscripción activa
-            return true; // ARGH! Bloqueado.
+            return true; // Bloqueado.
         }
 
         if ( $subscription->status === 'completed' ) {
