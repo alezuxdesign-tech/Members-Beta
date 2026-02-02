@@ -5,6 +5,11 @@ if ( ! \defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// PRUEBA DE VIDA: Si ves esto, el archivo se está cargando.
+if ( isset( $_GET['alezux_debug'] ) ) {
+    die( "<h1>DEBUG: Access_Control.php LOADED successfully.</h1>" );
+}
+
 class Access_Control {
 
     public static function init() {
