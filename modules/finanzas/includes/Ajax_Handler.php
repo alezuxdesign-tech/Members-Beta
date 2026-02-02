@@ -343,6 +343,7 @@ class Ajax_Handler {
         if ( ! empty( $search ) ) {
             $sql .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s)";
             $args[] = '%' . $wpdb->esc_like($search) . '%';
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
         }
 
         $sql .= " ORDER BY s.created_at DESC";
