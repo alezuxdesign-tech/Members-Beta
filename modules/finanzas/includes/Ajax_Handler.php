@@ -342,78 +342,107 @@ class Ajax_Handler {
         }
 
         global $wpdb;
-        $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
-        
-        $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
-        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
-        $t_users = $wpdb->users;
+    $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
+    
+    // Pagination
+    $limit = isset($_POST['limit']) ? \intval($_POST['limit']) : 20;
+    $paged = isset($_POST['paged']) ? \intval($_POST['paged']) : 1;
+    if ($limit < 1) $limit = 20;
+    if ($paged < 1) $paged = 1;
+    $offset = ($paged - 1) * $limit;
 
-        $sql = "SELECT s.*, u.display_name, u.user_email, p.name as plan_name, p.total_quotas, p.quota_amount 
-                FROM $t_subs s
-                LEFT JOIN $t_users u ON s.user_id = u.ID
-                LEFT JOIN $t_plans p ON s.plan_id = p.id
-                WHERE 1=1";
-        
-        $args = [];
+    $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+    $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+    $t_users = $wpdb->users;
+    
+    $where_sql = " WHERE 1=1";
+    $args = [];
 
-        if ( ! empty( $search ) ) {
-            $sql .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s)";
-            $args[] = '%' . $wpdb->esc_like($search) . '%';
-            $args[] = '%' . $wpdb->esc_like($search) . '%';
-        }
-
-        $sql .= " ORDER BY s.created_at DESC";
-
-        if ( ! empty( $args ) ) {
-            $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
-        } else {
-            $results = $wpdb->get_results( $sql );
-        }
-
-        $data = [];
-        foreach ( $results as $row ) {
-            // Calcular próximo pago
-            $next_payment = '-';
-            if ( $row->status === 'active' && $row->next_payment_date ) {
-                $next_payment = \date_i18n( \get_option( 'date_format' ), \strtotime( $row->next_payment_date ) );
-                
-                // Si está vencido
-                if ( \strtotime( $row->next_payment_date ) < \time() ) {
-                    $next_payment .= ' <span style="color:red;">(Atrasado)</span>';
-                }
-            } elseif ( $row->status === 'completed' ) {
-                $next_payment = 'Pagado Totalmente';
-            }
-
-            // Avatar
-            $avatar_url = \get_avatar_url( $row->user_id, ['size' => 48] );
-            
-            // Porcentaje
-            $percent = 0;
-            if ( $row->total_quotas > 0 ) {
-                $percent = \round( ( $row->quotas_paid / $row->total_quotas ) * 100 );
-            }
-
-            $data[] = [
-                'id' => $row->id,
-                'student' => $row->display_name ? $row->display_name : 'Usuario Eliminado',
-                'student_email' => $row->user_email, // Raw email
-                'student_avatar' => $avatar_url,
-                'plan' => $row->plan_name,
-                'total_quotas' => $row->total_quotas, // Para mostrar "3 CUOTAS"
-                'amount' => '$' . \number_format($row->quota_amount, 2, ',', '.'), // Formato correcto moneda
-                'raw_amount' => $row->quota_amount,
-                'status' => $row->status,
-                'quotas_paid' => $row->quotas_paid,
-                'percent' => $percent,
-                'next_payment' => $next_payment,
-                'next_payment_raw' => $row->next_payment_date,
-                'stripe_id' => $row->stripe_subscription_id
-            ];
-        }
-
-        \wp_send_json_success( $data );
+    if ( ! empty( $search ) ) {
+        $where_sql .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s)";
+        $args[] = '%' . $wpdb->esc_like($search) . '%';
+        $args[] = '%' . $wpdb->esc_like($search) . '%';
     }
+
+    // Get Total Count
+    $count_sql = "SELECT COUNT(*) FROM $t_subs s
+            LEFT JOIN $t_users u ON s.user_id = u.ID
+            LEFT JOIN $t_plans p ON s.plan_id = p.id
+            $where_sql";
+    
+    if ( ! empty( $args ) ) {
+        $total_subs = $wpdb->get_var( $wpdb->prepare( $count_sql, $args ) );
+    } else {
+        $total_subs = $wpdb->get_var( $count_sql );
+    }
+
+    // Get Rows
+    $sql = "SELECT s.*, u.display_name, u.user_email, p.name as plan_name, p.total_quotas, p.quota_amount 
+            FROM $t_subs s
+            LEFT JOIN $t_users u ON s.user_id = u.ID
+            LEFT JOIN $t_plans p ON s.plan_id = p.id
+            $where_sql
+            ORDER BY s.created_at DESC
+            LIMIT %d OFFSET %d";
+    
+    $args[] = $limit;
+    $args[] = $offset;
+
+    if ( ! empty( $args ) ) {
+        $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
+    } else {
+        $results = $wpdb->get_results( $sql ); // Fallback (should have args always due to limit)
+    }
+
+    $data = [];
+    foreach ( $results as $row ) {
+        // Calcular próximo pago
+        $next_payment = '-';
+        if ( $row->status === 'active' && $row->next_payment_date ) {
+            $next_payment = \date_i18n( \get_option( 'date_format' ), \strtotime( $row->next_payment_date ) );
+            
+            // Si está vencido
+            if ( \strtotime( $row->next_payment_date ) < \time() ) {
+                $next_payment .= ' <span style="color:red;">(Atrasado)</span>';
+            }
+        } elseif ( $row->status === 'completed' ) {
+            $next_payment = 'Pagado Totalmente';
+        }
+
+        // Avatar
+        $avatar_url = \get_avatar_url( $row->user_id, ['size' => 48] );
+        
+        // Porcentaje
+        $percent = 0;
+        if ( $row->total_quotas > 0 ) {
+            $percent = \round( ( $row->quotas_paid / $row->total_quotas ) * 100 );
+        }
+
+        $data[] = [
+            'id' => $row->id,
+            'student' => $row->display_name ? $row->display_name : 'Usuario Eliminado',
+            'student_email' => $row->user_email, // Raw email
+            'student_avatar' => $avatar_url,
+            'plan' => $row->plan_name,
+            'total_quotas' => $row->total_quotas, // Para mostrar "3 CUOTAS"
+            'amount' => '$' . \number_format($row->quota_amount, 2, ',', '.'), // Formato correcto moneda
+            'raw_amount' => $row->quota_amount,
+            'status' => $row->status,
+            'quotas_paid' => $row->quotas_paid,
+            'percent' => $percent,
+            'next_payment' => $next_payment,
+            'next_payment_raw' => $row->next_payment_date,
+            'stripe_id' => $row->stripe_subscription_id
+        ];
+    }
+
+    \wp_send_json_success( [
+        'rows' => $data,
+        'total_pages' => \ceil( $total_subs / $limit ),
+        'current_page' => $paged,
+        'total_subs' => $total_subs
+    ] );
+}
 
     public static function manual_subscription_payment() {
         \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );

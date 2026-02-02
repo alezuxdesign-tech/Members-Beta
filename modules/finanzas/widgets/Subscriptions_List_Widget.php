@@ -907,10 +907,13 @@ class Subscriptions_List_Widget extends Widget_Base {
                 </div>
 
                 <div class="alezux-header-right">
-                    <div class="alezux-filter-item search-item">
-                         <div class="alezux-search-wrapper">
-                            <span class="dashicons dashicons-search"></span>
-                            <input type="text" id="alezux-subs-search" class="alezux-table-search-input" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
+                    <div class="alezux-filters-inline">
+                         <!-- Search -->
+                         <div class="alezux-filter-item search-item">
+                            <div class="alezux-search-wrapper">
+                                <span class="dashicons dashicons-search"></span>
+                                <input type="text" id="alezux-subs-search" class="alezux-table-search-input" placeholder="<?php esc_attr_e('Buscar por estudiante o plan...', 'alezux-members'); ?>">
+                            </div>
                          </div>
                     </div>
                 </div>
@@ -1019,6 +1022,21 @@ class Subscriptions_List_Widget extends Widget_Base {
                         ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Footer: Pagination + Rows Filter -->
+            <div class="alezux-table-footer">
+                <div class="alezux-pagination"></div>
+                
+                <div class="alezux-footer-filter">
+                    <label>Filas:</label>
+                    <select id="alezux-limit-select">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Modal de Pago Manual -->

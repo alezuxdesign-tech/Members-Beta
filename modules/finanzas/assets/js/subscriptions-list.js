@@ -7,19 +7,32 @@ jQuery(document).ready(function ($) {
     const $spinner = $wrapper.find('.alezux-loading');
     const $searchInput = $wrapper.find('#alezux-subs-search');
 
+    // Filter & Pagination State
+    let currentState = {
+        paged: 1,
+        limit: 20,
+        search: ''
+    };
+
     function fetchSubscriptions() {
         $tbody.css('opacity', '0.5');
-        $spinner.show();
+        // $spinner.show(); // Optional: or show a small loader inside table
+
+        currentState.search = $searchInput.val();
+        currentState.limit = $('#alezux-limit-select').val();
 
         const data = {
             action: 'alezux_get_subscriptions_list',
             nonce: alezux_finanzas_vars.nonce,
-            search: $searchInput.val()
+            search: currentState.search,
+            paged: currentState.paged,
+            limit: currentState.limit
         };
 
         $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
             if (response.success) {
-                renderTable(response.data);
+                renderTable(response.data.rows);
+                renderPagination(response.data);
             } else {
                 $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error: ' + response.data + '</td></tr>');
             }
@@ -36,8 +49,9 @@ jQuery(document).ready(function ($) {
     function renderTable(rows) {
         $tbody.empty();
 
-        if (rows.length === 0) {
+        if (!rows || rows.length === 0) {
             $tbody.html('<tr><td colspan="8" style="text-align:center;">No se encontraron suscripciones.</td></tr>');
+            $('.alezux-pagination').empty();
             return;
         }
 
@@ -112,6 +126,48 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    function renderPagination(data) {
+        const $pagination = $('.alezux-pagination');
+        $pagination.empty();
+
+        if (data.total_pages <= 1) return;
+
+        let html = '';
+
+        // Prev
+        if (data.current_page > 1) {
+            html += `<button class="p-btn p-prev" data-page="${data.current_page - 1}"><span class="dashicons dashicons-arrow-left-alt2"></span></button>`;
+        } else {
+            html += `<button class="p-btn p-prev disabled" disabled><span class="dashicons dashicons-arrow-left-alt2"></span></button>`;
+        }
+
+        // Info
+        html += `<span class="p-info">Página ${data.current_page} - ${data.total_pages}</span>`;
+
+        // Next
+        if (data.current_page < data.total_pages) {
+            html += `<button class="p-btn p-next" data-page="${data.current_page + 1}"><span class="dashicons dashicons-arrow-right-alt2"></span></button>`;
+        } else {
+            html += `<button class="p-btn p-next disabled" disabled><span class="dashicons dashicons-arrow-right-alt2"></span></button>`;
+        }
+
+        $pagination.html(html);
+    }
+
+    // Pagination Click
+    $(document).on('click', '.alezux-pagination .p-btn', function () {
+        if ($(this).attr('disabled')) return;
+        const page = $(this).data('page');
+        currentState.paged = page;
+        fetchSubscriptions();
+    });
+
+    // Rows Limit Change
+    $('#alezux-limit-select').on('change', function () {
+        currentState.paged = 1; // Reset to page 1
+        fetchSubscriptions();
+    });
+
     function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -181,7 +237,10 @@ jQuery(document).ready(function ($) {
     let timeout = null;
     $searchInput.on('keyup', function () {
         clearTimeout(timeout);
-        timeout = setTimeout(fetchSubscriptions, 500);
+        timeout = setTimeout(function () {
+            currentState.paged = 1; // Reset pagination on search
+            fetchSubscriptions();
+        }, 500);
     });
 
     // Init
