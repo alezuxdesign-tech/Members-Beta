@@ -916,9 +916,9 @@ class Subscriptions_List_Widget extends Widget_Base {
                 </div>
             </div>
 
-            <div class="alezux-loading" style="display:none;">
+    <div class="alezux-loading" style="display:none;">
         <i class="eicon-loading eicon-animation-spin"></i> <?php esc_html_e('Cargando suscripciones...', 'alezux-members'); ?>
-    </div>        </div>
+    </div>
 
             <div class="alezux-table-wrapper">
                 <table class="alezux-finanzas-table"> 

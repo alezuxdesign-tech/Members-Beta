@@ -32,16 +32,20 @@ jQuery(document).ready(function ($) {
         };
 
         $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
-            $spinner.hide();
-            $tbody.css('opacity', '1');
-
             if (response.success) {
                 renderTable(response.data.rows);
                 renderPagination(response.data);
             } else {
-                $tbody.html('<tr><td colspan="7">Error al cargar datos: ' + response.data + '</td></tr>');
+                $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error: ' + response.data + '</td></tr>');
             }
-        });
+        })
+            .fail(function () {
+                $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error de conexión con el servidor.</td></tr>');
+            })
+            .always(function () {
+                $spinner.hide();
+                $tbody.css('opacity', '1');
+            });
     }
 
     function renderTable(rows) {
