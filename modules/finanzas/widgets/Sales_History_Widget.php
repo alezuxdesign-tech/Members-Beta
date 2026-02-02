@@ -390,6 +390,117 @@ class Sales_History_Widget extends Widget_Base {
 
         $this->end_controls_section();
 
+        // 5. ESTILOS DE FILTROS & DATEPICKER
+        $this->start_controls_section(
+            'style_section_filters',
+            [
+                'label' => esc_html__('Estilo Filtros & Calendario', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'filters_inputs_heading',
+            [
+                'label' => esc_html__('Inputs & Selects (General)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'input_bg_color',
+            [
+                'label' => esc_html__('Fondo Input', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-table-search-input' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} select' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'input_text_color',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-table-search-input' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} select' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name' => 'input_border',
+                'label' => esc_html__('Borde Input', 'alezux-members'),
+                'selector' => '{{WRAPPER}} .alezux-table-search-input, {{WRAPPER}} select',
+            ]
+        );
+
+         $this->add_control(
+            'datepicker_heading',
+            [
+                'label' => esc_html__('Calendario (Datepicker)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'description' => esc_html__('Estilos específicos para el calendario emergente.', 'alezux-members'),
+            ]
+        );
+
+        // NOTICE: Flatpickr is appended to body, so we need global selectors or targeted CSS injection.
+        // Elementor supports selectors but "wrapper" won't work well if flatpickr is outside.
+        // However, we can use a trick: flatpickr themes usually just need overriding variables or classes.
+        // For simplicity and effectiveness in this scoped widget context, we will try to style the TRIGGER INPUT specifically if needed,
+        // and provides some basic overrides that might apply globally or if we passed a specific container (which we default don't).
+        // BUT, user asked to edit datepicker. Assuming he means the INPUT appearance first.
+        // If he means the POPUP, it's global. We'll add a warning or try to scope it via class if possible (flatpickr supports 'static' wrapper but that breaks positioning sometimes).
+        
+        $this->add_control(
+            'datepicker_accent_color',
+            [
+                'label' => esc_html__('Color Acento (Selección)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    // Global override trick (might affect others if multiple widgets, but usually acceptable for theme consistency)
+                    'body .flatpickr-day.selected, body .flatpickr-day.startRange, body .flatpickr-day.endRange' => 'background: {{VALUE}} !important; border-color: {{VALUE}} !important;',
+                    'body .flatpickr-day.inRange' => 'box-shadow: -5px 0 0 {{VALUE}}33, 5px 0 0 {{VALUE}}33 !important; background: {{VALUE}}33 !important; border-color: transparent !important;', // 33 is approx 20% opacity hex
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'datepicker_bg_color',
+            [
+                'label' => esc_html__('Fondo Calendario', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    'body .flatpickr-calendar' => 'background: {{VALUE}} !important; border-color: {{VALUE}} !important;',
+                    'body .flatpickr-months .flatpickr-month' => 'background: {{VALUE}} !important;',
+                    'body .flatpickr-weekdays' => 'background: {{VALUE}} !important;',
+                ],
+            ]
+        );
+         
+         $this->add_control(
+            'datepicker_text_color',
+            [
+                'label' => esc_html__('Color Texto Calendario', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    'body .flatpickr-calendar' => 'color: {{VALUE}} !important;',
+                    'body .flatpickr-day' => 'color: {{VALUE}} !important;',
+                    'body .flatpickr-current-month .flatpickr-monthDropdown-months' => 'color: {{VALUE}} !important;',
+                    'body span.flatpickr-weekday' => 'color: {{VALUE}} !important;',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
 	}
 
 	protected function render() {
