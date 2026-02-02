@@ -96,15 +96,22 @@ class Access_Control {
         }
         error_log( "Alezux Debug: Plan identified: " . $plan->id );
         
-        return false; // BREAKPOINT: Stop before processing rules
-
-        /*
+        if ( ! $plan ) {
+            return false; 
+        }
+        error_log( "Alezux Debug: Plan identified: " . $plan->id );
+        
         // PASO 3: JSON Decode
         $access_rules = \json_decode( $plan->access_rules, true );
+        error_log( "Alezux Debug: Rules decoded: " . print_r( $access_rules, true ) );
+
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
             return false; 
         }
         
+        return false; // BREAKPOINT: Stop before loop
+
+        /*
         // Check rule match
         $required_quota = 0;
         foreach ( $access_rules as $quota_key => $module_ids ) {
