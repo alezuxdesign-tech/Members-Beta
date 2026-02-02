@@ -332,16 +332,17 @@ class Finanzas extends Module_Base {
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/plans-manager.js' ) ) {
              wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], ALEZUX_VERSION . '.' . time(), true );
+             wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], '1.0.0.' . time(), true );
               wp_localize_script( 'alezux-plans-manager-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
             
-            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], ALEZUX_VERSION . '.' . time() );
+            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], '1.0.0.' . time() );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
-             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], ALEZUX_VERSION . '.' . time(), true );
+             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], '1.0.0.' . time(), true );
               wp_localize_script( 'alezux-subs-list-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
