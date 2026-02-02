@@ -25,9 +25,14 @@ class Access_Control {
             return $access;
         }
 
-        // Verificamos nuestras reglas de Cuotas
-        if ( self::is_post_locked( $post_id, $user_id ) ) {
-            return false; // Bloqueado por Finanzas
+        try {
+             // Verificamos nuestras reglas de Cuotas
+            if ( self::is_post_locked( $post_id, $user_id ) ) {
+                return false; // Bloqueado por Finanzas
+            }
+        } catch ( \Throwable $e ) {
+            error_log( 'Alezux Critical Error en Access_Control: ' . $e->getMessage() );
+            return $access; // En caso de error, no bloqueamos (fail-open) para no romper el sitio
         }
 
         return $access;
@@ -52,7 +57,11 @@ class Access_Control {
         }
 
         // 1. Identificar el Curso del Post
-        $course_id = \learndash_get_course_id( $post_id );
+        $course_id = 0;
+        if ( \function_exists( 'learndash_get_course_id' ) ) {
+            $course_id = \learndash_get_course_id( $post_id );
+        }
+        
         if ( ! $course_id ) {
             return false; // No es contenido LearnDash, no gestionamos bloqueo aquí
         }
