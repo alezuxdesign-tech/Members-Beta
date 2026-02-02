@@ -265,8 +265,12 @@ class Ajax_Handler {
         foreach ( $results as $row ) {
             $course_title = get_the_title( $row->course_id );
             
-            // Generar Link Directo
-            $buy_link = home_url( '/?alezux_buy_plan=' . $row->id );
+            // Generar Link Directo Seguro (Token)
+            if ( ! empty( $row->token ) ) {
+                $buy_link = home_url( '/?alezux_buy_token=' . $row->token );
+            } else {
+                 $buy_link = home_url( '/?alezux_buy_plan=' . $row->id );
+            }
 
             $data[] = [
                 'id' => $row->id,

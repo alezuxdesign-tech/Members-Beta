@@ -64,8 +64,15 @@ class Enrollment_Manager {
 
         // 3. Matricular en LearnDash
         if ( function_exists( 'ld_update_course_access' ) ) {
-            ld_update_course_access( $user_id, $plan->course_id );
-            error_log( "Alezux: Usuario $user_id matriculado en curso {$plan->course_id} via LD." );
+            // Verificar si el curso es valido
+            if ( $plan->course_id > 0 ) {
+                ld_update_course_access( $user_id, $plan->course_id );
+                error_log( "Alezux: Usuario $user_id matriculado exitosamente en curso {$plan->course_id} via LD." );
+            } else {
+                 error_log( "Alezux Warning: El plan {$plan_id} no tiene un course_id valido ({$plan->course_id}). No se pudo matricular." );
+            }
+        } else {
+            error_log( "Alezux Error: Función 'ld_update_course_access' no existe. LearnDash no está activo?" );
         }
 
         // 4. Registrar Suscripción/Compra

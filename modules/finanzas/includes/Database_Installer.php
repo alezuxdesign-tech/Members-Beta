@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Database_Installer {
 
-	const DB_VERSION = '1.1';
+	const DB_VERSION = '1.2';
 	const OPTION_NAME = 'alezux_finanzas_db_version';
 
 	public static function install() {
@@ -28,9 +28,25 @@ class Database_Installer {
 			total_quotas INT(5) DEFAULT 1,
 			quota_amount DECIMAL(10,2),
 			frequency VARCHAR(50) DEFAULT 'month',
+            token VARCHAR(64),
 			access_rules LONGTEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		) $charset_collate;";
+
+        // Update 1.2: Add token column if not exists
+        $row_check = $wpdb->get_results( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '" . DB_NAME . "' AND TABLE_NAME = '$table_plans' AND COLUMN_NAME = 'token'" );
+        if ( empty( $row_check ) ) {
+            $wpdb->query( "ALTER TABLE $table_plans ADD COLUMN token VARCHAR(64)" );
+        }
+
+        // Backfill tokens for existing plans
+        $existing_plans = $wpdb->get_results( "SELECT id FROM $table_plans WHERE token IS NULL OR token = ''" );
+        if ( ! empty( $existing_plans ) ) {
+            foreach ( $existing_plans as $plan ) {
+                $token = bin2hex( random_bytes( 16 ) );
+                $wpdb->update( $table_plans, ['token' => $token], ['id' => $plan->id] );
+            }
+        }
 
 		$sql_subs = "CREATE TABLE $table_subs (
 			id BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,

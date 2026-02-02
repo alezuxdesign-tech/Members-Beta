@@ -118,7 +118,19 @@ class Finanzas extends Module_Base {
             }
         }
 
-            // Manejar Link de Pago Directo (?alezux_buy_plan=123)
+        // Manejar Link de Pago Directo por Token (?alezux_buy_token=xyz)
+        if ( isset( $_GET['alezux_buy_token'] ) ) {
+            $token = sanitize_text_field( $_GET['alezux_buy_token'] );
+            global $wpdb;
+            $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+            $plan_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table_plans WHERE token = %s", $token ) );
+            
+            if ( $plan_id ) {
+                $this->process_direct_buy_link( $plan_id );
+            }
+        }
+
+        // Manejar Link de Pago Directo Legacy (?alezux_buy_plan=123)
         if ( isset( $_GET['alezux_buy_plan'] ) ) {
             $plan_id = intval( $_GET['alezux_buy_plan'] );
             if ( $plan_id > 0 ) {
@@ -218,14 +230,18 @@ class Finanzas extends Module_Base {
                 );
 
                 if ( $user_id ) {
-                    // Auto-Login si no está logueado
+                    // Auto-Login si no está logueado (Mejorado)
                     if ( ! is_user_logged_in() ) {
-                        wp_set_current_user( $user_id );
-                        wp_set_auth_cookie( $user_id );
+                         $user = get_user_by( 'id', $user_id );
+                         if ( $user ) {
+                             wp_clear_auth_cookie();
+                             wp_set_current_user( $user_id );
+                             wp_set_auth_cookie( $user_id );
+                             do_action( 'wp_login', $user->user_login, $user );
+                         }
                     }
 
                     // Redirigir al curso o dashboard
-
                     // Obtener course_id del plan para redirigir
                     global $wpdb;
                     $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
@@ -234,6 +250,7 @@ class Finanzas extends Module_Base {
                     if ( $course_id ) {
                         $course_url = get_permalink( $course_id );
                         if ( $course_url ) {
+                            nocache_headers(); // Evitar cache de redireccion
                             wp_redirect( $course_url );
                             exit;
                         }
