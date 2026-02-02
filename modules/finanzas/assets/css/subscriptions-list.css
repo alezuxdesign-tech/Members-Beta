@@ -1,8 +1,8 @@
 /* Dark Theme Container */
 .alezux-subs-list-app {
-    background-color: #0b0e14;
+    background-color: #0b0e14 !important;
     /* Dark Background matching image */
-    color: #a0aec0;
+    color: #a0aec0 !important;
     font-family: 'Inter', sans-serif;
     /* Modern Font */
     padding: 20px;
@@ -11,9 +11,9 @@
 
 /* Header & Search */
 #alezux-subs-search {
-    background-color: #121620;
-    border: 1px solid #2d3748;
-    color: #fff;
+    background-color: #121620 !important;
+    border: 1px solid #2d3748 !important;
+    color: #fff !important;
     padding: 10px 15px;
     border-radius: 8px;
     width: 300px;
@@ -244,18 +244,90 @@
 
 /* Modal Dark Theme fixes */
 .alezux-modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 99999;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Black w/ opacity */
     backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
 }
 
 .alezux-modal-content {
     background-color: #1a202c;
     border: 1px solid #2d3748;
     color: #e2e8f0;
+    margin: auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.alezux-close-modal {
+    color: #a0aec0;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.alezux-close-modal:hover,
+.alezux-close-modal:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.alezux-form-group {
+    margin-bottom: 15px;
+}
+
+.alezux-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #cbd5e0;
+    font-size: 13px;
 }
 
 .alezux-form-group input,
 .alezux-form-group textarea {
-    background-color: #2d3748;
-    border: 1px solid #4a5568;
-    color: #fff;
+    background-color: #2d3748 !important;
+    border: 1px solid #4a5568 !important;
+    color: #fff !important;
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.alezux-btn-primary {
+    background: #5a8dee;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.alezux-btn-primary:hover {
+    background: #4a76c9;
 }
