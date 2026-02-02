@@ -83,8 +83,8 @@
     background-color: #121620;
     border: 1px solid #2d3748;
     color: #fff;
-    padding: 8px 15px 8px 35px;
-    /* Less left padding, tighter fit */
+    padding: 8px 15px 8px 45px;
+    /* Increased padding-left to 45px */
     border-radius: 8px;
     width: 100%;
     font-size: 13px;
@@ -506,4 +506,39 @@
 
 .alezux-btn-primary:hover {
     background: #4a76c9;
+}
+
+/* Footer & Pagination Styles */
+.alezux-table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 0 5px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.alezux-footer-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alezux-footer-filter label {
+    color: #718096;
+    font-size: 12px;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.alezux-footer-filter select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #121620;
+    border: 1px solid #2d3748;
+    color: #fff;
+    font-size: 13px;
+    width: auto;
+    min-width: 60px;
 }

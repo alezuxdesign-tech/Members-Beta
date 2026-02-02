@@ -297,12 +297,12 @@ class Sales_History_Widget extends Widget_Base {
             </div>
 
             <!-- Footer: Pagination + Rows Filter -->
-            <div class="alezux-table-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <div class="alezux-table-footer">
                 <div class="alezux-pagination"></div>
                 
-                <div class="alezux-filter-item" style="max-width: 100px;">
-                    <label style="display:inline-block; margin-right:5px; color:#718096; font-size:12px;">Filas:</label>
-                    <select id="alezux-limit-select" style="width:auto; display:inline-block; padding: 4px 8px;">
+                <div class="alezux-footer-filter">
+                    <label>Filas:</label>
+                    <select id="alezux-limit-select">
                         <option value="10">10</option>
                         <option value="20" selected>20</option>
                         <option value="50">50</option>
