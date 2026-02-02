@@ -20,21 +20,31 @@ class Access_Control {
      * @return bool
      */
     public static function filter_content_access( $access, $post_id, $user_id ) {
+        // Recursion Guard: Evitar loops infinitos si LD llama al filtro internamente
+        static $is_running = false;
+        if ( $is_running ) {
+            return $access;
+        }
+        $is_running = true;
+
         // Si LearnDash ya dijo que NO (por otras razones), respetamos.
         if ( ! $access ) {
+            $is_running = false;
             return $access;
         }
 
         try {
              // Verificamos nuestras reglas de Cuotas
             if ( self::is_post_locked( $post_id, $user_id ) ) {
+                $is_running = false;
                 return false; // Bloqueado por Finanzas
             }
         } catch ( \Throwable $e ) {
             error_log( 'Alezux Critical Error en Access_Control: ' . $e->getMessage() );
-            return $access; // En caso de error, no bloqueamos (fail-open) para no romper el sitio
+            // En caso de error, no bloqueamos (fail-open)
         }
 
+        $is_running = false;
         return $access;
     }
 
