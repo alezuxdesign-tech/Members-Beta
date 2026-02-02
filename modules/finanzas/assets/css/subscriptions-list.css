@@ -10,13 +10,69 @@
 }
 
 /* Header & Search */
+/* Header & Search Layout */
+.alezux-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.alezux-header-left {
+    flex: 1;
+    min-width: 200px;
+}
+
+.alezux-table-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.alezux-table-desc {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #718096;
+}
+
+.alezux-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alezux-search-wrapper {
+    position: relative;
+}
+
+.alezux-search-wrapper .dashicons {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #718096;
+}
+
 #alezux-subs-search {
     background-color: #121620;
     border: 1px solid #2d3748;
     color: #fff;
-    padding: 10px 15px;
+    padding: 10px 15px 10px 40px;
+    /* Padding left for icon */
     border-radius: 8px;
     width: 300px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#alezux-subs-search:focus {
+    border-color: #5a8dee;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(90, 141, 238, 0.2);
 }
 
 /* Table Structure */
