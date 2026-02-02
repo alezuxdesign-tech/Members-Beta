@@ -212,9 +212,9 @@ class Ajax_Handler {
             $data[] = [
                 'id' => $row->id,
                 'student' => $row->user_name ? $row->user_name . ' (' . $row->user_email . ')' : 'Usuario Eliminado',
-                'method' => ucfirst($row->method),
+                'method' => $row->method ? ucfirst($row->method) : 'Sistema',
                 'amount' => $row->amount . ' ' . $row->currency,
-                'course' => $row->plan_name, // O nombre del curso si preferimos
+                'course' => $row->plan_name ? $row->plan_name : 'Plan Eliminado',
                 'quotas_desc' => $payment_desc,
                 'status' => $row->status,
                 'date' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $row->created_at ) ),

@@ -99,12 +99,29 @@
     border: 1px solid #2d3748;
     color: #fff;
     font-size: 13px;
-    min-width: 140px;
+    min-width: 100px;
+    /* Reduced from 140px */
+    max-width: 100%;
 }
 
 .alezux-filter-item select:focus {
     border-color: #5a8dee;
     outline: none;
+}
+
+/* Responsive adjustment for filters */
+@media (max-width: 768px) {
+    .alezux-filters-secondary {
+        justify-content: flex-start;
+    }
+
+    .alezux-filter-item {
+        flex: 1 1 auto;
+    }
+
+    .alezux-filter-item select {
+        width: 100%;
+    }
 }
 
 /* Table Structure */

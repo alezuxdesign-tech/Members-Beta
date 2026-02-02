@@ -57,21 +57,26 @@ jQuery(document).ready(function ($) {
         }
 
         rows.forEach(row => {
-            let statusClass = 'status-' + row.status;
+            let statusClass = 'status-' + (row.status || 'pending');
+            let method = row.method || 'Desconocido';
+            let amount = row.amount || '0';
+            let course = row.course || 'Desconocido';
+            let quotas_desc = row.quotas_desc || '';
+            let date = row.date || '-';
 
             // Badge para método
             let methodIcon = '';
-            if (row.method.toLowerCase().includes('stripe')) methodIcon = '<i class="fab fa-stripe"></i> ';
+            if (method.toLowerCase().includes('stripe')) methodIcon = '<i class="fab fa-stripe"></i> ';
 
             const html = `
                 <tr>
                     <td>#${row.id}</td>
                     <td>${row.student}</td>
-                    <td>${methodIcon}${row.method}</td>
-                    <td><strong>${row.amount}</strong></td>
-                    <td>${row.course}<br><small class="text-muted">${row.quotas_desc}</small></td>
-                    <td><span class="alezux-status-badge ${statusClass}">${row.status}</span></td>
-                    <td>${row.date}</td>
+                    <td>${methodIcon}${method}</td>
+                    <td><strong>${amount}</strong></td>
+                    <td>${course}<br><small class="text-muted">${quotas_desc}</small></td>
+                    <td><span class="alezux-status-badge ${statusClass}">${row.status || 'Unknown'}</span></td>
+                    <td>${date}</td>
                 </tr>
             `;
             $tbody.append(html);
