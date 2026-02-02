@@ -11,6 +11,8 @@ class Ajax_Handler {
 		\add_action( 'wp_ajax_alezux_get_course_modules', [ __CLASS__, 'get_course_modules' ] );
 		\add_action( 'wp_ajax_alezux_create_stripe_plan', [ __CLASS__, 'create_stripe_plan' ] );
         \add_action( 'wp_ajax_alezux_get_sales_history', [ __CLASS__, 'get_sales_history' ] );
+        \add_action( 'wp_ajax_alezux_get_plans_list', [ __CLASS__, 'get_plans_list' ] );
+        \add_action( 'wp_ajax_alezux_delete_plan', [ __CLASS__, 'delete_plan' ] );
 	}
 
 	public static function get_course_modules() {
@@ -219,5 +221,86 @@ class Ajax_Handler {
             'pages' => ceil($total_rows / $limit),
             'current_page' => $page
         ] );
+    }
+
+    public static function get_plans_list() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        global $wpdb;
+        $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
+        $course_id = isset($_POST['course_id']) ? \intval($_POST['course_id']) : 0;
+        
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        
+        // Query manual para JOIN con posts (usando $wpdb->posts no funciona directamente en string interpolated sin prefix real a veces, pero post table es standard)
+        // Mejor usar get_posts o query simple. Join con posts table standard.
+        // Asumiendo prefijo wp_
+        
+        $sql = "SELECT p.* FROM $t_plans p WHERE 1=1";
+        $args = [];
+
+        if ( ! empty( $search ) ) {
+            $sql .= " AND p.name LIKE %s";
+            $args[] = '%' . $wpdb->esc_like($search) . '%';
+        }
+
+        if ( $course_id > 0 ) {
+            $sql .= " AND p.course_id = %d";
+            $args[] = $course_id;
+        }
+
+        $sql .= " ORDER BY p.id DESC";
+
+        if ( ! empty( $args ) ) {
+            $results = $wpdb->get_results( $wpdb->prepare( $sql, $args ) );
+        } else {
+            $results = $wpdb->get_results( $sql );
+        }
+
+        $data = [];
+        foreach ( $results as $row ) {
+            $course_title = get_the_title( $row->course_id );
+            
+            // Generar Link Directo
+            $buy_link = home_url( '/?alezux_buy_plan=' . $row->id );
+
+            $data[] = [
+                'id' => $row->id,
+                'name' => $row->name,
+                'course' => $course_title ? $course_title : '(Curso Eliminado)',
+                'price' => $row->quota_amount,
+                'quotas' => $row->total_quotas,
+                'frequency' => $row->frequency,
+                'buy_link' => $buy_link
+            ];
+        }
+
+        \wp_send_json_success( $data );
+    }
+
+    public static function delete_plan() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        $id = isset($_POST['id']) ? \intval($_POST['id']) : 0;
+        if ( !$id ) \wp_send_json_error('ID Inválido');
+
+        global $wpdb;
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        
+        $deleted = $wpdb->delete( $t_plans, ['id' => $id] );
+
+        if ( $deleted ) {
+            \wp_send_json_success( 'Plan eliminado.' );
+        } else {
+            \wp_send_json_error( 'No se pudo eliminar el plan o no existe.' );
+        }
     }
 }

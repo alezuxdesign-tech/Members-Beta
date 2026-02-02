@@ -28,8 +28,12 @@ class Subscriptions_List_Widget extends Widget_Base {
 		return [ 'alezux-members' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'alezux-plans-manager-js' ];
+	}
+
     public function get_style_depends() {
-		return [ 'alezux-subs-list-css' ];
+		return [ 'alezux-sales-history-css' ]; // Reutilizar estilos de tabla
 	}
 
 	protected function register_controls() {
@@ -41,90 +45,77 @@ class Subscriptions_List_Widget extends Widget_Base {
 				'tab' => Controls_Manager::TAB_CONTENT,
 			]
 		);
-
+        
         $this->add_control(
-			'limit',
+			'view_mode',
 			[
-				'label' => esc_html__( 'Límite', 'alezux-members' ),
-				'type' => Controls_Manager::NUMBER,
-				'default' => 20,
+				'label' => esc_html__( 'Vista Inicial', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'plans',
+				'options' => [
+					'plans' => esc_html__( 'Gestor de Planes', 'alezux-members' ),
+                    // 'subscriptions' => esc_html__( 'Suscripciones de Usuarios', 'alezux-members' ), // Deshabilitado temporalmente si solo quiere planes
+				],
 			]
 		);
 
 		$this->end_controls_section();
-
-        // Estilos
-        $this->start_controls_section(
-			'style_section',
-			[
-				'label' => esc_html__( 'Estilo Tabla', 'alezux-members' ),
-				'tab' => Controls_Manager::TAB_STYLE,
-			]
-		);
-        
-        // Similar controls to Sales History can be added here
-        $this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name' => 'table_typography',
-				'selector' => '{{WRAPPER}} .alezux-subs-table',
-			]
-		);
-
-        $this->end_controls_section();
 	}
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
-        $limit = $settings['limit'];
-
-        global $wpdb;
-        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
-        $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
         
-        $results = $wpdb->get_results( $wpdb->prepare( "
-            SELECT s.*, p.name as plan_name 
-            FROM $subs_table s 
-            LEFT JOIN $plans_table p ON s.plan_id = p.id 
-            ORDER BY s.id DESC LIMIT %d", $limit 
-        ) );
-
-        if ( empty( $results ) ) {
-            echo '<p>No hay suscripciones activas.</p>';
-            return;
+        // Obtener cursos para filtro (Select options)
+        global $wpdb;
+        $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $courses_ids = $wpdb->get_col("SELECT DISTINCT course_id FROM $t_plans");
+        $courses = [];
+        if ( ! empty( $courses_ids ) ) {
+            foreach( $courses_ids as $cid ) {
+                $c_title = get_the_title( $cid );
+                if( $c_title ) $courses[ $cid ] = $c_title;
+            }
         }
-
         ?>
-        <div class="alezux-subs-wrapper">
-            <table class="alezux-subs-table">
+        <div class="alezux-plans-manager-app">
+            
+            <div class="alezux-filter-bar">
+                <div class="alezux-filter-item search-item">
+                     <label>Buscar Plan</label>
+                     <input type="text" id="alezux-plans-search" placeholder="Buscar por nombre...">
+                </div>
+                <div class="alezux-filter-item">
+                     <label>Filtrar por Curso</label>
+                     <select id="alezux-plans-course">
+                         <option value="0">Todos</option>
+                         <?php foreach($courses as $id => $title): ?>
+                            <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
+                         <?php endforeach; ?>
+                     </select>
+                </div>
+            </div>
+
+            <div class="alezux-loading-plans" style="display:none; text-align:center; padding:20px;">
+                <i class="eicon-loading eicon-animation-spin"></i> Cargando planes...
+            </div>
+
+            <table class="alezux-plans-table alezux-sales-table"> <!-- Reutilizando estilos sales-table -->
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Plan</th>
-                        <th>Estado</th>
+                        <th>Nombre del Plan</th>
+                        <th>Curso Asociado</th>
+                        <th>Precio</th>
                         <th>Cuotas</th>
-                        <th>Próximo Pago</th>
-                        <th>Stripe ID</th>
+                        <th>Frecuencia</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ( $results as $row ) : 
-                        $user_info = get_userdata( $row->user_id );
-                        $user_name = $user_info ? $user_info->user_login : 'ID: ' . $row->user_id;
-                    ?>
-                        <tr>
-                            <td><?php echo esc_html( $row->id ); ?></td>
-                            <td><?php echo esc_html( $user_name ); ?></td>
-                            <td><?php echo esc_html( $row->plan_name ); ?></td>
-                            <td><span class="alezux-status-badge status-<?php echo esc_attr( $row->status ); ?>"><?php echo esc_html( ucfirst( $row->status ) ); ?></span></td>
-                            <td><?php echo esc_html( $row->quotas_paid ); ?></td>
-                            <td><?php echo esc_html( $row->next_payment_date ); ?></td>
-                            <td><?php echo esc_html( $row->stripe_subscription_id ?: 'Manual' ); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
+                    <!-- AJAX Content -->
                 </tbody>
             </table>
+
         </div>
         <?php
 	}

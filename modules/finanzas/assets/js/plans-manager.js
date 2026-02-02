@@ -1,0 +1,103 @@
+jQuery(document).ready(function ($) {
+
+    if ($('.alezux-plans-manager-app').length === 0) return;
+
+    const $wrapper = $('.alezux-plans-manager-app');
+    const $tbody = $wrapper.find('.alezux-plans-table tbody');
+    const $spinner = $wrapper.find('.alezux-loading-plans');
+    const $searchInput = $wrapper.find('#alezux-plans-search');
+    const $courseFilter = $wrapper.find('#alezux-plans-course');
+
+    function fetchPlans() {
+        $tbody.css('opacity', '0.5');
+        $spinner.show();
+
+        const data = {
+            action: 'alezux_get_plans_list',
+            nonce: alezux_finanzas_vars.nonce,
+            search: $searchInput.val(),
+            course_id: $courseFilter.val()
+        };
+
+        $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
+            $spinner.hide();
+            $tbody.css('opacity', '1');
+
+            if (response.success) {
+                renderTable(response.data);
+            } else {
+                $tbody.html('<tr><td colspan="7">Error: ' + response.data + '</td></tr>');
+            }
+        });
+    }
+
+    function renderTable(rows) {
+        $tbody.empty();
+
+        if (rows.length === 0) {
+            $tbody.html('<tr><td colspan="7" style="text-align:center;">No se encontraron planes.</td></tr>');
+            return;
+        }
+
+        rows.forEach(row => {
+            const html = `
+                <tr>
+                    <td>#${row.id}</td>
+                    <td><strong>${row.name}</strong></td>
+                    <td>${row.course}</td>
+                    <td>${row.price}</td>
+                    <td>${row.quotas}</td>
+                    <td>${row.frequency}</td>
+                    <td>
+                        <button class="page-btn btn-copy-link" data-link="${row.buy_link}" title="Copiar Link de Pago Directo">
+                            <i class="eicon-link"></i> Link
+                        </button>
+                        <button class="page-btn btn-delete-plan" data-id="${row.id}" title="Eliminar Plan" style="color:#d9534f; border-color:#d9534f;">
+                            <i class="eicon-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(html);
+        });
+    }
+
+    // Filtros
+    let timeout = null;
+    $searchInput.on('keyup', function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(fetchPlans, 500);
+    });
+
+    $courseFilter.on('change', fetchPlans);
+
+    // Acciones
+    $tbody.on('click', '.btn-delete-plan', function () {
+        const id = $(this).data('id');
+        if (confirm('¿Estás seguro de eliminar este plan? Esto no eliminará las suscripciones activas en Stripe, pero lo quitará de la base de datos local.')) {
+            $.post(alezux_finanzas_vars.ajax_url, {
+                action: 'alezux_delete_plan',
+                nonce: alezux_finanzas_vars.nonce,
+                id: id
+            }, function (response) {
+                if (response.success) {
+                    fetchPlans();
+                } else {
+                    alert('Error al eliminar: ' + response.data);
+                }
+            });
+        }
+    });
+
+    $tbody.on('click', '.btn-copy-link', function () {
+        const link = $(this).data('link');
+        navigator.clipboard.writeText(link).then(function () {
+            alert('Enlace copiado al portapapeles:\n' + link);
+        }, function (err) {
+            alert('No se pudo copiar el enlace. Cópielo manualmente:\n' + link);
+        });
+    });
+
+    // Init
+    fetchPlans();
+});

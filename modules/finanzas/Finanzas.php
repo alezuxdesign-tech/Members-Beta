@@ -117,8 +117,69 @@ class Finanzas extends Module_Base {
                 exit;
             }
         }
+
+            // Manejar Link de Pago Directo (?alezux_buy_plan=123)
+        if ( isset( $_GET['alezux_buy_plan'] ) ) {
+            $plan_id = intval( $_GET['alezux_buy_plan'] );
+            if ( $plan_id > 0 ) {
+                $this->process_direct_buy_link( $plan_id );
+            }
+        }
+
+        // Manejar Retorno de Stripe
+        if ( isset( $_GET['session_id'] ) && ! empty( $_GET['session_id'] ) ) {
+            $this->handle_payment_return();
+        }
     }
 
+    private function process_direct_buy_link( $plan_id ) {
+        // Obtener datos del plan de la DB
+        global $wpdb;
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_plans WHERE id = %d", $plan_id ) );
+
+        if ( ! $plan ) {
+            wp_die( 'El plan especificado no existe.' );
+        }
+
+        // Crear Sesión de Stripe
+        $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
+        
+        // URLs de éxito y cancelación
+        $success_url = home_url( '/?session_id={CHECKOUT_SESSION_ID}' );
+        $cancel_url  = home_url( '/' ); // O alguna página específica
+
+        // Metadata necesaria
+        $metadata = [
+            'plan_id' => $plan_id,
+            'source'  => 'direct_link'
+        ];
+
+        // Determinar modo (payment vs subscription) basado en frecuencia o cuotas
+        $mode = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 ) ? 'payment' : 'subscription';
+
+        // Crear sesión
+        $session = $stripe->create_checkout_session(
+            $plan->stripe_price_id,
+            $success_url,
+            $cancel_url,
+            null, // No customer email for direct link unless user is logged in
+            $mode,
+            $metadata
+        );
+
+        if ( is_wp_error( $session ) ) {
+            wp_die( 'Error conectando con Stripe: ' . $session->get_error_message() );
+        }
+
+        // Redirigir a Stripe
+        if ( isset( $session->url ) ) {
+            wp_redirect( $session->url );
+            exit;
+        } else {
+            wp_die( 'No se pudo generar la URL de pago.' );
+        }
+    }
     /**
      * Maneja el retorno exitoso desde Stripe para matriculación inmediata.
      */
@@ -219,6 +280,14 @@ class Finanzas extends Module_Base {
             wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], '1.0', true );
             
             wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
+            ] );
+        }
+        
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/plans-manager.js' ) ) {
+             wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], '1.0', true );
+              wp_localize_script( 'alezux-plans-manager-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
