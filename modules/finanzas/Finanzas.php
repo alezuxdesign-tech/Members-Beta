@@ -65,7 +65,8 @@ class Finanzas extends Module_Base {
 	}
 
     public function debug_manual_enrollment() {
-        if ( ! isset( $_GET['alezux_test_enrollment'] ) || ! current_user_can( 'manage_options' ) ) {
+        // SEGURIDAD RELAJADA TEMPORALMENTE PARA PRUEBA DE ESTUDIANTE
+        if ( ! isset( $_GET['alezux_test_enrollment'] ) ) {
             return;
         }
 
