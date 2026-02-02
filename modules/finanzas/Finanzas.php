@@ -317,6 +317,8 @@ class Finanzas extends Module_Base {
 	}
 
     public function enqueue_widget_styles() {
+        $version = '1.0.0.' . time(); // Cache busting safe
+
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/sales-history.css' ) ) {
             wp_register_style( 'alezux-sales-history-css', ALEZUX_FINANZAS_URL . 'assets/css/sales-history.css', [], '1.0' );
         }
@@ -331,25 +333,25 @@ class Finanzas extends Module_Base {
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/plans-manager.js' ) ) {
-             wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], ALEZUX_VERSION . '.' . time(), true );
-             wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], '1.0.0.' . time(), true );
+             wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], $version, true );
               wp_localize_script( 'alezux-plans-manager-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
             
-            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], '1.0.0.' . time() );
+            wp_register_style( 'alezux-plans-manager-css', ALEZUX_FINANZAS_URL . 'assets/css/plans-manager.css', [], $version );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
-             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], '1.0.0.' . time(), true );
+             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], $version, true );
               wp_localize_script( 'alezux-subs-list-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
             ] );
         }
 
-        wp_register_style( 'alezux-subs-list-css', ALEZUX_FINANZAS_URL . 'assets/css/subscriptions-list.css', [], '1.0.4' );
+        wp_register_style( 'alezux-subs-list-css', ALEZUX_FINANZAS_URL . 'assets/css/subscriptions-list.css', [], $version );
+        
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/manual-payment.css' ) ) {
             wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );
         }
