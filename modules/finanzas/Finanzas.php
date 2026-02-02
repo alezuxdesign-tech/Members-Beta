@@ -60,50 +60,7 @@ class Finanzas extends Module_Base {
         \add_action( 'template_redirect', [ $this, 'handle_checkout_redirect' ] );
         \add_action( 'template_redirect', [ $this, 'handle_payment_return' ] ); // Nuevo hook
         
-        // DEBUG TRIGGER (Temporary)
-        \add_action( 'init', [ $this, 'debug_manual_enrollment' ] );
 	}
-
-    public function debug_manual_enrollment() {
-        // SEGURIDAD RELAJADA TEMPORALMENTE PARA PRUEBA DE ESTUDIANTE
-        if ( ! isset( $_GET['alezux_test_enrollment'] ) ) {
-            return;
-        }
-
-        $user = \wp_get_current_user();
-        if ( ! $user->ID ) wp_die("Debes estar logueado.");
-
-        $plan_id = 1; // Plan ID a probar
-        $email = $user->user_email;
-
-        echo "<h1>Alezux Debug Enrollment</h1>";
-        echo "Usuario: $email (ID: $user->ID)<br>";
-        
-        if ( ! class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager' ) ) {
-            wp_die("Error CRITICO: Clase Enrollment_Manager no encontrada. Revisa require_once en Finanzas.php");
-        }
-
-        echo "Simulando inscripción...<br>";
-        
-        $result = \Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager::enroll_user(
-            $email,
-            $plan_id,
-            'sub_debug_' . rand(100,999), 
-            10.00,
-            'ref_debug_' . rand(100,999)
-        );
-
-        if ( $result ) {
-            echo "<h2 style='color:green'>¡ÉXITO! Usuario matriculado.</h2>";
-            echo "Ahora intenta acceder al contenido bloqueado.";
-        } else {
-            echo "<h2 style='color:red'>FALLO. La función devolvió false.</h2>";
-            global $wpdb;
-            echo "Last DB Error: " . $wpdb->last_error;
-        }
-        
-        wp_die("Fin del Test.");
-    }
 
     /**
      * Maneja la redirección al Checkout de Stripe cuando se detecta ?alezux_action=checkout
