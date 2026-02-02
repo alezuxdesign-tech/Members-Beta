@@ -33,7 +33,7 @@ jQuery(document).ready(function ($) {
         $tbody.empty();
 
         if (rows.length === 0) {
-            $tbody.html('<tr><td colspan="6" style="text-align:center;">No se encontraron suscripciones.</td></tr>');
+            $tbody.html('<tr><td colspan="8" style="text-align:center;">No se encontraron suscripciones.</td></tr>');
             return;
         }
 
@@ -44,24 +44,75 @@ jQuery(document).ready(function ($) {
             if (row.status === 'canceled') statusClass = 'status-canceled';
             if (row.status === 'past_due') statusClass = 'status-past_due';
 
+            // Determinar si mostrar botón de acción
+            let actionHtml = '';
+            if (row.status === 'completed') {
+                actionHtml = '<span class="alezux-no-action">SIN ACCIONES</span>';
+            } else {
+                actionHtml = `
+                <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual">
+                    <span class="dashicons dashicons-money-alt"></span> Pago manual
+                </button>`;
+            }
+
+            // Icono de estado
+            const statusDot = `<span class="alezux-status-dot"></span>`;
+
             const html = `
                 <tr>
-                    <td>#${row.id}</td>
-                    <td>${row.student}</td>
-                    <td><strong>${row.plan}</strong></td>
-                    <td>${row.amount}</td>
-                    <td><span class="alezux-status-badge ${statusClass}">${row.status.toUpperCase()}</span></td>
-                    <td>${row.progress}</td>
-                    <td>${row.next_payment}</td>
-                    <td>
-                <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual" ${row.status === 'completed' ? 'style="display:none;" disabled' : ''}>
-                    <span class="dashicons dashicons-money-alt"></span>
-                </button>
+                    <td class="col-id">#${row.id}</td>
+                    <td class="col-student">
+                        <div class="alezux-student-info">
+                            <img src="${row.student_avatar}" class="alezux-student-avatar" alt="Avatar">
+                            <div class="alezux-student-text">
+                                <span class="student-name">${row.student}</span>
+                                <span class="student-email">${row.student_email}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="col-plan">
+                        <div class="alezux-plan-info">
+                            <span class="plan-name">${row.plan}</span>
+                            <span class="plan-meta">${row.total_quotas} CUOTAS</span>
+                        </div>
+                    </td>
+                    <td class="col-amount"><strong>${row.amount}</strong></td>
+                    <td class="col-status">
+                        <span class="alezux-status-badge ${statusClass}">
+                            ${statusDot} ${row.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="col-progress">
+                        <div class="alezux-progress-wrapper">
+                            <div class="progress-Label">
+                                <span>${row.quotas_paid}/${row.total_quotas} PAGADOS</span>
+                                <span>${row.percent}%</span>
+                            </div>
+                            <div class="alezux-progress-bar-bg">
+                                <div class="alezux-progress-bar-fill" style="width: ${row.percent}%;"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="col-next-payment">
+                       <div class="alezux-date-info">
+                           <span class="date-val">${row.next_payment_raw ? formatDate(row.next_payment_raw) : '-'}</span>
+                           ${row.status === 'completed' ? '<span class="date-meta success-icon"><span class="dashicons dashicons-yes"></span> FINALIZADO</span>' : `<span class="date-meta"><span class="dashicons dashicons-calendar-alt"></span> CUOTA #${Number(row.quotas_paid) + 1}</span>`}
+                       </div>
+                    </td>
+                    <td class="col-actions">
+                        ${actionHtml}
                     </td>
                 </tr>
             `;
             $tbody.append(html);
         });
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        // Formato simple "1 mar 2026"
+        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
     // Modal Logic

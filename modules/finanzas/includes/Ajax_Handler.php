@@ -368,15 +368,29 @@ class Ajax_Handler {
                 $next_payment = 'Pagado Totalmente';
             }
 
+            // Avatar
+            $avatar_url = \get_avatar_url( $row->user_id, ['size' => 48] );
+            
+            // Porcentaje
+            $percent = 0;
+            if ( $row->total_quotas > 0 ) {
+                $percent = \round( ( $row->quotas_paid / $row->total_quotas ) * 100 );
+            }
+
             $data[] = [
                 'id' => $row->id,
-                'student' => $row->display_name ? $row->display_name . ' (' . $row->user_email . ')' : 'Usuario Eliminado',
+                'student' => $row->display_name ? $row->display_name : 'Usuario Eliminado',
+                'student_email' => $row->user_email, // Raw email
+                'student_avatar' => $avatar_url,
                 'plan' => $row->plan_name,
-                'amount' => '$' . $row->quota_amount,
-                'raw_amount' => $row->quota_amount, // Para uso en JS
+                'total_quotas' => $row->total_quotas, // Para mostrar "3 CUOTAS"
+                'amount' => '$' . \number_format($row->quota_amount, 2, ',', '.'), // Formato correcto moneda
+                'raw_amount' => $row->quota_amount,
                 'status' => $row->status,
-                'progress' => $row->quotas_paid . ' / ' . $row->total_quotas,
+                'quotas_paid' => $row->quotas_paid,
+                'percent' => $percent,
                 'next_payment' => $next_payment,
+                'next_payment_raw' => $row->next_payment_date,
                 'stripe_id' => $row->stripe_subscription_id
             ];
         }

@@ -66,14 +66,17 @@ class Subscriptions_List_Widget extends Widget_Base {
         ?>
         <div class="alezux-subs-list-app">
             
-            <div class="alezux-filter-bar">
-                <div class="alezux-filter-item search-item">
-                     <label>Buscar Suscripción</label>
-                     <input type="text" id="alezux-subs-search" placeholder="Nombre o email...">
+            <div class="alezux-filter-bar" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="alezux-filter-item search-item" style="width:100%;">
+                     <div class="alezux-search-wrapper" style="position:relative;">
+                        <span class="dashicons dashicons-search" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#718096;"></span>
+                        <input type="text" id="alezux-subs-search" placeholder="Buscar por estudiante o plan..." style="padding-left:35px; width: 100%; max-width: 400px; background-color:#121620; border:1px solid #2d3748; color:#fff; border-radius:8px;">
+                     </div>
                 </div>
+                <!-- Optional: Add Filters button placeholder if needed later -->
             </div>
 
-            <div class="alezux-loading-subs" style="display:none; text-align:center; padding:20px;">
+            <div class="alezux-loading-subs" style="display:none; text-align:center; padding:20px; color: #a0aec0;">
                 <i class="eicon-loading eicon-animation-spin"></i> Cargando suscripciones...
             </div>
 
@@ -81,14 +84,14 @@ class Subscriptions_List_Widget extends Widget_Base {
                 <table class="alezux-subs-table alezux-sales-table"> 
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Estudiante</th>
-                            <th>Plan</th>
-                            <th>Monto</th>
-                            <th>Estado</th>
-                            <th>Progreso</th>
-                            <th>Próximo Pago</th>
-                            <th>Acciones</th>
+                            <th class="col-id">ID</th>
+                            <th class="col-student">ESTUDIANTE</th>
+                            <th class="col-plan">PLAN ACADÉMICO</th>
+                            <th class="col-amount">MONTO</th>
+                            <th class="col-status">ESTADO</th>
+                            <th class="col-progress">PROGRESO</th>
+                            <th class="col-next-payment">VENCIMIENTO</th>
+                            <th class="col-actions">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
