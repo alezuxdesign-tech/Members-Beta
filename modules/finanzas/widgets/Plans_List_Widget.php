@@ -508,7 +508,7 @@ class Plans_List_Widget extends Widget_Base {
             <table class="alezux-finanzas-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+
                         <th>Nombre del Plan</th>
                         <th>Curso Asociado</th>
                         <th>Precio</th>
@@ -521,7 +521,7 @@ class Plans_List_Widget extends Widget_Base {
                     <?php if ( $is_editor ) : ?>
                         <!-- Dummy Data for Editor -->
                          <tr>
-                            <td>#5</td>
+
                             <td><strong>Plan Básico</strong></td>
                             <td>Curso Introducción</td>
                             <td>$20.00</td>
@@ -533,7 +533,7 @@ class Plans_List_Widget extends Widget_Base {
                             </td>
                         </tr>
                         <tr>
-                            <td>#8</td>
+
                             <td><strong>Plan Completo</strong></td>
                             <td>Curso Avanzado</td>
                             <td>$99.00</td>
@@ -545,7 +545,7 @@ class Plans_List_Widget extends Widget_Base {
                             </td>
                         </tr>
                          <tr>
-                            <td>#12</td>
+
                             <td><strong>Membresía VIP</strong></td>
                             <td>Todos los Cursos</td>
                             <td>$150.00</td>

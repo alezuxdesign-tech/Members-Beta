@@ -49,7 +49,7 @@ jQuery(document).ready(function ($) {
         rows.forEach(row => {
             const html = `
                 <tr>
-                    <td>#${row.id}</td>
+
                     <td><strong>${row.name}</strong></td>
                     <td>${row.course}</td>
                     <td>${row.price}</td>

@@ -471,7 +471,7 @@ class Sales_History_Widget extends Widget_Base {
                 <table class="alezux-finanzas-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+
                             <th>Alumno</th>
                             <th>Método</th>
                             <th>Monto</th>
@@ -484,7 +484,7 @@ class Sales_History_Widget extends Widget_Base {
                         <?php if ( $is_editor ) : ?>
                             <!-- Dummy Data for Editor -->
                             <tr>
-                                <td>#101</td>
+
                                 <td>Juan Pérez</td>
                                 <td><span style="font-family: 'Font Awesome 5 Brands'; font-weight: 400;">&#xf429;</span> Stripe</td>
                                 <td><strong>$50.00</strong></td>
@@ -493,7 +493,7 @@ class Sales_History_Widget extends Widget_Base {
                                 <td>01 Nov 2025</td>
                             </tr>
                             <tr>
-                                <td>#102</td>
+
                                 <td>Maria Garcia</td>
                                 <td>PayPal</td>
                                 <td><strong>$120.00</strong></td>
@@ -502,7 +502,7 @@ class Sales_History_Widget extends Widget_Base {
                                 <td>02 Nov 2025</td>
                             </tr>
                             <tr>
-                                <td>#103</td>
+
                                 <td>Carlos Diaz</td>
                                 <td><span style="font-family: 'Font Awesome 5 Brands'; font-weight: 400;">&#xf429;</span> Stripe</td>
                                 <td><strong>$50.00</strong></td>
@@ -511,7 +511,7 @@ class Sales_History_Widget extends Widget_Base {
                                 <td>03 Nov 2025</td>
                             </tr>
                              <tr>
-                                <td>#104</td>
+
                                 <td>Ana Lopez</td>
                                 <td>Manual</td>
                                 <td><strong>$25.00</strong></td>

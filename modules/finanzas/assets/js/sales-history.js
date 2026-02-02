@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
 
             const html = `
                 <tr>
-                    <td>#${row.id}</td>
+
                     <td>${row.student}</td>
                     <td>${methodIcon}${method}</td>
                     <td><strong>${amount}</strong></td>
