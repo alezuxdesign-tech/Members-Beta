@@ -110,12 +110,20 @@ class Access_Control {
             }
         }
 
-        if ( $required_quota === 0 ) {
-            // El post no está en ninguna regla de restricción explícita
-            return false; 
+        // DEBUG VISUAL EN PANTALLA
+        if ( isset( $_GET['alezux_debug'] ) ) {
+            echo "<div style='background:white; color:black; padding:20px; z-index:9999; position:relative; border:2px solid red;'>";
+            echo "<h3>Alezux Debug</h3>";
+            echo "Post ID: $post_id <br>";
+            echo "User ID: $user_id <br>";
+            echo "Course ID: $course_id <br>";
+            echo "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
+            echo "Required Quota for this content: $required_quota <br>";
+            echo "<pre>Rules: " . print_r($access_rules, true) . "</pre>";
+            echo "</div>";
         }
 
-        // 4. Verificar estado del usuario (Suscripción)
+        // PASO 4: Subscription Check
         $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
         $subscription = $wpdb->get_row( $wpdb->prepare( 
             "SELECT * FROM $subs_table WHERE user_id = %d AND plan_id = %d AND status IN ('active', 'completed') LIMIT 1", 
@@ -123,19 +131,22 @@ class Access_Control {
         ) );
 
         if ( ! $subscription ) {
-            // Curso tiene plan, Post requiere cuota, Usuario NO tiene suscripción activa
-            return true; // Bloqueado.
+             // Debug visual
+            if ( isset( $_GET['alezux_debug'] ) ) echo "BLOCK: No subscription.<br>";
+            return true; // Bloqueado
         }
 
         if ( $subscription->status === 'completed' ) {
-            return false; // Pagó todo, acceso total.
+            if ( isset( $_GET['alezux_debug'] ) ) echo "ALLOW: Subscription completed.<br>";
+            return false; 
         }
 
-        // 5. Comparar Cuotas
         if ( $subscription->quotas_paid >= $required_quota ) {
-            return false; // Tiene suficientes cuotas pagadas
+            if ( isset( $_GET['alezux_debug'] ) ) echo "ALLOW: Quotas paid " . $subscription->quotas_paid . " >= Required $required_quota.<br>";
+            return false; 
         }
 
+        if ( isset( $_GET['alezux_debug'] ) ) echo "BLOCK: Not enough quotas.<br>";
         return true; // Le faltan cuotas. BLOQUEADO.
     }
 }
