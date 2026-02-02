@@ -50,10 +50,32 @@
 
 .alezux-search-wrapper .dashicons {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #718096;
+    font-size: 18px;
+    /* Slightly smaller icon */
+    line-height: 1;
+}
+
+/* Inline Filters Container */
+.alezux-filters-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.alezux-filters-inline .alezux-filter-item {
+    margin-bottom: 0;
+}
+
+.alezux-filters-inline .alezux-filter-item select {
+    margin-bottom: 0;
+    height: 38px;
+    /* Match input height */
+    min-width: 140px;
 }
 
 /* Generic Search Input Class */
@@ -61,11 +83,13 @@
     background-color: #121620;
     border: 1px solid #2d3748;
     color: #fff;
-    padding: 10px 15px 10px 40px;
-    /* Padding left for icon */
+    padding: 8px 15px 8px 35px;
+    /* Less left padding, tighter fit */
     border-radius: 8px;
     width: 100%;
-    font-size: 14px;
+    font-size: 13px;
+    height: 38px;
+    /* Fixed height for alignment */
     transition: all 0.2s ease;
 }
 
@@ -99,7 +123,7 @@
     border: 1px solid #2d3748;
     color: #fff;
     font-size: 13px;
-    min-width: 100px;
+    min-width: 140px;
     /* Reduced from 140px */
     max-width: 100%;
 }
@@ -123,6 +147,36 @@
         width: 100%;
     }
 }
+
+/* Pagination Buttons */
+.alezux-pagination {
+    display: flex;
+    gap: 5px;
+}
+
+.page-btn {
+    background: #1a202c;
+    border: 1px solid #2d3748;
+    color: #a0aec0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.page-btn:hover,
+.page-btn.active {
+    background: #5a8dee;
+    border-color: #5a8dee;
+    color: #fff;
+}
+
+.page-dots {
+    color: #718096;
+    padding: 6px;
+}
+
 
 /* Table Structure */
 .alezux-table-wrapper {

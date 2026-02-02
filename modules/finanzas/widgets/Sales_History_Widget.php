@@ -237,7 +237,7 @@ class Sales_History_Widget extends Widget_Base {
                     <?php endif; ?>
                 </div>
 
-                <div class="alezux-header-right" style="flex-wrap: wrap; justify-content: flex-end;">
+                <div class="alezux-header-right alezux-filters-inline">
                      <!-- Search -->
                     <div class="alezux-filter-item search-item">
                          <div class="alezux-search-wrapper">
@@ -245,44 +245,31 @@ class Sales_History_Widget extends Widget_Base {
                             <input type="text" id="alezux-sales-search" class="alezux-table-search-input" placeholder="Buscar transacción...">
                          </div>
                     </div>
+
+                    <!-- Course Filter -->
+                    <div class="alezux-filter-item">
+                        <select id="alezux-filter-course">
+                            <option value="0">Todos los Cursos</option>
+                            <?php foreach($courses as $id => $title): ?>
+                                <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="alezux-filter-item">
+                        <select id="alezux-filter-status">
+                                <option value="">Todos los Estados</option>
+                                <option value="succeeded">Completado</option>
+                                <option value="pending">Pendiente</option>
+                                <option value="failed">Fallido</option>
+                                <option value="refunded">Reembolsado</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             
-            <!-- Barra de Filtros Secundaria (Debajo del título para no saturar header) -->
-            <div class="alezux-filters-secondary">
-                
-                <div class="alezux-filter-item">
-                    <label>Curso</label>
-                    <select id="alezux-filter-course">
-                        <option value="0">Todos</option>
-                        <?php foreach($courses as $id => $title): ?>
-                            <option value="<?php echo esc_attr($id); ?>"><?php echo esc_html($title); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="alezux-filter-item">
-                    <label>Estado</label>
-                    <select id="alezux-filter-status">
-                            <option value="">Todos</option>
-                            <option value="succeeded">Completado</option>
-                            <option value="pending">Pendiente</option>
-                            <option value="failed">Fallido</option>
-                            <option value="refunded">Reembolsado</option>
-                    </select>
-                </div>
-
-                <div class="alezux-filter-item" style="max-width: 100px;">
-                    <label>Filas</label>
-                    <select id="alezux-limit-select">
-                        <option value="10">10</option>
-                        <option value="20" selected>20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-
-            </div>
+            <!-- (Secondary filters div removed as they are now inline) -->
 
             <!-- Loading -->
             <div class="alezux-loading">
@@ -309,8 +296,20 @@ class Sales_History_Widget extends Widget_Base {
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="alezux-pagination"></div>
+            <!-- Footer: Pagination + Rows Filter -->
+            <div class="alezux-table-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <div class="alezux-pagination"></div>
+                
+                <div class="alezux-filter-item" style="max-width: 100px;">
+                    <label style="display:inline-block; margin-right:5px; color:#718096; font-size:12px;">Filas:</label>
+                    <select id="alezux-limit-select" style="width:auto; display:inline-block; padding: 4px 8px;">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
 
         </div>
         <?php
