@@ -12,6 +12,7 @@ jQuery(document).ready(function ($) {
     const $searchInput = $wrapper.find('#alezux-sales-search');
     const $courseFilter = $wrapper.find('#alezux-filter-course');
     const $statusFilter = $wrapper.find('#alezux-filter-status');
+    const $dateFilter = $wrapper.find('#alezux-filter-date');
     const $limitSelect = $wrapper.find('#alezux-limit-select');
 
     let currentPage = 1;
@@ -22,6 +23,34 @@ jQuery(document).ready(function ($) {
         $tbody.css('opacity', '0.5');
         $spinner.show();
 
+        let startDate = '';
+        let endDate = '';
+
+        // Get dates from Flatpickr instance if valid
+        if ($dateFilter.length && $dateFilter[0]._flatpickr) {
+            const fp = $dateFilter[0]._flatpickr;
+            const selected = fp.selectedDates;
+            if (selected.length > 0) {
+                const formatDate = (d) => {
+                    let month = '' + (d.getMonth() + 1),
+                        day = '' + d.getDate(),
+                        year = d.getFullYear();
+                    if (month.length < 2) month = '0' + month;
+                    if (day.length < 2) day = '0' + day;
+                    return [year, month, day].join('-');
+                };
+
+                startDate = formatDate(selected[0]);
+                if (selected.length > 1) {
+                    endDate = formatDate(selected[selected.length - 1]);
+                } else {
+                    // Si es rango y solo eligió uno, a veces flatpickr espera el segundo.
+                    // Asumiremos start=end si se cerró solo con 1, o enviamos solo start.
+                    // Ajax Handler ya maneja start solo.
+                }
+            }
+        }
+
         const data = {
             action: 'alezux_get_sales_history',
             nonce: alezux_finanzas_vars.nonce,
@@ -29,7 +58,9 @@ jQuery(document).ready(function ($) {
             limit: $limitSelect.val(),
             search: $searchInput.val(),
             filter_course: $courseFilter.val(),
-            filter_status: $statusFilter.val()
+            filter_status: $statusFilter.val(),
+            start_date: startDate,
+            end_date: endDate
         };
         console.log('Request data:', data);
 
@@ -153,6 +184,23 @@ jQuery(document).ready(function ($) {
         currentPage = $(this).data('page');
         fetchSales();
     });
+
+    // Initialize Flatpickr if available
+    if ($dateFilter.length > 0) {
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr($dateFilter[0], {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                // locale: "es", // Needs Spanish locale loaded separately usually, stick to default or check
+                onClose: function (selectedDates, dateStr, instance) {
+                    currentPage = 1;
+                    fetchSales();
+                }
+            });
+        } else {
+            console.warn('Flatpickr library not found. Date filtering disabled.');
+        }
+    }
 
     // Init
     fetchSales();

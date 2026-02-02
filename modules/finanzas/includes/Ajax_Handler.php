@@ -138,6 +138,8 @@ class Ajax_Handler {
         $search = isset($_POST['search']) ? \sanitize_text_field($_POST['search']) : '';
         $filter_course = isset($_POST['filter_course']) ? \intval($_POST['filter_course']) : 0;
         $filter_status = isset($_POST['filter_status']) ? \sanitize_text_field($_POST['filter_status']) : '';
+        $start_date = isset($_POST['start_date']) ? \sanitize_text_field($_POST['start_date']) : '';
+        $end_date = isset($_POST['end_date']) ? \sanitize_text_field($_POST['end_date']) : '';
         
         $offset = ($page - 1) * $limit;
 
@@ -182,6 +184,16 @@ class Ajax_Handler {
         if ( ! empty($filter_status) ) {
             $sql .= " AND t.status = %s";
             $args[] = $filter_status;
+        }
+
+        if ( ! empty($start_date) && ! empty($end_date) ) {
+            $sql .= " AND DATE(t.created_at) BETWEEN %s AND %s";
+            $args[] = $start_date;
+            $args[] = $end_date;
+        } elseif ( ! empty($start_date) ) {
+            // Caso borde: solo fecha inicio seleccionada (flatpickr a veces envia solo start si no se completa rango)
+            $sql .= " AND DATE(t.created_at) >= %s";
+            $args[] = $start_date;
         }
 
         // Orden y Paginación

@@ -448,6 +448,14 @@ class Sales_History_Widget extends Widget_Base {
                         </select>
                     </div>
 
+                    <!-- Date Filter -->
+                    <div class="alezux-filter-item">
+                         <div class="alezux-search-wrapper date-wrapper">
+                            <span class="dashicons dashicons-calendar-alt"></span>
+                            <input type="text" id="alezux-filter-date" class="alezux-table-search-input alezux-date-picker" placeholder="Fecha">
+                         </div>
+                    </div>
+
                     <!-- Status Filter -->
                     <div class="alezux-filter-item">
                         <select id="alezux-filter-status">
