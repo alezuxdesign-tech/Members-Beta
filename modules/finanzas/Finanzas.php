@@ -36,6 +36,7 @@ class Finanzas extends Module_Base {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php';
         require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php';
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Enrollment_Manager.php';
 
 		// Inicializar manejadores
 		\Alezux_Members\Modules\Finanzas\Includes\Ajax_Handler::init();
