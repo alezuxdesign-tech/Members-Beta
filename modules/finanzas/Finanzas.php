@@ -327,7 +327,7 @@ class Finanzas extends Module_Base {
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
-             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], '1.0.5', true );
+             wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], '1.0.6', true );
               wp_localize_script( 'alezux-subs-list-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )

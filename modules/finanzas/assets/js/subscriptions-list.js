@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
                     <td>${row.progress}</td>
                     <td>${row.next_payment}</td>
                     <td>
-                        <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual">
+                <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual" ${row.status === 'completed' ? 'style="display:none;" disabled' : ''}>
                     <span class="dashicons dashicons-money-alt"></span>
                 </button>
                     </td>
