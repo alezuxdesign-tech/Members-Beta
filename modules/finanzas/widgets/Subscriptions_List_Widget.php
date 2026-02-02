@@ -97,5 +97,6 @@ class Subscriptions_List_Widget extends Widget_Base {
             </div>
 
         </div>
+        <?php
 	}
 }
