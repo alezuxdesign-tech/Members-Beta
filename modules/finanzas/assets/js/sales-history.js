@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
     let limit = 20;
 
     function fetchSales() {
+        console.log('Fetching sales history...');
         $tbody.css('opacity', '0.5');
         $spinner.show();
 
@@ -30,17 +31,22 @@ jQuery(document).ready(function ($) {
             filter_course: $courseFilter.val(),
             filter_status: $statusFilter.val()
         };
+        console.log('Request data:', data);
 
         $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
+            console.log('Server response:', response);
             if (response.success) {
                 renderTable(response.data.rows);
                 renderPagination(response.data);
             } else {
+                console.error('Server error:', response.data);
                 $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error: ' + response.data + '</td></tr>');
             }
         })
-            .fail(function () {
-                $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error de conexión con el servidor.</td></tr>');
+            .fail(function (xhr, status, error) {
+                console.error('AJAX failed:', status, error);
+                console.log('XHR:', xhr);
+                $tbody.html('<tr><td colspan="7" style="text-align:center; padding: 20px; color: #ff6b6b;">Error de conexión con el servidor. Revisar consola.</td></tr>');
             })
             .always(function () {
                 $spinner.hide();

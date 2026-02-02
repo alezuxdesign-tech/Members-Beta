@@ -328,7 +328,7 @@ class Finanzas extends Module_Base {
         // But for now, I will just register the javascripts.
 
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-history.js' ) ) {
-            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], '1.0', true );
+            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], $version, true );
             
             wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
