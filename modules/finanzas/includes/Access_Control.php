@@ -5,11 +5,6 @@ if ( ! \defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// PRUEBA DE VIDA: Si ves esto, el archivo se está cargando.
-if ( isset( $_GET['alezux_debug'] ) ) {
-    die( "<h1>DEBUG: Access_Control.php LOADED successfully.</h1>" );
-}
-
 class Access_Control {
 
     public static function init() {
@@ -25,6 +20,12 @@ class Access_Control {
      * @return bool
      */
     public static function filter_content_access( $access, $post_id, $user_id ) {
+        // HOOK TEST
+        if ( isset( $_GET['alezux_debug'] ) ) {
+            // Nota: die() aqui es validopara probar hook, pero vamos a dejar que is_post_locked maneje el debug detallado
+            // die( "<h1>DEBUG: Hook learndash_content_access FIRED for Post ID: $post_id</h1>" );
+        }
+
         // Recursion Guard: Evitar loops infinitos si LD llama al filtro internamente
         static $is_running = false;
         if ( $is_running ) {
@@ -135,9 +136,6 @@ class Access_Control {
             }
         }
 
-        // DEBUG VISUAL EN PANTALLA
-        $subscription = null; // Initialize for debug safety
-        
         // 4. Retrieve Subscription for Debug and Logic
         $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
         $subscription = $wpdb->get_row( $wpdb->prepare( 
