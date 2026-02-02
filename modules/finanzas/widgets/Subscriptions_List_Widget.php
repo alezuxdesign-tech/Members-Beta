@@ -377,7 +377,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'label' => esc_html__('Color Email', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .student-email' => 'color: {{VALUE}}; word-break: break-word; overflow-wrap: anywhere;',
                 ],
             ]
         );
@@ -681,6 +681,48 @@ class Subscriptions_List_Widget extends Widget_Base {
                 'size_units' => ['px', 'em'],
                 'selectors' => [
                     '{{WRAPPER}} .alezux-btn-manual-pay' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        // --- ESTILO: MONTO ---
+        $this->start_controls_section(
+            'style_section_amount',
+            [
+                'label' => esc_html__('Monto', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'amount_text_color',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .col-amount strong' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .col-amount' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'amount_typography',
+                'selector' => '{{WRAPPER}} .col-amount strong, {{WRAPPER}} .col-amount',
+            ]
+        );
+
+        $this->add_control(
+            'amount_bg_color',
+            [
+                'label' => esc_html__('Color Fondo Celda', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .col-amount' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
