@@ -34,9 +34,9 @@ class Finanzas extends Module_Base {
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Ajax_Handler.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Stripe_API.php';
 		require_once ALEZUX_FINANZAS_PATH . 'includes/Admin_Settings.php';
-		// require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; // Dejamos este activo por si acaso, no lo toqué
+        // require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; // Dejamos este activo por si acaso, no lo toqué
         require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; 
-        // require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // DISABLED FOR DEBUG 500
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // REACTIVATED
         // require_once ALEZUX_FINANZAS_PATH . 'includes/Enrollment_Manager.php'; // DISABLED FOR DEBUG 500
 
 		// Inicializar manejadores
@@ -45,9 +45,9 @@ class Finanzas extends Module_Base {
         \Alezux_Members\Modules\Finanzas\Includes\Webhook_Handler::init();
         
         // Inicializar Control de Acceso (Hooks LearnDash)
-        // if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Access_Control' ) ) {
-        //     \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
-        // }
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Access_Control' ) ) {
+            \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
+        }
 
         // Dashboard legacy (opcional, mantener por si acaso se necesita lógica interna)
         // require_once ALEZUX_FINANZAS_PATH . 'includes/Finance_Dashboard.php';

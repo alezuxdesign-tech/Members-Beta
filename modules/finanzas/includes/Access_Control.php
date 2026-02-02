@@ -8,8 +8,7 @@ if ( ! \defined( 'ABSPATH' ) ) {
 class Access_Control {
 
     public static function init() {
-        // Desactivado temporalmente para debugging error 500
-        // \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
+        \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
     }
 
     /**
