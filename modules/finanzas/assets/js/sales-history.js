@@ -191,7 +191,7 @@ jQuery(document).ready(function ($) {
             flatpickr($dateFilter[0], {
                 mode: "range",
                 dateFormat: "Y-m-d",
-                // locale: "es", // Needs Spanish locale loaded separately usually, stick to default or check
+                locale: "es", // Spanish locale
                 onClose: function (selectedDates, dateStr, instance) {
                     currentPage = 1;
                     fetchSales();

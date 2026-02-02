@@ -320,15 +320,20 @@ class Finanzas extends Module_Base {
         $version = '1.0.0.' . time(); // Cache busting safe
 
         // Unified Table Styles
+        // Register Flatpickr (Remote CDN)
+        wp_register_style('flatpickr-css', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css', [], '4.6.13');
+        wp_register_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', ['jquery'], '4.6.13', true);
+        wp_register_script('flatpickr-es-js', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js', ['flatpickr-js'], '4.6.13', true);
+
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/alezux-tables.css' ) ) {
-             wp_register_style( 'alezux-finanzas-tables-css', ALEZUX_FINANZAS_URL . 'assets/css/alezux-tables.css', [], $version );
+             wp_register_style( 'alezux-finanzas-tables-css', ALEZUX_FINANZAS_URL . 'assets/css/alezux-tables.css', ['flatpickr-css'], $version );
         }
         
         // Legacy handles alias (to prevent break if usage is missed) - Optional but safer to update widgets
         // But for now, I will just register the javascripts.
 
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-history.js' ) ) {
-            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery'], $version, true );
+            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js'], $version, true );
             
             wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
