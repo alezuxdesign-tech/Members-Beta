@@ -34,6 +34,10 @@ class Sales_History_Widget extends Widget_Base {
 		return [ 'alezux-sales-history-css' ];
 	}
 
+    public function get_script_depends() {
+		return [ 'alezux-sales-history-js' ];
+	}
+
 	protected function register_controls() {
 
 		$this->start_controls_section(
