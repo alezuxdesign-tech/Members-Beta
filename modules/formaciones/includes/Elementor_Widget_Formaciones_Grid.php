@@ -990,11 +990,12 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                     $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
                     // Check if table exists to prevent errors if module not installed
                     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
-                        $plan_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table_plans WHERE course_id = %d AND total_quotas = 1 LIMIT 1", $post_id ) );
+                        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token FROM $table_plans WHERE course_id = %d AND total_quotas = 1 LIMIT 1", $post_id ) );
                         
-                        if ( $plan_id ) {
-                             // Si hay plan, generar URL de checkout directo
-                             $button_link = home_url( '/?alezux_action=checkout&plan_id=' . $plan_id );
+                        if ( $plan ) {
+                             // Si hay plan, generar URL de checkout directo con Token (Más seguro) o ID si no hay token
+                             $identifier = !empty($plan->token) ? 'token=' . $plan->token : 'plan_id=' . $plan->id;
+                             $button_link = home_url( '/?alezux_action=checkout&' . $identifier );
                         }
                     }
                     
