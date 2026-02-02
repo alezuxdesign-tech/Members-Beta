@@ -90,11 +90,15 @@ class Finanzas extends Module_Base {
                 $customer_email = $current_user->user_email;
             }
 
+            // Determinar modo (payment vs subscription) basado en frecuencia
+            $mode = ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) ? 'payment' : 'subscription';
+
             $session = $users_access->create_checkout_session( 
                 $plan->stripe_price_id, 
                 $success_url, 
                 $cancel_url, 
-                $customer_email 
+                $customer_email,
+                $mode
             );
 
             if ( is_wp_error( $session ) ) {

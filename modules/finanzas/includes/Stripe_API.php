@@ -84,7 +84,7 @@ class Stripe_API {
     /**
      * Crea una Sesión de Checkout.
      */
-    public function create_checkout_session( $price_id, $success_url, $cancel_url, $customer_email = null ) {
+    public function create_checkout_session( $price_id, $success_url, $cancel_url, $customer_email = null, $mode = 'subscription' ) {
         if ( empty( $this->secret_key ) ) {
             return new \WP_Error( 'stripe_error', 'Falta la Secret Key de Stripe.' );
         }
@@ -98,16 +98,8 @@ class Stripe_API {
                     'quantity' => 1,
                 ],
             ],
-            'mode' => 'subscription', // Asumimos suscripción (cuotas) por ahora, cambiar a 'payment' si es contado
+            'mode' => $mode,
         ];
-
-        // Validar si es pago unico (hack rápido, idealmente pasar 'mode' como argumento)
-        // Pero Stripe maneja precios recurrentes en mode subscription y one-time en payment.
-        // Consultar el precio primero seria ideal, pero costoso. 
-        // Si el precio es recurrente y usas mode payment, fallará.
-        // Por defecto en alezux miembros usamos cuotas (recurring).
-        // Podemos intentar 'subscription', si falla (porque es one time), reintentar con 'payment' es muy sucio.
-        // Mejor pasar el modo como argumento. Lo dejo en 'subscription' default.
 
         if ( ! empty( $customer_email ) ) {
             $payload['customer_email'] = $customer_email;
@@ -144,6 +136,10 @@ class Stripe_API {
 
         if ( $code >= 400 ) {
             $msg = isset( $json->error->message ) ? $json->error->message : 'Error desconocido de Stripe';
+            // Agregar más info para debug si es posible
+            if ( isset( $json->error->param ) ) {
+                $msg .= ' (Campo: ' . $json->error->param . ')';
+            }
             return new \WP_Error( 'stripe_api_error', $msg );
         }
 
