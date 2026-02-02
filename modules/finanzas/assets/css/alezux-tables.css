@@ -59,13 +59,10 @@
     line-height: 1;
 }
 
-line-height: 1;
-}
-
 .alezux-search-wrapper .alezux-clear-icon {
     position: absolute;
-    left: auto;
-    right: 10px;
+    left: auto !important;
+    right: 10px !important;
     top: 50%;
     transform: translateY(-50%);
     color: #cbd5e0;
