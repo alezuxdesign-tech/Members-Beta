@@ -659,6 +659,214 @@ class Subscriptions_List_Widget extends Widget_Base {
         $this->end_controls_tab();
         $this->end_controls_tabs();
 
+        $this->end_controls_section();
+
+        // ---------------------------------------------------------
+        // SECTION: Popup Styles & Preview
+        // ---------------------------------------------------------
+        $this->start_controls_section(
+            'section_popup_style',
+            [
+                'label' => esc_html__('Estilos Popup de Pago', 'alezux-members'),
+                'tab' => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'preview_modal',
+            [
+                'label' => esc_html__('Ver Popup en Editor', 'alezux-members'),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__('Sí', 'alezux-members'),
+                'label_off' => esc_html__('No', 'alezux-members'),
+                'return_value' => 'yes',
+                'default' => '',
+                'description' => esc_html__('Activa para previsualizar y editar el estilo del popup.', 'alezux-members'),
+            ]
+        );
+
+        $this->add_control(
+            'popup_overlay_heading',
+            [
+                'label' => esc_html__('Fondo Pantalla (Overlay)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'popup_overlay_bg',
+            [
+                'label' => esc_html__('Color Fondo Oscuro', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_box_heading',
+            [
+                'label' => esc_html__('Caja del Modal', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'popup_box_bg',
+            [
+                'label' => esc_html__('Color Fondo Caja', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'popup_box_border',
+                'selector' => '{{WRAPPER}} .alezux-modal-content',
+            ]
+        );
+
+        $this->add_control(
+            'popup_box_radius',
+            [
+                'label' => esc_html__('Radio de Borde', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+         $this->add_group_control(
+            \Elementor\Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'popup_box_shadow',
+                'selector' => '{{WRAPPER}} .alezux-modal-content',
+            ]
+        );
+
+        $this->add_control(
+            'popup_content_heading',
+            [
+                'label' => esc_html__('Textos y Inputs', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'popup_title_color',
+            [
+                'label' => esc_html__('Color Título', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal h3' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'popup_title_typo',
+                'selector' => '{{WRAPPER}} .alezux-modal h3',
+            ]
+        );
+
+        $this->add_control(
+            'popup_labels_color',
+            [
+                'label' => esc_html__('Color Etiquetas', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal label' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-modal p' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_input_bg',
+            [
+                'label' => esc_html__('Fondo Inputs', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-form-group input' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-form-group textarea' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_input_color',
+            [
+                'label' => esc_html__('Color Texto Inputs', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-form-group input' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .alezux-form-group textarea' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+        
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'popup_input_border',
+                'selector' => '{{WRAPPER}} .alezux-form-group input, {{WRAPPER}} .alezux-form-group textarea',
+            ]
+        );
+
+        $this->add_control(
+            'popup_btn_heading',
+            [
+                'label' => esc_html__('Botón Confirmar', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'popup_btn_bg',
+            [
+                'label' => esc_html__('Fondo Botón', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal .alezux-btn-primary' => 'background: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_btn_bg_hover',
+            [
+                'label' => esc_html__('Fondo Botón (Hover)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal .alezux-btn-primary:hover' => 'background: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_btn_text_color',
+            [
+                'label' => esc_html__('Color Texto Botón', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal .alezux-btn-primary' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
         $this->end_controls_section();    
 
 	}
@@ -782,7 +990,7 @@ class Subscriptions_List_Widget extends Widget_Base {
             </div>
 
             <!-- Modal de Pago Manual -->
-            <div id="alezux-manual-pay-modal" class="alezux-modal" style="display:none;">
+            <div id="alezux-manual-pay-modal" class="alezux-modal" style="<?php echo ( \Elementor\Plugin::$instance->editor->is_edit_mode() && 'yes' === $settings['preview_modal'] ) ? 'display:flex !important;' : 'display:none;'; ?>">
                 <div class="alezux-modal-content">
                     <span class="alezux-close-modal">&times;</span>
                     <h3><?php esc_html_e('Registrar Pago Manual', 'alezux-members'); ?></h3>

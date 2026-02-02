@@ -307,9 +307,9 @@
 
 .alezux-form-group input,
 .alezux-form-group textarea {
-    background-color: #2d3748 !important;
-    border: 1px solid #4a5568 !important;
-    color: #fff !important;
+    background-color: #2d3748;
+    border: 1px solid #4a5568;
+    color: #fff;
     width: 100%;
     padding: 10px;
     border-radius: 6px;
