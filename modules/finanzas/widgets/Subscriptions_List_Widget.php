@@ -957,7 +957,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                                         <div class="alezux-student-info">
                                             <img src="<?php echo esc_url($item['avatar']); ?>" class="alezux-student-avatar" alt="">
                                             <div class="alezux-student-text">
-                                                <span class="student-id">#<?php echo esc_html($item['id']); ?></span>
+
                                                 <div class="student-name"><?php echo esc_html($item['student']); ?></div>
                                                 <div class="student-email"><?php echo esc_html($item['email']); ?></div>
                                             </div>

@@ -65,7 +65,6 @@ jQuery(document).ready(function ($) {
                         <div class="alezux-student-info">
                             <img src="${row.student_avatar}" class="alezux-student-avatar" alt="Avatar">
                             <div class="alezux-student-text">
-                                <span class="student-id" style="font-size: 0.8em; color: #718096; display: block; margin-bottom: 2px;">#${row.id}</span>
                                 <span class="student-name">${row.student}</span>
                                 <span class="student-email">${row.student_email}</span>
                             </div>
