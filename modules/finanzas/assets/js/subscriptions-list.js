@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
                     <td>${row.progress}</td>
                     <td>${row.next_payment}</td>
                     <td>
-                        <button class="alezux-btn-manual-pay" data-id="${row.id}" title="Pago Manual">
+                        <button class="alezux-btn-manual-pay" data-id="${row.id}" data-amount="${row.raw_amount}" title="Pago Manual">
                             <i class="eicon-wallet"></i>
                         </button>
                     </td>
@@ -73,10 +73,12 @@ jQuery(document).ready(function ($) {
     // Abrir Modal
     $(document).on('click', '.alezux-btn-manual-pay', function () {
         currentSubId = $(this).data('id');
+        const amount = $(this).data('amount');
+
         $('#modal-sub-id').text(currentSubId);
-        $('#manual-pay-amount').val('');
+        $('#manual-pay-amount').val(amount).prop('readonly', true).css('background-color', '#eee');
         $('#manual-pay-note').val('');
-        $modal.show();
+        $modal.css('display', 'flex'); // Force flex for centering
     });
 
     // Cerrar Modal

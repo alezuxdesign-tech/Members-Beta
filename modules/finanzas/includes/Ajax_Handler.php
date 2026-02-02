@@ -14,6 +14,7 @@ class Ajax_Handler {
         \add_action( 'wp_ajax_alezux_get_plans_list', [ __CLASS__, 'get_plans_list' ] );
         \add_action( 'wp_ajax_alezux_get_subscriptions_list', [ __CLASS__, 'get_subscriptions_list' ] );
         \add_action( 'wp_ajax_alezux_delete_plan', [ __CLASS__, 'delete_plan' ] );
+        \add_action( 'wp_ajax_alezux_manual_subs_payment', [ __CLASS__, 'manual_subscription_payment' ] );
 	}
 
 	public static function get_course_modules() {
@@ -372,6 +373,7 @@ class Ajax_Handler {
                 'student' => $row->display_name ? $row->display_name . ' (' . $row->user_email . ')' : 'Usuario Eliminado',
                 'plan' => $row->plan_name,
                 'amount' => '$' . $row->quota_amount,
+                'raw_amount' => $row->quota_amount, // Para uso en JS
                 'status' => $row->status,
                 'progress' => $row->quotas_paid . ' / ' . $row->total_quotas,
                 'next_payment' => $next_payment,
