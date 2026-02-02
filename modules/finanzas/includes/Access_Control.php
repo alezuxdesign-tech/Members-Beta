@@ -78,13 +78,14 @@ class Access_Control {
             $course_id = \learndash_get_course_id( $post_id );
         }
         
+        
         if ( ! $course_id ) {
             return false; 
         }
         error_log( "Alezux Debug: Course ID identified: $course_id" );
         
 
-        /*
+        
         // PASO 2: DB Plan Check
         global $wpdb;
         $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
@@ -94,9 +95,9 @@ class Access_Control {
             return false; 
         }
         error_log( "Alezux Debug: Plan identified: " . $plan->id );
-        */
+        
 
-        /*
+        
         // PASO 3: JSON Decode
         $access_rules = \json_decode( $plan->access_rules, true );
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
@@ -115,7 +116,7 @@ class Access_Control {
         if ( $required_quota === 0 ) {
             return false; 
         }
-        */
+        
 
         /*
         // PASO 4: Subscription Check
