@@ -1,8 +1,8 @@
 /* Dark Theme Container */
 .alezux-subs-list-app {
-    background-color: #0b0e14 !important;
+    background-color: #0b0e14;
     /* Dark Background matching image */
-    color: #a0aec0 !important;
+    color: #a0aec0;
     font-family: 'Inter', sans-serif;
     /* Modern Font */
     padding: 20px;
@@ -11,9 +11,9 @@
 
 /* Header & Search */
 #alezux-subs-search {
-    background-color: #121620 !important;
-    border: 1px solid #2d3748 !important;
-    color: #fff !important;
+    background-color: #121620;
+    border: 1px solid #2d3748;
+    color: #fff;
     padding: 10px 15px;
     border-radius: 8px;
     width: 300px;
