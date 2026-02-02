@@ -9,6 +9,36 @@ class Access_Control {
 
     public static function init() {
         \add_filter( 'learndash_content_access', [ __CLASS__, 'filter_content_access' ], 10, 3 );
+        
+        // SECURITY ENFORCEMENT: Force check on template load (Backup in case LD filter is bypassed)
+        \add_action( 'template_redirect', [ __CLASS__, 'enforce_template_restriction' ] );
+    }
+
+    /**
+     * Verificación forzada antes de cargar la plantilla.
+     * Garantiza que el bloqueo funcione incluso si LD ignora el filtro.
+     */
+    public static function enforce_template_restriction() {
+        if ( ! \is_singular( ['sfwd-lessons', 'sfwd-topic'] ) ) {
+            return;
+        }
+
+        $post_id = \get_queried_object_id();
+        $user_id = \get_current_user_id();
+
+        // 1. Check Lock security
+        // Note: is_post_locked already handles ?alezux_debug=1 output internally
+        $is_locked = self::is_post_locked( $post_id, $user_id );
+
+        if ( $is_locked ) {
+            // Contenido Bloqueado
+            // Opcional: Redirigir a página de venta o mostrar mensaje
+            $message = "<h1>Acceso Restringido</h1>";
+            $message .= "<p>Este contenido pertenece a una cuota que aún no has desbloqueado.</p>";
+            $message .= "<p><a href='" . \home_url('/mis-finanzas') . "'>Ver mi estado de cuenta</a></p>";
+            
+            \wp_die( $message, 'Contenido Bloqueado', [ 'response' => 403 ] );
+        }
     }
 
     /**
@@ -20,12 +50,6 @@ class Access_Control {
      * @return bool
      */
     public static function filter_content_access( $access, $post_id, $user_id ) {
-        // HOOK TEST
-        if ( isset( $_GET['alezux_debug'] ) ) {
-            // Nota: die() aqui es validopara probar hook, pero vamos a dejar que is_post_locked maneje el debug detallado
-            // die( "<h1>DEBUG: Hook learndash_content_access FIRED for Post ID: $post_id</h1>" );
-        }
-
         // Recursion Guard: Evitar loops infinitos si LD llama al filtro internamente
         static $is_running = false;
         if ( $is_running ) {
@@ -34,10 +58,8 @@ class Access_Control {
         $is_running = true;
 
         // Si LearnDash ya dijo que NO (por otras razones), respetamos.
-        if ( ! $access ) {
-            $is_running = false;
-            return $access;
-        }
+        // Pero si dijo SI, nosotros verificamos doblemente con is_post_locked
+        // if ( ! $access ) { ... } // Comentado: Queremos verificar incluso si LD da acceso
 
         try {
              // Verificamos nuestras reglas de Cuotas
@@ -145,7 +167,7 @@ class Access_Control {
 
         if ( $debug_mode ) {
             $msg = "<div style='background:white; color:black; padding:20px; border:2px solid red;'>";
-            $msg .= "<h3>Alezux Debug (WP_DIE MODE)</h3>";
+            $msg .= "<h3>Alezux Debug (TEMPLATE_REDIRECT MODE)</h3>";
             $msg .= "Post ID: $post_id <br>";
             $msg .= "Parent ID (Lesson): $parent_id <br>";
             $msg .= "User ID: $user_id <br>";
