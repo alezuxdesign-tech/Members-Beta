@@ -684,6 +684,86 @@ class Subscriptions_List_Widget extends Widget_Base {
                     </thead>
                     <tbody>
                         <!-- AJAX Content -->
+                        <?php
+                        if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+                            $dummy_data = [
+                                [
+                                    'id' => 101,
+                                    'student' => 'Estudiante Demo',
+                                    'email' => 'demo@ejemplo.com',
+                                    'avatar' => get_avatar_url(0),
+                                    'plan' => 'Suscripción Anual',
+                                    'amount' => '$120.00',
+                                    'status' => 'active',
+                                    'status_label' => 'Activo',
+                                    'progress' => 45,
+                                    'due' => date('d/m/Y', strtotime('+5 days')),
+                                    'due_meta' => 'En 5 días'
+                                ],
+                                [
+                                    'id' => 102,
+                                    'student' => 'Juan Pérez',
+                                    'email' => 'juan.perez@email.com',
+                                    'avatar' => get_avatar_url(0),
+                                    'plan' => 'Curso Intensivo',
+                                    'amount' => '$299.00',
+                                    'status' => 'completed',
+                                    'status_label' => 'Completado',
+                                    'progress' => 100,
+                                    'due' => date('d/m/Y', strtotime('-1 days')),
+                                    'due_meta' => 'Ayer'
+                                ],
+                                [
+                                    'id' => 103,
+                                    'student' => 'Maria Gonzalez',
+                                    'email' => 'maria.g@email.com',
+                                    'avatar' => get_avatar_url(0),
+                                    'plan' => 'Mensualidad Básica',
+                                    'amount' => '$45.00',
+                                    'status' => 'past_due',
+                                    'status_label' => 'Vencido',
+                                    'progress' => 12,
+                                    'due' => date('d/m/Y', strtotime('-1 week')),
+                                    'due_meta' => 'Hace 1 semana'
+                                ],
+                            ];
+
+                            foreach ($dummy_data as $item) {
+                                ?>
+                                <tr>
+                                    <td class="col-id">#<?php echo esc_html($item['id']); ?></td>
+                                    <td class="col-student">
+                                        <div class="alezux-student-info">
+                                            <img src="<?php echo esc_url($item['avatar']); ?>" class="alezux-student-avatar" alt="">
+                                            <div class="alezux-student-text">
+                                                <div class="student-name"><?php echo esc_html($item['student']); ?></div>
+                                                <div class="student-email"><?php echo esc_html($item['email']); ?></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="col-plan"><?php echo esc_html($item['plan']); ?></td>
+                                    <td class="col-amount"><strong><?php echo esc_html($item['amount']); ?></strong></td>
+                                    <td class="col-status">
+                                        <span class="alezux-status-badge status-<?php echo esc_attr($item['status']); ?>"><?php echo esc_html($item['status_label']); ?></span>
+                                    </td>
+                                    <td class="col-progress">
+                                        <div class="progress-Label"><span><?php echo esc_html($item['progress']); ?>%</span></div>
+                                        <div class="alezux-progress-bar-bg">
+                                            <div class="alezux-progress-bar-fill" style="width: <?php echo esc_attr($item['progress']); ?>%;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="col-next-payment">
+                                        <div class="date-val"><?php echo esc_html($item['due']); ?></div>
+                                        <div class="date-meta"><?php echo esc_html($item['due_meta']); ?></div>
+                                    </td>
+                                    <td class="col-actions">
+                                        <button class="alezux-btn-manual-pay"><?php esc_html_e('Pagar', 'alezux-members'); ?></button>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
