@@ -35,7 +35,7 @@ class Estudiantes extends Module_Base {
 
 	public function register_assets() {
 		// Estilos
-		// Estilos
+		\wp_enqueue_style( 'alezux-tables-css', \plugin_dir_url( \dirname( __FILE__ ) ) . 'finanzas/assets/css/alezux-tables.css', [], '1.0.5' );
 		\wp_enqueue_style( 'alezux-estudiantes-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes.css', [], '1.3.6' );
 		\wp_register_style( 'alezux-estudiantes-register-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-register.css', [], '1.1.0' );
 		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.1.0' ); // Se registra pero no se encola globalmente

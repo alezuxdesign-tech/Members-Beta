@@ -66,7 +66,7 @@ jQuery(document).ready(function ($) {
     var currentSearch = '';
 
     // Input de Búsqueda
-    $(document).on('input', '.alezux-estudiantes-search input', function () {
+    $(document).on('input', '.alezux-table-search-input', function () {
         clearTimeout(searchTimer);
         currentSearch = $(this).val();
 
@@ -98,11 +98,11 @@ jQuery(document).ready(function ($) {
                     renderTable(response.data.students);
                     renderPagination(response.data.total_pages, response.data.current_page);
                 } else {
-                    $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Error al cargar datos.</td></tr>');
+                    $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">Error al cargar datos.</td></tr>');
                 }
             },
             error: function () {
-                $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Error de conexión.</td></tr>');
+                $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">Error de conexión.</td></tr>');
             },
             complete: function () {
                 $tableBody.css('opacity', '1');

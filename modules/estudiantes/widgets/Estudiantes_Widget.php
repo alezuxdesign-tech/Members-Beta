@@ -95,7 +95,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Título', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-title' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-table-title' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -105,7 +105,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'header_title_typography',
 				'label'    => \esc_html__( 'Tipografía Título', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-estudiantes-title',
+				'selector' => '{{WRAPPER}} .alezux-table-title',
 			]
 		);
 
@@ -115,7 +115,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Descripción', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-desc' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-table-desc' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -125,7 +125,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'header_desc_typography',
 				'label'    => esc_html__( 'Tipografía Descripción', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-estudiantes-desc',
+				'selector' => '{{WRAPPER}} .alezux-table-desc',
 			]
 		);
 		
@@ -144,7 +144,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Fondo Buscador', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-search input' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-table-search-input' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -155,7 +155,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Texto Buscador', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-search input' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-table-search-input' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -166,7 +166,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Borde Buscador', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-search input' => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-table-search-input' => 'border-color: {{VALUE}};',
 				],
 			]
 		);
@@ -188,7 +188,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Fondo Cabecera', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table th' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-finanzas-table thead tr' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -199,7 +199,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Texto Cabecera', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table th' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-finanzas-table thead th' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -209,7 +209,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'table_header_typography',
 				'label'    => \esc_html__( 'Tipografía Cabecera', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-estudiantes-table th',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-table thead th',
 			]
 		);
 
@@ -219,7 +219,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Fondo Filas Pares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(even) td' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-finanzas-table tbody tr:nth-child(even)' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -230,7 +230,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Fondo Filas Impares', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table tr:nth-child(odd) td' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-finanzas-table tbody tr:nth-child(odd)' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -250,7 +250,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Texto General', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-estudiantes-table td' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-finanzas-table tbody td' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -260,7 +260,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'table_text_typography',
 				'label'    => \esc_html__( 'Tipografía General', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-estudiantes-table td',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-table tbody td',
 			]
 		);
 
@@ -320,7 +320,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', '%' ],
 				'selectors'  => [
-					'{{WRAPPER}} .alezux-estudiantes-table th, {{WRAPPER}} .alezux-estudiantes-table td' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-finanzas-table th, {{WRAPPER}} .alezux-finanzas-table td' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -330,7 +330,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'table_border',
 				'label'    => \esc_html__( 'Borde Tabla', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-estudiantes-wrapper',
+				'selector' => '{{WRAPPER}} .alezux-finanzas-app',
 			]
 		);
 
@@ -1269,22 +1269,24 @@ class Estudiantes_Widget extends Widget_Base {
 
 		?>
 
-		<div class="alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>" data-time-icon="<?php echo \esc_url( $custom_icon_url ); ?>">
+		<div class="alezux-finanzas-app alezux-estudiantes-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>" data-time-icon="<?php echo \esc_url( $custom_icon_url ); ?>">
 			<!-- Header -->
-			<div class="alezux-estudiantes-header">
-				<div class="alezux-header-content">
-					<h2 class="alezux-estudiantes-title"><?php echo \esc_html( $settings['header_title'] ); ?></h2>
-					<p class="alezux-estudiantes-desc"><?php echo \esc_html( $settings['header_description'] ); ?></p>
+			<div class="alezux-table-header alezux-estudiantes-header">
+				<div class="alezux-header-left">
+					<h2 class="alezux-table-title alezux-estudiantes-title"><?php echo \esc_html( $settings['header_title'] ); ?></h2>
+					<p class="alezux-table-desc alezux-estudiantes-desc"><?php echo \esc_html( $settings['header_description'] ); ?></p>
 				</div>
-				<div class="alezux-estudiantes-search">
-					<i class="fa fa-search search-icon"></i>
-					<input type="text" placeholder="<?php \esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
-				</div>
+                <div class="alezux-header-right">
+                    <div class="alezux-search-wrapper alezux-estudiantes-search">
+                        <span class="dashicons dashicons-search search-icon"></span>
+                        <input type="text" class="alezux-table-search-input" placeholder="<?php \esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
+                    </div>
+                </div>
 			</div>
 
 			<!-- Table -->
 			<div class="alezux-estudiantes-table-container">
-				<table class="alezux-estudiantes-table">
+				<table class="alezux-finanzas-table alezux-estudiantes-table">
 					<thead>
 						<tr>
 							<th><?php \esc_html_e( 'FOTO', 'alezux-members' ); ?></th>
@@ -1331,8 +1333,8 @@ class Estudiantes_Widget extends Widget_Base {
 									<img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>">
 								</td>
 								<td class="col-nombre">
-									<?php echo \esc_html( $name ); ?>
-									<div style="font-size: 12px; color: #999;"><?php echo '@' . \esc_html( $student->user_nicename ); ?></div>
+									<div class="estudiante-nombre"><?php echo \esc_html( $name ); ?></div>
+									<div class="estudiante-usuario"><?php echo '@' . \esc_html( $student->user_nicename ); ?></div>
 								</td>
 								<td class="col-correo">
 									<?php echo \esc_html( $email ); ?>
@@ -1358,7 +1360,7 @@ class Estudiantes_Widget extends Widget_Base {
 							<?php endforeach; ?>
 						<?php else : ?>
 							<tr>
-								<td colspan="5" style="text-align:center; padding: 20px;">
+								<td colspan="6" style="text-align:center; padding: 20px;">
 									<?php \esc_html_e( 'No se encontraron estudiantes.', 'alezux-members' ); ?>
 								</td>
 							</tr>
@@ -1368,7 +1370,7 @@ class Estudiantes_Widget extends Widget_Base {
 			</div>
 			
 			<!-- Pagination -->
-			<div class="alezux-estudiantes-pagination" 
+			<div class="alezux-pagination alezux-estudiantes-pagination" 
 				 data-total-pages="<?php echo \esc_attr( $total_pages ); ?>" 
 				 data-current-page="1">
 			<!-- Pagination rendered via JS -->
