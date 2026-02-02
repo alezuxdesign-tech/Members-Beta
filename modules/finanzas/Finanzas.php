@@ -90,8 +90,8 @@ class Finanzas extends Module_Base {
                 $customer_email = $current_user->user_email;
             }
 
-            // Determinar modo (payment vs subscription) basado en frecuencia
-            $mode = ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) ? 'payment' : 'subscription';
+            // Determinar modo (payment vs subscription) basado en frecuencia o cuotas
+            $mode = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 ) ? 'payment' : 'subscription';
 
             $session = $users_access->create_checkout_session( 
                 $plan->stripe_price_id, 

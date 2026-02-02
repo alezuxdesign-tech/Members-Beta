@@ -99,6 +99,7 @@ class Ajax_Handler {
                 'stripe_price_id' => $stripe_price_id,
                 'total_quotas' => $total_quotas,
                 'quota_amount' => $quota_amount,
+                'frequency'    => $interval,
                 'access_rules' => \json_encode( $rules ),
             ] 
         );
