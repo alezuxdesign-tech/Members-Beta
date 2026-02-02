@@ -143,18 +143,22 @@ class Access_Control {
 
         // Buscamos en qué cuota está restringido este post específico
         $required_quota = 0;
-        foreach ( $access_rules as $quota_key => $module_ids ) {
-            // Defensive Check: Ensure module_ids is actually an array
-            if ( ! \is_array( $module_ids ) ) {
-                continue;
-            }
+        
+        // DEBUG: Imprimir estructura para confirmar en logs si es necesario
+        // error_log( "Alezux Rules Structure: " . print_r($access_rules, true) );
 
-            // Check if CURRENT POST or PARENT POST is in the rule
-            if ( \in_array( $post_id, $module_ids ) || ( $parent_id && \in_array( $parent_id, $module_ids ) ) ) {
-                 // SAFER ALTERNATIVE: Use regex instead of filter_var to avoid constant issues
-                 $numeric_part = preg_replace( '/[^0-9]/', '', $quota_key );
-                 $required_quota = (int) $numeric_part;
-                 break;
+        foreach ( $access_rules as $rule_post_id => $rule_quota ) {
+            // Estructura Real Confirmada: [ "342" => 2, "424" => 3 ] 
+            // Donde Key es el Post ID y Value es el Número de Cuota
+            
+            // Cast to int for comparison
+            $rule_post_id = (int)$rule_post_id;
+            $rule_quota   = (int)$rule_quota;
+
+            // Check if CURRENT POST or PARENT POST matches the Rule Key
+            if ( $post_id === $rule_post_id || ( $parent_id && $parent_id === $rule_post_id ) ) {
+                 $required_quota = $rule_quota;
+                 break; // Encontramos la regla, salimos.
             }
         }
 
