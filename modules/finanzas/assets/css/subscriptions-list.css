@@ -51,8 +51,11 @@
 }
 
 /* Columns Specifics */
-.col-id {
+.student-id {
     color: #718096;
+    font-size: 11px;
+    margin-bottom: 2px;
+    display: block;
 }
 
 /* Student Info with Avatar */

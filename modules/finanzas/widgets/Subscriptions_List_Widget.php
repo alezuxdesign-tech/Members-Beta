@@ -893,7 +893,7 @@ class Subscriptions_List_Widget extends Widget_Base {
                 <table class="alezux-subs-table alezux-sales-table"> 
                     <thead>
                         <tr>
-                            <th class="col-id"><?php esc_html_e('ID', 'alezux-members'); ?></th>
+
                             <th class="col-student"><?php esc_html_e('ESTUDIANTE', 'alezux-members'); ?></th>
                             <th class="col-plan"><?php esc_html_e('PLAN ACADÉMICO', 'alezux-members'); ?></th>
                             <th class="col-amount"><?php esc_html_e('MONTO', 'alezux-members'); ?></th>
@@ -952,11 +952,12 @@ class Subscriptions_List_Widget extends Widget_Base {
                             foreach ($dummy_data as $item) {
                                 ?>
                                 <tr>
-                                    <td class="col-id">#<?php echo esc_html($item['id']); ?></td>
+
                                     <td class="col-student">
                                         <div class="alezux-student-info">
                                             <img src="<?php echo esc_url($item['avatar']); ?>" class="alezux-student-avatar" alt="">
                                             <div class="alezux-student-text">
+                                                <span class="student-id">#<?php echo esc_html($item['id']); ?></span>
                                                 <div class="student-name"><?php echo esc_html($item['student']); ?></div>
                                                 <div class="student-email"><?php echo esc_html($item['email']); ?></div>
                                             </div>
