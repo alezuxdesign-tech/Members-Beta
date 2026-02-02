@@ -446,7 +446,7 @@ class Ajax_Handler {
         }
 
         // Actualizar fecha de update y quotas
-        $wpdb->update(
+        $result = $wpdb->update(
             $t_subs,
             [
                 'quotas_paid' => $new_quotas_paid,
@@ -458,6 +458,15 @@ class Ajax_Handler {
 
         // Opcional: Agregar nota interna (si tuviéramos tabla de notas) o log
         
-        \wp_send_json_success( 'Pago registrado y suscripción actualizada.' );
+        \wp_send_json_success( [
+            'message' => 'Pago registrado y suscripción actualizada.',
+            'debug' => [
+                'sub_id' => $sub_id,
+                'old_quotas' => $sub->quotas_paid,
+                'new_quotas' => $new_quotas_paid,
+                'db_update_result' => $result,
+                'error' => $wpdb->last_error
+            ]
+        ] );
     }
 }
