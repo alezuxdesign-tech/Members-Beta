@@ -7,15 +7,18 @@
             this.canvas = document.getElementById(canvasId);
             if (!this.canvas) return;
 
-            this.svgLayer = this.initSvgLayer();
-            this.nodes = [];
-            this.connections = [];
-            this.isDragging = false;
-            this.dragTarget = null;
-            this.initialX = 0;
-            this.initialY = 0;
             this.editingNode = null;
             this.pendingConnection = null;
+
+            // Navegación estilo Figma
+            this.scale = 1;
+            this.pan = { x: 0, y: 0 };
+            this.isPanning = false;
+            this.panStart = { x: 0, y: 0 };
+            this.spacePressed = false;
+
+            this.canvasContent = this.initCanvasContent();
+            this.svgLayer = this.initSvgLayer();
 
             this.modal = {
                 overlay: document.getElementById('alezux-node-modal'),
@@ -55,10 +58,27 @@
             this.loadAutomationsTable();
         }
 
+        initCanvasContent() {
+            const div = document.createElement('div');
+            div.id = "alezux-marketing-canvas-content";
+            div.style.position = "absolute";
+            div.style.top = "0";
+            div.style.left = "0";
+            div.style.width = "5000px";
+            div.style.height = "5000px";
+            div.style.transformOrigin = "0 0";
+            this.canvas.appendChild(div);
+            return div;
+        }
+
         initSvgLayer() {
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.id = "alezux-marketing-svg-layer";
-            this.canvas.appendChild(svg);
+            svg.style.width = "100%";
+            svg.style.height = "100%";
+            svg.style.position = "absolute";
+            svg.style.pointerEvents = "none";
+            this.canvasContent.appendChild(svg);
             return svg;
         }
 
@@ -131,6 +151,24 @@
                     this.previewModal.overlay.style.display = 'none';
                 });
             }
+
+            // Zoom Events
+            this.canvas.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
+
+            // Spacebar handling for Pan
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && e.target === document.body) {
+                    this.spacePressed = true;
+                    this.canvas.style.cursor = 'grab';
+                    e.preventDefault();
+                }
+            });
+            window.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') {
+                    this.spacePressed = false;
+                    this.canvas.style.cursor = 'crosshair';
+                }
+            });
         }
 
         handleModalAction() {
@@ -175,19 +213,26 @@
             nodeEl.innerHTML = `
                 <div class="node-header">
                     <span>${icon} ${title}</span>
-                    <div class="node-delete-btn" data-node="${id}" title="Eliminar nodo">×</div>
+                    <div class="node-menu-btn" data-node="${id}" title="Opciones">
+                        <span></span><span></span><span></span>
+                    </div>
                 </div>
                 <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
                 ${type !== 'trigger' ? `<div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>` : ''}
-                <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
-                ${type !== 'delay' ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
+                ${type === 'condition' ? `
+                    <div class="node-terminal terminal-out terminal-true" data-node="${id}" data-branch="true" title="Sí"></div>
+                    <div class="node-terminal terminal-out terminal-false" data-node="${id}" data-branch="false" title="No"></div>
+                ` : `
+                    <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
+                `}
+                ${(type !== 'delay' && type !== 'condition') ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
             `;
 
-            const deleteBtn = nodeEl.querySelector('.node-delete-btn');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', (e) => {
+            const menuBtn = nodeEl.querySelector('.node-menu-btn');
+            if (menuBtn) {
+                menuBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    this.deleteNode(id);
+                    this.showNodeContextMenu(id, e);
                 });
             }
 
@@ -349,13 +394,36 @@
                         const x2 = nodeTo.x + toTerm.offsetLeft + 6;
                         const y2 = nodeTo.y + toTerm.offsetTop + 6;
 
-                        const cp1x = x1 + (x2 - x1) / 2;
-                        const cp2x = x1 + (x2 - x1) / 2;
+                        const dx = Math.abs(x2 - x1) * 0.5;
+                        const cp1x = x1 + dx;
+                        const cp2x = x2 - dx;
 
                         conn.path.setAttribute("d", `M ${x1} ${y1} C ${cp1x} ${y1} ${cp2x} ${y2} ${x2} ${y2}`);
                     }
                 }
             });
+        }
+
+        handleZoom(e) {
+            e.preventDefault();
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const zoomSpeed = 0.001;
+            const delta = -e.deltaY;
+            const newScale = Math.min(Math.max(0.2, this.scale + delta * zoomSpeed), 2);
+
+            // Zoom hacia el puntero del ratón
+            this.pan.x -= (mouseX / newScale - mouseX / this.scale) * newScale;
+            this.pan.y -= (mouseY / newScale - mouseY / this.scale) * newScale;
+
+            this.scale = newScale;
+            this.applyTransform();
+        }
+
+        applyTransform() {
+            this.canvasContent.style.transform = `translate(${this.pan.x}px, ${this.pan.y}px) scale(${this.scale})`;
         }
 
         removeTempLine() {
@@ -421,6 +489,11 @@
             } else if (node.type === 'delay') {
                 node.data.minutes = document.getElementById('field-minutes').value;
                 display = `Espera ${node.data.minutes} min`;
+            } else if (node.type === 'condition') {
+                node.data.condition_type = document.getElementById('field-condition-type').value;
+                node.data.condition_value = document.getElementById('field-condition-value').value;
+                const typeLabel = document.getElementById('field-condition-type').options[document.getElementById('field-condition-type').selectedIndex].text;
+                display = `${typeLabel}: ${node.data.condition_value}`;
             }
 
             node.data.description = display;
@@ -435,28 +508,39 @@
         }
 
         handleMouseDown(e) {
+            if (this.spacePressed) {
+                this.isPanning = true;
+                this.panStart.x = e.clientX - this.pan.x;
+                this.panStart.y = e.clientY - this.pan.y;
+                this.canvas.style.cursor = 'grabbing';
+                return;
+            }
+
             const nodeEl = e.target.closest('.alezux-automation-node');
             if (nodeEl && !e.target.closest('.node-terminal')) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
-                this.initialX = e.clientX - nodeEl.offsetLeft;
-                this.initialY = e.clientY - nodeEl.offsetTop;
+                this.initialX = e.clientX / this.scale - nodeEl.offsetLeft;
+                this.initialY = e.clientY / this.scale - nodeEl.offsetTop;
                 nodeEl.style.zIndex = 1000;
             }
         }
 
         handleMouseMove(e) {
+            if (this.isPanning) {
+                this.pan.x = e.clientX - this.panStart.x;
+                this.pan.y = e.clientY - this.panStart.y;
+                this.applyTransform();
+                return;
+            }
+
             const rect = this.canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            const mouseX = (e.clientX - rect.left - this.pan.x) / this.scale;
+            const mouseY = (e.clientY - rect.top - this.pan.y) / this.scale;
 
             if (this.isDragging && this.dragTarget) {
-                let x = e.clientX - this.initialX;
-                let y = e.clientY - this.initialY;
-
-                // Constraints
-                x = Math.max(0, Math.min(x, rect.width - this.dragTarget.offsetWidth));
-                y = Math.max(0, Math.min(y, rect.height - this.dragTarget.offsetHeight));
+                let x = e.clientX / this.scale - this.initialX;
+                let y = e.clientY / this.scale - this.initialY;
 
                 this.dragTarget.style.left = `${x}px`;
                 this.dragTarget.style.top = `${y}px`;
@@ -465,7 +549,6 @@
                 if (node) { node.x = x; node.y = y; }
                 this.updateConnections();
             } else if (this.pendingConnection) {
-                // Linea temporal
                 const fromTerm = this.pendingConnection.fromTerminal;
                 const nodeFrom = this.nodes.find(n => n.id === this.pendingConnection.from);
                 const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
@@ -480,8 +563,8 @@
                     this.svgLayer.appendChild(temp);
                 }
 
-                const cp1x = x1 + (mouseX - x1) / 2;
-                temp.setAttribute("d", `M ${x1} ${y1} C ${cp1x} ${y1} ${cp1x} ${mouseY} ${mouseX} ${mouseY}`);
+                const dx = Math.abs(mouseX - x1) * 0.5;
+                temp.setAttribute("d", `M ${x1} ${y1} C ${x1 + dx} ${y1} ${mouseX - dx} ${mouseY} ${mouseX} ${mouseY}`);
             }
         }
 
@@ -489,7 +572,11 @@
             if (this.isDragging && this.dragTarget) {
                 this.dragTarget.style.zIndex = 10;
             }
+            if (this.isPanning) {
+                this.canvas.style.cursor = this.spacePressed ? 'grab' : 'crosshair';
+            }
             this.isDragging = false;
+            this.isPanning = false;
             this.dragTarget = null;
         }
 
@@ -552,6 +639,50 @@
                 }
             };
             setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+
+        // CONTEXT MENU LOGIC
+        showNodeContextMenu(nodeId, event) {
+            this.removeContextMenu();
+            const node = this.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            const menu = document.createElement('div');
+            menu.className = 'node-context-menu';
+            menu.style.left = `${event.clientX}px`;
+            menu.style.top = `${event.clientY}px`;
+            menu.style.position = 'fixed'; // Usar fixed para que no se vea afectado por el canvas-content transform
+
+            const options = [
+                { label: '⚙️ Configurar', action: () => this.openNodeSettings(nodeId) },
+                { label: '🗑️ Eliminar Nodo', action: () => this.deleteNode(nodeId), class: 'danger' }
+            ];
+
+            options.forEach(opt => {
+                const item = document.createElement('div');
+                item.className = `context-menu-item ${opt.class || ''}`;
+                item.innerText = opt.label;
+                item.onclick = () => {
+                    opt.action();
+                    this.removeContextMenu();
+                };
+                menu.appendChild(item);
+            });
+
+            document.body.appendChild(menu);
+
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    this.removeContextMenu();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+
+        removeContextMenu() {
+            const old = document.querySelector('.node-context-menu');
+            if (old) old.remove();
         }
 
         removeQuickMenu() {

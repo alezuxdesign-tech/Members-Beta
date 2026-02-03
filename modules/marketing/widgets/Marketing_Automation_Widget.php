@@ -132,9 +132,9 @@ class Marketing_Automation_Widget extends Widget_Base {
                                 <span class="node-icon">⚡</span> Evento
                             </div>
 
-                            <h4 class="sidebar-section-title">Acciones</h4>
-                            <div class="automation-node-template action" data-type="email" draggable="true">
-                                <span class="node-icon">✉️</span> Enviar Email
+                            <h4 class="sidebar-section-title">Logica</h4>
+                            <div class="automation-node-template logic" data-type="condition" draggable="true">
+                                <span class="node-icon">🔄</span> Condición (If/Else)
                             </div>
                             <div class="automation-node-template logic" data-type="delay" draggable="true">
                                 <span class="node-icon">⏳</span> Esperar (Delay)

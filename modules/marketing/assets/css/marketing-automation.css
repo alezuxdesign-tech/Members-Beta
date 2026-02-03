@@ -275,6 +275,40 @@
     border-top: 5px solid #3498db;
 }
 
+.node-condition {
+    border-top: 5px solid #a855f7;
+    /* Violeta para lógica */
+}
+
+/* 3-Dots Menu Button */
+.node-menu-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.node-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.node-menu-btn span {
+    width: 4px;
+    height: 4px;
+    background: #666;
+    border-radius: 50%;
+}
+
+.node-menu-btn:hover span {
+    background: #fff;
+}
+
 /* Terminals (Dots for connection) */
 .node-terminal {
     width: 12px;
@@ -294,6 +328,18 @@
     right: -6px;
     top: 50%;
     margin-top: -6px;
+}
+
+.terminal-true {
+    background: #48bb78 !important;
+    /* Verde */
+    top: 30% !important;
+}
+
+.terminal-false {
+    background: #f56565 !important;
+    /* Rojo */
+    top: 70% !important;
 }
 
 .terminal-in {
@@ -326,8 +372,18 @@
 
 .automation-line.active {
     stroke: #4299e1;
-    stroke-dasharray: none;
-    animation: none;
+    stroke-dasharray: 8;
+    animation: alezux-flow 1s linear infinite;
+}
+
+@keyframes alezux-flow {
+    from {
+        stroke-dashoffset: 16;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 .automation-line.active:hover {
@@ -469,20 +525,57 @@
     display: flex;
 }
 
-/* Menú de Selección Rápida */
-.alezux-quick-menu {
+/* Menú de Selección Rápida y Menú de Nodo */
+.alezux-quick-menu,
+.node-context-menu {
     position: absolute;
     background: #1a1a1a;
     border: 1px solid #333;
-    border-radius: 15px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 8px;
     z-index: 2000;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-width: 150px;
-    animation: alezux-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    gap: 4px;
+    min-width: 140px;
+    animation: alezux-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.quick-menu-item,
+.context-menu-item {
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.quick-menu-item:hover,
+.context-menu-item:hover {
+    background: rgba(90, 141, 238, 0.1);
+    color: #5a8dee;
+}
+
+.context-menu-item.danger:hover {
+    background: rgba(229, 62, 62, 0.1);
+    color: #e53e3e;
+}
+
+@keyframes alezux-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 /* -------------------------------------------------------------------------- */
