@@ -321,6 +321,36 @@ class Login_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'button_align',
+			[
+				'label' => esc_html__( 'Posición', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'flex-start' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'flex-end' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'stretch' => [
+						'title' => esc_html__( 'Justificado', 'alezux-members' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+				],
+				'default' => 'stretch',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->start_controls_tabs( 'tabs_button_style' );
 
 		$this->start_controls_tab(

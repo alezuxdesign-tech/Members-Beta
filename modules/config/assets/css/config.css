@@ -248,6 +248,11 @@
     line-height: 1.6;
 }
 
+.alezux-auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
 .alezux-auth-field {
     margin-bottom: 20px;
 }
@@ -317,11 +322,13 @@
 }
 
 .alezux-auth-submit {
-    width: 100%;
+    width: auto;
+    align-self: flex-start;
+    /* Default alignment */
     background: var(--alezux-primary, #6c5ce7);
     color: #fff;
     border: none;
-    padding: 14px;
+    padding: 14px 30px;
     border-radius: 50px;
     font-size: 16px;
     font-weight: 600;
