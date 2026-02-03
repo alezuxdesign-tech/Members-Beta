@@ -536,7 +536,8 @@
     border: 1px solid #333;
     border-radius: 12px;
     padding: 8px;
-    z-index: 2000;
+    z-index: 200000;
+    /* Superior al popup (100000) */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
     display: flex;
     flex-direction: column;
