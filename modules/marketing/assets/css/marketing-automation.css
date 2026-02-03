@@ -1,0 +1,134 @@
+/* Canvas & Workspace */
+.alezux-marketing-canvas-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 700px;
+    background: #0f0f0f !important;
+    font-family: 'Inter', sans-serif;
+}
+
+#alezux-marketing-canvas {
+    flex-grow: 1;
+    background-color: #111;
+    background-image:
+        radial-gradient(circle, #222 1px, transparent 1px);
+    background-size: 30px 30px;
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+/* Nodes */
+.alezux-automation-node {
+    position: absolute;
+    width: 220px;
+    background: #1a1a1a;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    padding: 15px;
+    cursor: grab;
+    user-select: none;
+    z-index: 10;
+}
+
+.alezux-automation-node:active {
+    cursor: grabbing;
+}
+
+.alezux-automation-node .node-header {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alezux-automation-node .node-content {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* Node Types */
+.node-trigger {
+    border-top: 5px solid #f1c40f;
+}
+
+.node-email {
+    border-top: 5px solid #2ecc71;
+}
+
+.node-delay {
+    border-top: 5px solid #3498db;
+}
+
+/* Terminals (Dots for connection) */
+.node-terminal {
+    width: 12px;
+    height: 12px;
+    background: #444;
+    border: 2px solid #666;
+    border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+}
+
+.node-terminal:hover {
+    background: #fff;
+}
+
+.terminal-out {
+    right: -6px;
+    top: 50%;
+    margin-top: -6px;
+}
+
+.terminal-in {
+    left: -6px;
+    top: 50%;
+    margin-top: -6px;
+}
+
+/* SVG Connections */
+#alezux-marketing-svg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.automation-line {
+    fill: none;
+    stroke: #444;
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.automation-line.active {
+    stroke: #e74c3c;
+    stroke-dasharray: 5;
+    animation: flow 1s linear infinite;
+}
+
+@keyframes flow {
+    from {
+        stroke-dashoffset: 10;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Sidebar Templates */
+.automation-node-template {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.automation-node-template:hover {
+    transform: translateY(-3px) scale(1.02);
+}

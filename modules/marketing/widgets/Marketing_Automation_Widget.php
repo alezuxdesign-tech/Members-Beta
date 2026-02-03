@@ -26,6 +26,14 @@ class Marketing_Automation_Widget extends Widget_Base {
 		return [ 'alezux-admin' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'alezux-marketing-js' ];
+	}
+
+	public function get_style_depends() {
+		return [ 'alezux-marketing-css' ];
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
@@ -66,20 +74,26 @@ class Marketing_Automation_Widget extends Widget_Base {
             <div id="alezux-marketing-sidebar" style="width: 250px; background: #1a1a1a; border-radius: 30px; padding: 20px; float: left; margin-right: 20px; box-shadow: 10px 0 20px rgba(0,0,0,0.5);">
                 <h3 style="color: #fff; font-size: 16px; margin-bottom: 20px;">Componentes</h3>
                 
-                <div class="automation-node-template trigger" data-type="trigger" style="background: #f1c40f; color: #000; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
+                <div class="automation-node-template trigger" data-type="trigger" draggable="true" style="background: #f1c40f; color: #000; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
                     ⚡ Trigger Evento
                 </div>
-                <div class="automation-node-template action" data-type="email" style="background: #2ecc71; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
+                <div class="automation-node-template action" data-type="email" draggable="true" style="background: #2ecc71; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
                     ✉️ Enviar Email
                 </div>
-                <div class="automation-node-template logic" data-type="delay" style="background: #3498db; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
+                <div class="automation-node-template logic" data-type="delay" draggable="true" style="background: #3498db; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
                     ⏳ Esperar (Delay)
                 </div>
+
+                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                
+                <button id="clear-canvas" style="width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 10px; border-radius: 50px; cursor: pointer; font-size: 12px;">
+                    🗑️ Limpiar Lienzo
+                </button>
             </div>
 
-            <div id="alezux-marketing-canvas" style="flex-grow: 1; height: 500px; background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; border-radius: 30px; position: relative;">
-                <!-- Aquí se renderizarán los nodos dinámicamente -->
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; text-align: center;">
+            <div id="alezux-marketing-canvas" style="flex-grow: 1; height: 600px; background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; border-radius: 30px; position: relative;">
+                <!-- El sistema de JS inyectará el SVG aquí -->
+                <div class="canvas-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; text-align: center; pointer-events: none;">
                     <p>Arrastra componentes aquí para empezar</p>
                 </div>
             </div>

@@ -23,7 +23,10 @@ class Marketing extends Module_Base {
 		}
 	}
 
-	private function init_hooks() {
+    private function init_hooks() {
+        \add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ] );
+        \add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
+
         // Incluir componentes
         require_once ALEZUX_MARKETING_PATH . 'includes/Database_Installer.php';
         require_once ALEZUX_MARKETING_PATH . 'includes/Automation_Engine.php';
@@ -53,6 +56,11 @@ class Marketing extends Module_Base {
     public function register_widgets( $widgets_manager ) {
         require_once ALEZUX_MARKETING_PATH . 'widgets/Marketing_Automation_Widget.php';
         $widgets_manager->register( new \Alezux_Members\Modules\Marketing\Widgets\Marketing_Automation_Widget() );
+    }
+
+    public function register_assets() {
+        \wp_register_script( 'alezux-marketing-js', ALEZUX_MARKETING_URL . 'assets/js/marketing-automation.js', [ 'jquery' ], '1.0.0', true );
+        \wp_register_style( 'alezux-marketing-css', ALEZUX_MARKETING_URL . 'assets/css/marketing-automation.css', [], '1.0.0' );
     }
 
     /**
