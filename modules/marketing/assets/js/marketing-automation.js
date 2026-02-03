@@ -517,7 +517,10 @@
                         this.currentAutomationId = response.data.id;
                         this.popup.nameInput.value = response.data.name;
 
-                        const blueprint = response.data.blueprint;
+                        let blueprint = response.data.blueprint;
+                        if (typeof blueprint === 'string') {
+                            try { blueprint = JSON.parse(blueprint); } catch (e) { blueprint = {}; }
+                        }
                         if (!blueprint) return;
 
                         // Cargar Nodos
@@ -562,7 +565,10 @@
                         let html = '';
                         response.data.forEach(item => {
                             const date = new Date(item.created_at).toLocaleDateString();
-                            const blueprint = item.blueprint || {};
+                            let blueprint = item.blueprint || {};
+                            if (typeof blueprint === 'string') {
+                                try { blueprint = JSON.parse(blueprint); } catch (e) { blueprint = {}; }
+                            }
                             const nodeCount = (blueprint.nodes && Array.isArray(blueprint.nodes)) ? blueprint.nodes.length : 0;
 
                             html += `

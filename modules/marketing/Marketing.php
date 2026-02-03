@@ -169,7 +169,7 @@ class Marketing extends Module_Base {
         \wp_send_json_success( [
             'id'        => $automation->id,
             'name'      => $automation->name,
-            'blueprint' => \json_decode( $automation->blueprint )
+            'blueprint' => \json_decode( \wp_unslash( $automation->blueprint ) )
         ] );
     }
 
@@ -185,7 +185,7 @@ class Marketing extends Module_Base {
 
         // Decodificar blueprint para que llegue como objeto al JS
         foreach ( $results as $item ) {
-            $item->blueprint = \json_decode( $item->blueprint );
+            $item->blueprint = \json_decode( \wp_unslash( $item->blueprint ) );
         }
 
         \wp_send_json_success( $results );

@@ -249,8 +249,8 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Delegación fuerte para el botón gestionar
-    $(document).on('click', '.alezux-action-btn', function (e) {
+    // Delegación fuerte para el botón gestionar - LIMITADO A LA TABLA DE ESTUDIANTES
+    $(document).on('click', '.alezux-estudiantes-table .alezux-action-btn', function (e) {
         e.preventDefault();
         var userId = $(this).data('student-id');
         console.log('[Alezux] Clic en botón Gestionar. UserID:', userId);
