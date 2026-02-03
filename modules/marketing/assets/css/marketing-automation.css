@@ -796,12 +796,36 @@
     border: none;
     color: #888;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.2s;
+    width: 14px;
+    height: 14px;
 }
 
-.alezux-btn-icon:hover {
-    background: rgba(255, 255, 255, 0.05);
+.badge-success {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+    border-color: rgba(72, 187, 120, 0.2);
+}
+
+.badge-danger {
+    background: rgba(245, 101, 101, 0.1);
+    color: #f56565;
+    border-color: rgba(245, 101, 101, 0.2);
+}
+
+.alezux-action-btn.success {
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.2);
+}
+
+.alezux-action-btn.success:hover {
+    background: #48bb78;
     color: #fff;
+    box-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
+}
+
+/* Alineación de iconos de Dashicons en botones */
+.alezux-action-btn .dashicons {
+    margin-right: 5px;
+    margin-top: -2px;
 }

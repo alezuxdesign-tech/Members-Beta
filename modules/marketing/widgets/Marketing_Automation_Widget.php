@@ -89,16 +89,17 @@ class Marketing_Automation_Widget extends Widget_Base {
                 <table class="alezux-finanzas-table" id="marketing-automations-table">
                     <thead>
                         <tr>
-                            <th><?php \esc_html_e( 'Nombre de la Automatización', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Automatización', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Estado', 'alezux-members' ); ?></th>
                             <th><?php \esc_html_e( 'Ejecuciones', 'alezux-members' ); ?></th>
-                            <th><?php \esc_html_e( 'Fecha de Creación', 'alezux-members' ); ?></th>
-                            <th style="text-align: center;"><?php \esc_html_e( 'Acciones', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Fecha', 'alezux-members' ); ?></th>
+                            <th style="text-align: right;"><?php \esc_html_e( 'Acciones', 'alezux-members' ); ?></th>
                         </tr>
                     </thead>
-                    <tbody id="marketing-automations-list">
+                   <tbody id="marketing-automations-list">
                         <!-- Se llena vía JS -->
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: #718096;">
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #718096;">
                                 <span class="dashicons dashicons-update alezux-spin"></span> Cargando automatizaciones...
                             </td>
                         </tr>

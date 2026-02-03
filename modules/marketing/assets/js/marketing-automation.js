@@ -901,18 +901,7 @@
                             return;
                         }
 
-                        let html = `
-                            <thead>
-                                <tr>
-                                    <th>Automatización</th>
-                                    <th>Estado</th>
-                                    <th>Ejecuciones</th>
-                                    <th>Creada</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                        `;
+                        let html = '';
                         response.data.forEach(item => {
                             const date = new Date(item.created_at).toLocaleDateString();
                             let blueprint = item.blueprint || {};
@@ -922,10 +911,10 @@
                             const nodeCount = (blueprint.nodes && Array.isArray(blueprint.nodes)) ? blueprint.nodes.length : 0;
 
                             const statusClass = item.status === 'active' ? 'success' : 'danger';
-                            const statusText = item.status === 'active' ? 'Activa' : 'Inactiva';
+                            const statusText = item.status === 'active' ? 'Activa' : 'Pausada';
                             const statusIcon = item.status === 'active' ? 'dashicons-yes-alt' : 'dashicons-no-alt';
-                            const toggleBtnText = item.status === 'active' ? 'Desactivar' : 'Activar';
-                            const toggleBtnClass = item.status === 'active' ? 'alezux-btn-icon-danger' : 'alezux-btn-icon-success';
+                            const toggleBtnText = item.status === 'active' ? 'Pausar' : 'Activar';
+                            const toggleBtnClass = item.status === 'active' ? 'alezux-action-btn' : 'alezux-action-btn success';
                             const toggleBtnIcon = item.status === 'active' ? 'dashicons-controls-pause' : 'dashicons-controls-play';
 
                             html += `
@@ -938,21 +927,20 @@
                                     </td>
                                     <td><span class="alezux-badge" style="background: rgba(72, 187, 120, 0.1); color: #48bb78; border-color: rgba(72, 187, 120, 0.2);">${item.total_executions || 0} disparos</span></td>
                                     <td>${date}</td>
-                                    <td style="text-align: right;">
-                                        <button class="alezux-action-btn edit-auto" data-id="${item.id}">
+                                    <td style="text-align: right; white-space: nowrap;">
+                                        <button class="alezux-action-btn edit-auto" data-id="${item.id}" title="Editar Flujo">
                                             <span class="dashicons dashicons-edit"></span> Editar
                                         </button>
-                                        <button class="${toggleBtnClass} toggle-status" data-id="${item.id}" data-status="${item.status}">
+                                        <button class="${toggleBtnClass} toggle-status" data-id="${item.id}" data-status="${item.status}" title="${toggleBtnText}">
                                             <span class="dashicons ${toggleBtnIcon}"></span> ${toggleBtnText}
                                         </button>
-                                        <button class="alezux-btn-icon-danger delete-auto" data-id="${item.id}">
+                                        <button class="alezux-action-btn danger delete-auto" data-id="${item.id}" title="Eliminar">
                                             <span class="dashicons dashicons-trash"></span>
                                         </button>
                                     </td>
                                 </tr>
                             `;
                         });
-                        html += `</tbody>`;
                         list.innerHTML = html;
 
                         // Eventos de botones
@@ -960,6 +948,12 @@
                             btn.onclick = (e) => {
                                 e.stopPropagation();
                                 this.openEditor(btn.dataset.id);
+                            };
+                        });
+                        list.querySelectorAll('.toggle-status').forEach(btn => {
+                            btn.onclick = (e) => {
+                                e.stopPropagation();
+                                this.toggleAutomationStatus(btn.dataset.id, btn.dataset.status);
                             };
                         });
                         list.querySelectorAll('.delete-auto').forEach(btn => {
