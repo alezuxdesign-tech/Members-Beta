@@ -141,6 +141,11 @@ class Marketing_Automation_Widget extends Widget_Base {
                                 <span class="node-icon">⏳</span> Esperar (Delay)
                             </div>
 
+                            <h4 class="sidebar-section-title">Acciones</h4>
+                            <div class="automation-node-template action" data-type="email" draggable="true">
+                                <span class="node-icon">✉️</span> Enviar Email
+                            </div>
+
                             <div class="sidebar-footer">
                                 <button id="clear-canvas" class="alezux-btn-soft-danger">
                                     <span class="dashicons dashicons-trash"></span> Limpiar Lienzo

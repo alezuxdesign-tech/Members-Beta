@@ -1040,20 +1040,35 @@
             const triggerType = this.getTriggerTypeForNode(node.id);
             let placeholders = '';
 
-            if (triggerType === 'new_student') {
+            if (triggerType === 'registro_usuario') {
                 placeholders = `
                     <div style="background: rgba(66, 153, 225, 0.1); border: 1px dashed #4299e1; padding: 10px; border-radius: 8px;">
                         <span style="color: #4299e1; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles:</span>
-                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
-                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_email}}')">{{student_email}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{student_email}}')">{{student_email}}</code>
                     </div>
                 `;
             } else if (['primer_pago', 'pago_exitoso', 'pago_fallido'].includes(triggerType)) {
                 placeholders = `
                     <div style="background: rgba(72, 187, 120, 0.1); border: 1px dashed #48bb78; padding: 10px; border-radius: 8px;">
                         <span style="color: #48bb78; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles:</span>
-                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
-                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{plan_name}}')">{{plan_name}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{plan_name}}')">{{plan_name}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{amount}}')">{{amount}}</code>
+                    </div>
+                `;
+            } else if (['curso_completado', 'logro_obtenido'].includes(triggerType)) {
+                placeholders = `
+                    <div style="background: rgba(237, 137, 54, 0.1); border: 1px dashed #ed8936; padding: 10px; border-radius: 8px;">
+                        <span style="color: #ed8936; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles:</span>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
+                        <code class="placeholder-code" onclick="navigator.clipboard.writeText('{{item_name}}')">{{item_name}}</code>
+                    </div>
+                `;
+            } else {
+                placeholders = `
+                    <div style="background: rgba(113, 128, 150, 0.1); border: 1px dashed #718096; padding: 10px; border-radius: 8px;">
+                        <p style="color: #718096; font-size: 11px; margin: 0;">Conecta este email a un disparador para ver variables disponibles.</p>
                     </div>
                 `;
             }

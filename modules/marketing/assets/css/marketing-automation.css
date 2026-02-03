@@ -829,3 +829,31 @@
     margin-right: 5px;
     margin-top: -2px;
 }
+
+/* Estilos para etiquetas de personalización (Placeholders) */
+.placeholder-code {
+    background: #2d3748;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    cursor: pointer;
+    display: inline-block;
+    margin: 4px 2px;
+    transition: all 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.placeholder-code:hover {
+    background: #4a5568;
+    color: #4299e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: rgba(66, 153, 225, 0.4);
+}
+
+.placeholder-code:active {
+    transform: translateY(0);
+}
