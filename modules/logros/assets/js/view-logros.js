@@ -55,6 +55,7 @@ var AlezuxViewLogrosHandler = function ($scope, $) {
     // Edit Button
     container.off('click', '.alezux-edit-logro').on('click', '.alezux-edit-logro', function (e) {
         e.preventDefault();
+        e.stopImmediatePropagation(); // Prevenir conflicto con estudiantes.js
         var id = $(this).data('id');
         openEditModal(id);
     });
@@ -62,6 +63,7 @@ var AlezuxViewLogrosHandler = function ($scope, $) {
     // Delete Button
     container.off('click', '.alezux-delete-logro').on('click', '.alezux-delete-logro', function (e) {
         e.preventDefault();
+        e.stopImmediatePropagation(); // Prevenir conflicto con estudiantes.js
         var id = $(this).data('id');
         openDeleteModal(id);
     });
@@ -224,8 +226,8 @@ function renderRows(data, container) {
                 html += '<div class="alezux-student-avatar" style="background: #1a202c; border-radius: 4px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-award" style="color: #718096;"></i></div>';
             }
         }
-        html += '<div class="alezux-student-text">';
-        html += '<span class="student-name" style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.4;">' + item.message + '</span>';
+        html += '<div class="alezux-student-text" style="width: 100%; overflow: hidden;">';
+        html += '<span class="student-name" style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.4; word-break: break-all; overflow-wrap: anywhere;">' + item.message + '</span>';
         html += '</div>';
         html += '</div>';
         html += '</td>';
@@ -260,8 +262,8 @@ function renderRows(data, container) {
         // Column: ACCIONES
         html += '<td style="text-align: right;">';
         html += '<div class="alezux-table-actions" style="display: flex; justify-content: flex-end; gap: 8px;">';
-        html += '<button class="alezux-action-btn alezux-edit-logro" data-id="' + item.id + '" title="Editar"><span class="dashicons dashicons-edit"></span></button>';
-        html += '<button class="alezux-action-btn alezux-delete-logro" style="color: #ff4d4d;" data-id="' + item.id + '" title="Eliminar"><span class="dashicons dashicons-trash"></span></button>';
+        html += '<button class="alezux-logro-action-btn alezux-edit-logro" data-id="' + item.id + '" title="Editar"><span class="dashicons dashicons-edit"></span></button>';
+        html += '<button class="alezux-logro-action-btn alezux-delete-logro" style="color: #ff4d4d;" data-id="' + item.id + '" title="Eliminar"><span class="dashicons dashicons-trash"></span></button>';
         html += '</div>';
         html += '</td>';
 

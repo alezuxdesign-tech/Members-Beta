@@ -20,9 +20,39 @@
     flex-shrink: 0;
 }
 
-/* Ensure the message column (LOGRO) allows text wrapping but doesn't overflow */
-.alezux-logros-table td:first-child {
-    max-width: 300px;
+/* Ensure the message column (LOGRO) allows text wrapping and breaks long words */
+.alezux-logros-table td:first-child .student-name {
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+}
+
+/* Action buttons specifically for logros to avoid conflict with students */
+.alezux-logro-action-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: #fff;
+    padding: 8px !important;
+    min-width: 38px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 6px rgba(118, 75, 162, 0.3);
+    text-decoration: none;
+}
+
+.alezux-logro-action-btn:hover {
+    opacity: 0.9;
+    color: #fff;
+}
+
+.alezux-logro-action-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
 }
 
 /* Pagination Adjustments for Logros */
