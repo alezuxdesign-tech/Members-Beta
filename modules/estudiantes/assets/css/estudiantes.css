@@ -1,22 +1,13 @@
 /* Estudiantes Module Styles */
 
 .alezux-estudiantes-wrapper {
-    background: var(--alezux-bg-card, #1a1a1a);
-    border-radius: 12px;
-    box-shadow: var(--alezux-box-shadow, 0 4px 20px rgba(0, 0, 0, 0.05));
-    overflow: hidden;
+    /* Inherits background and family from .alezux-finanzas-app */
+    border-radius: 10px;
 }
 
 /* Header Styles */
 .alezux-estudiantes-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 30px;
-    background-color: var(--alezux-bg-card, #1a1a1a);
-    border-bottom: 1px solid var(--alezux-border-color, #2a2a2a);
-    flex-wrap: wrap;
-    gap: 20px;
+    /* Padding and margins handled by .alezux-table-header */
 }
 
 .alezux-header-content {
@@ -33,10 +24,7 @@
 }
 
 .alezux-estudiantes-desc {
-    margin: 0;
-    font-size: 14px;
-    color: #888;
-    line-height: 1.5;
+    /* Styles handled by .alezux-table-desc */
 }
 
 /* Search Styles */
@@ -75,9 +63,7 @@
 
 /* Table Wrapper Update */
 .alezux-estudiantes-table-container {
-    padding: 0;
-    width: 100%;
-    overflow-x: auto;
+    /* Redundant: switched to .alezux-table-wrapper */
 }
 
 .alezux-estudiantes-table {
@@ -99,11 +85,7 @@
 }
 
 .alezux-estudiantes-table td {
-    padding: 15px 20px;
-    vertical-align: middle;
-    border-bottom: 1px solid var(--alezux-border-color, #2a2a2a);
-    color: #ccc;
-    font-size: 14px;
+    /* Borders and paddings handled by .alezux-finanzas-table td */
 }
 
 .alezux-estudiantes-table tr:last-child td {
@@ -181,11 +163,7 @@
 
 /* Pagination Styles */
 .alezux-estudiantes-pagination {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 15px 30px 24px;
-    gap: 5px;
+    /* Paginación hereda de .alezux-pagination */
 }
 
 .alezux-estudiantes-pagination .page-link {

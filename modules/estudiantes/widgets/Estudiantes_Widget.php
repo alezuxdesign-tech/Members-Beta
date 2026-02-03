@@ -1285,7 +1285,7 @@ class Estudiantes_Widget extends Widget_Base {
 			</div>
 
 			<!-- Table -->
-			<div class="alezux-estudiantes-table-container">
+			<div class="alezux-table-wrapper">
 				<table class="alezux-finanzas-table alezux-estudiantes-table">
 					<thead>
 						<tr>
@@ -1369,11 +1369,13 @@ class Estudiantes_Widget extends Widget_Base {
 				</table>
 			</div>
 			
-			<!-- Pagination -->
-			<div class="alezux-pagination alezux-estudiantes-pagination" 
-				 data-total-pages="<?php echo \esc_attr( $total_pages ); ?>" 
-				 data-current-page="1">
-			<!-- Pagination rendered via JS -->
+			<!-- Footer: Pagination -->
+			<div class="alezux-table-footer">
+				<div class="alezux-pagination alezux-estudiantes-pagination" 
+					 data-total-pages="<?php echo \esc_attr( $total_pages ); ?>" 
+					 data-current-page="1">
+				<!-- Pagination rendered via JS -->
+				</div>
 			</div>
 
             <!-- MODAL DE GESTIÓN (Hidden default) -->
