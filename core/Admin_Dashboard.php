@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Admin_Dashboard {
 
 	public function init() {
-		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+		add_action( 'admin_menu', [ $this, 'add_admin_menu' ], 5 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_post_alezux_save_settings', [ $this, 'save_settings' ] );
 		add_action( 'admin_post_alezux_send_test_notification', [ $this, 'send_test_notification' ] );
@@ -46,6 +46,16 @@ class Admin_Dashboard {
 			[ $this, 'render_dashboard' ],
 			ALEZUX_MEMBERS_URL . 'modules/demo-block/assets/css/img/LOGO.svg',
 			2
+		);
+
+		// Submenú explícito para el Dashboard (para asegurar que sea el primero y cargue la vista correcta)
+		add_submenu_page(
+			'alezux-members',
+			'Dashboard',
+			'Dashboard',
+			'manage_options',
+			'alezux-members',
+			[ $this, 'render_dashboard' ]
 		);
 	}
 

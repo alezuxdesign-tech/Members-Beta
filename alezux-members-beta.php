@@ -37,16 +37,16 @@ spl_autoload_register( function ( $class ) {
 
 // Inicializar el plugin
 function alezux_members_init() {
-	// Inicializar el plugin
-	if ( class_exists( 'Alezux_Members\\Core\\Plugin_Loader' ) ) {
-		$loader = new \Alezux_Members\Core\Plugin_Loader();
-		$loader->run();
-	}
-
-	// Inicializar Dashboard si estamos en admin
+	// 1. Inicializar Dashboard si estamos en admin (Priority First para el Menu)
 	if ( is_admin() && class_exists( 'Alezux_Members\\Core\\Admin_Dashboard' ) ) {
 		$dashboard = new \Alezux_Members\Core\Admin_Dashboard();
 		$dashboard->init();
+	}
+
+	// 2. Inicializar el Plugin Loader y Módulos
+	if ( class_exists( 'Alezux_Members\\Core\\Plugin_Loader' ) ) {
+		$loader = new \Alezux_Members\Core\Plugin_Loader();
+		$loader->run();
 	}
 }
 add_action( 'plugins_loaded', 'alezux_members_init' );
