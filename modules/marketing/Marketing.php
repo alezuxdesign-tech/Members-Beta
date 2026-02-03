@@ -127,6 +127,10 @@ class Marketing extends Module_Base {
                     $trigger = $node['data']['event'];
                     break;
                 }
+                if ( in_array( $node['type'], [ 'inactivity', 'expiration' ] ) ) {
+                    $trigger = $node['type'];
+                    break;
+                }
             }
         }
 

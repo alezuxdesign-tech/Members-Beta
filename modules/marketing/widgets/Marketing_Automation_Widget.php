@@ -130,7 +130,13 @@ class Marketing_Automation_Widget extends Widget_Base {
                         <div class="editor-sidebar">
                             <h4 class="sidebar-section-title">Triggers</h4>
                             <div class="automation-node-template trigger" data-type="trigger" draggable="true">
-                                <span class="node-icon">⚡</span> Evento
+                                <span class="node-icon">⚡</span> Evento General
+                            </div>
+                            <div class="automation-node-template trigger" data-type="inactivity" draggable="true">
+                                <span class="node-icon">💤</span> Inactividad
+                            </div>
+                            <div class="automation-node-template trigger" data-type="expiration" draggable="true">
+                                <span class="node-icon">📅</span> Vencimiento Cobro
                             </div>
 
                             <h4 class="sidebar-section-title">Logica</h4>

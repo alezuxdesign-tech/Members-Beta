@@ -16,10 +16,13 @@ class Queue_Runner {
      * Se puede llamar vía Cron o manualmente.
      */
     public static function process_queue( $limit = 10 ) {
+        // 1. Procesar disparadores de tiempo (Inactividad / Vencimiento)
+        self::process_time_triggers();
+
         global $wpdb;
         $table_queue = $wpdb->prefix . 'alezux_marketing_queue';
 
-        // 1. Obtener correos pendientes que ya deberían haberse enviado
+        // 2. Obtener correos pendientes que ya deberían haberse enviado
         $now = \current_time('mysql');
         $emails = $wpdb->get_results( $wpdb->prepare(
             "SELECT * FROM $table_queue 
@@ -37,6 +40,116 @@ class Queue_Runner {
             self::send_single_email( $email );
         }
     }
+
+    /**
+     * Escanea automatizaciones de inactividad y vencimiento.
+     */
+    private static function process_time_triggers() {
+        global $wpdb;
+        $table_automations = $wpdb->prefix . 'alezux_marketing_automations';
+
+        // Evitar que esto corra demasiadas veces seguidas si el cron es muy frecuente
+        // Podríamos usar un transiente, pero por ahora confiaremos en has_been_triggered_today.
+
+        // 1. Inactividad
+        $inactivity_automations = $wpdb->get_results( "SELECT * FROM $table_automations WHERE event_trigger = 'inactivity' AND status = 'active'" );
+        foreach ( $inactivity_automations as $automation ) {
+            self::run_inactivity_trigger( $automation );
+        }
+
+        // 2. Vencimiento
+        $expiration_automations = $wpdb->get_results( "SELECT * FROM $table_automations WHERE event_trigger = 'expiration' AND status = 'active'" );
+        foreach ( $expiration_automations as $automation ) {
+            self::run_expiration_trigger( $automation );
+        }
+    }
+
+    private static function run_inactivity_trigger( $automation ) {
+        $blueprint = \json_decode( $automation->blueprint, true );
+        $days = 0;
+        if ( ! isset( $blueprint['nodes'] ) ) return;
+
+        foreach ( $blueprint['nodes'] as $node ) {
+            if ( $node['type'] === 'inactivity' ) {
+                $days = \intval( $node['data']['days'] ?? 0 );
+                break;
+            }
+        }
+
+        if ( $days <= 0 ) return;
+
+        $date_target = \date( 'Y-m-d', \strtotime( "-$days days" ) );
+
+        $users = \get_users( [
+            'meta_key'     => 'alezux_last_active',
+            'meta_value'   => $date_target,
+            'meta_compare' => 'LIKE',
+            'fields'       => 'ID'
+        ] );
+
+        foreach ( $users as $user_id ) {
+            if ( self::has_been_triggered_today( $user_id, $automation->id ) ) continue;
+
+            $user = \get_userdata( $user_id );
+            if ( ! $user ) continue;
+
+            Automation_Engine::execute_automation( $automation, [ 'user' => $user ] );
+            self::mark_as_triggered_today( $user_id, $automation->id );
+        }
+    }
+
+    private static function run_expiration_trigger( $automation ) {
+        $blueprint = \json_decode( $automation->blueprint, true );
+        $days = 0;
+        if ( ! isset( $blueprint['nodes'] ) ) return;
+
+        foreach ( $blueprint['nodes'] as $node ) {
+            if ( $node['type'] === 'expiration' ) {
+                $days = \intval( $node['data']['days'] ?? 0 );
+                break;
+            }
+        }
+
+        if ( $days <= 0 ) return;
+
+        global $wpdb;
+        $date_target = \date( 'Y-m-d', \strtotime( "+$days days" ) );
+        $table_subs  = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+
+        $near_expirations = $wpdb->get_results( $wpdb->prepare(
+            "SELECT s.*, p.name as plan_name, p.token as plan_token, p.quota_amount 
+             FROM $table_subs s
+             JOIN $table_plans p ON s.plan_id = p.id
+             WHERE DATE(s.next_payment_date) = %s AND s.status = 'active'",
+            $date_target
+        ) );
+
+        foreach ( $near_expirations as $sub ) {
+            if ( self::has_been_triggered_today( $sub->user_id, $automation->id ) ) continue;
+
+            $user = \get_userdata( $sub->user_id );
+            if ( ! $user ) continue;
+
+            Automation_Engine::execute_automation( $automation, [
+                'user'       => $user,
+                'plan_name'  => $sub->plan_name,
+                'plan_token' => $sub->plan_token,
+                'amount'     => $sub->quota_amount
+            ] );
+            self::mark_as_triggered_today( $sub->user_id, $automation->id );
+        }
+    }
+
+    private static function has_been_triggered_today( $user_id, $automation_id ) {
+        $last_run = \get_user_meta( $user_id, "alezux_auto_run_{$automation_id}", true );
+        return $last_run === \date( 'Y-m-d' );
+    }
+
+    private static function mark_as_triggered_today( $user_id, $automation_id ) {
+        \update_user_meta( $user_id, "alezux_auto_run_{$automation_id}", \date( 'Y-m-d' ) );
+    }
+
 
     /**
      * Envía un único email de la cola.

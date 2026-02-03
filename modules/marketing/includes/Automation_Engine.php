@@ -39,16 +39,13 @@ class Automation_Engine {
     /**
      * Ejecuta una automatización específica (Blueprint).
      */
-    private static function execute_automation( $automation, $data ) {
+    public static function execute_automation( $automation, $data ) {
         $blueprint = \json_decode( $automation->blueprint, true );
         
         if ( ! $blueprint || ! isset( $blueprint['nodes'] ) ) {
             return;
         }
 
-        // TODO: Implementar el recorrido del grafo de nodos.
-        // Por ahora, lógica simplificada para pruebas:
-        // Buscamos nodos de tipo 'email' y los mandamos a la cola.
         foreach ( $blueprint['nodes'] as $node ) {
             if ( $node['type'] === 'email' ) {
                 self::queue_email( $node['data'], $data, $automation->id );
@@ -79,7 +76,7 @@ class Automation_Engine {
             'from_name'     => $node_data['from_name'] ?? \get_bloginfo('name'),
             'from_email'    => $node_data['from_email'] ?? \get_bloginfo('admin_email'),
             'status'        => 'pending',
-            'scheduled_at'  => \current_time('mysql') // Aquí se sumaría el Delay si existiera el nodo
+            'scheduled_at'  => \current_time('mysql')
         ] );
     }
 
@@ -87,14 +84,24 @@ class Automation_Engine {
      * Reemplaza tags dinámicos {{variable}} por datos reales.
      */
     private static function replace_variables( $content, $data ) {
-        $user = $data['user'] ?? null;
+        $user      = $data['user'] ?? null;
         $plan_name = $data['plan_name'] ?? '';
+        $plan_token = $data['plan_token'] ?? '';
+        $amount    = $data['amount'] ?? '';
+
+        $payment_url = '';
+        if ( ! empty( $plan_token ) ) {
+            $payment_url = \home_url( '/?alezux_buy_token=' . $plan_token );
+        }
 
         $replacements = [
-            '{{student_name}}' => $user ? $user->display_name : '',
-            '{{student_email}}' => $user ? $user->user_email : '',
-            '{{plan_name}}'    => $plan_name,
-            '{{site_name}}'    => \get_bloginfo('name'),
+            '{{student_name}}'      => $user ? $user->display_name : '',
+            '{{student_email}}'     => $user ? $user->user_email : '',
+            '{{plan_name}}'         => $plan_name,
+            '{{payment_url}}'       => $payment_url,
+            '{{subscription_amount}}' => $amount,
+            '{{amount}}'            => $amount,
+            '{{site_name}}'         => \get_bloginfo('name'),
         ];
 
         return \str_replace( \array_keys($replacements), \array_values($replacements), $content );

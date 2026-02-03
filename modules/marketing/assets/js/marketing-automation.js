@@ -516,6 +516,18 @@
                 this.closeModal();
                 this.openDrawer(node);
                 return;
+            } else if (node.type === 'inactivity') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días de inactividad:</label>
+                    <input type="number" id="field-days" value="${node.data.days || '4'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    <p style="color:#555; font-size:11px; margin-top:10px;">Se disparará cuando el alumno lleve exactamente estos días sin entrar.</p>
+                `;
+            } else if (node.type === 'expiration') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días antes del vencimiento:</label>
+                    <input type="number" id="field-days" value="${node.data.days || '2'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    <p style="color:#555; font-size:11px; margin-top:10px;">Se disparará X días antes de la fecha de cobro de la suscripción.</p>
+                `;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
@@ -559,6 +571,12 @@
                 node.data.condition_value = document.getElementById('field-condition-value').value;
                 const typeLabel = document.getElementById('field-condition-type').options[document.getElementById('field-condition-type').selectedIndex].text;
                 display = `${typeLabel}: ${node.data.condition_value}`;
+            } else if (node.type === 'inactivity') {
+                node.data.days = document.getElementById('field-days').value;
+                display = `Inactividad: ${node.data.days} días`;
+            } else if (node.type === 'expiration') {
+                node.data.days = document.getElementById('field-days').value;
+                display = `Vencimiento: ${node.data.days} días antes`;
             }
 
             node.data.description = display;

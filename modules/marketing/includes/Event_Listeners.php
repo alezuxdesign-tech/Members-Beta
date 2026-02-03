@@ -14,6 +14,25 @@ class Event_Listeners {
         
         // Registro de usuario
         \add_action( 'user_register', [ __CLASS__, 'on_user_register' ] );
+
+        // Tracking de actividad para Inactividad
+        \add_action( 'init', [ __CLASS__, 'track_user_activity' ] );
+    }
+
+    /**
+     * Registra la última actividad del usuario para detectar inactividad.
+     */
+    public static function track_user_activity() {
+        if ( \is_user_logged_in() ) {
+            $user_id = \get_current_user_id();
+            $last_active = \get_user_meta( $user_id, 'alezux_last_active', true );
+            $now_ts = \time();
+            $last_active_ts = $last_active ? \strtotime( $last_active ) : 0;
+
+            if ( $now_ts - $last_active_ts > 3600 ) {
+                \update_user_meta( $user_id, 'alezux_last_active', \current_time('mysql') );
+            }
+        }
     }
 
     /**
