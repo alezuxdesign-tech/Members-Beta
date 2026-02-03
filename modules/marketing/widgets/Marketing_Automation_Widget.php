@@ -154,6 +154,48 @@ class Marketing_Automation_Widget extends Widget_Base {
                                 <p>Arrastra componentes aquí para empezar tu flujo</p>
                             </div>
                         </div>
+
+                        <!-- PANEL LATERAL DERECHO (Drawer) para Emails -->
+                        <div id="alezux-side-panel" class="alezux-editor-drawer">
+                            <div class="drawer-header">
+                                <h3><span class="dashicons dashicons-email"></span> Configurar Email</h3>
+                                <button id="close-side-panel" class="alezux-btn-icon"><span class="dashicons dashicons-no-alt"></span></button>
+                            </div>
+                            <div class="drawer-content">
+                                <div class="alezux-field-group">
+                                    <label>Asunto del Correo</label>
+                                    <input type="text" id="drawer-subject" placeholder="Ej: ¡Bienvenido a la academia!">
+                                </div>
+                                <div class="alezux-field-group">
+                                    <label>Mensaje (Soporta HTML)</label>
+                                    <textarea id="drawer-content" placeholder="Escribe o pega aquí el código HTML de tu correo..."></textarea>
+                                </div>
+                                <div id="drawer-placeholders" class="drawer-info-box">
+                                    <!-- Se llena vía JS -->
+                                </div>
+                            </div>
+                            <div class="drawer-footer">
+                                <button id="preview-email-btn" class="alezux-btn-soft">
+                                    <span class="dashicons dashicons-visibility"></span> Vista Previa
+                                </button>
+                                <button id="save-side-panel" class="alezux-action-btn">
+                                    <span class="dashicons dashicons-saved"></span> Aplicar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL DE VISTA PREVIA -->
+            <div id="alezux-preview-modal" class="alezux-modal-overlay" style="display:none;">
+                <div class="alezux-modal-content" style="width: 800px; height: 80vh; display: flex; flex-direction: column;">
+                    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 id="preview-title" style="margin:0; font-size:18px;">Vista Previa del Correo</h3>
+                        <button id="close-preview-modal" class="alezux-btn-icon"><span class="dashicons dashicons-no-alt"></span></button>
+                    </div>
+                    <div id="email-preview-body" style="flex-grow:1; background:white; border-radius:15px; overflow:hidden;">
+                        <iframe id="preview-iframe" style="width:100%; height:100%; border:none;"></iframe>
                     </div>
                 </div>
             </div>

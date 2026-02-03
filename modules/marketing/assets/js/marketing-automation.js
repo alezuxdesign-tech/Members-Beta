@@ -34,6 +34,23 @@
                 nameInput: document.getElementById('automation-name')
             };
 
+            this.drawer = {
+                el: document.getElementById('alezux-side-panel'),
+                subject: document.getElementById('drawer-subject'),
+                content: document.getElementById('drawer-content'),
+                save: document.getElementById('save-side-panel'),
+                close: document.getElementById('close-side-panel'),
+                preview: document.getElementById('preview-email-btn'),
+                placeholders: document.getElementById('drawer-placeholders')
+            };
+
+            this.previewModal = {
+                overlay: document.getElementById('alezux-preview-modal'),
+                iframe: document.getElementById('preview-iframe'),
+                close: document.getElementById('close-preview-modal'),
+                title: document.getElementById('preview-title')
+            };
+
             this.initEvents();
             this.loadAutomationsTable();
         }
@@ -90,6 +107,26 @@
             // Modal Save
             if (this.modal.save) {
                 this.modal.save.addEventListener('click', () => this.handleModalAction());
+            }
+
+            // Side Panel Events
+            if (this.drawer.close) {
+                this.drawer.close.addEventListener('click', () => this.closeDrawer());
+            }
+
+            if (this.drawer.save) {
+                this.drawer.save.addEventListener('click', () => this.saveDrawerChanges());
+            }
+
+            if (this.drawer.preview) {
+                this.drawer.preview.addEventListener('click', () => this.openPreview());
+            }
+
+            // Preview Modal Close
+            if (this.previewModal.close) {
+                this.previewModal.close.addEventListener('click', () => {
+                    this.previewModal.overlay.style.display = 'none';
+                });
             }
         }
 
@@ -289,42 +326,10 @@
                     `;
                 }
             } else if (node.type === 'email') {
-                const triggerType = this.getTriggerTypeForNode(nodeId);
-                let placeholdersInfo = '';
-
-                if (triggerType === 'new_student') {
-                    placeholdersInfo = `
-                        <div style="background: rgba(66, 153, 225, 0.1); border: 1px dashed #4299e1; padding: 10px; border-radius: 8px; margin-top: 15px;">
-                            <span style="color: #4299e1; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles (Registro):</span>
-                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_name}}</code>
-                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_email}}</code>
-                        </div>
-                    `;
-                } else if (['primer_pago', 'pago_exitoso', 'pago_fallido'].includes(triggerType)) {
-                    placeholdersInfo = `
-                        <div style="background: rgba(72, 187, 120, 0.1); border: 1px dashed #48bb78; padding: 10px; border-radius: 8px; margin-top: 15px;">
-                            <span style="color: #48bb78; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles (Pago):</span>
-                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_name}}</code>
-                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{plan_name}}</code>
-                        </div>
-                    `;
-                }
-                else {
-                    placeholdersInfo = `
-                        <div style="background: rgba(113, 128, 150, 0.1); border: 1px dashed #4a5568; padding: 10px; border-radius: 8px; margin-top: 15px;">
-                            <span style="color: #a0aec0; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Nota:</span>
-                            <p style="color: #718096; font-size: 10px; margin: 0;">Conecta un trigger para ver las variables disponibles.</p>
-                        </div>
-                    `;
-                }
-
-                this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Asunto:</label>
-                    <input type="text" id="field-subject" value="${node.data.subject || ''}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;" placeholder="Ej: Bienvenido {{student_name}}">
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Mensaje:</label>
-                    <textarea id="field-content" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; height:120px;">${node.data.content || ''}</textarea>
-                    ${placeholdersInfo}
-                `;
+                // Sustituir modal por Drawer para Emails
+                this.closeModal();
+                this.openDrawer(node);
+                return;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
@@ -766,6 +771,76 @@
                 currentId = incoming.from;
             }
             return null;
+        }
+
+        openDrawer(node) {
+            this.editingNode = node;
+            this.drawer.subject.value = node.data.subject || '';
+            this.drawer.content.value = node.data.message || '';
+
+            // Cargar Placeholders dinámicos
+            const triggerType = this.getTriggerTypeForNode(node.id);
+            let placeholders = '';
+
+            if (triggerType === 'new_student') {
+                placeholders = `
+                    <div style="background: rgba(66, 153, 225, 0.1); border: 1px dashed #4299e1; padding: 10px; border-radius: 8px;">
+                        <span style="color: #4299e1; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles:</span>
+                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
+                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_email}}')">{{student_email}}</code>
+                    </div>
+                `;
+            } else if (['primer_pago', 'pago_exitoso', 'pago_fallido'].includes(triggerType)) {
+                placeholders = `
+                    <div style="background: rgba(72, 187, 120, 0.1); border: 1px dashed #48bb78; padding: 10px; border-radius: 8px;">
+                        <span style="color: #48bb78; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles:</span>
+                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{student_name}}')">{{student_name}}</code>
+                        <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff; cursor:pointer;" onclick="navigator.clipboard.writeText('{{plan_name}}')">{{plan_name}}</code>
+                    </div>
+                `;
+            }
+
+            this.drawer.placeholders.innerHTML = placeholders;
+            this.drawer.el.classList.add('open');
+        }
+
+        closeDrawer() {
+            this.drawer.el.classList.remove('open');
+            this.editingNode = null;
+        }
+
+        saveDrawerChanges() {
+            if (!this.editingNode) return;
+
+            this.editingNode.data.subject = this.drawer.subject.value;
+            this.editingNode.data.message = this.drawer.content.value;
+            this.editingNode.data.description = "Asunto: " + (this.editingNode.data.subject || 'Sin asunto').substring(0, 20) + "...";
+
+            // Actualizar vista del nodo
+            const contentEl = this.editingNode.el.querySelector('.node-content');
+            if (contentEl) contentEl.innerText = this.editingNode.data.description;
+
+            this.closeDrawer();
+        }
+
+        openPreview() {
+            const html = this.drawer.content.value;
+            const subject = this.drawer.subject.value || 'Sin Asunto';
+
+            this.previewModal.title.innerText = "Vista Previa: " + subject;
+            this.previewModal.overlay.style.display = 'flex';
+
+            const doc = this.previewModal.iframe.contentWindow.document;
+            doc.open();
+
+            // Reemplazo simple para vista previa
+            let processedHtml = html
+                .replace(/{{student_name}}/g, 'Juan Pérez (Ejemplo)')
+                .replace(/{{student_email}}/g, 'juan@ejemplo.com')
+                .replace(/{{plan_name}}/g, 'Membresía VIP (Ejemplo)');
+
+            doc.write(processedHtml);
+            doc.close();
         }
 
     }

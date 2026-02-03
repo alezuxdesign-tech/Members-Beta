@@ -449,3 +449,135 @@
     min-width: 150px;
     animation: alezux-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+/* -------------------------------------------------------------------------- */
+/* NEW: LATERAL PANEL (DRAWER)                                                */
+/* -------------------------------------------------------------------------- */
+
+.alezux-editor-drawer {
+    position: absolute;
+    top: 0;
+    right: -450px;
+    /* Hidden by default */
+    width: 450px;
+    height: 100%;
+    background: #111;
+    border-left: 1px solid #333;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.alezux-editor-drawer.open {
+    right: 0;
+}
+
+.drawer-header {
+    padding: 20px 25px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drawer-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.drawer-content {
+    flex-grow: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.alezux-field-group {
+    margin-bottom: 20px;
+}
+
+.alezux-field-group label {
+    display: block;
+    color: #888;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.alezux-field-group input[type="text"],
+.alezux-field-group textarea {
+    width: 100%;
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.alezux-field-group textarea {
+    height: 350px;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    line-height: 1.5;
+    resize: none;
+}
+
+.alezux-field-group input:focus,
+.alezux-field-group textarea:focus {
+    border-color: #5a8dee;
+    outline: none;
+}
+
+.drawer-info-box {
+    margin-top: 10px;
+}
+
+.drawer-footer {
+    padding: 20px 25px;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    display: flex;
+    gap: 10px;
+}
+
+.drawer-footer button {
+    flex: 1;
+}
+
+.alezux-btn-soft {
+    background: rgba(90, 141, 238, 0.1);
+    color: #5a8dee;
+    border: 1px solid rgba(90, 141, 238, 0.2);
+    padding: 12px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.alezux-btn-soft:hover {
+    background: rgba(90, 141, 238, 0.2);
+}
+
+.alezux-btn-icon {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.alezux-btn-icon:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
