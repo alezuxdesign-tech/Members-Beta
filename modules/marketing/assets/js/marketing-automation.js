@@ -277,13 +277,20 @@
                 });
             });
 
-            // Abrir ajustes con CLIC (si no se ha arrastrado)
-            nodeEl.addEventListener('click', (e) => {
+            // Abrir ajustes con CLIC o DOBLE CLIC (si no se ha arrastrado significativamente)
+            const handleConfigOpen = (e) => {
                 if (e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn')) return;
-                if (this.nodeWasDragged) return; // Evitar abrir si solo estaba arrastrando
+
+                // Si la distancia de arrastre es pequeña (< 5px), lo tratamos como clic
+                const dragDistance = Math.sqrt(Math.pow(this.dragDiffX || 0, 2) + Math.pow(this.dragDiffY || 0, 2));
+                if (dragDistance > 5) return;
+
                 e.stopPropagation();
                 this.openNodeSettings(id);
-            });
+            };
+
+            nodeEl.addEventListener('click', handleConfigOpen);
+            nodeEl.addEventListener('dblclick', handleConfigOpen);
 
             this.canvasContent.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
@@ -491,8 +498,11 @@
             const node = this.nodes.find(n => n.id === nodeId);
             if (!node) return;
 
+            // Asegurar que cerramos otros paneles
+            this.closeDrawer();
+            this.closeModal();
+
             if (node.type === 'email') {
-                this.closeModal();
                 this.openDrawer(node);
                 return;
             }
@@ -807,14 +817,17 @@
             if (nodeEl && !isButton) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
-                this.nodeWasDragged = false; // Resetear bandera
+                this.nodeWasDragged = false;
 
                 const rect = this.canvas.getBoundingClientRect();
-                // Coordenada del mouse en el espacio del lienzo (0,0 es top-left de canvasContent)
                 const mouseCanvasX = (e.clientX - rect.left - this.pan.x) / this.scale;
                 const mouseCanvasY = (e.clientY - rect.top - this.pan.y) / this.scale;
 
-                // Offset relativo al nodo
+                this.dragStartX = mouseCanvasX; // Guardar inicio
+                this.dragStartY = mouseCanvasY;
+                this.dragDiffX = 0;
+                this.dragDiffY = 0;
+
                 this.initialX = mouseCanvasX - nodeEl.offsetLeft;
                 this.initialY = mouseCanvasY - nodeEl.offsetTop;
                 nodeEl.style.zIndex = 1000;
@@ -834,7 +847,10 @@
             const mouseCanvasY = (e.clientY - rect.top - this.pan.y) / this.scale;
 
             if (this.isDragging && this.dragTarget) {
-                this.nodeWasDragged = true; // Marcar que se ha movido
+                this.nodeWasDragged = true;
+                this.dragDiffX = mouseCanvasX - this.dragStartX; // Calcular diff
+                this.dragDiffY = mouseCanvasY - this.dragStartY;
+
                 let x = mouseCanvasX - this.initialX;
                 let y = mouseCanvasY - this.initialY;
 
