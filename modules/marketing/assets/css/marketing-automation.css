@@ -868,3 +868,140 @@
 .placeholder-code:active {
     transform: translateY(0);
 }
+
+/* ==========================================================
+   NUEVOS ESTILOS: BIBLIOTECA DE TRIGGERS (Estilo n8n)
+   ========================================================== */
+
+.trigger-library {
+    padding: 5px;
+}
+
+.library-module-title {
+    font-size: 11px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 25px 0 12px;
+    font-weight: 600;
+}
+
+.library-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #111;
+    border: 1px solid #2d3748;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 10px;
+    user-select: none;
+}
+
+.library-item:hover {
+    border-color: #4299e1;
+    background: #1a202c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.library-item.active {
+    border-color: #4299e1;
+    background: rgba(66, 153, 225, 0.1);
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+}
+
+.lib-icon {
+    font-size: 20px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.lib-info {
+    flex-grow: 1;
+}
+
+.lib-info strong {
+    display: block;
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.lib-info p {
+    margin: 0;
+    color: #718096;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Áreas de Configuración Dinámica */
+#trigger-config-area {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #2d3748;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botón Unificado de Guardar en Drawer */
+#save-side-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+}
+
+#save-side-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
+}
+
+/* Evitar conflictos con botones globales */
+.alezux-marketing-btn {
+    all: unset;
+    /* Reset inicial */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+    gap: 8px;
+    background: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.2);
+}
+
+.alezux-marketing-btn:hover {
+    background: #48bb78;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
+}

@@ -91,7 +91,12 @@
         initEvents() {
             // Dashboard Events
             if (this.popup.createBtn) {
-                this.popup.createBtn.addEventListener('click', () => this.openEditor());
+                this.popup.createBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    this.openEditor();
+                });
             }
 
             if (this.popup.close) {
@@ -646,7 +651,6 @@
             if (!activeItem) return;
 
             const newType = activeItem.dataset.type;
-            const oldType = node.type;
 
             // Metamorfosis de Nodo
             node.type = newType === 'general' ? 'trigger' : newType;
@@ -655,31 +659,36 @@
             let display = '';
             let icon = '⚙️';
 
-            if (newType === 'general') {
-                const ev = document.getElementById('lib-field-event').value;
+            if (newType === 'general' || node.type === 'trigger') {
+                const evField = document.getElementById('lib-field-event');
+                const ev = evField ? evField.value : (node.data.event || '');
                 node.data.event = ev;
                 node.data.event_type = 'general';
-                display = window.alezuxEventsDictionary[ev] || 'Evento General';
+                const dict = window.alezuxEventsDictionary || {};
+                display = dict[ev] || 'Evento General';
                 icon = '⚡';
             } else if (newType === 'inactivity') {
-                node.data.days = document.getElementById('lib-field-days').value;
-                display = `Inactividad: ${node.data.days} días`;
+                const daysField = document.getElementById('lib-field-days');
+                node.data.days = daysField ? daysField.value : (node.data.days || '4');
+                display = `Inactividad (${node.data.days} días)`;
                 icon = '💤';
             } else if (newType === 'expiration') {
-                node.data.days = document.getElementById('lib-field-days').value;
-                display = `Vencimiento: ${node.data.days} días antes`;
+                const daysField = document.getElementById('lib-field-days');
+                node.data.days = daysField ? daysField.value : (node.data.days || '2');
+                display = `Vencimiento (${node.data.days} días antes)`;
                 icon = '📅';
             }
 
             node.data.description = display;
 
-            // Actualizar visualmente el nodo
-            const iconEl = node.el.querySelector('.node-box-icon');
-            if (iconEl) iconEl.innerText = icon;
+            // Actualizar vista del nodo
             const titleEl = node.el.querySelector('.node-title');
-            if (titleEl) titleEl.innerText = newType === 'general' ? 'Trigger Evento' : (newType === 'inactivity' ? 'Inactividad' : 'Vencimiento Cobro');
             const descEl = node.el.querySelector('.node-description');
+            const iconEl = node.el.querySelector('.node-icon');
+
+            if (titleEl) titleEl.innerText = node.type.toUpperCase();
             if (descEl) descEl.innerText = display;
+            if (iconEl) iconEl.innerText = icon;
 
             this.closeDrawer();
             this.updateConnections(); // Por si el cambio de clase altera dimensiones (aunque no debería)

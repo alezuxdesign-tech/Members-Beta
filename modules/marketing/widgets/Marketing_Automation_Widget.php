@@ -78,7 +78,7 @@ class Marketing_Automation_Widget extends Widget_Base {
                     <p class="alezux-table-desc"><?php \esc_html_e( 'Gestiona tus flujos de trabajo y correos automáticos.', 'alezux-members' ); ?></p>
                 </div>
                 <div class="alezux-header-right">
-                    <button id="btn-create-automation" class="alezux-action-btn">
+                    <button id="btn-create-automation" class="alezux-marketing-btn">
                         <span class="dashicons dashicons-plus"></span> <?php \esc_html_e( 'Nueva Automatización', 'alezux-members' ); ?>
                     </button>
                 </div>
