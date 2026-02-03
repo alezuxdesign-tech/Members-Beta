@@ -9,6 +9,12 @@
 
             this.editingNode = null;
             this.pendingConnection = null;
+            this.nodes = [];
+            this.connections = [];
+            this.isDragging = false;
+            this.dragTarget = null;
+            this.initialX = 0;
+            this.initialY = 0;
 
             // Navegación estilo Figma
             this.scale = 1;
