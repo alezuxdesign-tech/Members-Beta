@@ -345,9 +345,7 @@ class Login_Widget extends Widget_Base {
 					],
 				],
 				'default' => 'stretch',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}};',
-				],
+				'prefix_class' => 'alezux-btn-align-',
 			]
 		);
 

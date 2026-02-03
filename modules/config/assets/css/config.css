@@ -322,8 +322,8 @@
 }
 
 .alezux-auth-submit {
-    width: auto;
-    align-self: flex-start;
+    width: 100%;
+    align-self: stretch;
     /* Default alignment */
     background: var(--alezux-primary, #6c5ce7);
     color: #fff;
@@ -345,6 +345,74 @@
     background: var(--alezux-primary-hover, #5649c0);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+/** Button Alignment via prefix_class **/
+/* Desktop */
+.alezux-btn-align-flex-start .alezux-auth-submit {
+    align-self: flex-start;
+    width: auto;
+}
+
+.alezux-btn-align-center .alezux-auth-submit {
+    align-self: center;
+    width: auto;
+}
+
+.alezux-btn-align-flex-end .alezux-auth-submit {
+    align-self: flex-end;
+    width: auto;
+}
+
+.alezux-btn-align-stretch .alezux-auth-submit {
+    align-self: stretch;
+    width: 100%;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .alezux-btn-align-tablet-flex-start .alezux-auth-submit {
+        align-self: flex-start;
+        width: auto;
+    }
+
+    .alezux-btn-align-tablet-center .alezux-auth-submit {
+        align-self: center;
+        width: auto;
+    }
+
+    .alezux-btn-align-tablet-flex-end .alezux-auth-submit {
+        align-self: flex-end;
+        width: auto;
+    }
+
+    .alezux-btn-align-tablet-stretch .alezux-auth-submit {
+        align-self: stretch;
+        width: 100%;
+    }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+    .alezux-btn-align-mobile-flex-start .alezux-auth-submit {
+        align-self: flex-start;
+        width: auto;
+    }
+
+    .alezux-btn-align-mobile-center .alezux-auth-submit {
+        align-self: center;
+        width: auto;
+    }
+
+    .alezux-btn-align-mobile-flex-end .alezux-auth-submit {
+        align-self: flex-end;
+        width: auto;
+    }
+
+    .alezux-btn-align-mobile-stretch .alezux-auth-submit {
+        align-self: stretch;
+        width: 100%;
+    }
 }
 
 .alezux-auth-extra {
