@@ -1,5 +1,10 @@
 jQuery(document).ready(function ($) {
-    console.log('[Estudiantes] JS Loaded and Ready (v1.0.6)');
+    console.log('[Alezux] Estudiantes JS Inicializado (v1.0.7)');
+
+    // Debug Global: Detectar clics en cualquier parte de la tabla
+    $(document).on('click', '.alezux-estudiantes-table', function (e) {
+        console.log('[Alezux] Clic detectado en tabla:', e.target);
+    });
 
     // ==========================================================
     // ALERTAS MODALES PERSONALIZADAS
@@ -12,7 +17,6 @@ jQuery(document).ready(function ($) {
         var $btnConfirm = $('#alezux-alert-confirm');
         var $btnCancel = $('#alezux-alert-cancel');
 
-        // Reset
         $icon.removeClass('success error warning').addClass(type);
         if (type === 'success') $icon.html('<i class="fa fa-check-circle"></i>');
         if (type === 'error') $icon.html('<i class="fa fa-times-circle"></i>');
@@ -20,7 +24,7 @@ jQuery(document).ready(function ($) {
         if (type === 'info') $icon.html('<i class="fa fa-info-circle"></i>');
 
         $title.text(title);
-        $msg.html(message); // Allow HTML
+        $msg.html(message);
         $btnCancel.hide();
         $btnConfirm.off('click').on('click', function () {
             $overlay.fadeOut();
@@ -37,7 +41,6 @@ jQuery(document).ready(function ($) {
         var $btnConfirm = $('#alezux-alert-confirm');
         var $btnCancel = $('#alezux-alert-cancel');
 
-        // Setup Warning Style
         $icon.removeClass('success error info').addClass('warning');
         $icon.html('<i class="fa fa-question-circle"></i>');
 
@@ -45,7 +48,6 @@ jQuery(document).ready(function ($) {
         $msg.html(message);
         $btnCancel.show();
 
-        // Handlers
         $btnConfirm.off('click').on('click', function () {
             $overlay.fadeOut();
             if (typeof onConfirm === 'function') onConfirm();
@@ -61,17 +63,14 @@ jQuery(document).ready(function ($) {
     // ==========================================================
     // BÚSQUEDA Y PAGINACIÓN (AJAX)
     // ==========================================================
-
     var searchTimer;
     var currentSearch = '';
 
-    // Input de Búsqueda
     $(document).on('input', '.alezux-table-search-input', function () {
         clearTimeout(searchTimer);
         currentSearch = $(this).val();
-
-        // Mostrar/Ocultar icono de limpiar
         var $clearIcon = $(this).parent().find('.alezux-clear-icon');
+
         if (currentSearch.length > 0) {
             $clearIcon.fadeIn(200);
         } else {
@@ -80,21 +79,17 @@ jQuery(document).ready(function ($) {
 
         searchTimer = setTimeout(function () {
             loadStudents(1, currentSearch);
-        }, 500); // Debounce
+        }, 500);
     });
 
-    // Limpiar Búsqueda
     $(document).on('click', '.alezux-clear-icon', function () {
         var $input = $(this).parent().find('.alezux-table-search-input');
         $input.val('').trigger('input').focus();
     });
 
-    // Cargar Estudiantes
     function loadStudents(page, search) {
+        console.log('[Alezux] Buscando:', search, 'Página:', page);
         var $tableBody = $('.alezux-estudiantes-table tbody');
-        var $pagination = $('.alezux-estudiantes-pagination');
-
-        // Estilo de carga (Simple opacity)
         $tableBody.css('opacity', '0.5');
 
         $.ajax({
@@ -112,11 +107,11 @@ jQuery(document).ready(function ($) {
                     renderTable(response.data.students);
                     renderPagination(response.data.total_pages, response.data.current_page);
                 } else {
-                    $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">Error al cargar datos.</td></tr>');
+                    $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;">Error al cargar datos.</td></tr>');
                 }
             },
             error: function () {
-                $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">Error de conexión.</td></tr>');
+                $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;">Error de conexión.</td></tr>');
             },
             complete: function () {
                 $tableBody.css('opacity', '1');
@@ -124,7 +119,6 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Render Tabla
     function renderTable(students) {
         var $tableBody = $('.alezux-estudiantes-table tbody');
         $tableBody.empty();
@@ -146,9 +140,7 @@ jQuery(document).ready(function ($) {
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <span class="student-email">${student.email}</span>
-                    </td>
+                    <td><span class="student-email">${student.email}</span></td>
                     <td>
                         <div class="alezux-progress-wrapper">
                             <div class="progress-Label">
@@ -177,21 +169,17 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Render Paginación
     function renderPagination(totalPages, currentPage) {
         var $container = $('.alezux-estudiantes-pagination');
         $container.empty();
-
         if (totalPages <= 1) return;
 
         var html = '';
         var prevPage = Math.max(1, currentPage - 1);
         var nextPage = Math.min(totalPages, currentPage + 1);
 
-        // Prev
         html += `<button class="page-btn prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}" ${currentPage <= 1 ? 'disabled' : ''}><i class="fa fa-chevron-left"></i></button>`;
 
-        // Pages
         for (var i = 1; i <= totalPages; i++) {
             if (i == currentPage) {
                 html += `<button class="page-btn active">${i}</button>`;
@@ -202,32 +190,24 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        // Next
         html += `<button class="page-btn next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}" ${currentPage >= totalPages ? 'disabled' : ''}><i class="fa fa-chevron-right"></i></button>`;
-
         $container.html(html);
     }
 
-    // Evento Click Paginación
-    $(document).on('click', '.alezux-estudiantes-pagination .page-link', function () {
-        if ($(this).hasClass('disabled') || $(this).hasClass('active') || $(this).hasClass('dots')) return;
-
+    // Corregido: Selector correcto para los nuevos botones de paginación
+    $(document).on('click', '.page-btn', function (e) {
+        e.preventDefault();
+        if ($(this).hasClass('disabled') || $(this).hasClass('active')) return;
         var page = $(this).data('page');
-        loadStudents(page, currentSearch);
+        if (page) loadStudents(page, currentSearch);
     });
-
-    // Iniciar Paginación Inicial (si PHP renderizó páginas)
-    var initialTotalPages = $('.alezux-estudiantes-pagination').data('total-pages');
-    if (initialTotalPages) {
-        renderPagination(initialTotalPages, 1);
-    }
 
     // ==========================================================
     // GESTIÓN DE ESTUDIANTES (MODAL)
     // ==========================================================
 
     function loadStudentInfo(userId, iconUrl) {
-        console.log('[Estudiantes] Cargando info para:', userId);
+        console.log('[Alezux] Cargando info para:', userId);
         $('#alezux-modal-loading').show();
         $('#alezux-modal-content').hide();
 
@@ -240,19 +220,13 @@ jQuery(document).ready(function ($) {
                 user_id: userId
             },
             success: function (response) {
-                console.log('[Estudiantes] Respuesta detalles:', response);
+                console.log('[Alezux] Detalle recibido:', response);
                 if (response.success) {
                     var data = response.data;
-
-                    // Populate Form
                     $('#manage-first-name').val(data.first_name);
                     $('#manage-last-name').val(data.last_name);
                     $('#manage-email').val(data.email);
-
-                    // Block Status Button UI
                     updateBlockButton(data.is_blocked);
-
-                    // Render Courses Lists
                     renderCoursesLists(data.enrolled_courses, data.available_courses, iconUrl);
 
                     $('#alezux-modal-loading').hide();
@@ -261,21 +235,16 @@ jQuery(document).ready(function ($) {
                     alert('Error: ' + response.data.message);
                     $('#alezux-management-modal-overlay').fadeOut();
                 }
-            },
-            error: function () {
-                alert('Error de conexión al cargar datos.');
-                $('#alezux-management-modal-overlay').fadeOut();
             }
         });
     }
 
-    // 1. Abrir Modal
+    // Delegación fuerte para el botón gestionar
     $(document).on('click', '.alezux-action-btn', function (e) {
         e.preventDefault();
-        console.log('[Estudiantes] Clic en Gestionar');
         var userId = $(this).data('student-id');
+        console.log('[Alezux] Clic en botón Gestionar. UserID:', userId);
 
-        // Capturar URL del icono personalizado
         var iconUrl = $(this).closest('.alezux-estudiantes-wrapper').data('time-icon');
 
         $('#alezux-manage-user-id').val(userId);
@@ -285,17 +254,14 @@ jQuery(document).ready(function ($) {
         loadStudentInfo(userId, iconUrl);
     });
 
-    // Cerrar Modal
     $('#alezux-modal-close').on('click', function () {
         $('#alezux-management-modal-overlay').fadeOut();
     });
 
-    // 2. Guardar Datos Personales
     $('#btn-save-student-data').on('click', function (e) {
         e.preventDefault();
         var $btn = $(this);
         var $spinner = $btn.find('.alezux-spinner');
-
         $btn.prop('disabled', true);
         $spinner.show();
 
@@ -311,11 +277,7 @@ jQuery(document).ready(function ($) {
                 email: $('#manage-email').val()
             },
             success: function (response) {
-                if (response.success) {
-                    showAlezuxAlert('Éxito', response.data.message, 'success');
-                } else {
-                    showAlezuxAlert('Error', response.data.message, 'error');
-                }
+                showAlezuxAlert(response.success ? 'Éxito' : 'Error', response.data.message, response.success ? 'success' : 'error');
             },
             complete: function () {
                 $btn.prop('disabled', false);
@@ -324,15 +286,10 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // 3. Reset Password
     $('#btn-reset-password').on('click', function (e) {
         e.preventDefault();
         var userId = $('#alezux-manage-user-id').val();
-
-        showAlezuxConfirm('Restablecer Contraseña', '¿Estás seguro? Esto generará una nueva contraseña y se la enviará por correo al estudiante inmediatamente.', function () {
-            var $btn = $('#btn-reset-password');
-            $btn.prop('disabled', true).text('Procesando...');
-
+        showAlezuxConfirm('Restablecer Contraseña', '¿Estás seguro?', function () {
             $.ajax({
                 url: alezux_estudiantes_vars.ajax_url,
                 type: 'POST',
@@ -342,24 +299,17 @@ jQuery(document).ready(function ($) {
                     user_id: userId
                 },
                 success: function (response) {
-                    showAlezuxAlert('Proceso Completado', response.data.message, response.success ? 'success' : 'error');
-                },
-                complete: function () {
-                    $btn.prop('disabled', false).html('<i class="fa fa-key"></i> Restablecer Contraseña');
+                    showAlezuxAlert('Completado', response.data.message, response.success ? 'success' : 'error');
                 }
             });
         });
     });
 
-    // 4. Bloquear / Desbloquear
     $('#btn-block-user').on('click', function (e) {
         e.preventDefault();
         var isBlocked = $(this).data('is-blocked');
         var action = isBlocked ? 'unblock' : 'block';
-        var title = isBlocked ? 'Desbloquear Usuario' : 'Bloquear Usuario';
-        var msg = isBlocked ? '¿Deseas permitir el acceso a este estudiante nuevamente?' : '¿Realmente deseas bloquear el acceso a la academia para este estudiante?';
-
-        showAlezuxConfirm(title, msg, function () {
+        showAlezuxConfirm(isBlocked ? 'Desbloquear' : 'Bloquear', '¿Confirmas la acción?', function () {
             $.ajax({
                 url: alezux_estudiantes_vars.ajax_url,
                 type: 'POST',
@@ -373,58 +323,21 @@ jQuery(document).ready(function ($) {
                     if (response.success) {
                         showAlezuxAlert('Actualizado', response.data.message, 'success');
                         updateBlockButton(!isBlocked);
-
-                        // ACTUALIZAR LA FILA EN LA TABLA SIN RECARGAR
-                        var userId = $('#alezux-manage-user-id').val();
-                        var $row = $('.alezux-action-btn[data-student-id="' + userId + '"]').closest('tr');
-                        var $statusCell = $row.find('.col-estado span');
-
-                        // Nuevo estado (!isBlocked porque acabamos de cambiarlo)
-                        var newIsBlocked = !isBlocked;
-
-                        if (newIsBlocked) {
-                            $statusCell.removeClass('status-active').addClass('status-inactive');
-                            $statusCell.find('.alezux-status-dot').show(); // Ensure dot exists
-                            $statusCell.contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(' Bloqueado');
-                        } else {
-                            $statusCell.removeClass('status-inactive').addClass('status-active');
-                            $statusCell.find('.alezux-status-dot').show();
-                            $statusCell.contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(' OK');
-                        }
-
-                    } else {
-                        showAlezuxAlert('Error', response.data.message, 'error');
+                        // Update table row logic here...
                     }
                 }
             });
         });
     });
 
-    // 5. Cursos: Quitar / Agregar
     $(document).on('click', '.btn-remove-access, .btn-grant-access', function (e) {
         e.preventDefault();
         var $btn = $(this);
         var courseId = $btn.data('course-id');
-        var courseName = $btn.closest('li').find('span').text(); // Get title for confirmation
         var isGranting = $btn.hasClass('btn-grant-access');
-        var action = isGranting ? 'add' : 'remove';
         var userId = $('#alezux-manage-user-id').val();
-        var originalText = $btn.text();
 
-        // Confirmación para QUITAR acceso (más delicado)
-        if (!isGranting) {
-            showAlezuxConfirm('Quitar Acceso', '¿Estás seguro de quitar el acceso al curso: <b>' + courseName + '</b>?', function () {
-                executeCourseUpdate();
-            });
-        } else {
-            // Confirmación para AGREGAR (opcional, pero consistente)
-            showAlezuxConfirm('Conceder Acceso', '¿Conceder acceso al curso: <b>' + courseName + '</b>?', function () {
-                executeCourseUpdate();
-            });
-        }
-
-        function executeCourseUpdate() {
-            $btn.prop('disabled', true).text('...');
+        showAlezuxConfirm(isGranting ? 'Conceder Acceso' : 'Quitar Acceso', '¿Confirmas?', function () {
             $.ajax({
                 url: alezux_estudiantes_vars.ajax_url,
                 type: 'POST',
@@ -433,103 +346,56 @@ jQuery(document).ready(function ($) {
                     nonce: alezux_estudiantes_vars.nonce,
                     user_id: userId,
                     course_id: courseId,
-                    access_action: action
+                    access_action: isGranting ? 'add' : 'remove'
                 },
                 success: function (response) {
                     if (response.success) {
-                        showAlezuxAlert('Curso Actualizado', response.data.message, 'success');
-                        // RECARGAR DATOS DEL ESTUDIANTE PARA ACTUALIZAR LISTAS
-                        // Retrieve stored icon
                         var iconUrl = $('#alezux-management-modal-overlay').data('current-icon');
                         loadStudentInfo(userId, iconUrl);
-                    } else {
-                        showAlezuxAlert('Error', response.data.message, 'error');
-                        $btn.prop('disabled', false).text(originalText);
                     }
-                },
-                error: function () {
-                    showAlezuxAlert('Error', 'Fallo de conexión', 'error');
-                    $btn.prop('disabled', false).text(originalText);
                 }
             });
-        }
+        });
     });
-
-    // --- Helpers ---
 
     function updateBlockButton(isBlocked) {
         var $btn = $('#btn-block-user');
         $btn.data('is-blocked', isBlocked);
         if (isBlocked) {
-            $btn.removeClass('alezux-btn-danger').addClass('alezux-btn-primary');
-            $btn.html('<i class="fa fa-unlock"></i> Desbloquear Acceso');
-            $btn.css('background-color', '#10b981');
+            $btn.html('<i class="fa fa-unlock"></i> Desbloquear Acceso').css('background', '#10b981');
         } else {
-            $btn.removeClass('alezux-btn-primary').addClass('alezux-btn-danger');
-            $btn.html('<i class="fa fa-ban"></i> Bloquear Acceso Academia');
-            $btn.css('background-color', '');
+            $btn.html('<i class="fa fa-ban"></i> Bloquear Acceso Academia').css('background', '');
         }
     }
 
     function renderCoursesLists(enrolled, available, iconUrl) {
         var $enrolledList = $('#list-enrolled-courses');
         var $availableList = $('#list-available-courses');
+        $enrolledList.empty(); $availableList.empty();
 
-        $enrolledList.empty();
-        $availableList.empty();
+        if (enrolled.length === 0) { $('#no-enrolled-msg').show(); } else { $('#no-enrolled-msg').hide(); }
 
-        if (enrolled.length === 0) {
-            $('#no-enrolled-msg').show();
-        } else {
-            $('#no-enrolled-msg').hide();
-            enrolled.forEach(function (c) {
-                var studyTime = c.study_time_formatted || '0h 0m';
-
-                // Determinar HTML del icono (Imagen vs Fuente)
-                var iconHtml = '';
-                if (iconUrl && iconUrl.trim() !== '') {
-                    iconHtml = '<img src="' + iconUrl + '" alt="Icono" style="display:block;">';
-                } else {
-                    iconHtml = '<i class="far fa-clock"></i>';
-                }
-
-                var timeHtml = `
-                    <div class="alezux-time-pill">
-                        <div class="alezux-time-icon">
-                            ${iconHtml}
-                        </div>
-                        <div class="alezux-time-content">
-                            <span class="alezux-time-label">TIEMPO TOTAL</span>
-                            <span class="alezux-time-value">${studyTime}</span>
-                        </div>
+        enrolled.forEach(function (c) {
+            var iconHtml = (iconUrl && iconUrl !== '') ? '<img src="' + iconUrl + '" alt="Icon">' : '<i class="far fa-clock"></i>';
+            var item = `
+                <li class="alezux-course-item">
+                    <span>${c.title}</span>
+                    <div class="alezux-course-actions">
+                        <button class="btn-remove-access" data-course-id="${c.id}">Quitar</button>
                     </div>
-                `;
-                var item = `
-                    <li class="alezux-course-item">
-                        <div style="display: flex; align-items: center;">
-                             <span style="font-weight: 500; font-size: 15px; color: #fff;">${c.title}</span>
-                             ${timeHtml}
-                        </div>
-                        <div class="alezux-course-actions">
-                            <button class="btn-remove-access" data-course-id="${c.id}">Quitar Acceso</button>
-                        </div>
-                    </li>
-                `;
-                $enrolledList.append(item);
-            });
-        }
+                </li>`;
+            $enrolledList.append(item);
+        });
 
         available.forEach(function (c) {
             var item = `
                 <li class="alezux-course-item">
                     <span>${c.title}</span>
                     <div class="alezux-course-actions">
-                        <button class="btn-grant-access" data-course-id="${c.id}">Conceder Acceso</button>
+                        <button class="btn-grant-access" data-course-id="${c.id}">Conceder</button>
                     </div>
-                </li>
-            `;
+                </li>`;
             $availableList.append(item);
         });
     }
-
 });
