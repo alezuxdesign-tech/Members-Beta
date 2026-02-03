@@ -57,6 +57,7 @@ class Marketing extends Module_Base {
         \add_action( 'wp_ajax_alezux_load_automation', [ $this, 'ajax_load_automation' ] );
         \add_action( 'wp_ajax_alezux_get_automations_list', [ $this, 'ajax_get_automations_list' ] );
         \add_action( 'wp_ajax_alezux_delete_automation', [ $this, 'ajax_delete_automation' ] );
+        \add_action( 'wp_ajax_alezux_toggle_automation_status', [ $this, 'ajax_toggle_automation_status' ] );
 	}
 
     public function register_widgets( $widgets_manager ) {
@@ -181,7 +182,7 @@ class Marketing extends Module_Base {
         
         global $wpdb;
         $table = $wpdb->prefix . 'alezux_marketing_automations';
-        $results = $wpdb->get_results( "SELECT id, name, total_executions, created_at, blueprint FROM $table ORDER BY created_at DESC" );
+        $results = $wpdb->get_results( "SELECT id, name, status, total_executions, created_at, blueprint FROM $table ORDER BY created_at DESC" );
 
         // Decodificar blueprint para que llegue como objeto al JS
         foreach ( $results as $item ) {
@@ -209,5 +210,30 @@ class Marketing extends Module_Base {
         $wpdb->delete( $table, [ 'id' => $id ] );
 
         \wp_send_json_success( 'Automatización eliminada.' );
+    }
+
+    /**
+     * AJAX: Conmuta el estado de una automatización (active/inactive)
+     */
+    public function ajax_toggle_automation_status() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+        
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Sin permisos.' );
+        }
+
+        $id = isset( $_POST['id'] ) ? \intval( $_POST['id'] ) : 0;
+        $status = isset( $_POST['status'] ) ? \sanitize_text_field( $_POST['status'] ) : '';
+
+        if ( ! $id || ! in_array( $status, [ 'active', 'inactive' ] ) ) {
+            \wp_send_json_error( 'Datos inválidos.' );
+        }
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+        
+        $wpdb->update( $table, [ 'status' => $status ], [ 'id' => $id ] );
+
+        \wp_send_json_success( 'Estado actualizado correctamente.' );
     }
 }

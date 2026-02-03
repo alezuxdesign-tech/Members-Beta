@@ -768,6 +768,32 @@
         }
 
         // PERSISTENCE LOGIC
+        ajax_delete_automation() {
+            // Este método parece no estar en la clase sino en el PHP. 
+            // Implementando deleteAutomation si no existe abajo.
+        }
+
+        toggleAutomationStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_toggle_automation_status',
+                    nonce: alezux_marketing_vars.nonce,
+                    id: id,
+                    status: newStatus
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.loadAutomationsTable();
+                    } else {
+                        alert(response.data || "Error al cambiar estado.");
+                    }
+                }
+            });
+        }
         persistAutomation() {
             const name = this.popup.nameInput.value;
             if (!name) {
@@ -871,11 +897,22 @@
                 success: (response) => {
                     if (response.success) {
                         if (response.data.length === 0) {
-                            list.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#718096;">No hay automatizaciones creadas aún.</td></tr>';
+                            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#718096;">No hay automatizaciones creadas aún.</td></tr>';
                             return;
                         }
 
-                        let html = '';
+                        let html = `
+                            <thead>
+                                <tr>
+                                    <th>Automatización</th>
+                                    <th>Estado</th>
+                                    <th>Ejecuciones</th>
+                                    <th>Creada</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        `;
                         response.data.forEach(item => {
                             const date = new Date(item.created_at).toLocaleDateString();
                             let blueprint = item.blueprint || {};
@@ -884,14 +921,29 @@
                             }
                             const nodeCount = (blueprint.nodes && Array.isArray(blueprint.nodes)) ? blueprint.nodes.length : 0;
 
+                            const statusClass = item.status === 'active' ? 'success' : 'danger';
+                            const statusText = item.status === 'active' ? 'Activa' : 'Inactiva';
+                            const statusIcon = item.status === 'active' ? 'dashicons-yes-alt' : 'dashicons-no-alt';
+                            const toggleBtnText = item.status === 'active' ? 'Desactivar' : 'Activar';
+                            const toggleBtnClass = item.status === 'active' ? 'alezux-btn-icon-danger' : 'alezux-btn-icon-success';
+                            const toggleBtnIcon = item.status === 'active' ? 'dashicons-controls-pause' : 'dashicons-controls-play';
+
                             html += `
                                 <tr>
                                     <td style="font-weight:600; color:#fff;">${item.name}</td>
+                                    <td>
+                                        <span class="alezux-badge badge-${statusClass}">
+                                            <span class="dashicons ${statusIcon}"></span> ${statusText}
+                                        </span>
+                                    </td>
                                     <td><span class="alezux-badge" style="background: rgba(72, 187, 120, 0.1); color: #48bb78; border-color: rgba(72, 187, 120, 0.2);">${item.total_executions || 0} disparos</span></td>
                                     <td>${date}</td>
                                     <td style="text-align: right;">
                                         <button class="alezux-action-btn edit-auto" data-id="${item.id}">
                                             <span class="dashicons dashicons-edit"></span> Editar
+                                        </button>
+                                        <button class="${toggleBtnClass} toggle-status" data-id="${item.id}" data-status="${item.status}">
+                                            <span class="dashicons ${toggleBtnIcon}"></span> ${toggleBtnText}
                                         </button>
                                         <button class="alezux-btn-icon-danger delete-auto" data-id="${item.id}">
                                             <span class="dashicons dashicons-trash"></span>
@@ -900,6 +952,7 @@
                                 </tr>
                             `;
                         });
+                        html += `</tbody>`;
                         list.innerHTML = html;
 
                         // Eventos de botones
