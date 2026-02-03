@@ -242,7 +242,7 @@ jQuery(document).ready(function ($) {
                     $('#alezux-modal-loading').hide();
                     $('#alezux-modal-content').fadeIn();
                 } else {
-                    alert('Error: ' + response.data.message);
+                    showAlezuxAlert('Error', response.data.message, 'error');
                     $('#alezux-management-modal-overlay').fadeOut();
                 }
             }
