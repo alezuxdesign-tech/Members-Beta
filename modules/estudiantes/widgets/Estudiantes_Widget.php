@@ -1277,10 +1277,11 @@ class Estudiantes_Widget extends Widget_Base {
 					<p class="alezux-table-desc alezux-estudiantes-desc"><?php echo \esc_html( $settings['header_description'] ); ?></p>
 				</div>
                 <div class="alezux-header-right">
-                    <div class="alezux-search-wrapper alezux-estudiantes-search">
-                        <span class="dashicons dashicons-search search-icon"></span>
-                        <input type="text" class="alezux-table-search-input" placeholder="<?php \esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
-                    </div>
+                    <div class="alezux-search-wrapper">
+                       <span class="dashicons dashicons-search search-icon"></span>
+                       <input type="text" class="alezux-table-search-input" placeholder="<?php esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">
+                       <span class="dashicons dashicons-no-alt alezux-clear-icon"></span>
+                   </div>
                 </div>
 			</div>
 
@@ -1340,17 +1341,19 @@ class Estudiantes_Widget extends Widget_Base {
 									<?php echo \esc_html( $email ); ?>
 								</td>
 								<td class="col-progreso">
-									<div class="alezux-progress-wrapper" style="width: 100%;">
-										<div class="alezux-progress-bar" style="width: <?php echo \esc_attr( $avg_progress ); ?>%;"></div>
-									</div>
-									<div class="alezux-progress-text"><?php echo \esc_html( $avg_progress ); ?>% Completado</div>
-								</td>
+							<div class="alezux-progress-wrapper">
+								<div class="alezux-progress-bar-bg">
+									<div class="alezux-progress-bar-fill" style="width: <?php echo esc_attr( $avg_progress ); ?>%;"></div>
+								</div>
+								<div class="alezux-progress-text"><?php echo esc_html( $avg_progress ); ?>% Completado</div>
+							</div>
+						</td>
 								<td class="col-estado">
-									<span class="<?php echo \esc_attr( $status_class ); ?>">
-										<i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
-										<?php echo \esc_html( $status_label ); ?>
-									</span>
-								</td>
+							<span class="alezux-status-badge <?php echo esc_attr( $status_class ); ?>">
+								<span class="alezux-status-dot"></span>
+								<?php echo esc_html( $status_label ); ?>
+							</span>
+						</td>
 								<td class="col-funciones">
 									<button class="btn-gestionar" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
 										<i class="fa fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>

@@ -27,38 +27,9 @@
     /* Styles handled by .alezux-table-desc */
 }
 
-/* Search Styles */
+/* Search Styles - Handled by global alezux-tables.css */
 .alezux-estudiantes-search {
-    position: relative;
-    width: 300px;
-    max-width: 100%;
-}
-
-.alezux-estudiantes-search input {
-    width: 100%;
-    background: #222;
-    border: 1px solid #333;
-    border-radius: 50px;
-    padding: 10px 15px 10px 35px;
-    color: #fff;
-    font-size: 13px;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-.alezux-estudiantes-search input:focus {
-    border-color: var(--alezux-primary, #6c5ce7);
-    background: #252525;
-}
-
-.alezux-estudiantes-search .search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-    font-size: 13px;
-    pointer-events: none;
+    /* No specific overrides needed */
 }
 
 /* Table Wrapper Update */
@@ -68,20 +39,11 @@
 
 .alezux-estudiantes-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    text-align: left;
+    border-collapse: collapse; /* Ensure no gaps */
 }
 
 .alezux-estudiantes-table th {
-    padding: 15px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #888;
-    border-bottom: 1px solid var(--alezux-border-color, #2a2a2a);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: transparent;
+    /* Base styles from .alezux-finanzas-table */
 }
 
 .alezux-estudiantes-table td {
@@ -115,26 +77,7 @@
 }
 
 
-.col-estado span {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-active {
-    background-color: rgba(76, 175, 80, 0.15);
-    color: #4CAF50;
-    border: 1px solid rgba(76, 175, 80, 0.2);
-}
-
-.status-inactive {
-    background-color: rgba(244, 67, 54, 0.15);
-    color: #F44336;
-    border: 1px solid rgba(244, 67, 54, 0.2);
-}
+/* Status badges handled by .alezux-status-badge in alezux-tables.css */
 
 .col-funciones .btn-gestionar {
     background: transparent;
@@ -161,64 +104,9 @@
     transition: opacity 0.2s ease;
 }
 
-/* Pagination Styles */
+/* Pagination handled by .alezux-pagination in alezux-tables.css */
 .alezux-estudiantes-pagination {
-    /* Paginación hereda de .alezux-pagination */
-}
-
-.alezux-estudiantes-pagination .page-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 10px;
-    border: 1px solid #333;
-    border-radius: 6px;
-    color: #888;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-    background: #222;
-}
-
-.alezux-estudiantes-pagination .page-link:hover:not(.disabled):not(.active):not(.dots) {
-    border-color: #555;
-    background: #2a2a2a;
-    color: #fff;
-}
-
-.alezux-estudiantes-pagination .page-link.active {
-    background: var(--alezux-primary, #6c5ce7);
-    border-color: var(--alezux-primary, #6c5ce7);
-    color: #fff;
-}
-
-.alezux-estudiantes-pagination .page-link.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: #2a2a2a;
-}
-
-.alezux-estudiantes-pagination .page-link.dots {
-    border: none;
-    background: transparent;
-    cursor: default;
-    min-width: auto;
-    padding: 0 5px;
-}
-
-.alezux-estudiantes-pagination .page-link i {
-    font-size: 12px;
-}
-
-.alezux-estudiantes-pagination .page-link.prev i {
-    margin-right: 5px;
-}
-
-.alezux-estudiantes-pagination .page-link.next i {
-    margin-left: 5px;
+    margin-top: 0;
 }
 
 /* =========================================

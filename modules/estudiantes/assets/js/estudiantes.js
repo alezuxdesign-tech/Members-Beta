@@ -70,9 +70,23 @@ jQuery(document).ready(function ($) {
         clearTimeout(searchTimer);
         currentSearch = $(this).val();
 
+        // Mostrar/Ocultar icono de limpiar
+        var $clearIcon = $(this).parent().find('.alezux-clear-icon');
+        if (currentSearch.length > 0) {
+            $clearIcon.fadeIn(200);
+        } else {
+            $clearIcon.fadeOut(200);
+        }
+
         searchTimer = setTimeout(function () {
             loadStudents(1, currentSearch);
         }, 500); // Debounce
+    });
+
+    // Limpiar Búsqueda
+    $(document).on('click', '.alezux-clear-icon', function () {
+        var $input = $(this).parent().find('.alezux-table-search-input');
+        $input.val('').trigger('input').focus();
     });
 
     // Cargar Estudiantes
@@ -139,14 +153,16 @@ jQuery(document).ready(function ($) {
                         ${student.email}
                     </td>
                     <td class="col-progreso">
-                        <div class="alezux-progress-wrapper" style="width: 100%;">
-                            <div class="alezux-progress-bar" style="width: ${student.progress}%;"></div>
+                        <div class="alezux-progress-wrapper">
+                            <div class="alezux-progress-bar-bg">
+                                <div class="alezux-progress-bar-fill" style="width: ${student.progress}%;"></div>
+                            </div>
+                            <div class="alezux-progress-text">${student.progress}% Completado</div>
                         </div>
-                        <div class="alezux-progress-text">${student.progress}% Completado</div>
                     </td>
                     <td class="col-estado">
-                        <span class="${student.status_class}">
-                            <i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
+                        <span class="alezux-status-badge ${student.status_class}">
+                            <span class="alezux-status-dot"></span>
                             ${student.status_label}
                         </span>
                     </td>
@@ -369,10 +385,12 @@ jQuery(document).ready(function ($) {
 
                         if (newIsBlocked) {
                             $statusCell.removeClass('status-active').addClass('status-inactive');
-                            $statusCell.html('<i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i> Bloqueado');
+                            $statusCell.find('.alezux-status-dot').show(); // Ensure dot exists
+                            $statusCell.contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(' Bloqueado');
                         } else {
                             $statusCell.removeClass('status-inactive').addClass('status-active');
-                            $statusCell.html('<i class="fa fa-circle" style="font-size: 8px; margin-right: 4px;"></i> OK');
+                            $statusCell.find('.alezux-status-dot').show();
+                            $statusCell.contents().filter(function () { return this.nodeType === 3; }).first().replaceWith(' OK');
                         }
 
                     } else {
