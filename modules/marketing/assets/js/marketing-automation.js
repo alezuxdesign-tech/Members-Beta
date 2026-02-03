@@ -224,6 +224,12 @@
                 return;
             }
 
+            // Si el e.target es directamente un path con la clase
+            if (e.target.classList.contains('automation-line') && e.target.id !== 'temp-connection-line') {
+                this.deleteConnection(e.target.id);
+                return;
+            }
+
             const nodeEl = e.target.closest('.alezux-automation-node');
             if (nodeEl) {
                 this.openNodeSettings(nodeEl.id);
@@ -305,9 +311,18 @@
         }
 
         createConnection(fromId, toId) {
+            // Evitar duplicados (bidireccional)
+            const exists = this.connections.some(c =>
+                (c.from === fromId && c.to === toId) ||
+                (c.from === toId && c.to === fromId)
+            );
+
+            if (exists) {
+                this.showMessage("Atención", "Estos nodos ya están conectados.");
+                return;
+            }
+
             const connId = `conn_${fromId}_${toId}`;
-            // Evitar duplicados
-            if (this.connections.find(c => c.id === connId)) return;
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.id = connId;

@@ -235,8 +235,26 @@
     font-size: 14px;
     margin-bottom: 10px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 10px;
+}
+
+.node-delete-btn {
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 50%;
+    color: #666;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.node-delete-btn:hover {
+    background: #ff4d4d;
+    color: #fff;
 }
 
 .alezux-automation-node .node-content {
@@ -300,14 +318,31 @@
     stroke: #444;
     stroke-width: 3;
     stroke-linecap: round;
+    pointer-events: stroke;
+    /* Habilitar clics solo en el trazo */
+    cursor: pointer;
+    transition: stroke 0.2s, stroke-width 0.2s;
 }
 
 .automation-line.active {
-    stroke: #e74c3c;
-    stroke-dasharray: 5;
-    animation: flow 1s linear infinite;
+    stroke: #4299e1;
+    stroke-dasharray: none;
+    animation: none;
 }
 
+.automation-line.active:hover {
+    stroke: #ff4d4d;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 5px rgba(255, 77, 77, 0.5));
+}
+
+#temp-connection-line {
+    stroke: #888;
+    stroke-dasharray: 5;
+    pointer-events: none;
+}
+
+/* Flow animation if needed for logic later */
 @keyframes flow {
     from {
         stroke-dashoffset: 10;
