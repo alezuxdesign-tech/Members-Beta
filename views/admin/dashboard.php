@@ -207,7 +207,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-settings')" class="alezux-tab-link active" id="link-tab-settings">Configuración Global</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-shortcodes')" class="alezux-tab-link" id="link-tab-shortcodes">Shortcodes</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-notifications')" class="alezux-tab-link" id="link-tab-notifications">Notificaciones</a>
-		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-finanzas')" class="alezux-tab-link" id="link-tab-finanzas">Finanzas</a>
 	</div>
 
 	<!-- TAB 1: CONFIGURACION -->
@@ -365,83 +364,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
-	<!-- TAB 4: FINANZAS -->
-	<div id="tab-finanzas" class="alezux-tab-panel" style="display: none;">
-		<div class="alezux-card">
-			<h2 class="alezux-title">💳 Configuración de Pagos</h2>
-			<p class="alezux-text">Gestiona las credenciales de Stripe para permitir la creación de planes de pago y suscripciones.</p>
-
-			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
-				<input type="hidden" name="action" value="alezux_save_settings">
-				<?php wp_nonce_field( 'alezux_save_settings_action', 'alezux_settings_nonce' ); ?>
-				
-				<div class="alezux-form-group">
-					<label class="alezux-form-label">Stripe Public Key</label>
-					<input type="text" name="alezux_stripe_public_key" 
-						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
-						   value="<?php echo esc_attr( get_option('alezux_stripe_public_key') ); ?>" placeholder="pk_test_...">
-				</div>
-
-				<div class="alezux-form-group">
-					<label class="alezux-form-label">Stripe Secret Key</label>
-					<input type="password" name="alezux_stripe_secret_key" 
-						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
-						   value="<?php echo esc_attr( get_option('alezux_stripe_secret_key') ); ?>" placeholder="sk_test_...">
-				</div>
-
-				<div class="alezux-form-group">
-					<label class="alezux-form-label">Webhook Signing Secret (Opcional por ahora)</label>
-					<input type="password" name="alezux_stripe_webhook_secret" 
-						   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
-						   value="<?php echo esc_attr( get_option('alezux_stripe_webhook_secret') ); ?>" placeholder="whsec_...">
-                    <p style="font-size:12px; color:#aaa; margin-top:5px;">Obtén esto en Stripe Dashboard > Developers > Webhooks tras añadir el endpoint.</p>
-				</div>
-
-				<div style="margin-top: 20px; text-align: right;">
-					<button type="submit" class="button button-primary" 
-							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
-						Guardar Credenciales
-					</button>
-				</div>
-			</form>
-
-			<hr style="margin: 30px 0; border: 0; border-top: 1px solid #333;">
-
-			<!-- Simulación Check -->
-			<div style="background: rgba(233, 30, 99, 0.1); border: 1px solid #e91e63; border-radius: 12px; padding: 25px;">
-				<h2 class="alezux-title" style="color: #e91e63; font-size: 20px;">⚡ Simulador de Webhook (Test)</h2>
-				<p class="alezux-text">Esta herramienta simula una respuesta de pago exitosa desde Stripe. Úsala para verificar que tu sistema crea usuarios y envía correos correctamente.</p>
-				
-				<?php if ( isset( $_GET['sim_result'] ) ) : ?>
-					<?php if ( $_GET['sim_result'] == 'success' ) : ?>
-						<div style="background: #27ae60; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
-							✅ <strong>Prueba Exitosa:</strong> El webhook simulado fue procesado correctamente.
-						</div>
-					<?php else : ?>
-						<div style="background: #c0392b; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
-							❌ <strong>Error:</strong> Hubo un problema procesando el webhook. Revisa los logs de error.
-						</div>
-					<?php endif; ?>
-				<?php endif; ?>
-
-				<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST" style="margin-top: 20px;">
-					<input type="hidden" name="action" value="alezux_simulate_webhook">
-					<?php wp_nonce_field( 'alezux_simulate_action', 'alezux_sim_nonce' ); ?>
-					
-					<div class="alezux-form-group">
-						<label class="alezux-form-label">Email de Prueba</label>
-						<input type="email" name="sim_email" 
-							   style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; max-width: 400px; box-sizing: border-box;"
-							   value="stikecool@gmail.com" required>
-					</div>
-
-					<button type="submit" class="button button-primary" 
-							style="background: #e91e63; border-color: #c2185b; padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
-						🚀 Disparar Pago Simulado
-					</button>
-					<p style="font-size: 12px; color: #777; margin-top: 10px;">Esto es solo una simulación interna, no contactará a Stripe ni realizará cargos reales.</p>
-				</form>
-			</div>
+		</div>
 	</div>
 
 </div>

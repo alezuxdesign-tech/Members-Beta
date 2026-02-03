@@ -8,7 +8,8 @@ if ( ! \defined( 'ABSPATH' ) ) {
 class Admin_Settings {
 
     public static function init() {
-        \add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
+        // Submenu desactivado por solicitud del usuario (Prefiere Widgets / Dashboard unificado)
+        // \add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
         \add_action( 'admin_init', [ __CLASS__, 'register_settings' ] );
     }
 

@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Finance_Dashboard {
 
     public static function init() {
-        \add_action( 'admin_menu', [ __CLASS__, 'add_menu_page' ] );
+        // \add_action( 'admin_menu', [ __CLASS__, 'add_menu_page' ] );
         \add_action( 'admin_post_alezux_manual_payment', [ __CLASS__, 'handle_manual_payment' ] );
         \add_action( 'admin_post_alezux_simulate_webhook', [ __CLASS__, 'handle_simulate_webhook' ] );
     }
