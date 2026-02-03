@@ -183,13 +183,22 @@
             } else if (this.modalAction === 'confirm_clear') {
                 this.doClearCanvas();
             } else if (this.modalAction === 'confirm_delete') {
-                this.doDelete(); // Asumiendo que doDelete existe o se llama deleteNode
+                this.doDelete();
             } else if (this.modalAction === 'success_close') {
                 this.closeModal();
                 this.closeEditor();
             } else {
                 this.closeModal();
             }
+        }
+
+        showMessage(title, text, action = 'info') {
+            if (!this.modal.overlay) return;
+            this.modal.title.innerText = title;
+            this.modal.fields.innerHTML = `<p style='color:#888;'>${text}</p>`;
+            this.modal.save.innerText = "Entendido";
+            this.modalAction = action;
+            this.modal.overlay.style.display = 'flex';
         }
 
         handleDrop(e) {
@@ -205,8 +214,8 @@
             this.updatePlaceholder();
         }
 
-        addNode(type, x, y, data = {}) {
-            const id = 'node_' + Math.random().toString(36).substr(2, 9);
+        addNode(type, x, y, data = {}, forcedId = null) {
+            const id = forcedId || 'node_' + Math.random().toString(36).substr(2, 9);
             const nodeEl = document.createElement('div');
             nodeEl.id = id;
             nodeEl.className = `alezux-automation-node node-${type}`;
@@ -277,6 +286,7 @@
             this.canvasContent.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
             this.updatePlusButtons();
+            return id;
         }
 
         handleClick(e) {
@@ -415,6 +425,7 @@
                     const toTerm = nodeTo.el.querySelector('.terminal-in');
 
                     if (fromTerm && toTerm) {
+                        // Cálculos centrados en el nuevo diseño icónico (70px box + margin)
                         const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
                         const y1 = nodeFrom.y + fromTerm.offsetTop + 6;
                         const x2 = nodeTo.x + toTerm.offsetLeft + 6;
@@ -794,6 +805,11 @@
                     } else {
                         this.showMessage("Error", response.data || "Error al guardar.");
                     }
+                },
+                error: (xhr) => {
+                    saveBtn.innerHTML = originalHtml;
+                    saveBtn.disabled = false;
+                    this.showMessage("Error", "Error de servidor al guardar.");
                 }
             });
         }
@@ -834,7 +850,8 @@
                                 });
                             }
                             this.updatePlaceholder();
-                        }, 50);
+                            this.updatePlusButtons();
+                        }, 200);
                     }
                 }
             });
