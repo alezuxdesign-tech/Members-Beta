@@ -277,9 +277,10 @@
                 });
             });
 
-            // Abrir ajustes solo con DOBLE CLIC
-            nodeEl.addEventListener('dblclick', (e) => {
+            // Abrir ajustes con CLIC (si no se ha arrastrado)
+            nodeEl.addEventListener('click', (e) => {
                 if (e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn')) return;
+                if (this.nodeWasDragged) return; // Evitar abrir si solo estaba arrastrando
                 e.stopPropagation();
                 this.openNodeSettings(id);
             });
@@ -490,9 +491,9 @@
             const node = this.nodes.find(n => n.id === nodeId);
             if (!node) return;
 
-            if (node.type === 'trigger' || node.type === 'inactivity' || node.type === 'expiration') {
+            if (node.type === 'email') {
                 this.closeModal();
-                this.openNodeLibrary('metamorphosis', node);
+                this.openDrawer(node);
                 return;
             }
 
@@ -501,11 +502,28 @@
             this.modal.title.innerText = `Configurar ${node.type.toUpperCase()}`;
             this.modal.fields.innerHTML = '';
 
-            if (node.type === 'email') {
-                // Sustituir modal por Drawer para Emails
-                this.closeModal();
-                this.openDrawer(node);
-                return;
+            if (node.type === 'trigger') {
+                let options = '<option value="">Selecciona un evento...</option>';
+                const dict = window.alezuxEventsDictionary || {};
+                for (const [key, label] of Object.entries(dict)) {
+                    options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
+                }
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Evento Disparador:</label>
+                    <select id="field-event" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                        ${options}
+                    </select>
+                `;
+            } else if (node.type === 'inactivity') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días de Inactividad:</label>
+                    <input type="number" id="field-days" value="${node.data.days || '4'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                `;
+            } else if (node.type === 'expiration') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días antes del vencimiento:</label>
+                    <input type="number" id="field-days" value="${node.data.days || '2'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                `;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
@@ -789,6 +807,7 @@
             if (nodeEl && !isButton) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
+                this.nodeWasDragged = false; // Resetear bandera
 
                 const rect = this.canvas.getBoundingClientRect();
                 // Coordenada del mouse en el espacio del lienzo (0,0 es top-left de canvasContent)
@@ -815,6 +834,7 @@
             const mouseCanvasY = (e.clientY - rect.top - this.pan.y) / this.scale;
 
             if (this.isDragging && this.dragTarget) {
+                this.nodeWasDragged = true; // Marcar que se ha movido
                 let x = mouseCanvasX - this.initialX;
                 let y = mouseCanvasY - this.initialY;
 
