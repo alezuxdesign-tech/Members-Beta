@@ -18,8 +18,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 		margin: 20px;
 		max-width: 1200px;
 		font-family: 'Inter', system-ui, -apple-system, sans-serif;
-		padding-bottom: 200px; /* Bastante espacio para que el footer no tape nada */
-		min-height: 80vh;
+		padding-bottom: 50px; 
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Resetear el footer de WordPress para que no se superponga */
+	#wpfooter {
+		position: relative !important;
+		margin-top: 50px !important;
+		padding: 20px 0 !important;
+		clear: both !important;
+		background: transparent !important;
+		color: #666 !important;
+	}
+
+	#wpcontent {
+		height: auto !important;
+		min-height: 100vh !important;
+		display: flex;
+		flex-direction: column;
 	}
 	.alezux-tabs {
 		display: flex;

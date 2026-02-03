@@ -84,6 +84,42 @@ class Config extends Module_Base {
 		}
 	}
 
+	public function enqueue_assets() {
+		// CSS
+		wp_enqueue_style( 
+			'alezux-config-css', 
+			$this->get_asset_url( 'assets/css/config.css' ), 
+			[], 
+			ALEZUX_MEMBERS_VERSION 
+		);
+
+		// JS
+		wp_enqueue_script(
+			'alezux-config-js',
+			$this->get_asset_url( 'assets/js/config.js' ),
+			[ 'jquery' ],
+			ALEZUX_MEMBERS_VERSION,
+			true
+		);
+
+		// Localizar script para AJAX
+		wp_localize_script( 'alezux-config-js', 'alezux_auth_obj', [
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'nonce'    => wp_create_nonce( 'alezux-auth-nonce' ),
+			'home_url' => home_url()
+		]);
+	}
+
+	public function register_elementor_widgets( $widgets_manager ) {
+		require_once __DIR__ . '/widgets/Config_Widget.php';
+		require_once __DIR__ . '/widgets/Login_Widget.php';
+		require_once __DIR__ . '/widgets/Recover_Widget.php';
+
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Config_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Login_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Recover_Widget() );
+	}
+
 	/**
 	 * Manejar Login por AJAX
 	 */
