@@ -110,7 +110,10 @@ class Menu_Admin_Widget extends Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-list' => 'flex-direction: {{VALUE}}',
+					'{{WRAPPER}}.alezux-menu-layout-column .alezux-menu-admin-item' => 'width: 100%;',
+					'{{WRAPPER}}.alezux-menu-layout-column .alezux-menu-admin-item-link' => 'width: 100%;',
 				],
+				'prefix_class' => 'alezux-menu-layout-',
 			]
 		);
 
