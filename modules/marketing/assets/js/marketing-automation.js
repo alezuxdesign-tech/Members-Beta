@@ -532,27 +532,28 @@
             this.editingNode = node;
             const drawerTitle = this.drawer.el.querySelector('.drawer-header h3');
 
-            // Ajustar clases de visibilidad
-            this.drawer.el.classList.remove('drawer-hide-preview', 'drawer-hide-save', 'drawer-full-save');
-
-            if (context === 'metamorphosis') {
-                if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-forms"></span> Biblioteca de Triggers';
-                this.drawer.el.classList.add('drawer-hide-preview', 'drawer-full-save');
+            // Ocultar siempre Vista Previa en la biblioteca, mostrar Guardar solo si estamos editando (metamorfosis)
+            this.drawer.el.classList.add('drawer-hide-preview');
+            if (context === 'metamorphosis' || node) {
+                this.drawer.el.classList.remove('drawer-hide-save');
+                this.drawer.el.classList.add('drawer-full-save');
+                if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-forms"></span> Configurar Disparador';
             } else {
+                this.drawer.el.classList.add('drawer-hide-save');
+                this.drawer.el.classList.remove('drawer-full-save');
                 if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-plus-alt"></span> Biblioteca de Nodos';
-                this.drawer.el.classList.add('drawer-hide-preview', 'drawer-hide-save');
             }
 
             let html = `
                 <div class="trigger-library">
                     <p style="color:#718096; font-size:12px; margin-bottom:20px;">
-                        ${context === 'metamorphosis' ? 'Cambia el evento que inicia esta automatización:' : 'Arrastra un nodo al lienzo para añadirlo:'}
+                        ${node ? 'Haz clic en un disparador para cambiarlo, o arrastra nuevos nodos al lienzo:' : 'Arrastra un nodo al lienzo para añadirlo:'}
                     </p>
                     
                     <div class="library-section">
                         <h4 class="library-module-title">Disparadores</h4>
                         <div class="library-item ${node && node.data.event_type === 'general' ? 'active' : ''}" 
-                             draggable="${context === 'create'}" data-type="trigger" data-event="general">
+                             draggable="true" data-type="trigger" data-event="general">
                             <span class="lib-icon">⚡</span>
                             <div class="lib-info">
                                 <strong>Evento General</strong>
@@ -560,7 +561,7 @@
                             </div>
                         </div>
                         <div class="library-item ${node && node.type === 'inactivity' ? 'active' : ''}" 
-                             draggable="${context === 'create'}" data-type="inactivity" data-event="inactivity">
+                             draggable="true" data-type="inactivity" data-event="inactivity">
                             <span class="lib-icon">💤</span>
                             <div class="lib-info">
                                 <strong>Inactividad</strong>
@@ -571,7 +572,7 @@
 
                     <div class="library-section">
                         <h4 class="library-module-title">Acciones</h4>
-                        <div class="library-item" draggable="${context === 'create'}" data-type="email">
+                        <div class="library-item" draggable="true" data-type="email">
                             <span class="lib-icon">✉️</span>
                             <div class="lib-info">
                                 <strong>Enviar Email</strong>
@@ -582,7 +583,7 @@
 
                     <div class="library-section">
                         <h4 class="library-module-title">Lógica</h4>
-                        <div class="library-item" draggable="${context === 'create'}" data-type="condition">
+                        <div class="library-item" draggable="true" data-type="condition">
                             <span class="lib-icon">🔄</span>
                             <div class="lib-info">
                                 <strong>Condición</strong>
@@ -590,7 +591,7 @@
                             </div>
                         </div>
                         <div class="library-item ${node && node.type === 'expiration' ? 'active' : ''}" 
-                             draggable="${context === 'create'}" data-type="expiration" data-event="expiration">
+                             draggable="true" data-type="expiration" data-event="expiration">
                             <span class="lib-icon">📅</span>
                             <div class="lib-info">
                                 <strong>Vencimiento Cobro</strong>
@@ -600,7 +601,7 @@
                     </div>
 
                     <div id="trigger-config-area" style="margin-top:25px; border-top:1px solid #2d3748; padding-top:20px; display:none;">
-                        <!-- Se llena dinámicamente solo en metamorfosis -->
+                        <!-- Se llena dinámicamente solo al configurar triggers -->
                     </div>
                 </div>
             `;
@@ -618,23 +619,26 @@
             libContainer.innerHTML = html;
             libContainer.style.display = 'block';
 
-            // Configurar eventos para los items
+            // Configurar eventos
             libContainer.querySelectorAll('.library-item').forEach(item => {
-                if (context === 'metamorphosis') {
+                // Arrastrar siempre permitido (crea un nuevo nodo)
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('node-type', item.dataset.type);
+                    e.dataTransfer.dropEffect = "copy";
+                });
+
+                // Clic para metamorfosis (solo si estamos editando un trigger y el item es un trigger)
+                const isTriggerItem = ['trigger', 'inactivity', 'expiration'].includes(item.dataset.type);
+                if (node && isTriggerItem) {
                     item.onclick = () => {
                         libContainer.querySelectorAll('.library-item').forEach(i => i.classList.remove('active'));
                         item.classList.add('active');
                         this.showTriggerConfig(item.dataset.type, node);
                     };
-                } else {
-                    item.addEventListener('dragstart', (e) => {
-                        e.dataTransfer.setData('node-type', item.dataset.type);
-                        e.dataTransfer.dropEffect = "copy";
-                    });
                 }
             });
 
-            if (context === 'metamorphosis' && node) {
+            if (node) {
                 this.showTriggerConfig(node.type === 'trigger' ? 'general' : node.type, node);
             }
 
