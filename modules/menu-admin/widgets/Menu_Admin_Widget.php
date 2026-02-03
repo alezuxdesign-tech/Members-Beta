@@ -103,15 +103,14 @@ class Menu_Admin_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Diseño', 'alezux-members' ),
 				'type' => Controls_Manager::SELECT,
-				'default' => 'vertical',
+				'default' => 'row',
 				'options' => [
-					'vertical' => esc_html__( 'Vertical', 'alezux-members' ),
-					'horizontal' => esc_html__( 'Horizontal', 'alezux-members' ),
+					'column' => esc_html__( 'Vertical', 'alezux-members' ),
+					'row' => esc_html__( 'Horizontal', 'alezux-members' ),
 				],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-list' => 'flex-direction: {{VALUE}}',
 				],
-				'prefix_class' => 'alezux-menu-layout-',
 			]
 		);
 
@@ -122,7 +121,7 @@ class Menu_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'flex-start' => [
-						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'title' => esc_html__( 'Izquierda / Inicio', 'alezux-members' ),
 						'icon' => 'eicon-h-align-left',
 					],
 					'center' => [
@@ -130,17 +129,13 @@ class Menu_Admin_Widget extends Widget_Base {
 						'icon' => 'eicon-h-align-center',
 					],
 					'flex-end' => [
-						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'title' => esc_html__( 'Derecha / Fin', 'alezux-members' ),
 						'icon' => 'eicon-h-align-right',
-					],
-					'space-between' => [
-						'title' => esc_html__( 'Justificado', 'alezux-members' ),
-						'icon' => 'eicon-h-align-stretch',
 					],
 				],
 				'default' => 'flex-start',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-menu-admin-list' => 'justify-content: {{VALUE}};',
+					'{{WRAPPER}} .alezux-menu-admin-list' => 'justify-content: {{VALUE}}; align-items: {{VALUE}};',
 				],
 			]
 		);
