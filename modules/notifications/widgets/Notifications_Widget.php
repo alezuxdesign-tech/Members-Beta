@@ -226,7 +226,6 @@ class Notifications_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-notifications-dropdown' => 'background-color: {{VALUE}};',
 					'{{WRAPPER}} .alezux-dropdown-header' => 'background-color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-tabs' => 'background-color: {{VALUE}};',
 					'{{WRAPPER}} .alezux-notifications-list' => 'background-color: {{VALUE}};',
 				],
 			]
@@ -240,6 +239,68 @@ class Notifications_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-tab.active' => 'color: {{VALUE}}; border-bottom-color: {{VALUE}};',
 					'{{WRAPPER}} .alezux-tab.active .badge-count' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-notification-item.unread::after' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_heading',
+			[
+				'label' => __( 'Items de Notificación', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'item_bg_color',
+			[
+				'label'     => __( 'Color Fondo Item', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notification-item' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_hover_bg_color',
+			[
+				'label'     => __( 'Color Fondo Item (Hover)', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notification-item:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'unread_heading',
+			[
+				'label' => __( 'Notificaciones No Leídas', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'unread_bg_color',
+			[
+				'label'     => __( 'Color Fondo No Leído', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-notification-item.unread' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'unread_dot_color',
+			[
+				'label'     => __( 'Color Punto de Alerta', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
 					'{{WRAPPER}} .alezux-notification-item.unread::after' => 'background-color: {{VALUE}};',
 				],
 			]

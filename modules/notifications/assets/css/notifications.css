@@ -45,7 +45,8 @@
     top: calc(100% + 15px);
     right: 0;
     width: 360px;
-    background: #fff;
+    background: transparent;
+    /* Permite control desde Elementor */
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     z-index: 1000;
@@ -77,8 +78,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #f5f5f5;
-    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
 }
 
 .alezux-dropdown-header h3 {
@@ -107,7 +108,7 @@
 .alezux-notifications-list {
     max-height: 400px;
     overflow-y: auto;
-    background: #fff;
+    background: transparent;
 }
 
 /* Empty State */
@@ -132,19 +133,19 @@
     padding: 15px 20px;
     display: flex;
     align-items: flex-start;
-    border-bottom: 1px solid #f9f9f9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     transition: background 0.2s;
     position: relative;
     cursor: pointer;
 }
 
 .alezux-notification-item:hover {
-    background: #fcfcfc;
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .alezux-notification-item.unread {
-    background: #f0f7ff;
-    /* Very subtle blue tint */
+    background: rgba(108, 92, 231, 0.05);
+    /* Usar un color semitransparente por defecto */
 }
 
 /* Unread Indicator Dot */
