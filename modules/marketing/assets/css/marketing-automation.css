@@ -284,6 +284,7 @@
 .node-menu-btn {
     width: 24px;
     height: 24px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -301,12 +302,14 @@
 .node-menu-btn span {
     width: 4px;
     height: 4px;
-    background: #666;
+    background: #999;
+    /* Más claro */
     border-radius: 50%;
 }
 
 .node-menu-btn:hover span {
     background: #fff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Terminals (Dots for connection) */

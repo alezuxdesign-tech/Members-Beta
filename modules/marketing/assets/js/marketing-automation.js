@@ -182,6 +182,11 @@
                 this.applyModalChanges();
             } else if (this.modalAction === 'confirm_clear') {
                 this.doClearCanvas();
+            } else if (this.modalAction === 'confirm_delete') {
+                this.doDelete(); // Asumiendo que doDelete existe o se llama deleteNode
+            } else if (this.modalAction === 'success_close') {
+                this.closeModal();
+                this.closeEditor();
             } else {
                 this.closeModal();
             }
@@ -214,6 +219,7 @@
                 case 'trigger': title = 'Trigger Evento'; icon = '⚡'; break;
                 case 'email': title = 'Enviar Email'; icon = '✉️'; break;
                 case 'delay': title = 'Esperar (Delay)'; icon = '⏳'; break;
+                case 'condition': title = 'Condición (If/Else)'; icon = '🔄'; break;
             }
 
             nodeEl.innerHTML = `
@@ -258,7 +264,14 @@
                 });
             });
 
-            this.canvas.appendChild(nodeEl);
+            // Abrir ajustes solo con DOBLE CLIC
+            nodeEl.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn')) return;
+                e.stopPropagation();
+                this.openNodeSettings(id);
+            });
+
+            this.canvasContent.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
         }
 
@@ -283,7 +296,7 @@
 
             const nodeEl = e.target.closest('.alezux-automation-node');
             if (nodeEl) {
-                this.openNodeSettings(nodeEl.id);
+                // No hacer nada aquí, esperar dblclick
             } else {
                 // Click en canvas vacío cancela conexión pendiente
                 if (this.pendingConnection) {
@@ -473,6 +486,17 @@
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
                     <input type="number" id="field-minutes" value="${node.data.minutes || '5'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
                 `;
+            } else if (node.type === 'condition') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Si el usuario...</label>
+                    <select id="field-condition-type" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                        <option value="has_tag" ${node.data.condition_type === 'has_tag' ? 'selected' : ''}>Tiene la etiqueta</option>
+                        <option value="in_course" ${node.data.condition_type === 'in_course' ? 'selected' : ''}>Está en el curso</option>
+                        <option value="payment_status" ${node.data.condition_type === 'payment_status' ? 'selected' : ''}>Estado de pago es</option>
+                    </select>
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Valor a comparar:</label>
+                    <input type="text" id="field-condition-value" value="${node.data.condition_value || ''}" placeholder="Ej: VIP, 123, paid" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                `;
             }
 
             this.modal.save.innerText = "Guardar";
@@ -523,7 +547,9 @@
             }
 
             const nodeEl = e.target.closest('.alezux-automation-node');
-            if (nodeEl && !e.target.closest('.node-terminal')) {
+            const isButton = e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn');
+
+            if (nodeEl && !isButton) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
                 this.initialX = e.clientX / this.scale - nodeEl.offsetLeft;
@@ -557,10 +583,18 @@
             } else if (this.pendingConnection) {
                 const fromTerm = this.pendingConnection.fromTerminal;
                 const nodeFrom = this.nodes.find(n => n.id === this.pendingConnection.from);
+                if (!nodeFrom) return;
+
                 const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
                 const y1 = nodeFrom.y + fromTerm.offsetTop + 6;
 
+                // Ocultar si estamos paneando
                 let temp = document.getElementById('temp-connection-line');
+                if (this.isPanning && temp) {
+                    temp.style.display = 'none';
+                    return;
+                }
+
                 if (!temp) {
                     temp = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     temp.id = 'temp-connection-line';
@@ -568,6 +602,7 @@
                     temp.setAttribute("style", "stroke: #888; stroke-dasharray: 4;");
                     this.svgLayer.appendChild(temp);
                 }
+                temp.style.display = 'block';
 
                 const dx = Math.abs(mouseX - x1) * 0.5;
                 temp.setAttribute("d", `M ${x1} ${y1} C ${x1 + dx} ${y1} ${mouseX - dx} ${mouseY} ${mouseX} ${mouseY}`);
@@ -886,74 +921,6 @@
                     }
                 }
             });
-        }
-
-        handleModalAction() {
-            if (this.modalAction === 'save_settings') {
-                this.applyModalChanges();
-            } else if (this.modalAction === 'confirm_clear') {
-                this.doClearCanvas();
-            } else if (this.modalAction === 'confirm_delete') {
-                this.doDelete();
-            } else if (this.modalAction === 'success_close') {
-                this.closeModal();
-                this.closeEditor();
-            } else {
-                this.closeModal();
-            }
-        }
-
-        showMessage(title, text, action = 'info') {
-            this.modal.title.innerText = title;
-            this.modal.fields.innerHTML = `<p style='color:#888;'>${text}</p>`;
-            this.modal.save.innerText = "Entendido";
-            this.modalAction = action;
-            this.modal.overlay.style.display = 'flex';
-        }
-
-        addNode(type, x, y, data = {}, forcedId = null) {
-            const id = forcedId || 'node_' + Math.random().toString(36).substr(2, 9);
-            const nodeEl = document.createElement('div');
-            nodeEl.id = id;
-            nodeEl.className = `alezux-automation-node node-${type}`;
-            nodeEl.style.left = `${x}px`;
-            nodeEl.style.top = `${y}px`;
-
-            let title = 'Nodo';
-            let icon = '⚙️';
-            switch (type) {
-                case 'trigger': title = 'Trigger Evento'; icon = '⚡'; break;
-                case 'email': title = 'Enviar Email'; icon = '✉️'; break;
-                case 'delay': title = 'Esperar (Delay)'; icon = '⏳'; break;
-            }
-
-            nodeEl.innerHTML = `
-                <div class="node-header">${icon} ${title}</div>
-                <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
-                <div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>
-                <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
-                ${type !== 'delay' ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
-            `;
-
-            const plusBtn = nodeEl.querySelector('.node-plus-btn');
-            if (plusBtn) {
-                plusBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.showQuickAppendMenu(id, e);
-                });
-            }
-
-            // Evitar que el clic en el terminal se propague al nodo (que abre ajustes)
-            nodeEl.querySelectorAll('.node-terminal').forEach(t => {
-                t.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.handleTerminalClick(t);
-                });
-            });
-
-            this.canvas.appendChild(nodeEl);
-            this.nodes.push({ id, type, x, y, el: nodeEl, data });
-            return id;
         }
 
         getTriggerTypeForNode(nodeId) {
