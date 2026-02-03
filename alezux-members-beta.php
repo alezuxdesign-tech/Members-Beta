@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Alezux Members Beta
  * Description: Plugin modular "Lego-style" para funcionalidades robustas y escalables.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Alezux
  * Text Domain: alezux-members
  */
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Definir constantes del plugin
-define( 'ALEZUX_MEMBERS_VERSION', '1.0.0' );
+define( 'ALEZUX_MEMBERS_VERSION', '1.0.4' );
 define( 'ALEZUX_MEMBERS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ALEZUX_MEMBERS_URL', plugin_dir_url( __FILE__ ) );
 define( 'ALEZUX_MEMBERS_MODULES_PATH', ALEZUX_MEMBERS_PATH . 'modules/' );
