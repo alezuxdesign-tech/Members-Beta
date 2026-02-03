@@ -252,9 +252,10 @@
     margin-bottom: 20px;
 }
 
-.alezux-auth-pass-wrapper {
+.alezux-input-wrapper {
     position: relative !important;
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
     width: 100% !important;
 }
 
@@ -265,7 +266,7 @@
     transform: translateY(-50%) !important;
     cursor: pointer !important;
     color: #888 !important;
-    z-index: 99 !important;
+    z-index: 10 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -277,6 +278,8 @@
     pointer-events: all !important;
     outline: none !important;
     box-shadow: none !important;
+    margin: 0 !important;
+    /* Evitar desplazamientos por márgenes heredados */
 }
 
 .alezux-eye-icon {
