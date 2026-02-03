@@ -562,7 +562,8 @@
             }
 
             node.data.description = display;
-            node.el.querySelector('.node-content').innerText = display;
+            const descEl = node.el.querySelector('.node-description');
+            if (descEl) descEl.innerText = display;
             this.closeModal();
         }
 
@@ -1074,8 +1075,8 @@
             this.editingNode.data.description = "Asunto: " + (this.editingNode.data.subject || 'Sin asunto').substring(0, 20) + "...";
 
             // Actualizar vista del nodo
-            const contentEl = this.editingNode.el.querySelector('.node-content');
-            if (contentEl) contentEl.innerText = this.editingNode.data.description;
+            const descEl = this.editingNode.el.querySelector('.node-description');
+            if (descEl) descEl.innerText = this.editingNode.data.description;
 
             this.closeDrawer();
         }
