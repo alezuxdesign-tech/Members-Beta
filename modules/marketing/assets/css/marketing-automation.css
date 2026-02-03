@@ -296,21 +296,21 @@
 }
 
 /* Node Types */
-.node-trigger {
-    border-top: 5px solid #f1c40f;
+/* Node variants (Remove top bars as requested) */
+.node-trigger .node-box {
+    border-color: #f1c40f;
 }
 
-.node-email {
-    border-top: 5px solid #2ecc71;
+.node-email .node-box {
+    border-color: #2ecc71;
 }
 
-.node-delay {
-    border-top: 5px solid #3498db;
+.node-delay .node-box {
+    border-color: #3498db;
 }
 
-.node-condition {
-    border-top: 5px solid #a855f7;
-    /* Violeta para lógica */
+.node-condition .node-box {
+    border-color: #a855f7;
 }
 
 /* 3-Dots Menu Button */
@@ -543,7 +543,8 @@
 /* Botón Plus (Quick Append) */
 .node-plus-btn {
     position: absolute;
-    right: -32px;
+    right: -25px;
+    /* Más cerca para evitar gaps */
     top: 35px;
     transform: translate(-50%, -50%);
     width: 20px;
@@ -553,6 +554,7 @@
     border-radius: 6px;
     color: #fff;
     display: none;
+    /* Controlado por JS .is-terminal */
     align-items: center;
     justify-content: center;
     font-size: 14px;
@@ -561,8 +563,16 @@
     transition: all 0.2s;
 }
 
-.alezux-automation-node:hover .node-plus-btn {
+.node-plus-btn.is-terminal {
     display: flex;
+    /* Siempre visible si es terminal */
+    opacity: 0.6;
+}
+
+.alezux-automation-node:hover .node-plus-btn.is-terminal {
+    opacity: 1;
+    border-color: #5a8dee;
+    transform: translate(-50%, -50%) scale(1.1);
 }
 
 .node-plus-btn:hover {

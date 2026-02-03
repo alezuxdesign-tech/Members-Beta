@@ -276,6 +276,7 @@
 
             this.canvasContent.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
+            this.updatePlusButtons();
         }
 
         handleClick(e) {
@@ -328,6 +329,7 @@
             this.nodes = this.nodes.filter(n => n.id !== nodeId);
 
             this.updatePlaceholder();
+            this.updatePlusButtons();
         }
 
         deleteConnection(connId) {
@@ -336,6 +338,7 @@
 
             conn.path.remove();
             this.connections = this.connections.filter(c => c.id !== connId);
+            this.updatePlusButtons();
         }
 
         handleTerminalClick(terminal) {
@@ -399,6 +402,7 @@
 
             this.connections.push({ id: connId, from: fromId, to: toId, path });
             this.updateConnections();
+            this.updatePlusButtons();
         }
 
         updateConnections() {
@@ -451,6 +455,23 @@
         removeTempLine() {
             const temp = document.getElementById('temp-connection-line');
             if (temp) temp.remove();
+        }
+
+        updatePlusButtons() {
+            this.nodes.forEach(node => {
+                const plusBtn = node.el.querySelector('.node-plus-btn');
+                if (!plusBtn) return;
+
+                // Un nodo es terminal si no tiene conexiones de SALIDA
+                const hasOutgoing = this.connections.some(c => c.from === node.id);
+
+                // No mostrar en condiciones (tienen ramas) o si ya tiene salida
+                if (hasOutgoing || node.type === 'condition' || node.type === 'delay') {
+                    plusBtn.classList.remove('is-terminal');
+                } else {
+                    plusBtn.classList.add('is-terminal');
+                }
+            });
         }
 
         openNodeSettings(nodeId) {
