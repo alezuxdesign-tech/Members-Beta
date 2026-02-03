@@ -126,8 +126,20 @@ class Marketing_Automation_Widget extends Widget_Base {
 
             <div style="clear: both;"></div>
             
-            <div class="alezux-canvas-actions" style="margin-top: 20px; text-align: right;">
-                <button id="save-automation" class="alezux-action-btn" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);">
+            <div class="alezux-canvas-actions" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="automation-meta" style="display: flex; gap: 15px; align-items: center;">
+                    <input type="text" id="automation-name" placeholder="Nombre de la automatización..." style="background: #000; color: #fff; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; width: 300px;">
+                    <select id="load-automation-select" style="background: #000; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; min-width: 200px;">
+                        <option value="">Cargar automatización...</option>
+                        <?php 
+                        $autos = $this->get_automations_list(); 
+                        foreach($autos as $id => $name) {
+                            if($id) echo "<option value='$id'>$name</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <button id="save-marketing-automation" class="alezux-save-btn" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);">
                     Guardar Automatización
                 </button>
             </div>

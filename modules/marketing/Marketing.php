@@ -51,6 +51,11 @@ class Marketing extends Module_Base {
 
         // Registrar Widget de Elementor
         \add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+
+        // AJAX Handlers
+        \add_action( 'wp_ajax_alezux_save_automation', [ $this, 'ajax_save_automation' ] );
+        \add_action( 'wp_ajax_alezux_load_automation', [ $this, 'ajax_load_automation' ] );
+        \add_action( 'wp_ajax_alezux_get_automations', [ $this, 'ajax_get_automations_list' ] );
 	}
 
     public function register_widgets( $widgets_manager ) {
@@ -62,6 +67,11 @@ class Marketing extends Module_Base {
         $ver = \time(); // Cache busting para desarrollo
         \wp_register_script( 'alezux-marketing-js', ALEZUX_MARKETING_URL . 'assets/js/marketing-automation.js', [ 'jquery' ], $ver, true );
         \wp_register_style( 'alezux-marketing-css', ALEZUX_MARKETING_URL . 'assets/css/marketing-automation.css', [], $ver );
+
+        \wp_localize_script( 'alezux-marketing-js', 'alezux_marketing_vars', [
+            'ajax_url' => \admin_url( 'admin-ajax.php' ),
+            'nonce'    => \wp_create_nonce( 'alezux_marketing_nonce' )
+        ] );
     }
 
     /**
@@ -90,5 +100,88 @@ class Marketing extends Module_Base {
             echo \base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
             exit;
         }
+    }
+
+    /**
+     * AJAX: Guarda una automatización (Nueva o Actualización)
+     */
+    public function ajax_save_automation() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+        
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( [ 'message' => 'Sin permisos.' ] );
+        }
+
+        $id        = isset( $_POST['id'] ) ? \intval( $_POST['id'] ) : 0;
+        $name      = isset( $_POST['name'] ) ? \sanitize_text_field( $_POST['name'] ) : 'Sin Nombre';
+        $blueprint = isset( $_POST['blueprint'] ) ? $_POST['blueprint'] : ''; // JSON raw
+        
+        // Extraer el trigger del blueprint para indexar
+        $blueprint_data = \json_decode( $blueprint, true );
+        $trigger = '';
+        if ( isset( $blueprint_data['nodes'] ) ) {
+            foreach ( $blueprint_data['nodes'] as $node ) {
+                if ( $node['type'] === 'trigger' && isset( $node['data']['event'] ) ) {
+                    $trigger = $node['data']['event'];
+                    break;
+                }
+            }
+        }
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+
+        if ( $id > 0 ) {
+            $wpdb->update( $table, 
+                [ 'name' => $name, 'blueprint' => $blueprint, 'event_trigger' => $trigger ], 
+                [ 'id' => $id ] 
+            );
+            $new_id = $id;
+        } else {
+            $wpdb->insert( $table, [ 
+                'name' => $name, 
+                'blueprint' => $blueprint, 
+                'event_trigger' => $trigger,
+                'status' => 'active'
+            ] );
+            $new_id = $wpdb->insert_id;
+        }
+
+        \wp_send_json_success( [ 'id' => $new_id, 'message' => 'Automatización guardada.' ] );
+    }
+
+    /**
+     * AJAX: Carga una automatización por ID
+     */
+    public function ajax_load_automation() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+        
+        $id = isset( $_POST['id'] ) ? \intval( $_POST['id'] ) : 0;
+        if ( ! $id ) \wp_send_json_error( [ 'message' => 'ID inválido.' ] );
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+        $automation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE id = %d", $id ) );
+
+        if ( ! $automation ) \wp_send_json_error( [ 'message' => 'No encontrada.' ] );
+
+        \wp_send_json_success( [
+            'id'        => $automation->id,
+            'name'      => $automation->name,
+            'blueprint' => \json_decode( $automation->blueprint )
+        ] );
+    }
+
+    /**
+     * AJAX: Obtiene la lista completa de automatizaciones para el select
+     */
+    public function ajax_get_automations_list() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+        
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+        $results = $wpdb->get_results( "SELECT id, name FROM $table ORDER BY name ASC" );
+
+        \wp_send_json_success( $results );
     }
 }

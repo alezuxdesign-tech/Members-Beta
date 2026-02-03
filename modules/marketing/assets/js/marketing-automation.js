@@ -25,6 +25,7 @@
                 title: document.getElementById('modal-title')
             };
 
+            this.currentAutomationId = null;
             this.initEvents();
         }
 
@@ -60,8 +61,17 @@
             if (clearBtn) clearBtn.addEventListener('click', () => this.clearCanvas());
 
             // Save Button
-            const saveBtn = document.getElementById('save-automation');
-            if (saveBtn) saveBtn.addEventListener('click', () => this.saveAutomation());
+            const saveBtn = document.getElementById('save-marketing-automation');
+            if (saveBtn) saveBtn.addEventListener('click', () => this.persistAutomation());
+
+            // Load Selector
+            const loadSelect = document.getElementById('load-automation-select');
+            if (loadSelect) {
+                loadSelect.addEventListener('change', (e) => {
+                    const id = e.target.value;
+                    if (id) this.loadAutomation(id);
+                });
+            }
 
             // Modal Cancel
             if (this.modal.cancel) {
@@ -118,7 +128,16 @@
                 <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
                 <div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>
                 <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
+                ${type !== 'delay' ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
             `;
+
+            const plusBtn = nodeEl.querySelector('.node-plus-btn');
+            if (plusBtn) {
+                plusBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showQuickAppendMenu(id, e);
+                });
+            }
 
             // Evitar que el clic en el terminal se propague al nodo (que abre ajustes)
             nodeEl.querySelectorAll('.node-terminal').forEach(t => {
@@ -388,19 +407,193 @@
             if (p) p.style.display = this.nodes.length === 0 ? 'block' : 'none';
         }
 
-        saveAutomation() {
+        // QUICK APPEND LOGIC
+        showQuickAppendMenu(nodeId, event) {
+            this.removeQuickMenu();
+            const node = this.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            const menu = document.createElement('div');
+            menu.className = 'alezux-quick-menu';
+            menu.style.left = `${node.x + 220}px`;
+            menu.style.top = `${node.y}px`;
+
+            const items = [
+                { type: 'email', icon: '✉️', label: 'Enviar Email' },
+                { type: 'delay', icon: '⏳', label: 'Esperar' }
+            ];
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `quick-menu-item type-${item.type}`;
+                div.innerHTML = `<span>${item.icon}</span> ${item.label}`;
+                div.onclick = () => {
+                    const newNodeId = this.addNode(item.type, node.x + 300, node.y);
+                    this.createConnection(nodeId, newNodeId);
+                    this.removeQuickMenu();
+                };
+                menu.appendChild(div);
+            });
+
+            this.canvas.appendChild(menu);
+
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    this.removeQuickMenu();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+
+        removeQuickMenu() {
+            const old = document.querySelector('.alezux-quick-menu');
+            if (old) old.remove();
+        }
+
+        // PERSISTENCE LOGIC
+        persistAutomation() {
+            const name = document.getElementById('automation-name').value;
+            if (!name) {
+                alert("Por favor, ingresa un nombre para la automatización.");
+                return;
+            }
+
             const blueprint = {
                 nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
                 connections: this.connections.map(c => ({ from: c.from, to: c.to }))
             };
-            console.log("Blueprint:", blueprint);
 
-            this.modal.title.innerText = "Guardado Exitoso";
-            this.modal.fields.innerHTML = "<p style='color:#888;'>Estructura generada en la consola (Pronto en Base de Datos).</p>";
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_save_automation',
+                    nonce: alezux_marketing_vars.nonce,
+                    id: this.currentAutomationId,
+                    name: name,
+                    blueprint: JSON.stringify(blueprint)
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.currentAutomationId = response.data.id;
+                        this.showMessage("¡Éxito!", "Automatización guardada correctamente.");
+                        this.updateLoadList();
+                    } else {
+                        this.showMessage("Error", response.data || "Error al guardar.");
+                    }
+                }
+            });
+        }
+
+        loadAutomation(id) {
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_load_automation',
+                    nonce: alezux_marketing_vars.nonce,
+                    id: id
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.doClearCanvas();
+                        this.currentAutomationId = response.data.id;
+                        document.getElementById('automation-name').value = response.data.name;
+
+                        const blueprint = JSON.parse(response.data.blueprint);
+
+                        // Cargar Nodos
+                        blueprint.nodes.forEach(n => {
+                            this.addNode(n.type, n.x, n.y, n.data, n.id);
+                        });
+
+                        // Cargar Conexiones (esperar un tick para que los IDs existan)
+                        setTimeout(() => {
+                            blueprint.connections.forEach(c => {
+                                this.createConnection(c.from, c.to);
+                            });
+                            this.updatePlaceholder();
+                        }, 50);
+                    }
+                }
+            });
+        }
+
+        updateLoadList() {
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_get_automations_list',
+                    nonce: alezux_marketing_vars.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        const select = document.getElementById('load-automation-select');
+                        let html = '<option value="">Cargar automatización...</option>';
+                        response.data.forEach(item => {
+                            html += `<option value="${item.id}" ${item.id == this.currentAutomationId ? 'selected' : ''}>${item.name}</option>`;
+                        });
+                        select.innerHTML = html;
+                    }
+                }
+            });
+        }
+
+        showMessage(title, text) {
+            this.modal.title.innerText = title;
+            this.modal.fields.innerHTML = `<p style='color:#888;'>${text}</p>`;
             this.modal.save.innerText = "Entendido";
             this.modalAction = 'info';
             this.modal.overlay.style.display = 'flex';
         }
+
+        addNode(type, x, y, data = {}, forcedId = null) {
+            const id = forcedId || 'node_' + Math.random().toString(36).substr(2, 9);
+            const nodeEl = document.createElement('div');
+            nodeEl.id = id;
+            nodeEl.className = `alezux-automation-node node-${type}`;
+            nodeEl.style.left = `${x}px`;
+            nodeEl.style.top = `${y}px`;
+
+            let title = 'Nodo';
+            let icon = '⚙️';
+            switch (type) {
+                case 'trigger': title = 'Trigger Evento'; icon = '⚡'; break;
+                case 'email': title = 'Enviar Email'; icon = '✉️'; break;
+                case 'delay': title = 'Esperar (Delay)'; icon = '⏳'; break;
+            }
+
+            nodeEl.innerHTML = `
+                <div class="node-header">${icon} ${title}</div>
+                <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
+                <div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>
+                <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
+                ${type !== 'delay' ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
+            `;
+
+            const plusBtn = nodeEl.querySelector('.node-plus-btn');
+            if (plusBtn) {
+                plusBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showQuickAppendMenu(id, e);
+                });
+            }
+
+            // Evitar que el clic en el terminal se propague al nodo (que abre ajustes)
+            nodeEl.querySelectorAll('.node-terminal').forEach(t => {
+                t.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.handleTerminalClick(t);
+                });
+            });
+
+            this.canvas.appendChild(nodeEl);
+            this.nodes.push({ id, type, x, y, el: nodeEl, data });
+            return id;
+        }
+
     }
 
     $(document).ready(() => {

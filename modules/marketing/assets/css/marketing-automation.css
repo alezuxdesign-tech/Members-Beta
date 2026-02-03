@@ -177,3 +177,105 @@
 .alezux-modal-content textarea:focus {
     border-color: #e74c3c !important;
 }
+
+/* Botón Plus (Quick Append) */
+.node-plus-btn {
+    position: absolute;
+    right: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid #1a1a1a;
+}
+
+.alezux-automation-node:hover .node-plus-btn {
+    display: flex;
+}
+
+.node-plus-btn:hover {
+    transform: translateY(-50%) scale(1.2);
+    background: #ff5e4d;
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+}
+
+/* Menú de Selección Rápida */
+.alezux-quick-menu {
+    position: absolute;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 10px;
+    z-index: 2000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 150px;
+    animation: alezux-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes alezux-pop {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.quick-menu-item {
+    padding: 10px 15px;
+    color: #eee;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quick-menu-item:hover {
+    background: #333;
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.quick-menu-item.type-trigger {
+    color: #f1c40f;
+}
+
+.quick-menu-item.type-email {
+    color: #2ecc71;
+}
+
+.quick-menu-item.type-delay {
+    color: #3498db;
+}
+
+/* Botón Guardar */
+.alezux-save-btn {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.alezux-save-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(231, 76, 60, 0.5) !important;
+}
