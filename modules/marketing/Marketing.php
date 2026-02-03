@@ -55,7 +55,8 @@ class Marketing extends Module_Base {
         // AJAX Handlers
         \add_action( 'wp_ajax_alezux_save_automation', [ $this, 'ajax_save_automation' ] );
         \add_action( 'wp_ajax_alezux_load_automation', [ $this, 'ajax_load_automation' ] );
-        \add_action( 'wp_ajax_alezux_get_automations', [ $this, 'ajax_get_automations_list' ] );
+        \add_action( 'wp_ajax_alezux_get_automations_list', [ $this, 'ajax_get_automations_list' ] );
+        \add_action( 'wp_ajax_alezux_delete_automation', [ $this, 'ajax_delete_automation' ] );
 	}
 
     public function register_widgets( $widgets_manager ) {
@@ -173,15 +174,35 @@ class Marketing extends Module_Base {
     }
 
     /**
-     * AJAX: Obtiene la lista completa de automatizaciones para el select
+     * AJAX: Obtiene la lista completa de automatizaciones para la tabla
      */
     public function ajax_get_automations_list() {
         \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
         
         global $wpdb;
         $table = $wpdb->prefix . 'alezux_marketing_automations';
-        $results = $wpdb->get_results( "SELECT id, name FROM $table ORDER BY name ASC" );
+        $results = $wpdb->get_results( "SELECT id, name, blueprint, created_at FROM $table ORDER BY created_at DESC" );
 
         \wp_send_json_success( $results );
+    }
+
+    /**
+     * AJAX: Elimina una automatización
+     */
+    public function ajax_delete_automation() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+        
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Sin permisos.' );
+        }
+
+        $id = isset( $_POST['id'] ) ? \intval( $_POST['id'] ) : 0;
+        if ( ! $id ) \wp_send_json_error( 'ID inválido.' );
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+        $wpdb->delete( $table, [ 'id' => $id ] );
+
+        \wp_send_json_success( 'Automatización eliminada.' );
     }
 }

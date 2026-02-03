@@ -70,46 +70,103 @@ class Marketing_Automation_Widget extends Widget_Base {
 
 	protected function render() {
 		?>
-		<div class="alezux-marketing-canvas-wrapper" style="background: #111; border-radius: 50px; padding: 20px; min-height: 600px; position: relative; overflow: hidden;">
-            <div id="alezux-marketing-sidebar" style="width: 250px; background: #1a1a1a; border-radius: 30px; padding: 20px; float: left; margin-right: 20px; box-shadow: 10px 0 20px rgba(0,0,0,0.5);">
-                <h3 style="color: #fff; font-size: 16px; margin-bottom: 20px;">Componentes</h3>
-                
-                <div class="automation-node-template trigger" data-type="trigger" draggable="true" style="background: #f1c40f; color: #000; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
-                    ⚡ Trigger Evento
+		<div class="alezux-finanzas-app alezux-marketing-dashboard">
+            <!-- Header de la Tabla -->
+            <div class="alezux-table-header">
+                <div class="alezux-header-left">
+                    <h2 class="alezux-table-title"><?php \esc_html_e( 'Automatizaciones de Marketing', 'alezux-members' ); ?></h2>
+                    <p class="alezux-table-desc"><?php \esc_html_e( 'Gestiona tus flujos de trabajo y correos automáticos.', 'alezux-members' ); ?></p>
                 </div>
-                <div class="automation-node-template action" data-type="email" draggable="true" style="background: #2ecc71; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
-                    ✉️ Enviar Email
-                </div>
-                <div class="automation-node-template logic" data-type="delay" draggable="true" style="background: #3498db; color: #fff; padding: 15px; border-radius: 50px; margin-bottom: 10px; cursor: move; font-weight: bold; text-align: center;">
-                    ⏳ Esperar (Delay)
-                </div>
-
-                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-                
-                <button id="clear-canvas" style="width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 10px; border-radius: 50px; cursor: pointer; font-size: 12px;">
-                    🗑️ Limpiar Lienzo
-                </button>
-            </div>
-
-            <div id="alezux-marketing-canvas" style="flex-grow: 1; height: 600px; background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; border-radius: 30px; position: relative;">
-                <!-- El sistema de JS inyectará el SVG aquí -->
-                <div class="canvas-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; text-align: center; pointer-events: none;">
-                    <p>Arrastra componentes aquí para empezar</p>
+                <div class="alezux-header-right">
+                    <button id="btn-create-automation" class="alezux-action-btn">
+                        <span class="dashicons dashicons-plus"></span> <?php \esc_html_e( 'Nueva Automatización', 'alezux-members' ); ?>
+                    </button>
                 </div>
             </div>
 
-            <!-- Modal Personalizado Alezux -->
-            <div id="alezux-node-modal" class="alezux-modal-overlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter: blur(5px); justify-content: center; align-items: center;">
-                <div class="alezux-modal-content" style="background: #1a1a1a; width: 400px; border-radius: 30px; border: 1px solid #333; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,1);">
-                    <h3 id="modal-title" style="color:#fff; margin-bottom: 20px;">Configurar Nodo</h3>
-                    
-                    <div id="modal-fields">
-                        <!-- Campos dinámicos aquí -->
+            <!-- Tabla de Automatizaciones -->
+            <div class="alezux-table-wrapper">
+                <table class="alezux-finanzas-table" id="marketing-automations-table">
+                    <thead>
+                        <tr>
+                            <th><?php \esc_html_e( 'ID', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Nombre de la Automatización', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Nodos', 'alezux-members' ); ?></th>
+                            <th><?php \esc_html_e( 'Fecha de Creación', 'alezux-members' ); ?></th>
+                            <th style="text-align: center;"><?php \esc_html_e( 'Acciones', 'alezux-members' ); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketing-automations-list">
+                        <!-- Se llena vía JS -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #718096;">
+                                <span class="dashicons dashicons-update alezux-spin"></span> Cargando automatizaciones...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- POPUP GIGANTE DEL EDITOR -->
+            <div id="alezux-editor-popup" class="alezux-full-popup" style="display:none;">
+                <div class="popup-overlay"></div>
+                <div class="popup-container">
+                    <div class="popup-header">
+                        <div class="popup-title-group">
+                            <input type="text" id="automation-name" placeholder="Nombre de la automatización..." class="alezux-popup-input">
+                        </div>
+                        <div class="popup-actions">
+                            <button id="save-marketing-automation" class="alezux-action-btn">
+                                <span class="dashicons dashicons-saved"></span> Guardar
+                            </button>
+                            <button id="close-editor-popup" class="alezux-btn-danger">
+                                <span class="dashicons dashicons-no-alt"></span> Cerrar
+                            </button>
+                        </div>
                     </div>
+                    
+                    <div class="popup-body">
+                        <!-- Sidebar Izquierda: Componentes -->
+                        <div class="editor-sidebar">
+                            <h4 class="sidebar-section-title">Triggers</h4>
+                            <div class="automation-node-template trigger" data-type="trigger" draggable="true">
+                                <span class="node-icon">⚡</span> Evento
+                            </div>
 
-                    <div style="margin-top: 30px; display: flex; gap: 10px;">
-                        <button id="modal-save" style="flex:1; background: #e74c3c; color:#fff; border:none; padding:12px; border-radius:50px; cursor:pointer; font-weight:bold;">Guardar</button>
-                        <button id="modal-cancel" style="flex:1; background: transparent; color:#888; border:1px solid #333; padding:12px; border-radius:50px; cursor:pointer;">Cancelar</button>
+                            <h4 class="sidebar-section-title">Acciones</h4>
+                            <div class="automation-node-template action" data-type="email" draggable="true">
+                                <span class="node-icon">✉️</span> Enviar Email
+                            </div>
+                            <div class="automation-node-template logic" data-type="delay" draggable="true">
+                                <span class="node-icon">⏳</span> Esperar (Delay)
+                            </div>
+
+                            <div class="sidebar-footer">
+                                <button id="clear-canvas" class="alezux-btn-soft-danger">
+                                    <span class="dashicons dashicons-trash"></span> Limpiar Lienzo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Área Central: Canvas -->
+                        <div id="alezux-marketing-canvas" class="editor-canvas">
+                            <div class="canvas-placeholder">
+                                <span class="dashicons dashicons-move"></span>
+                                <p>Arrastra componentes aquí para empezar tu flujo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Configuración de Nodo (Pequeño, encima del editor) -->
+            <div id="alezux-node-modal" class="alezux-modal-overlay" style="display:none;">
+                <div class="alezux-modal-content">
+                    <h3 id="modal-title">Configurar Nodo</h3>
+                    <div id="modal-fields"></div>
+                    <div class="modal-footer">
+                        <button id="modal-save" class="alezux-btn-primary">Guardar Cambios</button>
+                        <button id="modal-cancel" class="alezux-btn-secondary">Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -123,33 +180,7 @@ class Marketing_Automation_Widget extends Widget_Base {
                     'logro_obtenido': 'Nuevo Logro Desbloqueado'
                 };
             </script>
-
-            <div style="clear: both;"></div>
-            
-            <div class="alezux-canvas-actions" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div class="automation-meta" style="display: flex; gap: 15px; align-items: center;">
-                    <input type="text" id="automation-name" placeholder="Nombre de la automatización..." style="background: #000; color: #fff; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; width: 300px;">
-                    <select id="load-automation-select" style="background: #000; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; min-width: 200px;">
-                        <option value="">Cargar automatización...</option>
-                        <?php 
-                        $autos = $this->get_automations_list(); 
-                        foreach($autos as $id => $name) {
-                            if($id) echo "<option value='$id'>$name</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-                <button id="save-marketing-automation" class="alezux-save-btn" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);">
-                    Guardar Automatización
-                </button>
-            </div>
 		</div>
-
-        <style>
-            .automation-node-template:hover {
-                transform: scale(1.05);
-                transition: all 0.3s ease;
-            }
             #alezux-marketing-canvas {
                 border: 2px dashed #444;
             }

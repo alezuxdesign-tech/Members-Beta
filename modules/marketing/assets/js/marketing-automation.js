@@ -26,7 +26,16 @@
             };
 
             this.currentAutomationId = null;
+
+            this.popup = {
+                container: document.getElementById('alezux-editor-popup'),
+                close: document.getElementById('close-editor-popup'),
+                createBtn: document.getElementById('btn-create-automation'),
+                nameInput: document.getElementById('automation-name')
+            };
+
             this.initEvents();
+            this.loadAutomationsTable();
         }
 
         initSvgLayer() {
@@ -37,6 +46,15 @@
         }
 
         initEvents() {
+            // Dashboard Events
+            if (this.popup.createBtn) {
+                this.popup.createBtn.addEventListener('click', () => this.openEditor());
+            }
+
+            if (this.popup.close) {
+                this.popup.close.addEventListener('click', () => this.closeEditor());
+            }
+
             // Drag and Drop from Sidebar
             const templates = document.querySelectorAll('.automation-node-template');
             templates.forEach(template => {
@@ -53,7 +71,7 @@
             document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
             document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
 
-            // Click handling for terminals and nodes
+            // Click handling
             this.canvas.addEventListener('click', (e) => this.handleClick(e));
 
             // Clear Button
@@ -64,21 +82,12 @@
             const saveBtn = document.getElementById('save-marketing-automation');
             if (saveBtn) saveBtn.addEventListener('click', () => this.persistAutomation());
 
-            // Load Selector
-            const loadSelect = document.getElementById('load-automation-select');
-            if (loadSelect) {
-                loadSelect.addEventListener('change', (e) => {
-                    const id = e.target.value;
-                    if (id) this.loadAutomation(id);
-                });
-            }
-
             // Modal Cancel
             if (this.modal.cancel) {
                 this.modal.cancel.addEventListener('click', () => this.closeModal());
             }
 
-            // Modal Save (usaremos un handler único para redireccionar)
+            // Modal Save
             if (this.modal.save) {
                 this.modal.save.addEventListener('click', () => this.handleModalAction());
             }
@@ -453,7 +462,7 @@
 
         // PERSISTENCE LOGIC
         persistAutomation() {
-            const name = document.getElementById('automation-name').value;
+            const name = this.popup.nameInput.value;
             if (!name) {
                 alert("Por favor, ingresa un nombre para la automatización.");
                 return;
@@ -463,6 +472,11 @@
                 nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
                 connections: this.connections.map(c => ({ from: c.from, to: c.to }))
             };
+
+            const saveBtn = document.getElementById('save-marketing-automation');
+            const originalHtml = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span class="dashicons dashicons-update alezux-spin"></span> Guardando...';
+            saveBtn.disabled = true;
 
             $.ajax({
                 url: alezux_marketing_vars.ajax_url,
@@ -475,10 +489,12 @@
                     blueprint: JSON.stringify(blueprint)
                 },
                 success: (response) => {
+                    saveBtn.innerHTML = originalHtml;
+                    saveBtn.disabled = false;
                     if (response.success) {
                         this.currentAutomationId = response.data.id;
-                        this.showMessage("¡Éxito!", "Automatización guardada correctamente.");
-                        this.updateLoadList();
+                        this.showMessage("¡Éxito!", "Automatización guardada correctamente.", 'success_close');
+                        this.loadAutomationsTable();
                     } else {
                         this.showMessage("Error", response.data || "Error al guardar.");
                     }
@@ -486,41 +502,10 @@
             });
         }
 
-        loadAutomation(id) {
-            $.ajax({
-                url: alezux_marketing_vars.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'alezux_load_automation',
-                    nonce: alezux_marketing_vars.nonce,
-                    id: id
-                },
-                success: (response) => {
-                    if (response.success) {
-                        this.doClearCanvas();
-                        this.currentAutomationId = response.data.id;
-                        document.getElementById('automation-name').value = response.data.name;
+        loadAutomationsTable() {
+            const list = document.getElementById('marketing-automations-list');
+            if (!list) return;
 
-                        const blueprint = JSON.parse(response.data.blueprint);
-
-                        // Cargar Nodos
-                        blueprint.nodes.forEach(n => {
-                            this.addNode(n.type, n.x, n.y, n.data, n.id);
-                        });
-
-                        // Cargar Conexiones (esperar un tick para que los IDs existan)
-                        setTimeout(() => {
-                            blueprint.connections.forEach(c => {
-                                this.createConnection(c.from, c.to);
-                            });
-                            this.updatePlaceholder();
-                        }, 50);
-                    }
-                }
-            });
-        }
-
-        updateLoadList() {
             $.ajax({
                 url: alezux_marketing_vars.ajax_url,
                 type: 'POST',
@@ -530,22 +515,113 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        const select = document.getElementById('load-automation-select');
-                        let html = '<option value="">Cargar automatización...</option>';
+                        if (response.data.length === 0) {
+                            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#718096;">No hay automatizaciones creadas aún.</td></tr>';
+                            return;
+                        }
+
+                        let html = '';
                         response.data.forEach(item => {
-                            html += `<option value="${item.id}" ${item.id == this.currentAutomationId ? 'selected' : ''}>${item.name}</option>`;
+                            const date = new Date(item.created_at).toLocaleDateString();
+                            const blueprint = JSON.parse(item.blueprint || '{}');
+                            const nodeCount = blueprint.nodes ? blueprint.nodes.length : 0;
+
+                            html += `
+                                <tr>
+                                    <td>#${item.id}</td>
+                                    <td style="font-weight:600; color:#fff;">${item.name}</td>
+                                    <td><span class="alezux-badge">${nodeCount} nodos</span></td>
+                                    <td>${date}</td>
+                                    <td style="text-align: right;">
+                                        <button class="alezux-action-btn edit-auto" data-id="${item.id}">
+                                            <span class="dashicons dashicons-edit"></span> Editar
+                                        </button>
+                                        <button class="alezux-btn-icon-danger delete-auto" data-id="${item.id}">
+                                            <span class="dashicons dashicons-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
                         });
-                        select.innerHTML = html;
+                        list.innerHTML = html;
+
+                        // Eventos de botones
+                        list.querySelectorAll('.edit-auto').forEach(btn => {
+                            btn.onclick = () => this.openEditor(btn.dataset.id);
+                        });
+                        list.querySelectorAll('.delete-auto').forEach(btn => {
+                            btn.onclick = () => this.confirmDelete(btn.dataset.id);
+                        });
                     }
                 }
             });
         }
 
-        showMessage(title, text) {
+        openEditor(id = null) {
+            this.doClearCanvas();
+            this.currentAutomationId = id;
+            if (id) {
+                this.loadAutomation(id);
+            } else {
+                this.popup.nameInput.value = '';
+                this.updatePlaceholder();
+            }
+            this.popup.container.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        closeEditor() {
+            this.popup.container.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        confirmDelete(id) {
+            this.deleteTargetId = id;
+            this.modal.title.innerText = "Eliminar Automatización";
+            this.modal.fields.innerHTML = "<p style='color:#888;'>¿Estás seguro de que quieres eliminar esta automatización? Esta acción no se puede deshacer.</p>";
+            this.modal.save.innerText = "Sí, Eliminar";
+            this.modalAction = 'confirm_delete';
+            this.modal.overlay.style.display = 'flex';
+        }
+
+        doDelete() {
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_delete_automation',
+                    nonce: alezux_marketing_vars.nonce,
+                    id: this.deleteTargetId
+                },
+                success: (response) => {
+                    this.closeModal();
+                    if (response.success) {
+                        this.loadAutomationsTable();
+                    }
+                }
+            });
+        }
+
+        handleModalAction() {
+            if (this.modalAction === 'save_settings') {
+                this.applyModalChanges();
+            } else if (this.modalAction === 'confirm_clear') {
+                this.doClearCanvas();
+            } else if (this.modalAction === 'confirm_delete') {
+                this.doDelete();
+            } else if (this.modalAction === 'success_close') {
+                this.closeModal();
+                this.closeEditor();
+            } else {
+                this.closeModal();
+            }
+        }
+
+        showMessage(title, text, action = 'info') {
             this.modal.title.innerText = title;
             this.modal.fields.innerHTML = `<p style='color:#888;'>${text}</p>`;
             this.modal.save.innerText = "Entendido";
-            this.modalAction = 'info';
+            this.modalAction = action;
             this.modal.overlay.style.display = 'flex';
         }
 
