@@ -869,6 +869,47 @@
     transform: translateY(0);
 }
 
+/* Biblioteca de Nodos Arrastrables */
+.library-item[draggable="true"] {
+    cursor: grab;
+}
+
+.library-item[draggable="true"]:active {
+    cursor: grabbing;
+    opacity: 0.6;
+}
+
+.library-item .dashicons {
+    color: #718096;
+    font-size: 16px;
+    margin-right: -5px;
+}
+
+/* Ocultar botones del drawer según contexto */
+.drawer-footer {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #2d3748;
+}
+
+.drawer-footer button {
+    flex: 1;
+}
+
+/* Modificadores de visibilidad */
+.drawer-hide-preview #preview-email-btn {
+    display: none !important;
+}
+
+.drawer-hide-save #save-side-panel {
+    display: none !important;
+}
+
+.drawer-full-save #save-side-panel {
+    flex: 2;
+}
+
 /* ==========================================================
    NUEVOS ESTILOS: BIBLIOTECA DE TRIGGERS (Estilo n8n)
    ========================================================== */

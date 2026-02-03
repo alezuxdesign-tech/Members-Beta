@@ -171,12 +171,7 @@
             if (globalAddBtn) {
                 globalAddBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    // Calcular centro del lienzo
-                    const rect = this.canvas.getBoundingClientRect();
-                    const centerX = (rect.width / 2 - this.pan.x) / this.scale - 50;
-                    const centerY = (rect.height / 2 - this.pan.y) / this.scale - 40;
-
-                    this.showQuickAppendMenuAt(centerX, centerY, e);
+                    this.openNodeLibrary('create');
                 });
             }
         }
@@ -233,6 +228,8 @@
                 case 'email': title = 'Enviar Email'; icon = '✉️'; break;
                 case 'delay': title = 'Esperar (Delay)'; icon = '⏳'; break;
                 case 'condition': title = 'Condición (If/Else)'; icon = '🔄'; break;
+                case 'inactivity': title = 'Inactividad'; icon = '💤'; break;
+                case 'expiration': title = 'Vencimiento Cobro'; icon = '📅'; break;
             }
 
             nodeEl.innerHTML = `
@@ -495,7 +492,7 @@
 
             if (node.type === 'trigger' || node.type === 'inactivity' || node.type === 'expiration') {
                 this.closeModal();
-                this.openTriggerLibrary(node);
+                this.openNodeLibrary('metamorphosis', node);
                 return;
             }
 
@@ -531,29 +528,39 @@
             this.modal.overlay.style.display = 'flex';
         }
 
-        openTriggerLibrary(node) {
+        openNodeLibrary(context = 'create', node = null) {
             this.editingNode = node;
             const drawerTitle = this.drawer.el.querySelector('.drawer-header h3');
-            if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-forms"></span> Biblioteca de Triggers';
+
+            // Ajustar clases de visibilidad
+            this.drawer.el.classList.remove('drawer-hide-preview', 'drawer-hide-save', 'drawer-full-save');
+
+            if (context === 'metamorphosis') {
+                if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-forms"></span> Biblioteca de Triggers';
+                this.drawer.el.classList.add('drawer-hide-preview', 'drawer-full-save');
+            } else {
+                if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-plus-alt"></span> Biblioteca de Nodos';
+                this.drawer.el.classList.add('drawer-hide-preview', 'drawer-hide-save');
+            }
 
             let html = `
                 <div class="trigger-library">
-                    <p style="color:#718096; font-size:12px; margin-bottom:20px;">Selecciona el evento que iniciará esta automatización:</p>
+                    <p style="color:#718096; font-size:12px; margin-bottom:20px;">
+                        ${context === 'metamorphosis' ? 'Cambia el evento que inicia esta automatización:' : 'Arrastra un nodo al lienzo para añadirlo:'}
+                    </p>
                     
                     <div class="library-section">
-                        <h4 class="library-module-title">Alezux Marketing</h4>
-                        <div class="library-item ${node.data.event_type === 'general' ? 'active' : ''}" data-type="trigger" data-event="general">
+                        <h4 class="library-module-title">Disparadores</h4>
+                        <div class="library-item ${node && node.data.event_type === 'general' ? 'active' : ''}" 
+                             draggable="${context === 'create'}" data-type="trigger" data-event="general">
                             <span class="lib-icon">⚡</span>
                             <div class="lib-info">
                                 <strong>Evento General</strong>
                                 <p>Registro, pagos, cursos...</p>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="library-section">
-                        <h4 class="library-module-title">Estudiantes</h4>
-                        <div class="library-item ${node.type === 'inactivity' ? 'active' : ''}" data-type="inactivity" data-event="inactivity">
+                        <div class="library-item ${node && node.type === 'inactivity' ? 'active' : ''}" 
+                             draggable="${context === 'create'}" data-type="inactivity" data-event="inactivity">
                             <span class="lib-icon">💤</span>
                             <div class="lib-info">
                                 <strong>Inactividad</strong>
@@ -563,8 +570,27 @@
                     </div>
 
                     <div class="library-section">
-                        <h4 class="library-module-title">Finanzas</h4>
-                        <div class="library-item ${node.type === 'expiration' ? 'active' : ''}" data-type="expiration" data-event="expiration">
+                        <h4 class="library-module-title">Acciones</h4>
+                        <div class="library-item" draggable="${context === 'create'}" data-type="email">
+                            <span class="lib-icon">✉️</span>
+                            <div class="lib-info">
+                                <strong>Enviar Email</strong>
+                                <p>Crea y envía un correo HTML.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="library-section">
+                        <h4 class="library-module-title">Lógica</h4>
+                        <div class="library-item" draggable="${context === 'create'}" data-type="condition">
+                            <span class="lib-icon">🔄</span>
+                            <div class="lib-info">
+                                <strong>Condición</strong>
+                                <p>Divide el flujo (Sí / No).</p>
+                            </div>
+                        </div>
+                        <div class="library-item ${node && node.type === 'expiration' ? 'active' : ''}" 
+                             draggable="${context === 'create'}" data-type="expiration" data-event="expiration">
                             <span class="lib-icon">📅</span>
                             <div class="lib-info">
                                 <strong>Vencimiento Cobro</strong>
@@ -574,16 +600,15 @@
                     </div>
 
                     <div id="trigger-config-area" style="margin-top:25px; border-top:1px solid #2d3748; padding-top:20px; display:none;">
-                        <!-- Se llena dinámicamente -->
+                        <!-- Se llena dinámicamente solo en metamorfosis -->
                     </div>
                 </div>
             `;
 
-            this.drawer.subject.parentElement.style.display = 'none'; // Ocultar campo asunto
-            this.drawer.content.parentElement.style.display = 'none'; // Ocultar campo mensaje
+            this.drawer.subject.parentElement.style.display = 'none';
+            this.drawer.content.parentElement.style.display = 'none';
             this.drawer.placeholders.style.display = 'none';
 
-            // Crear contenedor temporal si no existe para la librería
             let libContainer = this.drawer.el.querySelector('.trigger-library-container');
             if (!libContainer) {
                 libContainer = document.createElement('div');
@@ -593,17 +618,23 @@
             libContainer.innerHTML = html;
             libContainer.style.display = 'block';
 
-            // Click en items de la librería
+            // Configurar eventos para los items
             libContainer.querySelectorAll('.library-item').forEach(item => {
-                item.onclick = () => {
-                    libContainer.querySelectorAll('.library-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    this.showTriggerConfig(item.dataset.type, node);
-                };
+                if (context === 'metamorphosis') {
+                    item.onclick = () => {
+                        libContainer.querySelectorAll('.library-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        this.showTriggerConfig(item.dataset.type, node);
+                    };
+                } else {
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('node-type', item.dataset.type);
+                        e.dataTransfer.dropEffect = "copy";
+                    });
+                }
             });
 
-            // Si ya tiene un tipo, mostrar su config
-            if (node.type !== 'trigger' || node.data.event_type) {
+            if (context === 'metamorphosis' && node) {
                 this.showTriggerConfig(node.type === 'trigger' ? 'general' : node.type, node);
             }
 
@@ -614,7 +645,7 @@
             const configArea = document.getElementById('trigger-config-area');
             configArea.style.display = 'block';
 
-            if (type === 'general') {
+            if (type === 'trigger' || type === 'general') {
                 let options = '<option value="">Selecciona un evento...</option>';
                 const dict = window.alezuxEventsDictionary || {};
                 for (const [key, label] of Object.entries(dict)) {
@@ -1278,6 +1309,9 @@
             this.drawer.placeholders.style.display = 'block';
             const libContainer = this.drawer.el.querySelector('.trigger-library-container');
             if (libContainer) libContainer.style.display = 'none';
+
+            // Ajustar visibilidad de botones (Email requiere ambos)
+            this.drawer.el.classList.remove('drawer-hide-preview', 'drawer-hide-save', 'drawer-full-save');
 
             // Cargar Placeholders dinámicos
             const triggerType = this.getTriggerTypeForNode(node.id);
