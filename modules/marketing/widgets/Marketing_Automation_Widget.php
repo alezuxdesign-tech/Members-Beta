@@ -128,28 +128,30 @@ class Marketing_Automation_Widget extends Widget_Base {
                     <div class="popup-body">
                         <!-- Sidebar Izquierda: Componentes -->
                         <div class="editor-sidebar">
-                            <h4 class="sidebar-section-title">Triggers</h4>
+                            <h4 class="sidebar-section-title">Alezux Marketing</h4>
                             <div class="automation-node-template trigger" data-type="trigger" draggable="true">
                                 <span class="node-icon">⚡</span> Evento General
                             </div>
+                            <div class="automation-node-template action" data-type="email" draggable="true">
+                                <span class="node-icon">✉️</span> Enviar Email
+                            </div>
+
+                            <h4 class="sidebar-section-title">Estudiantes</h4>
                             <div class="automation-node-template trigger" data-type="inactivity" draggable="true">
                                 <span class="node-icon">💤</span> Inactividad
                             </div>
+
+                            <h4 class="sidebar-section-title">Finanzas</h4>
                             <div class="automation-node-template trigger" data-type="expiration" draggable="true">
                                 <span class="node-icon">📅</span> Vencimiento Cobro
                             </div>
 
-                            <h4 class="sidebar-section-title">Logica</h4>
+                            <h4 class="sidebar-section-title">Sistema / Lógica</h4>
                             <div class="automation-node-template logic" data-type="condition" draggable="true">
                                 <span class="node-icon">🔄</span> Condición (If/Else)
                             </div>
                             <div class="automation-node-template logic" data-type="delay" draggable="true">
                                 <span class="node-icon">⏳</span> Esperar (Delay)
-                            </div>
-
-                            <h4 class="sidebar-section-title">Acciones</h4>
-                            <div class="automation-node-template action" data-type="email" draggable="true">
-                                <span class="node-icon">✉️</span> Enviar Email
                             </div>
 
                             <div class="sidebar-footer">

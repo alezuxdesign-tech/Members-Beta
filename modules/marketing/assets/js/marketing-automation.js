@@ -710,11 +710,21 @@
             menu.style.top = `${node.y}px`;
 
             const items = [
-                { type: 'email', icon: '✉️', label: 'Enviar Email' },
-                { type: 'delay', icon: '⏳', label: 'Esperar' }
+                { type: 'email', icon: '✉️', label: 'Enviar Email', module: 'Marketing' },
+                { type: 'condition', icon: '🔄', label: 'Condición', module: 'Lógica' },
+                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' }
             ];
 
+            let currentModule = '';
             items.forEach(item => {
+                if (item.module !== currentModule) {
+                    currentModule = item.module;
+                    const header = document.createElement('div');
+                    header.className = 'quick-menu-header';
+                    header.innerText = currentModule;
+                    menu.appendChild(header);
+                }
+
                 const div = document.createElement('div');
                 div.className = `quick-menu-item type-${item.type}`;
                 div.innerHTML = `<span>${item.icon}</span> ${item.label}`;
