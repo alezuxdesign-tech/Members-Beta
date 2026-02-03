@@ -253,6 +253,13 @@ jQuery(document).ready(function ($) {
     $(document).on('click', '.alezux-estudiantes-table .alezux-action-btn', function (e) {
         e.preventDefault();
         var userId = $(this).data('student-id');
+
+        // Seguridad: Si no hay ID de estudiante, no es un clic destinado a este módulo.
+        if (!userId) {
+            console.log('[Alezux] Clic en botón sin ID de estudiante. Ignorando evento de Estudiantes.');
+            return;
+        }
+
         console.log('[Alezux] Clic en botón Gestionar. UserID:', userId);
 
         var iconUrl = $(this).closest('.alezux-estudiantes-wrapper').data('time-icon');

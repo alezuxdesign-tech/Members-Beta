@@ -592,10 +592,16 @@
 
                         // Eventos de botones
                         list.querySelectorAll('.edit-auto').forEach(btn => {
-                            btn.onclick = () => this.openEditor(btn.dataset.id);
+                            btn.onclick = (e) => {
+                                e.stopPropagation();
+                                this.openEditor(btn.dataset.id);
+                            };
                         });
                         list.querySelectorAll('.delete-auto').forEach(btn => {
-                            btn.onclick = () => this.confirmDelete(btn.dataset.id);
+                            btn.onclick = (e) => {
+                                e.stopPropagation();
+                                this.confirmDelete(btn.dataset.id);
+                            };
                         });
                     }
                 }
