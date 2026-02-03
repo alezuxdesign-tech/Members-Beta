@@ -409,6 +409,23 @@ class Recover_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'button_typography',
+				'label'    => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-auth-submit',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Text_Shadow::get_type(),
+			[
+				'name'     => 'button_text_shadow',
+				'selector' => '{{WRAPPER}} .alezux-auth-submit',
+			]
+		);
+
 		$this->start_controls_tabs( 'tabs_button_style' );
 
 		$this->start_controls_tab(
@@ -419,21 +436,10 @@ class Recover_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'button_bg',
+			'button_text_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit' => 'background-color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'button_color',
-			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color de texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-auth-submit' => 'color: {{VALUE}};',
 				],
@@ -441,9 +447,19 @@ class Recover_Widget extends Widget_Base {
 		);
 
 		$this->add_group_control(
-			Group_Control_Border::get_type(),
+			Group_Control_Background::get_type(),
 			[
-				'name' => 'button_border',
+				'name'     => 'button_background',
+				'label'    => esc_html__( 'Color', 'alezux-members' ),
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-auth-submit',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'button_box_shadow',
 				'selector' => '{{WRAPPER}} .alezux-auth-submit',
 			]
 		);
@@ -453,40 +469,36 @@ class Recover_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_button_hover',
 			[
-				'label' => esc_html__( 'Hover', 'alezux-members' ),
+				'label' => esc_html__( 'Al pasar el cursor', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
-			'button_bg_hover',
+			'button_text_color_hover',
 			[
-				'label' => esc_html__( 'Color de Fondo (Hover)', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit:hover' => 'background-color: {{VALUE}};',
-				],
-			]
-		);
-
-		$this->add_control(
-			'button_color_hover',
-			[
-				'label' => esc_html__( 'Color de Texto (Hover)', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Color de texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-auth-submit:hover' => 'color: {{VALUE}};',
 				],
 			]
 		);
 
-		$this->add_control(
-			'button_border_hover',
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
 			[
-				'label' => esc_html__( 'Color de Borde (Hover)', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit:hover' => 'border-color: {{VALUE}};',
-				],
+				'name'     => 'button_background_hover',
+				'label'    => esc_html__( 'Color', 'alezux-members' ),
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-auth-submit:hover',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'button_box_shadow_hover',
+				'selector' => '{{WRAPPER}} .alezux-auth-submit:hover',
 			]
 		);
 
@@ -494,14 +506,35 @@ class Recover_Widget extends Widget_Base {
 
 		$this->end_controls_tabs();
 
-		$this->add_control(
-			'button_radius',
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
 			[
-				'label' => esc_html__( 'Borde Redondeado', 'alezux-members' ),
-				'type' => Controls_Manager::DIMENSIONS,
+				'name'      => 'button_border',
+				'selector'  => '{{WRAPPER}} .alezux-auth-submit',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_border_radius',
+			[
+				'label'      => esc_html__( 'Radio del borde', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
-				'selectors' => [
+				'selectors'  => [
 					'{{WRAPPER}} .alezux-auth-submit' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label'      => esc_html__( 'Relleno', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-auth-submit' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 				'separator' => 'before',
 			]
