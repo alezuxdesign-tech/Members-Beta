@@ -8,19 +8,33 @@
    LOGRO CARD LAYOUT - HORIZONTAL DARK (V3)
    ========================================= */
 
-.alezux-logro-card {
-    display: flex;
-    flex-direction: row;
-    /* Horizontal layout */
-    /* Background, Border, Shadow controlled by Elementor */
-    padding: 20px;
-    margin-bottom: 20px;
-    gap: 20px;
-    align-items: stretch;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* =========================================
+   VIEW LOGROS TABLE REFINEMENTS
+   ========================================= */
+
+.alezux-logros-table td {
+    vertical-align: middle;
 }
 
-/* ... (Remaining horizontal styles kept intact, ensure no v2 grid styles exist here) ... */
+.alezux-logros-table .alezux-student-avatar {
+    flex-shrink: 0;
+}
+
+/* Ensure the message column (LOGRO) allows text wrapping but doesn't overflow */
+.alezux-logros-table td:first-child {
+    max-width: 300px;
+}
+
+/* Pagination Adjustments for Logros */
+.alezux-logros-pagination {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+}
+
+/* =========================================
+   Wrapper del Formulario (KEEPING AS IS)
+   ========================================= */
 
 /* Wrapper del Formulario */
 .alezux-logro-form-wrapper {
@@ -289,227 +303,6 @@
     font-size: 14px;
     width: 100%;
     max-width: 300px;
-}
-
-/* =========================================
-   NEW CARD LAYOUT STYLES - DARK/GREEN V2
-   ========================================= */
-
-/* =========================================
-   LOGRO CARD LAYOUT - HORIZONTAL DARK (V3)
-   ========================================= */
-
-.alezux-logro-card {
-    display: flex;
-    flex-direction: row;
-    /* Horizontal layout */
-    background-color: #0f0f0f;
-    /* Dark background similar to image */
-    border: 1px solid #1f1f1f;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    gap: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    align-items: stretch;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.alezux-logro-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* --- LEFT COLUMN: IMAGE --- */
-.alezux-card-image {
-    flex: 0 0 150px;
-    /* Fixed width for image container */
-    width: 150px;
-    height: 150px;
-    /* Square */
-    background-color: #ffffff;
-    /* White placeholder bg as seen in image */
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.alezux-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    /* Or cover depending on preference for logotypes */
-}
-
-.alezux-card-placeholder-img {
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-}
-
-/* --- RIGHT COLUMN: CONTENT --- */
-.alezux-card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    /* Distributors header top, footer bottom */
-}
-
-/* HEADER: Badge + Date */
-.alezux-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.alezux-course-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    /* Font size, colors handled by Elementor */
-}
-
-.alezux-card-date {
-    font-size: 13px;
-    color: #a0a0a0;
-}
-
-/* BODY: Message */
-.alezux-card-message {
-    color: #e5e5e5;
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0 0 15px 0;
-    flex-grow: 1;
-    /* Pushes footer down if text is short, expands if long */
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    /* Text truncation as shown in image "..." */
-}
-
-/* FOOTER: Student + Actions */
-.alezux-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #1f1f1f;
-    /* Optional separator? Image doesn't show clearly, maybe none */
-    padding-top: 10px;
-    margin-top: 5px;
-}
-
-/* Override border-top if not desired, image looks clean. Let's remove border for now to match clean look */
-.alezux-card-footer {
-    border-top: none;
-    padding-top: 0;
-}
-
-/* Student Info */
-.alezux-card-student {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.alezux-student-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    overflow: hidden;
-    background-color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.alezux-student-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.alezux-student-avatar i {
-    font-size: 14px;
-    color: #fff;
-}
-
-.alezux-student-name {
-    font-size: 13px;
-    color: #d4d4d4;
-    font-weight: 500;
-}
-
-/* Action Buttons */
-.alezux-card-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.alezux-btn-card-action {
-    padding: 8px 24px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    outline: none;
-}
-
-/* Edit Button - Green Dark */
-/* Edit Button - Controlled by Elementor */
-.alezux-btn-card-edit {
-    /* Styles handled by Elementor */
-}
-
-.alezux-btn-card-edit:hover {
-    /* Styles handled by Elementor */
-}
-
-/* Delete Button - Red/Orange */
-/* Delete Button - Controlled by Elementor */
-.alezux-btn-card-delete {
-    /* Styles handled by Elementor */
-}
-
-.alezux-btn-card-delete:hover {
-    /* Styles handled by Elementor */
-}
-
-/* Responsive: Stack on mobile */
-/* Responsive: Stack on mobile and tablet */
-@media (max-width: 1024px) {
-    .alezux-logro-card {
-        flex-direction: column;
-    }
-
-    .alezux-card-image {
-        width: 100%;
-        height: 200px;
-        /* Larger image area on mobile */
-    }
-
-    .alezux-card-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .alezux-card-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .alezux-btn-card-action {
-        flex: 1;
-        text-align: center;
-    }
 }
 
 /* Custom Modals (Mantener estilos de modal existentes) */

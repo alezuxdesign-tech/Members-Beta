@@ -40,6 +40,12 @@ var AlezuxViewLogrosHandler = function ($scope, $) {
         loadLogros(container, false);
     });
 
+    // Rows per page
+    container.find('#alezux-logros-limit-select').off('change').on('change', function () {
+        currentOffset = 0;
+        loadLogros(container, false);
+    });
+
     // Load More
     container.find('#alezux-load-more-logros').off('click').on('click', function (e) {
         e.preventDefault();
@@ -120,25 +126,27 @@ var delay = (function () {
 function loadLogros(container, append) {
     if (isLoading) return;
 
-    var listContainer = container.find('#alezux-logros-list-container');
+    var $tableBody = container.find('#alezux-logros-list-container');
     var loadMoreBtnContainer = container.find('#alezux-logros-pagination-container');
     var search = container.find('#alezux-logro-search').val();
     var course_id = container.find('#alezux-logro-course-filter').val();
+    var limit = container.find('#alezux-logros-limit-select').val() || container.data('limit') || 20;
 
     // Reset offset if not appending
     if (!append) {
         currentOffset = 0;
-        listContainer.html('<div class="alezux-loading">Cargando registros...</div>');
-        loadMoreBtnContainer.hide();
+        $tableBody.css('opacity', '0.5');
+        // If it's the first load, the <tbody> might have the loading <tr>
+        if (!$tableBody.find('tr').length || $tableBody.find('.alezux-loading').length) {
+            $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;"><div class="alezux-loading">Cargando registros...</div></td></tr>');
+        }
     } else {
-        // Show lightweight loading indicator or button state?
-        // For now, change button text
         container.find('#alezux-load-more-logros').text('Cargando...');
     }
 
     isLoading = true;
 
-    console.log('Alezux: loadLogros called. Append:', append, 'Offset:', currentOffset);
+    console.log('Alezux: loadLogros called. Append:', append, 'Offset:', currentOffset, 'Limit:', limit);
 
     jQuery.ajax({
         url: alezux_logros_vars.ajax_url,
@@ -148,42 +156,35 @@ function loadLogros(container, append) {
             nonce: alezux_logros_vars.nonce,
             search: search,
             course_id: course_id,
-            search: search,
-            course_id: course_id,
-            limit: itemsLimit,
+            limit: limit,
             offset: currentOffset,
-            image_size: listContainer.data('image-size') || 'medium'
-        },
-        beforeSend: function () {
-            console.log('Alezux: Requesting achievements. Image Size:', listContainer.data('image-size'), 'Show Image:', listContainer.data('show-image'));
+            image_size: $tableBody.data('image-size') || 'medium'
         },
         success: function (response) {
             console.log('Alezux: AJAX Response:', response);
             isLoading = false;
+            $tableBody.css('opacity', '1');
             container.find('#alezux-load-more-logros').text('Cargar más');
 
             if (response.success) {
                 var data = response.data;
 
                 if (!append) {
-                    listContainer.empty(); // Clear loading message
+                    $tableBody.empty();
                 }
 
                 if (data.length === 0) {
                     if (!append) {
-                        listContainer.html('<div class="alezux-no-results">No se encontraron logros.</div>');
+                        $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;"><div class="alezux-no-results">No se encontraron logros.</div></td></tr>');
                     } else {
-                        // End of list reached
                         loadMoreBtnContainer.hide();
                     }
                 } else {
-                    renderCards(data, listContainer);
-                    currentOffset += data.length; // Update offset
+                    renderRows(data, $tableBody);
+                    currentOffset += data.length;
 
-                    // Logic to show/hide load more: 
-                    // If we got exactly 'limit' items, there might be more. 
-                    // If less, we are at the end.
-                    if (data.length < itemsLimit) {
+                    // Pagination logic
+                    if (data.length < limit) {
                         loadMoreBtnContainer.hide();
                     } else {
                         loadMoreBtnContainer.show();
@@ -192,92 +193,79 @@ function loadLogros(container, append) {
 
             } else {
                 console.error('Alezux: Server Error:', response.data.message);
-                if (!append) listContainer.html('<div class="alezux-error">' + response.data.message + '</div>');
-                else alert('Error: ' + response.data.message);
+                if (!append) $tableBody.html('<tr><td colspan="5" style="text-align:center; color: #dc3545; padding: 20px;">' + response.data.message + '</td></tr>');
             }
         },
         error: function (xhr, status, error) {
             isLoading = false;
+            $tableBody.css('opacity', '1');
             container.find('#alezux-load-more-logros').text('Cargar más');
-            console.error('Alezux: AJAX Error:', status, error);
-            if (!append) listContainer.html('<div class="alezux-error">Error al cargar los registros. Ver consola.</div>');
+            if (!append) $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Error al cargar los registros.</td></tr>');
         }
     });
 }
 
-function renderCards(data, container) {
+function renderRows(data, container) {
     var html = '';
+    var showImage = container.data('show-image') !== 'no';
 
     jQuery.each(data, function (index, item) {
-        // Fallback for image if no ID but has URL logic in PHP? Or just placeholder.
-        // PHP `alezux_get_achievements` currently returns `image_id`. We might need URL.
-        // Assuming we need to fetch image URL via JS or PHP should have sent it. 
-        // Ideally PHP sends URL, but let's assume image_id for now or placeholder if empty/invalid.
+        var imgUrl = item.image_url || '';
 
-        var imgUrl = item.image_url ? item.image_url : '';
-        var imgHtml = '';
-        if (imgUrl) {
-            imgHtml = '<img src="' + imgUrl + '" alt="Logro">';
-        } else if (item.image_id) {
-            // If we only have ID and no URL in response, we might need to fetch it or generic.
-            // Let's assume there is a generic placeholder or the PHP response has been updated to include image_url?
-            // Checking PHP `ajax_get_achievements`: it does NOT seem to return image_url in `renderTable` prev logic.
-            // But wait, the previous logic just showed ID. The new design needs visual.
-            // We will assume a placeholder if no URL, but we will fix PHP separately if needed.
-            // For now, placeholder.
-            imgHtml = '<div class="alezux-card-placeholder-img"></div>';
-        } else {
-            imgHtml = '<div class="alezux-card-placeholder-img"></div>';
+        html += '<tr>';
+
+        // Column: LOGRO (Image + Message)
+        html += '<td>';
+        html += '<div class="alezux-student-info">'; // Reusing class for layout
+        if (showImage) {
+            if (imgUrl) {
+                html += '<img src="' + imgUrl + '" class="alezux-student-avatar" style="border-radius: 4px; width: 45px; height: 45px;" alt="Logro">';
+            } else {
+                html += '<div class="alezux-student-avatar" style="background: #1a202c; border-radius: 4px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-award" style="color: #718096;"></i></div>';
+            }
         }
-
-        var showImage = container.data('show-image');
-        // Default to yes if undefined, but data attr usually returns string 'yes'/'no' or undefined
-        if (showImage === undefined) showImage = 'yes';
-
-        html += '<div class="alezux-logro-card">';
-
-        // Image Column - Only render if showImage is yes
-        if (showImage === 'yes') {
-            html += '<div class="alezux-card-image">';
-            html += imgHtml;
-            html += '</div>';
-        }
-
-        // Content Column
-        html += '<div class="alezux-card-content">';
-
-        // Header: Badge + Date (Date usually right aligned but simplified here to match design flow)
-        html += '<div class="alezux-card-header">';
-        html += '<span class="alezux-course-badge">' + (item.course_title || 'Sin Curso') + '</span>';
-        html += '<span class="alezux-card-date">' + (item.formatted_date || item.created_at || '') + '</span>';
+        html += '<div class="alezux-student-text">';
+        html += '<span class="student-name" style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.4;">' + item.message + '</span>';
         html += '</div>';
+        html += '</div>';
+        html += '</td>';
 
-        // Message body
-        html += '<p class="alezux-card-message">' + item.message + '</p>';
-
-        // Footer: Student + Actions
-        html += '<div class="alezux-card-footer">';
-
-        // Student Info
-        html += '<div class="alezux-card-student">';
+        // Column: ESTUDIANTE
+        html += '<td>';
+        html += '<div class="alezux-student-info">';
         if (item.student_avatar) {
-            html += '<div class="alezux-student-avatar"><img src="' + item.student_avatar + '" alt="Avatar"></div>';
+            html += '<img src="' + item.student_avatar + '" class="alezux-student-avatar" alt="Avatar">';
         } else {
-            html += '<div class="alezux-student-avatar"><i class="fas fa-user-circle"></i></div>';
+            html += '<div class="alezux-student-avatar" style="background: #2d3748; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user" style="font-size: 14px; color: #a0aec0;"></i></div>';
         }
-        html += '<span class="alezux-student-name">' + (item.student_name || 'Estudiante Desconocido') + '</span>';
+        html += '<div class="alezux-student-text">';
+        html += '<span class="student-name">' + (item.student_name || 'Estudiante Desconocido') + '</span>';
+        html += '<span class="student-id">ID: #' + (item.student_id || '---') + '</span>';
         html += '</div>';
+        html += '</div>';
+        html += '</td>';
 
-        // Actions
-        html += '<div class="alezux-card-actions">';
-        html += '<button class="alezux-btn-card-action alezux-btn-card-edit alezux-edit-logro" data-id="' + item.id + '">Editar</button>';
-        html += '<button class="alezux-btn-card-action alezux-btn-card-delete alezux-delete-logro" data-id="' + item.id + '">Eliminar</button>';
-        html += '</div>'; // End actions
+        // Column: CURSO
+        html += '<td>';
+        html += '<span class="alezux-status-badge status-completed" style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">' + (item.course_title || 'Sin Curso') + '</span>';
+        html += '</td>';
 
-        html += '</div>'; // End footer
-        html += '</div>'; // End content
+        // Column: FECHA
+        html += '<td>';
+        html += '<div class="alezux-date-info">';
+        html += '<span class="date-val">' + (item.formatted_date || item.created_at || '') + '</span>';
+        html += '</div>';
+        html += '</td>';
 
-        html += '</div>'; // End card
+        // Column: ACCIONES
+        html += '<td style="text-align: right;">';
+        html += '<div class="alezux-table-actions" style="display: flex; justify-content: flex-end; gap: 8px;">';
+        html += '<button class="alezux-action-btn alezux-edit-logro" data-id="' + item.id + '" title="Editar"><span class="dashicons dashicons-edit"></span></button>';
+        html += '<button class="alezux-action-btn alezux-delete-logro" style="color: #ff4d4d;" data-id="' + item.id + '" title="Eliminar"><span class="dashicons dashicons-trash"></span></button>';
+        html += '</div>';
+        html += '</td>';
+
+        html += '</tr>';
     });
 
     container.append(html);

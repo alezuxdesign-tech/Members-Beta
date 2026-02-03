@@ -19,7 +19,7 @@ class View_Logros_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Ver Logros', 'alezux-members' );
+		return \esc_html__( 'Ver Logros', 'alezux-members' );
 	}
 
 	public function get_icon() {
@@ -42,15 +42,33 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => esc_html__( 'Configuración', 'alezux-members' ),
+				'label' => \esc_html__( 'Configuración', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'header_title',
+			[
+				'label'   => \esc_html__( 'Título de Cabecera', 'alezux-members' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => \esc_html__( 'Logros de Alumnos', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'header_description',
+			[
+				'label'   => \esc_html__( 'Descripción de Cabecera', 'alezux-members' ),
+				'type'    => Controls_Manager::TEXTAREA,
+				'default' => \esc_html__( 'Historial de reconocimientos y logros otorgados.', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'items_per_page',
 			[
-				'label' => esc_html__( 'Elementos por página', 'alezux-members' ),
+				'label' => \esc_html__( 'Elementos por página', 'alezux-members' ),
 				'type' => Controls_Manager::NUMBER,
 				'min' => 5,
 				'max' => 100,
@@ -69,7 +87,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_filters',
 			[
-				'label' => esc_html__( 'Filtros (Buscador y Select)', 'alezux-members' ),
+				'label' => \esc_html__( 'Filtros (Buscador y Select)', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -77,7 +95,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'filters_container_padding',
 			[
-				'label' => esc_html__( 'Relleno del Contenedor', 'alezux-members' ),
+				'label' => \esc_html__( 'Relleno del Contenedor', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
@@ -89,7 +107,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'filters_container_bg',
 			[
-				'label' => esc_html__( 'Color de Fondo Contenedor', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo Contenedor', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-logros-filters' => 'background-color: {{VALUE}};',
@@ -108,7 +126,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_input_styles',
 			[
-				'label' => esc_html__( 'Estilos de Inputs', 'alezux-members' ),
+				'label' => \esc_html__( 'Estilos de Inputs', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -125,7 +143,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'input_text_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-logros-filters input, {{WRAPPER}} .alezux-logros-filters select' => 'color: {{VALUE}};',
@@ -136,7 +154,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'input_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo Input', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo Input', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-logros-filters input, {{WRAPPER}} .alezux-logros-filters select' => 'background-color: {{VALUE}};',
@@ -155,7 +173,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'input_border_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'label' => \esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -172,7 +190,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_card',
 			[
-				'label' => esc_html__( 'Tarjeta (Logro)', 'alezux-members' ),
+				'label' => \esc_html__( 'Tarjeta (Logro)', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -180,7 +198,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'card_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-logro-card' => 'background-color: {{VALUE}};',
@@ -191,7 +209,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'card_padding',
 			[
-				'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+				'label' => \esc_html__( 'Relleno (Padding)', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em' ],
 				'selectors' => [
@@ -203,7 +221,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'card_gap',
 			[
-				'label' => esc_html__( 'Espacio entre columnas', 'alezux-members' ),
+				'label' => \esc_html__( 'Espacio entre columnas', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range' => [
@@ -229,7 +247,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'card_border_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'label' => \esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -255,7 +273,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_image',
 			[
-				'label' => esc_html__( 'Imagen', 'alezux-members' ),
+				'label' => \esc_html__( 'Imagen', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -263,10 +281,10 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'show_image',
 			[
-				'label' => esc_html__( 'Mostrar Imagen', 'alezux-members' ),
+				'label' => \esc_html__( 'Mostrar Imagen', 'alezux-members' ),
 				'type' => Controls_Manager::SWITCHER,
-				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
-				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'label_on' => \esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => \esc_html__( 'No', 'alezux-members' ),
 				'return_value' => 'yes',
 				'default' => 'yes',
 			]
@@ -275,14 +293,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'image_resolution',
 			[
-				'label' => esc_html__( 'Resolución de Imagen', 'alezux-members' ),
+				'label' => \esc_html__( 'Resolución de Imagen', 'alezux-members' ),
 				'type' => Controls_Manager::SELECT,
 				'default' => 'medium',
 				'options' => [
-					'thumbnail' => esc_html__( 'Miniatura (150x150)', 'alezux-members' ),
-					'medium' => esc_html__( 'Medio (300x300)', 'alezux-members' ),
-					'large' => esc_html__( 'Grande (1024x1024)', 'alezux-members' ),
-					'full' => esc_html__( 'Completo', 'alezux-members' ),
+					'thumbnail' => \esc_html__( 'Miniatura (150x150)', 'alezux-members' ),
+					'medium' => \esc_html__( 'Medio (300x300)', 'alezux-members' ),
+					'large' => \esc_html__( 'Grande (1024x1024)', 'alezux-members' ),
+					'full' => \esc_html__( 'Completo', 'alezux-members' ),
 				],
 				'condition' => [
 					'show_image' => 'yes',
@@ -293,7 +311,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'image_width',
 			[
-				'label' => esc_html__( 'Ancho', 'alezux-members' ),
+				'label' => \esc_html__( 'Ancho', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em' ],
 				'range' => [
@@ -311,7 +329,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'image_border_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'label' => \esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -329,7 +347,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_content',
 			[
-				'label' => esc_html__( 'Contenido (Textos)', 'alezux-members' ),
+				'label' => \esc_html__( 'Contenido (Textos)', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -338,7 +356,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_badge_style',
 			[
-				'label' => esc_html__( 'Etiqueta de Curso', 'alezux-members' ),
+				'label' => \esc_html__( 'Etiqueta de Curso', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -355,7 +373,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'badge_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-course-badge' => 'color: {{VALUE}};',
@@ -366,7 +384,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'badge_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-course-badge' => 'background-color: {{VALUE}};',
@@ -377,7 +395,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'badge_padding',
 			[
-				'label' => esc_html__( 'Relleno', 'alezux-members' ),
+				'label' => \esc_html__( 'Relleno', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em' ],
 				'selectors' => [
@@ -389,7 +407,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'badge_border_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'label' => \esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -402,7 +420,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_date_style',
 			[
-				'label' => esc_html__( 'Fecha', 'alezux-members' ),
+				'label' => \esc_html__( 'Fecha', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -419,7 +437,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'date_color',
 			[
-				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'label' => \esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-card-date' => 'color: {{VALUE}};',
@@ -431,7 +449,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_message_style',
 			[
-				'label' => esc_html__( 'Mensaje', 'alezux-members' ),
+				'label' => \esc_html__( 'Mensaje', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -448,7 +466,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'message_color',
 			[
-				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'label' => \esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-card-message' => 'color: {{VALUE}};',
@@ -460,7 +478,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_student_style',
 			[
-				'label' => esc_html__( 'Nombre Estudiante', 'alezux-members' ),
+				'label' => \esc_html__( 'Nombre Estudiante', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -477,7 +495,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'student_color',
 			[
-				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'label' => \esc_html__( 'Color', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-student-name' => 'color: {{VALUE}};',
@@ -493,7 +511,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_actions',
 			[
-				'label' => esc_html__( 'Botones de Acción', 'alezux-members' ),
+				'label' => \esc_html__( 'Botones de Acción', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -501,7 +519,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'actions_padding',
 			[
-				'label' => esc_html__( 'Relleno', 'alezux-members' ),
+				'label' => \esc_html__( 'Relleno', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em' ],
 				'selectors' => [
@@ -513,7 +531,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'actions_radius',
 			[
-				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'label' => \esc_html__( 'Radio del Borde', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
@@ -534,7 +552,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_edit_btn',
 			[
-				'label' => esc_html__( 'Botón Editar', 'alezux-members' ),
+				'label' => \esc_html__( 'Botón Editar', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -545,14 +563,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_edit_btn_normal',
 			[
-				'label' => esc_html__( 'Normal', 'alezux-members' ),
+				'label' => \esc_html__( 'Normal', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'edit_btn_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-edit' => 'color: {{VALUE}};',
@@ -563,7 +581,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'edit_btn_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-edit' => 'background-color: {{VALUE}};',
@@ -584,14 +602,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_edit_btn_hover',
 			[
-				'label' => esc_html__( 'Hover', 'alezux-members' ),
+				'label' => \esc_html__( 'Hover', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'edit_btn_hover_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-edit:hover' => 'color: {{VALUE}};',
@@ -602,7 +620,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'edit_btn_hover_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-edit:hover' => 'background-color: {{VALUE}};',
@@ -625,7 +643,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'heading_delete_btn',
 			[
-				'label' => esc_html__( 'Botón Eliminar', 'alezux-members' ),
+				'label' => \esc_html__( 'Botón Eliminar', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -636,14 +654,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_delete_btn_normal',
 			[
-				'label' => esc_html__( 'Normal', 'alezux-members' ),
+				'label' => \esc_html__( 'Normal', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'delete_btn_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-delete' => 'color: {{VALUE}};',
@@ -654,7 +672,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'delete_btn_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-delete' => 'background-color: {{VALUE}};',
@@ -675,14 +693,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_delete_btn_hover',
 			[
-				'label' => esc_html__( 'Hover', 'alezux-members' ),
+				'label' => \esc_html__( 'Hover', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'delete_btn_hover_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-delete:hover' => 'color: {{VALUE}};',
@@ -693,7 +711,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'delete_btn_hover_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-card-delete:hover' => 'background-color: {{VALUE}};',
@@ -720,7 +738,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_style_pagination',
 			[
-				'label' => esc_html__( 'Paginación (Cargar más)', 'alezux-members' ),
+				'label' => \esc_html__( 'Paginación (Cargar más)', 'alezux-members' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -728,19 +746,19 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'pagination_align',
 			[
-				'label' => esc_html__( 'Alineación', 'alezux-members' ),
+				'label' => \esc_html__( 'Alineación', 'alezux-members' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'left' => [
-						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'title' => \esc_html__( 'Izquierda', 'alezux-members' ),
 						'icon' => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'title' => \esc_html__( 'Centro', 'alezux-members' ),
 						'icon' => 'eicon-text-align-center',
 					],
 					'right' => [
-						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'title' => \esc_html__( 'Derecha', 'alezux-members' ),
 						'icon' => 'eicon-text-align-right',
 					],
 				],
@@ -761,7 +779,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'pagination_padding',
 			[
-				'label' => esc_html__( 'Relleno', 'alezux-members' ),
+				'label' => \esc_html__( 'Relleno', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em' ],
 				'selectors' => [
@@ -775,14 +793,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_pagination_normal',
 			[
-				'label' => esc_html__( 'Normal', 'alezux-members' ),
+				'label' => \esc_html__( 'Normal', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'pagination_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} #alezux-load-more-logros' => 'color: {{VALUE}};',
@@ -793,7 +811,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'pagination_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} #alezux-load-more-logros' => 'background-color: {{VALUE}};',
@@ -814,14 +832,14 @@ class View_Logros_Widget extends Widget_Base {
 		$this->start_controls_tab(
 			'tab_pagination_hover',
 			[
-				'label' => esc_html__( 'Hover', 'alezux-members' ),
+				'label' => \esc_html__( 'Hover', 'alezux-members' ),
 			]
 		);
 
 		$this->add_control(
 			'pagination_hover_color',
 			[
-				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Texto', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} #alezux-load-more-logros:hover' => 'color: {{VALUE}};',
@@ -832,7 +850,7 @@ class View_Logros_Widget extends Widget_Base {
 		$this->add_control(
 			'pagination_hover_bg_color',
 			[
-				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'label' => \esc_html__( 'Color de Fondo', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} #alezux-load-more-logros:hover' => 'background-color: {{VALUE}};',
@@ -859,7 +877,7 @@ class View_Logros_Widget extends Widget_Base {
 			$this->start_controls_section(
 				'section_style_buttons',
 				[
-					'label' => esc_html__( 'Botones Tarjeta', 'alezux-members' ),
+					'label' => \esc_html__( 'Botones Tarjeta', 'alezux-members' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				]
 			);
@@ -867,7 +885,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_btn_edit',
 				[
-					'label' => esc_html__( 'Editar', 'alezux-members' ),
+					'label' => \esc_html__( 'Editar', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -886,14 +904,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_btn_edit_normal',
                 [
-                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                    'label' => \esc_html__( 'Normal', 'alezux-members' ),
                 ]
             );
 
             $this->add_control(
                 'btn_edit_color',
                 [
-                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'label' => \esc_html__( 'Texto', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-edit' => 'color: {{VALUE}};',
@@ -904,7 +922,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
                 'btn_edit_bg_color',
                 [
-                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'label' => \esc_html__( 'Fondo', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-edit' => 'background-color: {{VALUE}};',
@@ -917,14 +935,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_btn_edit_hover',
                 [
-                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                    'label' => \esc_html__( 'Hover', 'alezux-members' ),
                 ]
             );
 
             $this->add_control(
                 'btn_edit_color_hover',
                 [
-                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'label' => \esc_html__( 'Texto', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-edit:hover' => 'color: {{VALUE}};',
@@ -935,7 +953,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
                 'btn_edit_bg_color_hover',
                 [
-                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'label' => \esc_html__( 'Fondo', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-edit:hover' => 'background-color: {{VALUE}};',
@@ -951,7 +969,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_btn_delete',
 				[
-					'label' => esc_html__( 'Eliminar', 'alezux-members' ),
+					'label' => \esc_html__( 'Eliminar', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -970,14 +988,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_btn_delete_normal',
                 [
-                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                    'label' => \esc_html__( 'Normal', 'alezux-members' ),
                 ]
             );
 
             $this->add_control(
                 'btn_delete_color',
                 [
-                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'label' => \esc_html__( 'Texto', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-delete' => 'color: {{VALUE}};',
@@ -988,7 +1006,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
                 'btn_delete_bg_color',
                 [
-                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'label' => \esc_html__( 'Fondo', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-delete' => 'background-color: {{VALUE}};',
@@ -1001,14 +1019,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_btn_delete_hover',
                 [
-                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                    'label' => \esc_html__( 'Hover', 'alezux-members' ),
                 ]
             );
 
             $this->add_control(
                 'btn_delete_color_hover',
                 [
-                    'label' => esc_html__( 'Texto', 'alezux-members' ),
+                    'label' => \esc_html__( 'Texto', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-delete:hover' => 'color: {{VALUE}};',
@@ -1019,7 +1037,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
                 'btn_delete_bg_color_hover',
                 [
-                    'label' => esc_html__( 'Fondo', 'alezux-members' ),
+                    'label' => \esc_html__( 'Fondo', 'alezux-members' ),
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .alezux-btn-card-delete:hover' => 'background-color: {{VALUE}};',
@@ -1039,7 +1057,7 @@ class View_Logros_Widget extends Widget_Base {
 			$this->start_controls_section(
 				'section_style_modal',
 				[
-					'label' => esc_html__( 'Modal / Popup', 'alezux-members' ),
+					'label' => \esc_html__( 'Modal / Popup', 'alezux-members' ),
 					'tab'   => Controls_Manager::TAB_STYLE,
 				]
 			);
@@ -1047,7 +1065,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_overlay',
 				[
-					'label' => esc_html__( 'Fondo Overlay', 'alezux-members' ),
+					'label' => \esc_html__( 'Fondo Overlay', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1056,7 +1074,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_overlay_bg',
 				[
-					'label' => esc_html__( 'Color', 'alezux-members' ),
+					'label' => \esc_html__( 'Color', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
@@ -1067,7 +1085,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_box',
 				[
-					'label' => esc_html__( 'Caja de Contenido', 'alezux-members' ),
+					'label' => \esc_html__( 'Caja de Contenido', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1076,7 +1094,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_box_bg',
 				[
-					'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+					'label' => \esc_html__( 'Color Fondo', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-form-wrapper .alezux-logro-form' => 'background-color: {{VALUE}};',
@@ -1096,7 +1114,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_box_radius',
 				[
-					'label' => esc_html__( 'Radio de Borde', 'alezux-members' ),
+					'label' => \esc_html__( 'Radio de Borde', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', '%', 'em' ],
 					'selectors' => [
@@ -1117,7 +1135,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_box_padding',
 				[
-					'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+					'label' => \esc_html__( 'Relleno (Padding)', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', 'em', '%' ],
 					'selectors' => [
@@ -1130,7 +1148,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_title',
 				[
-					'label' => esc_html__( 'Título', 'alezux-members' ),
+					'label' => \esc_html__( 'Título', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1139,7 +1157,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_title_color',
 				[
-					'label' => esc_html__( 'Color', 'alezux-members' ),
+					'label' => \esc_html__( 'Color', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-form-wrapper h3' => 'color: {{VALUE}} !important;',
@@ -1160,7 +1178,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_labels',
 				[
-					'label' => esc_html__( 'Etiquetas (Labels)', 'alezux-members' ),
+					'label' => \esc_html__( 'Etiquetas (Labels)', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1169,7 +1187,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_label_color',
 				[
-					'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+					'label' => \esc_html__( 'Color Texto', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-form-group label' => 'color: {{VALUE}};',
@@ -1189,7 +1207,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_inputs',
 				[
-					'label' => esc_html__( 'Campos (Inputs)', 'alezux-members' ),
+					'label' => \esc_html__( 'Campos (Inputs)', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1198,7 +1216,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_input_bg',
 				[
-					'label' => esc_html__( 'Fondo Campo', 'alezux-members' ),
+					'label' => \esc_html__( 'Fondo Campo', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-input' => 'background-color: {{VALUE}};',
@@ -1209,7 +1227,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_input_color',
 				[
-					'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+					'label' => \esc_html__( 'Color Texto', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-input' => 'color: {{VALUE}};',
@@ -1236,7 +1254,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_input_radius',
 				[
-					'label' => esc_html__( 'Radio Borde', 'alezux-members' ),
+					'label' => \esc_html__( 'Radio Borde', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', '%' ],
 					'selectors' => [
@@ -1248,7 +1266,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_input_padding',
 				[
-					'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+					'label' => \esc_html__( 'Relleno (Padding)', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', 'em' ],
 					'selectors' => [
@@ -1260,7 +1278,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'heading_modal_submit',
 				[
-					'label' => esc_html__( 'Botón Guardar', 'alezux-members' ),
+					'label' => \esc_html__( 'Botón Guardar', 'alezux-members' ),
 					'type' => Controls_Manager::HEADING,
 					'separator' => 'before',
 				]
@@ -1279,14 +1297,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_modal_submit_normal',
                 [
-                    'label' => esc_html__( 'Normal', 'alezux-members' ),
+                    'label' => \esc_html__( 'Normal', 'alezux-members' ),
                 ]
             );
 
             $this->add_control(
 				'modal_submit_bg',
 				[
-					'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+					'label' => \esc_html__( 'Fondo Botón', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-submit' => 'background-color: {{VALUE}};',
@@ -1297,7 +1315,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_submit_color',
 				[
-					'label' => esc_html__( 'Texto Botón', 'alezux-members' ),
+					'label' => \esc_html__( 'Texto Botón', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-submit' => 'color: {{VALUE}};',
@@ -1310,14 +1328,14 @@ class View_Logros_Widget extends Widget_Base {
             $this->start_controls_tab(
                 'tab_modal_submit_hover',
                 [
-                    'label' => esc_html__( 'Hover', 'alezux-members' ),
+                    'label' => \esc_html__( 'Hover', 'alezux-members' ),
                 ]
             );
 
              $this->add_control(
 				'modal_submit_bg_hover',
 				[
-					'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+					'label' => \esc_html__( 'Fondo Botón', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-submit:hover' => 'background-color: {{VALUE}};',
@@ -1328,7 +1346,7 @@ class View_Logros_Widget extends Widget_Base {
             $this->add_control(
 				'modal_submit_color_hover',
 				[
-					'label' => esc_html__( 'Texto Botón', 'alezux-members' ),
+					'label' => \esc_html__( 'Texto Botón', 'alezux-members' ),
 					'type' => Controls_Manager::COLOR,
 					'selectors' => [
 						'{{WRAPPER}} .alezux-logro-submit:hover' => 'color: {{VALUE}};',
@@ -1352,7 +1370,7 @@ class View_Logros_Widget extends Widget_Base {
              $this->add_control(
 				'modal_submit_radius',
 				[
-					'label' => esc_html__( 'Radio Borde', 'alezux-members' ),
+					'label' => \esc_html__( 'Radio Borde', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', '%' ],
 					'selectors' => [
@@ -1364,7 +1382,7 @@ class View_Logros_Widget extends Widget_Base {
              $this->add_control(
 				'modal_submit_padding',
 				[
-					'label' => esc_html__( 'Relleno', 'alezux-members' ),
+					'label' => \esc_html__( 'Relleno', 'alezux-members' ),
 					'type' => Controls_Manager::DIMENSIONS,
 					'size_units' => [ 'px', 'em' ],
 					'selectors' => [
@@ -1385,46 +1403,96 @@ class View_Logros_Widget extends Widget_Base {
 	}
 
 	protected function render() {
-		if ( current_user_can( 'upload_files' ) ) {
+		$settings = $this->get_settings_for_display();
+		$limit = ! empty( $settings['items_per_page'] ) ? $settings['items_per_page'] : 20;
+
+		if ( \current_user_can( 'upload_files' ) ) {
 			wp_enqueue_media();
 		}
-		// Obtener todos los cursos para el filtro
+		// Obtener todos los cursos para el filtro (sfwd-courses es el de LearnDash)
 		$courses = get_posts( [
-			'post_type'      => 'sfwd-courses', // Asumiendo LearnDash, ajustar si es otro CPT
+			'post_type'      => 'sfwd-courses', 
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
 		] );
 
 		?>
-		<div class="alezux-view-logros-wrapper">
-			<div class="alezux-logros-filters">
-				<input type="text" id="alezux-logro-search" placeholder="<?php esc_attr_e( 'Buscar por palabra clave...', 'alezux-members' ); ?>">
-				
-				<select id="alezux-logro-course-filter">
-					<option value=""><?php esc_html_e( 'Todos los cursos', 'alezux-members' ); ?></option>
-					<?php foreach ( $courses as $course ) : ?>
-						<option value="<?php echo esc_attr( $course->ID ); ?>">
-							<?php echo esc_html( $course->post_title ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
+		<div class="alezux-finanzas-app alezux-view-logros-wrapper" data-limit="<?php echo \esc_attr( $limit ); ?>">
+			<!-- Header -->
+			<div class="alezux-table-header alezux-logros-header">
+				<div class="alezux-header-left">
+					<h2 class="alezux-table-title"><?php echo \esc_html( $settings['header_title'] ?? 'Logros de Alumnos' ); ?></h2>
+					<p class="alezux-table-desc"><?php echo \esc_html( $settings['header_description'] ?? 'Historial de reconocimientos y logros otorgados.' ); ?></p>
+				</div>
+				<div class="alezux-header-right">
+					<div class="alezux-filters-inline">
+						<div class="alezux-filter-item">
+							<select id="alezux-logro-course-filter">
+								<option value=""><?php \esc_html_e( 'Todos los cursos', 'alezux-members' ); ?></option>
+								<?php foreach ( $courses as $course ) : ?>
+									<option value="<?php echo \esc_attr( $course->ID ); ?>">
+										<?php echo \esc_html( $course->post_title ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+						<div class="alezux-search-wrapper">
+							<span class="dashicons dashicons-search search-icon"></span>
+							<input type="text" id="alezux-logro-search" class="alezux-table-search-input" placeholder="<?php \esc_attr_e( 'Buscar por mensaje...', 'alezux-members' ); ?>">
+							<span class="dashicons dashicons-no-alt alezux-clear-icon"></span>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<?php
 			$show_image = ( ! empty( $settings['show_image'] ) && 'yes' === $settings['show_image'] ) ? 'yes' : 'no';
 			$image_size = ! empty( $settings['image_resolution'] ) ? $settings['image_resolution'] : 'medium';
 			?>
-			<div id="alezux-logros-list-container" 
-				 data-show-image="<?php echo esc_attr( $show_image ); ?>"
-				 data-image-size="<?php echo esc_attr( $image_size ); ?>">
-				<!-- La lista de tarjetas se cargará vía AJAX -->
-				<div class="alezux-loading"><?php esc_html_e( 'Cargando registros...', 'alezux-members' ); ?></div>
+
+			<!-- Table Wrapper -->
+			<div class="alezux-table-wrapper">
+				<table class="alezux-finanzas-table alezux-logros-table">
+					<thead>
+						<tr>
+							<th style="width: 300px;"><?php \esc_html_e( 'LOGRO', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'ESTUDIANTE', 'alezux-members' ); ?></th>
+							<th style="width: 200px;"><?php \esc_html_e( 'CURSO', 'alezux-members' ); ?></th>
+							<th style="width: 150px;"><?php \esc_html_e( 'FECHA', 'alezux-members' ); ?></th>
+							<th style="width: 100px; text-align: right;"><?php \esc_html_e( 'ACCIONES', 'alezux-members' ); ?></th>
+						</tr>
+					</thead>
+					<tbody id="alezux-logros-list-container" 
+						   data-show-image="<?php echo \esc_attr( $show_image ); ?>"
+						   data-image-size="<?php echo \esc_attr( $image_size ); ?>">
+						<!-- Filas cargadas vía AJAX -->
+						<tr>
+							<td colspan="5" style="text-align:center; padding: 40px;">
+								<div class="alezux-loading"><?php \esc_html_e( 'Cargando registros...', 'alezux-members' ); ?></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			
-			<div id="alezux-logros-pagination-container" style="text-align:center; padding: 20px; display:none;">
-				<button id="alezux-load-more-logros" class="alezux-btn alezux-btn-primary">
-					<?php esc_html_e( 'Cargar más', 'alezux-members' ); ?>
-				</button>
+			<!-- Footer: Pagination & Limit -->
+			<div class="alezux-table-footer">
+				<div id="alezux-logros-pagination-container" class="alezux-pagination alezux-logros-pagination" style="display:none;">
+					<!-- La paginación será similar a estudiantes.js pero adaptada -->
+					<button id="alezux-load-more-logros" class="alezux-btn alezux-btn-primary" style="display:none;">
+						<?php \esc_html_e( 'Cargar más', 'alezux-members' ); ?>
+					</button>
+				</div>
+
+				<div class="alezux-row-limit-wrapper">
+					<span class="alezux-row-limit-label"><?php \esc_html_e( 'Filas:', 'alezux-members' ); ?></span>
+					<select id="alezux-logros-limit-select" class="alezux-row-limit-select">
+						<option value="10">10</option>
+						<option value="20" <?php \selected( 20, $limit ); ?>>20</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+					</select>
+				</div>
 			</div>
 
 			<!-- Modal de Edición (Estructura Avanzada) -->
