@@ -178,7 +178,7 @@
                     <div class="node-delete-btn" data-node="${id}" title="Eliminar nodo">×</div>
                 </div>
                 <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
-                <div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>
+                ${type !== 'trigger' ? `<div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>` : ''}
                 <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
                 ${type !== 'delay' ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
             `;
@@ -302,7 +302,7 @@
                     this.pendingConnection = null;
                     this.removeTempLine();
                 } else {
-                    // Mismo tipo, cancelar anterior y empezar nueva o simplemente cancelar
+                    this.showMessage("Atención", "Debes conectar una salida con una entrada.");
                     this.pendingConnection.fromTerminal.classList.remove('active');
                     this.pendingConnection = null;
                     this.removeTempLine();
