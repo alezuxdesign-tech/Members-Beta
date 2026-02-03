@@ -373,23 +373,23 @@ class Notifications_Widget extends Widget_Base {
 			]
 		);
 
-		// Notification Item Text
+		// Notification Item Title
 		$this->add_control(
-			'heading_notif_text_style',
+			'heading_notif_title_style',
 			[
-				'label' => __( 'Texto de Notificación', 'alezux-members' ),
+				'label' => __( 'Título de Notificación', 'alezux-members' ),
 				'type' => Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
 		);
 
 		$this->add_control(
-			'notif_text_color',
+			'notif_title_color',
 			[
 				'label'     => __( 'Color', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .notif-text' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .notif-title' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -397,8 +397,37 @@ class Notifications_Widget extends Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Typography::get_type(),
 			[
-				'name'     => 'notif_text_typography',
-				'selector' => '{{WRAPPER}} .notif-text',
+				'name'     => 'notif_title_typography',
+				'selector' => '{{WRAPPER}} .notif-title',
+			]
+		);
+
+		// Notification Item Message
+		$this->add_control(
+			'heading_notif_message_style',
+			[
+				'label' => __( 'Mensaje de Notificación', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'notif_message_color',
+			[
+				'label'     => __( 'Color', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .notif-message' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'notif_message_typography',
+				'selector' => '{{WRAPPER}} .notif-message',
 			]
 		);
 
