@@ -223,10 +223,6 @@ class Marketing_Automation_Widget extends Widget_Base {
                 };
             </script>
 		</div>
-            #alezux-marketing-canvas {
-                border: 2px dashed #444;
-            }
-        </style>
 		<?php
 	}
 }
