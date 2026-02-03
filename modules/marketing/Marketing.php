@@ -59,8 +59,9 @@ class Marketing extends Module_Base {
     }
 
     public function register_assets() {
-        \wp_register_script( 'alezux-marketing-js', ALEZUX_MARKETING_URL . 'assets/js/marketing-automation.js', [ 'jquery' ], '1.0.0', true );
-        \wp_register_style( 'alezux-marketing-css', ALEZUX_MARKETING_URL . 'assets/css/marketing-automation.css', [], '1.0.0' );
+        $ver = \time(); // Cache busting para desarrollo
+        \wp_register_script( 'alezux-marketing-js', ALEZUX_MARKETING_URL . 'assets/js/marketing-automation.js', [ 'jquery' ], $ver, true );
+        \wp_register_style( 'alezux-marketing-css', ALEZUX_MARKETING_URL . 'assets/css/marketing-automation.css', [], $ver );
     }
 
     /**

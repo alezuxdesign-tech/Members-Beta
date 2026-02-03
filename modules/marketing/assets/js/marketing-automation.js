@@ -3,17 +3,19 @@
 
     class AlezuxNodeEditor {
         constructor(canvasId) {
+            console.log("AlezuxNodeEditor cargado v1.0.3 - Modo Robusto");
             this.canvas = document.getElementById(canvasId);
+            if (!this.canvas) return;
+
             this.svgLayer = this.initSvgLayer();
             this.nodes = [];
             this.connections = [];
             this.isDragging = false;
             this.dragTarget = null;
-            this.currentX = 0;
-            this.currentY = 0;
             this.initialX = 0;
             this.initialY = 0;
             this.editingNode = null;
+            this.pendingConnection = null;
 
             this.modal = {
                 overlay: document.getElementById('alezux-node-modal'),
@@ -50,16 +52,36 @@
             document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
             document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
 
-            // Connection Events
+            // Click handling for terminals and nodes
             this.canvas.addEventListener('click', (e) => this.handleClick(e));
+
+            // Clear Button
+            const clearBtn = document.getElementById('clear-canvas');
+            if (clearBtn) clearBtn.addEventListener('click', () => this.clearCanvas());
 
             // Save Button
             const saveBtn = document.getElementById('save-automation');
             if (saveBtn) saveBtn.addEventListener('click', () => this.saveAutomation());
 
-            // Modal Events
-            this.modal.cancel.addEventListener('click', () => this.closeModal());
-            this.modal.save.addEventListener('click', () => this.applyModalChanges());
+            // Modal Cancel
+            if (this.modal.cancel) {
+                this.modal.cancel.addEventListener('click', () => this.closeModal());
+            }
+
+            // Modal Save (usaremos un handler único para redireccionar)
+            if (this.modal.save) {
+                this.modal.save.addEventListener('click', () => this.handleModalAction());
+            }
+        }
+
+        handleModalAction() {
+            if (this.modalAction === 'save_settings') {
+                this.applyModalChanges();
+            } else if (this.modalAction === 'confirm_clear') {
+                this.doClearCanvas();
+            } else {
+                this.closeModal();
+            }
         }
 
         handleDrop(e) {
@@ -72,6 +94,7 @@
             const y = e.clientY - rect.top - 40;
 
             this.addNode(type, x, y);
+            this.updatePlaceholder();
         }
 
         addNode(type, x, y, data = {}) {
@@ -111,6 +134,13 @@
             const nodeEl = e.target.closest('.alezux-automation-node');
             if (nodeEl) {
                 this.openNodeSettings(nodeEl.id);
+            } else {
+                // Click en canvas vacío cancela conexión pendiente
+                if (this.pendingConnection) {
+                    this.pendingConnection.fromTerminal.classList.remove('active');
+                    this.pendingConnection = null;
+                    this.removeTempLine();
+                }
             }
         }
 
@@ -119,32 +149,51 @@
             const isOut = terminal.classList.contains('terminal-out');
 
             if (!this.pendingConnection) {
-                if (isOut) {
-                    this.pendingConnection = { from: nodeId, fromTerminal: terminal };
-                    terminal.classList.add('active');
-                }
+                // Solo empezar desde puerto de salida o permitir cualquier dirección?
+                // Vamos a permitir empezar desde cualquier puerto por facilidad
+                this.pendingConnection = { from: nodeId, fromTerminal: terminal, isOut: isOut };
+                terminal.classList.add('active');
+                console.log("Iniciando conexión desde:", nodeId);
             } else {
-                if (!isOut && this.pendingConnection.from !== nodeId) {
-                    this.createConnection(this.pendingConnection.from, nodeId);
+                const targetIsOut = terminal.classList.contains('terminal-out');
+
+                // No conectar el mismo nodo
+                if (this.pendingConnection.from === nodeId) {
                     this.pendingConnection.fromTerminal.classList.remove('active');
                     this.pendingConnection = null;
+                    this.removeTempLine();
+                    return;
+                }
+
+                // Deben ser tipos opuestos (in -> out o out -> in)
+                if (this.pendingConnection.isOut !== targetIsOut) {
+                    const fromNode = this.pendingConnection.isOut ? this.pendingConnection.from : nodeId;
+                    const toNode = this.pendingConnection.isOut ? nodeId : this.pendingConnection.from;
+
+                    this.createConnection(fromNode, toNode);
+                    this.pendingConnection.fromTerminal.classList.remove('active');
+                    this.pendingConnection = null;
+                    this.removeTempLine();
                 } else {
+                    // Mismo tipo, cancelar anterior y empezar nueva o simplemente cancelar
                     this.pendingConnection.fromTerminal.classList.remove('active');
                     this.pendingConnection = null;
+                    this.removeTempLine();
                 }
             }
         }
 
         createConnection(fromId, toId) {
-            const id = `conn_${fromId}_${toId}`;
-            if (this.connections.find(c => c.id === id)) return;
+            const connId = `conn_${fromId}_${toId}`;
+            // Evitar duplicados
+            if (this.connections.find(c => c.id === connId)) return;
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.id = id;
+            path.id = connId;
             path.setAttribute("class", "automation-line active");
             this.svgLayer.appendChild(path);
 
-            this.connections.push({ id, from: fromId, to: toId, path });
+            this.connections.push({ id: connId, from: fromId, to: toId, path });
             this.updateConnections();
         }
 
@@ -154,93 +203,100 @@
                 const nodeTo = this.nodes.find(n => n.id === conn.to);
 
                 if (nodeFrom && nodeTo) {
-                    const x1 = nodeFrom.x + 220; // Terminal Out
-                    const y1 = nodeFrom.y + 45;
-                    const x2 = nodeTo.x; // Terminal In
-                    const y2 = nodeTo.y + 45;
+                    const fromTerm = nodeFrom.el.querySelector('.terminal-out');
+                    const toTerm = nodeTo.el.querySelector('.terminal-in');
 
-                    const cp1x = x1 + (x2 - x1) / 2;
-                    const cp2x = x1 + (x2 - x1) / 2;
+                    if (fromTerm && toTerm) {
+                        const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
+                        const y1 = nodeFrom.y + fromTerm.offsetTop + 6;
+                        const x2 = nodeTo.x + toTerm.offsetLeft + 6;
+                        const y2 = nodeTo.y + toTerm.offsetTop + 6;
 
-                    conn.path.setAttribute("d", `M ${x1} ${y1} C ${cp1x} ${y1} ${cp2x} ${y2} ${x2} ${y2}`);
+                        const cp1x = x1 + (x2 - x1) / 2;
+                        const cp2x = x1 + (x2 - x1) / 2;
+
+                        conn.path.setAttribute("d", `M ${x1} ${y1} C ${cp1x} ${y1} ${cp2x} ${y2} ${x2} ${y2}`);
+                    }
                 }
             });
         }
 
+        removeTempLine() {
+            const temp = document.getElementById('temp-connection-line');
+            if (temp) temp.remove();
+        }
+
         openNodeSettings(nodeId) {
             const node = this.nodes.find(n => n.id === nodeId);
-            this.editingNode = node;
+            if (!node) return;
 
-            this.modal.title.innerText = `Configurar ${node.type.charAt(0).toUpperCase() + node.type.slice(1)}`;
-            this.modal.fields.innerHTML = ''; // Limpiar
+            this.editingNode = node;
+            this.modalAction = 'save_settings';
+            this.modal.title.innerText = `Configurar ${node.type.toUpperCase()}`;
+            this.modal.fields.innerHTML = '';
 
             if (node.type === 'trigger') {
                 let options = '<option value="">Selecciona un evento...</option>';
-                for (const [key, label] of Object.entries(window.alezuxEventsDictionary || {})) {
-                    options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
-                }
+                const dict = window.alezuxEventsDictionary || {};
 
-                this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Evento que dispara la acción:</label>
-                    <select id="field-event" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                        ${options}
-                    </select>
-                `;
+                if (Object.keys(dict).length === 0) {
+                    this.modal.fields.innerHTML = '<p style="color:red;">Error: Diccionario de eventos no encontrado.</p>';
+                } else {
+                    for (const [key, label] of Object.entries(dict)) {
+                        options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
+                    }
+                    this.modal.fields.innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Trigger / Evento:</label>
+                        <select id="field-event" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                            ${options}
+                        </select>
+                    `;
+                }
             } else if (node.type === 'email') {
                 this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Asunto del correo:</label>
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Asunto:</label>
                     <input type="text" id="field-subject" value="${node.data.subject || ''}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">ID de Plantilla / Contenido:</label>
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Mensaje:</label>
                     <textarea id="field-content" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; height:80px;">${node.data.content || ''}</textarea>
                 `;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Tiempo de espera (minutos):</label>
-                    <input type="number" id="field-minutes" value="${node.data.minutes || '0'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
+                    <input type="number" id="field-minutes" value="${node.data.minutes || '5'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
                 `;
             }
 
+            this.modal.save.innerText = "Guardar";
             this.modal.overlay.style.display = 'flex';
-        }
-
-        closeModal() {
-            this.modal.overlay.style.display = 'none';
-            this.editingNode = null;
         }
 
         applyModalChanges() {
             if (!this.editingNode) return;
-
             const node = this.editingNode;
-            let description = '';
+            let display = '';
 
             if (node.type === 'trigger') {
-                const event = document.getElementById('field-event').value;
-                node.data.event = event;
-                description = window.alezuxEventsDictionary[event] || 'Evento no configurado';
+                const ev = document.getElementById('field-event').value;
+                node.data.event = ev;
+                display = window.alezuxEventsDictionary[ev] || 'Sin configurar';
             } else if (node.type === 'email') {
                 node.data.subject = document.getElementById('field-subject').value;
                 node.data.content = document.getElementById('field-content').value;
-                description = `Email: ${node.data.subject || 'Sin asunto'}`;
+                display = node.data.subject ? `Email: ${node.data.subject}` : 'Email vacío';
             } else if (node.type === 'delay') {
                 node.data.minutes = document.getElementById('field-minutes').value;
-                description = `Esperar ${node.data.minutes} min`;
+                display = `Espera ${node.data.minutes} min`;
             }
 
-            node.data.description = description;
-            node.el.querySelector('.node-content').innerText = description;
-
+            node.data.description = display;
+            node.el.querySelector('.node-content').innerText = display;
             this.closeModal();
         }
 
-        saveAutomation() {
-            const blueprint = {
-                nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
-                connections: this.connections.map(c => ({ from: c.from, to: c.to }))
-            };
-
-            console.log("Saving Blueprint:", blueprint);
-            alert("¡Blueprint generado en consola! Integrado con AJAX próximamente.");
+        closeModal() {
+            if (this.modal.overlay) this.modal.overlay.style.display = 'none';
+            this.editingNode = null;
+            this.modalAction = null;
         }
 
         handleMouseDown(e) {
@@ -248,61 +304,98 @@
             if (nodeEl && !e.target.closest('.node-terminal')) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
-
-                const rect = nodeEl.closest('#alezux-marketing-canvas').getBoundingClientRect();
                 this.initialX = e.clientX - nodeEl.offsetLeft;
                 this.initialY = e.clientY - nodeEl.offsetTop;
+                nodeEl.style.zIndex = 1000;
             }
         }
 
         handleMouseMove(e) {
-            if (this.isDragging && this.dragTarget) {
-                e.preventDefault();
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
 
-                const canvasRect = this.canvas.getBoundingClientRect();
+            if (this.isDragging && this.dragTarget) {
                 let x = e.clientX - this.initialX;
                 let y = e.clientY - this.initialY;
 
                 // Constraints
-                x = Math.max(0, Math.min(x, canvasRect.width - this.dragTarget.offsetWidth));
-                y = Math.max(0, Math.min(y, canvasRect.height - this.dragTarget.offsetHeight));
+                x = Math.max(0, Math.min(x, rect.width - this.dragTarget.offsetWidth));
+                y = Math.max(0, Math.min(y, rect.height - this.dragTarget.offsetHeight));
 
                 this.dragTarget.style.left = `${x}px`;
                 this.dragTarget.style.top = `${y}px`;
 
-                // Update node data
                 const node = this.nodes.find(n => n.id === this.dragTarget.id);
                 if (node) { node.x = x; node.y = y; }
-
                 this.updateConnections();
+            } else if (this.pendingConnection) {
+                // Linea temporal
+                const fromTerm = this.pendingConnection.fromTerminal;
+                const nodeFrom = this.nodes.find(n => n.id === this.pendingConnection.from);
+                const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
+                const y1 = nodeFrom.y + fromTerm.offsetTop + 6;
+
+                let temp = document.getElementById('temp-connection-line');
+                if (!temp) {
+                    temp = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    temp.id = 'temp-connection-line';
+                    temp.setAttribute("class", "automation-line");
+                    temp.setAttribute("style", "stroke: #888; stroke-dasharray: 4;");
+                    this.svgLayer.appendChild(temp);
+                }
+
+                const cp1x = x1 + (mouseX - x1) / 2;
+                temp.setAttribute("d", `M ${x1} ${y1} C ${cp1x} ${y1} ${cp1x} ${mouseY} ${mouseX} ${mouseY}`);
             }
         }
 
-        handleMouseUp(e) {
+        handleMouseUp() {
+            if (this.isDragging && this.dragTarget) {
+                this.dragTarget.style.zIndex = 10;
+            }
             this.isDragging = false;
             this.dragTarget = null;
         }
 
         clearCanvas() {
-            if (confirm('¿Estás seguro de que quieres limpiar todo el lienzo?')) {
-                this.nodes.forEach(n => n.el.remove());
-                this.connections.forEach(c => c.path.remove());
-                this.nodes = [];
-                this.connections = [];
-                this.updatePlaceholder();
-            }
+            this.modal.title.innerText = "¡Confirmar!";
+            this.modal.fields.innerHTML = "<p style='color:#888;'>¿Estás seguro de que quieres vaciar todo el lienzo?</p>";
+            this.modal.save.innerText = "Sí, Limpiar";
+            this.modalAction = 'confirm_clear';
+            this.modal.overlay.style.display = 'flex';
+        }
+
+        doClearCanvas() {
+            this.nodes.forEach(n => n.el.remove());
+            this.connections.forEach(c => c.path.remove());
+            this.nodes = [];
+            this.connections = [];
+            this.updatePlaceholder();
+            this.closeModal();
         }
 
         updatePlaceholder() {
-            const placeholder = this.canvas.querySelector('.canvas-placeholder');
-            if (placeholder) {
-                placeholder.style.display = this.nodes.length === 0 ? 'block' : 'none';
-            }
+            const p = this.canvas.querySelector('.canvas-placeholder');
+            if (p) p.style.display = this.nodes.length === 0 ? 'block' : 'none';
+        }
+
+        saveAutomation() {
+            const blueprint = {
+                nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
+                connections: this.connections.map(c => ({ from: c.from, to: c.to }))
+            };
+            console.log("Blueprint:", blueprint);
+
+            this.modal.title.innerText = "Guardado Exitoso";
+            this.modal.fields.innerHTML = "<p style='color:#888;'>Estructura generada en la consola (Pronto en Base de Datos).</p>";
+            this.modal.save.innerText = "Entendido";
+            this.modalAction = 'info';
+            this.modal.overlay.style.display = 'flex';
         }
     }
 
-    // Initialize when ready
-    $(document).ready(function () {
+    $(document).ready(() => {
         if ($('#alezux-marketing-canvas').length) {
             window.AlezuxMarketing = new AlezuxNodeEditor('alezux-marketing-canvas');
         }
