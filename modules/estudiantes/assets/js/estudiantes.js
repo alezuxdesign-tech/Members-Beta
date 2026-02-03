@@ -227,6 +227,7 @@ jQuery(document).ready(function ($) {
     // ==========================================================
 
     function loadStudentInfo(userId, iconUrl) {
+        console.log('[Estudiantes] Cargando info para:', userId);
         $('#alezux-modal-loading').show();
         $('#alezux-modal-content').hide();
 
@@ -239,6 +240,7 @@ jQuery(document).ready(function ($) {
                 user_id: userId
             },
             success: function (response) {
+                console.log('[Estudiantes] Respuesta detalles:', response);
                 if (response.success) {
                     var data = response.data;
 
@@ -256,12 +258,12 @@ jQuery(document).ready(function ($) {
                     $('#alezux-modal-loading').hide();
                     $('#alezux-modal-content').fadeIn();
                 } else {
-                    showAlezuxAlert('Error', response.data.message, 'error');
+                    alert('Error: ' + response.data.message);
                     $('#alezux-management-modal-overlay').fadeOut();
                 }
             },
             error: function () {
-                showAlezuxAlert('Error de Conexión', 'No se pudo conectar con el servidor.', 'error');
+                alert('Error de conexión al cargar datos.');
                 $('#alezux-management-modal-overlay').fadeOut();
             }
         });
@@ -270,17 +272,14 @@ jQuery(document).ready(function ($) {
     // 1. Abrir Modal
     $(document).on('click', '.alezux-action-btn', function (e) {
         e.preventDefault();
+        console.log('[Estudiantes] Clic en Gestionar');
         var userId = $(this).data('student-id');
 
-        // Capturar URL del icono personalizado desde el wrapper
+        // Capturar URL del icono personalizado
         var iconUrl = $(this).closest('.alezux-estudiantes-wrapper').data('time-icon');
 
-        console.log('[Estudiantes] Gestionando usuario ID:', userId);
-
-        // Store iconUrl in modal data for reuse if needed (e.g. course updates)
-        $('#alezux-management-modal-overlay').data('current-icon', iconUrl);
-
         $('#alezux-manage-user-id').val(userId);
+        $('#alezux-management-modal-overlay').data('current-icon', iconUrl);
         $('#alezux-management-modal-overlay').fadeIn(200).css('display', 'flex');
 
         loadStudentInfo(userId, iconUrl);

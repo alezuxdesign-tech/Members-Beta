@@ -204,27 +204,45 @@
 
 .alezux-finanzas-table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
+    /* Fixed: use collapse for grid look */
     border-spacing: 0;
-    font-size: 14px;
+    margin-bottom: 0;
+    font-size: 13px;
+    border: 1px solid #2d3748;
+    /* External border */
 }
 
 .alezux-finanzas-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #a1a1aa;
     text-transform: uppercase;
     font-size: 11px;
-    color: #718096;
     letter-spacing: 0.05em;
-    padding: 15px;
     border-bottom: 1px solid #2d3748;
-    background-color: transparent;
-    text-align: left;
+    border-right: 1px solid #2d3748;
+    /* Vertical border */
+    background: rgba(26, 32, 44, 0.5);
+    /* Subtle dark header bg */
+}
+
+.alezux-finanzas-table th:last-child {
+    border-right: none;
 }
 
 .alezux-finanzas-table td {
     padding: 15px;
     vertical-align: middle;
     border-bottom: 1px solid #1a202c;
+    border-right: 1px solid #1a202c;
+    /* Vertical border */
     color: #fff;
+}
+
+.alezux-finanzas-table td:last-child {
+    border-right: none;
 }
 
 /* Loading State */
