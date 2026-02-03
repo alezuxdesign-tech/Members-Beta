@@ -130,16 +130,11 @@ jQuery(document).ready(function ($) {
         $tableBody.empty();
 
         if (students.length === 0) {
-            $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 20px;">No se encontraron estudiantes.</td></tr>');
+            $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;">No se encontraron estudiantes.</td></tr>');
             return;
         }
 
-        console.log('[Estudiantes] Renderizando tabla con', students.length, 'estudiantes.');
-
         students.forEach(function (student) {
-            // Debug individual student data
-            console.log('[Estudiantes] Estudiante:', student.name, 'Progreso:', student.progress);
-
             var row = `
                 <tr>
                     <td>
@@ -151,24 +146,27 @@ jQuery(document).ready(function ($) {
                             </div>
                         </div>
                     </td>
-                    <td class="col-correo">
+                    <td>
                         <span class="student-email">${student.email}</span>
                     </td>
-                    <td class="col-progreso">
+                    <td>
                         <div class="alezux-progress-wrapper">
+                            <div class="progress-Label">
+                                <span>${student.progress}%</span>
+                                <span>Completado</span>
+                            </div>
                             <div class="alezux-progress-bar-bg">
                                 <div class="alezux-progress-bar-fill" style="width: ${student.progress}%;"></div>
                             </div>
-                            <div class="alezux-progress-text">${student.progress}% Completado</div>
                         </div>
                     </td>
-                    <td class="col-estado">
+                    <td>
                         <span class="alezux-status-badge ${student.status_class}">
                             <span class="alezux-status-dot"></span>
                             ${student.status_label}
                         </span>
                     </td>
-                    <td class="col-funciones">
+                    <td style="text-align: right;">
                         <button class="alezux-action-btn" data-student-id="${student.id}">
                             <i class="fa fa-cog"></i> Gestionar
                         </button>
@@ -191,21 +189,21 @@ jQuery(document).ready(function ($) {
         var nextPage = Math.min(totalPages, currentPage + 1);
 
         // Prev
-        html += `<span class="page-link prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}"><i class="fa fa-chevron-left"></i></span>`;
+        html += `<button class="page-btn prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}" ${currentPage <= 1 ? 'disabled' : ''}><i class="fa fa-chevron-left"></i></button>`;
 
         // Pages
         for (var i = 1; i <= totalPages; i++) {
             if (i == currentPage) {
-                html += `<span class="page-link active">${i}</span>`;
+                html += `<button class="page-btn active">${i}</button>`;
             } else if (i <= currentPage + 2 && i >= currentPage - 2) {
-                html += `<span class="page-link" data-page="${i}">${i}</span>`;
+                html += `<button class="page-btn" data-page="${i}">${i}</button>`;
             } else if (i == currentPage + 3 || i == currentPage - 3) {
-                html += `<span class="page-link dots">...</span>`;
+                html += `<span class="page-dots">...</span>`;
             }
         }
 
         // Next
-        html += `<span class="page-link next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}"><i class="fa fa-chevron-right"></i></span>`;
+        html += `<button class="page-btn next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}" ${currentPage >= totalPages ? 'disabled' : ''}><i class="fa fa-chevron-right"></i></button>`;
 
         $container.html(html);
     }

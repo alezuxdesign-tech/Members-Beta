@@ -1291,11 +1291,11 @@ class Estudiantes_Widget extends Widget_Base {
 				<table class="alezux-finanzas-table alezux-estudiantes-table">
 					<thead>
 						<tr>
-							<th style="width: 300px;"><?php \esc_html_e( 'ESTUDIANTE', 'alezux-members' ); ?></th>
-								<th class="col-correo"><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
-								<th class="col-progreso"><?php \esc_html_e( 'PROGRESO', 'alezux-members' ); ?></th>
-								<th class="col-estado"><?php \esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
-							<th><?php \esc_html_e( 'ACCIONES', 'alezux-members' ); ?></th>
+							<th style="width: 280px;"><?php \esc_html_e( 'ESTUDIANTE', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
+							<th style="width: 180px;"><?php \esc_html_e( 'PROGRESO academico', 'alezux-members' ); ?></th>
+							<th style="width: 120px;"><?php \esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
+							<th style="width: 100px; text-align: right;"><?php \esc_html_e( 'ACCIONES', 'alezux-members' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1323,40 +1323,43 @@ class Estudiantes_Widget extends Widget_Base {
 								$is_blocked = (bool) \get_user_meta( $student->ID, 'alezux_is_blocked', true );
 								if ( $is_blocked ) {
 									$status_label = \esc_html__( 'Bloqueado', 'alezux-members' );
-									$status_class = 'status-inactive'; // Asumimos que existe o se estilizará igual que 'error'
+									$status_class = 'status-failed';
 								} else {
-									$status_label = 'OK';
+									$status_label = \esc_html__( 'Activo', 'alezux-members' );
 									$status_class = 'status-active';
 								}
 							?>
 							<tr>
 								<td>
-                                    <div class="alezux-student-info">
-                                        <img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>" class="alezux-student-avatar">
-                                        <div class="alezux-student-text">
-                                            <span class="student-name"><?php echo \esc_html( $name ); ?></span>
-                                            <span class="student-email"><?php echo '@' . \esc_html( $student->user_nicename ); ?></span>
-                                        </div>
-                                    </div>
+									<div class="alezux-student-info">
+										<img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>" class="alezux-student-avatar">
+										<div class="alezux-student-text">
+											<span class="student-name"><?php echo \esc_html( $name ); ?></span>
+											<span class="student-email"><?php echo '@' . \esc_html( $student->user_nicename ); ?></span>
+										</div>
+									</div>
 								</td>
-								<td class="col-correo">
+								<td>
 									<span class="student-email"><?php echo \esc_html( $email ); ?></span>
 								</td>
-								<td class="col-progreso">
-							<div class="alezux-progress-wrapper">
-								<div class="alezux-progress-bar-bg">
-									<div class="alezux-progress-bar-fill" style="width: <?php echo esc_attr( $avg_progress ); ?>%;"></div>
-								</div>
-								<div class="alezux-progress-text"><?php echo esc_html( $avg_progress ); ?>% Completado</div>
-							</div>
-						</td>
-								<td class="col-estado">
-							<span class="alezux-status-badge <?php echo esc_attr( $status_class ); ?>">
-								<span class="alezux-status-dot"></span>
-								<?php echo esc_html( $status_label ); ?>
-							</span>
-						</td>
-								<td class="col-funciones">
+								<td>
+									<div class="alezux-progress-wrapper">
+										<div class="progress-Label">
+											<span><?php echo \esc_html( $avg_progress ); ?>%</span>
+											<span><?php \esc_html_e( 'Completado', 'alezux-members' ); ?></span>
+										</div>
+										<div class="alezux-progress-bar-bg">
+											<div class="alezux-progress-bar-fill" style="width: <?php echo \esc_attr( $avg_progress ); ?>%;"></div>
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class="alezux-status-badge <?php echo \esc_attr( $status_class ); ?>">
+										<span class="alezux-status-dot"></span>
+										<?php echo \esc_html( $status_label ); ?>
+									</span>
+								</td>
+								<td style="text-align: right;">
 									<button class="alezux-action-btn" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
 										<i class="fa fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>
 									</button>
@@ -1365,7 +1368,7 @@ class Estudiantes_Widget extends Widget_Base {
 							<?php endforeach; ?>
 						<?php else : ?>
 							<tr>
-								<td colspan="6" style="text-align:center; padding: 20px;">
+								<td colspan="5" style="text-align:center; padding: 40px;">
 									<?php \esc_html_e( 'No se encontraron estudiantes.', 'alezux-members' ); ?>
 								</td>
 							</tr>
