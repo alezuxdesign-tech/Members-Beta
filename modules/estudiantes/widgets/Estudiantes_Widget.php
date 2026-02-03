@@ -270,7 +270,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Nombre Estudiante', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .estudiante-nombre' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .student-name' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -280,7 +280,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'table_name_typography',
 				'label'    => \esc_html__( 'Tipografía Nombre', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .estudiante-nombre',
+				'selector' => '{{WRAPPER}} .student-name',
 			]
 		);
 
@@ -290,7 +290,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Usuario (@handle)', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .estudiante-usuario' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .student-email' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -300,7 +300,7 @@ class Estudiantes_Widget extends Widget_Base {
 			[
 				'name'     => 'table_username_typography',
 				'label'    => \esc_html__( 'Tipografía Usuario', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .estudiante-usuario',
+				'selector' => '{{WRAPPER}} .student-email',
 			]
 		);
 
@@ -355,9 +355,10 @@ class Estudiantes_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .col-foto img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-student-avatar' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 				],
 			]
+
 		);
 
 		$this->add_control(
@@ -716,7 +717,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Fondo', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .btn-gestionar' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-action-btn' => 'background-color: {{VALUE}};',
 				],
 			]
 		);
@@ -727,7 +728,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'label'     => \esc_html__( 'Color Texto', 'alezux-members' ),
 				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .btn-gestionar' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-action-btn' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -736,7 +737,7 @@ class Estudiantes_Widget extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name'     => 'btn_border',
-				'selector' => '{{WRAPPER}} .btn-gestionar',
+				'selector' => '{{WRAPPER}} .alezux-action-btn',
 			]
 		);
 
@@ -747,7 +748,7 @@ class Estudiantes_Widget extends Widget_Base {
 				'type'       => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', '%' ],
 				'selectors'  => [
-					'{{WRAPPER}} .btn-gestionar' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-action-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -1290,12 +1291,11 @@ class Estudiantes_Widget extends Widget_Base {
 				<table class="alezux-finanzas-table alezux-estudiantes-table">
 					<thead>
 						<tr>
-							<th><?php \esc_html_e( 'FOTO', 'alezux-members' ); ?></th>
-							<th><?php \esc_html_e( 'NOMBRE', 'alezux-members' ); ?></th>
-								<th class="col-correo"><?php \esc_html_e( 'Correo', 'alezux-members' ); ?></th>
-								<th class="col-progreso"><?php \esc_html_e( 'Progreso', 'alezux-members' ); ?></th>
-								<th class="col-estado"><?php \esc_html_e( 'Estado', 'alezux-members' ); ?></th>
-							<th><?php \esc_html_e( 'FUNCIONES', 'alezux-members' ); ?></th>
+							<th style="width: 300px;"><?php \esc_html_e( 'ESTUDIANTE', 'alezux-members' ); ?></th>
+								<th class="col-correo"><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
+								<th class="col-progreso"><?php \esc_html_e( 'PROGRESO', 'alezux-members' ); ?></th>
+								<th class="col-estado"><?php \esc_html_e( 'ESTADO', 'alezux-members' ); ?></th>
+							<th><?php \esc_html_e( 'ACCIONES', 'alezux-members' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1330,15 +1330,17 @@ class Estudiantes_Widget extends Widget_Base {
 								}
 							?>
 							<tr>
-								<td class="col-foto">
-									<img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>">
-								</td>
-								<td class="col-nombre">
-									<div class="estudiante-nombre"><?php echo \esc_html( $name ); ?></div>
-									<div class="estudiante-usuario"><?php echo '@' . \esc_html( $student->user_nicename ); ?></div>
+								<td>
+                                    <div class="alezux-student-info">
+                                        <img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>" class="alezux-student-avatar">
+                                        <div class="alezux-student-text">
+                                            <span class="student-name"><?php echo \esc_html( $name ); ?></span>
+                                            <span class="student-email"><?php echo '@' . \esc_html( $student->user_nicename ); ?></span>
+                                        </div>
+                                    </div>
 								</td>
 								<td class="col-correo">
-									<?php echo \esc_html( $email ); ?>
+									<span class="student-email"><?php echo \esc_html( $email ); ?></span>
 								</td>
 								<td class="col-progreso">
 							<div class="alezux-progress-wrapper">
@@ -1355,7 +1357,7 @@ class Estudiantes_Widget extends Widget_Base {
 							</span>
 						</td>
 								<td class="col-funciones">
-									<button class="btn-gestionar" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
+									<button class="alezux-action-btn" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
 										<i class="fa fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>
 									</button>
 								</td>

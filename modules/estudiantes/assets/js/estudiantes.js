@@ -142,15 +142,17 @@ jQuery(document).ready(function ($) {
 
             var row = `
                 <tr>
-                    <td class="col-foto">
-                        <img src="${student.avatar_url}" alt="${student.name}">
-                    </td>
-                    <td class="col-nombre">
-                        ${student.name}
-                        <div style="font-size: 12px; color: #999;">@${student.username}</div>
+                    <td>
+                        <div class="alezux-student-info">
+                            <img src="${student.avatar_url}" alt="${student.name}" class="alezux-student-avatar">
+                            <div class="alezux-student-text">
+                                <span class="student-name">${student.name}</span>
+                                <span class="student-email">@${student.username}</span>
+                            </div>
+                        </div>
                     </td>
                     <td class="col-correo">
-                        ${student.email}
+                        <span class="student-email">${student.email}</span>
                     </td>
                     <td class="col-progreso">
                         <div class="alezux-progress-wrapper">
@@ -167,7 +169,7 @@ jQuery(document).ready(function ($) {
                         </span>
                     </td>
                     <td class="col-funciones">
-                        <button class="btn-gestionar" data-student-id="${student.id}">
+                        <button class="alezux-action-btn" data-student-id="${student.id}">
                             <i class="fa fa-cog"></i> Gestionar
                         </button>
                     </td>
@@ -268,7 +270,7 @@ jQuery(document).ready(function ($) {
     }
 
     // 1. Abrir Modal
-    $(document).on('click', '.btn-gestionar', function (e) {
+    $(document).on('click', '.alezux-action-btn', function (e) {
         e.preventDefault();
         var userId = $(this).data('student-id');
 
@@ -377,7 +379,7 @@ jQuery(document).ready(function ($) {
 
                         // ACTUALIZAR LA FILA EN LA TABLA SIN RECARGAR
                         var userId = $('#alezux-manage-user-id').val();
-                        var $row = $('.btn-gestionar[data-student-id="' + userId + '"]').closest('tr');
+                        var $row = $('.alezux-action-btn[data-student-id="' + userId + '"]').closest('tr');
                         var $statusCell = $row.find('.col-estado span');
 
                         // Nuevo estado (!isBlocked porque acabamos de cambiarlo)
