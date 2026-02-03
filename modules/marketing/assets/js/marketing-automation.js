@@ -166,20 +166,19 @@
             // Zoom Events
             this.canvas.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
 
-            // Spacebar handling for Pan
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && e.target === document.body) {
-                    this.spacePressed = true;
-                    this.canvas.style.cursor = 'grab';
-                    e.preventDefault();
-                }
-            });
-            window.addEventListener('keyup', (e) => {
-                if (e.code === 'Space') {
-                    this.spacePressed = false;
-                    this.canvas.style.cursor = 'crosshair';
-                }
-            });
+            // Global Add Node Button
+            const globalAddBtn = document.getElementById('add-global-node');
+            if (globalAddBtn) {
+                globalAddBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Calcular centro del lienzo
+                    const rect = this.canvas.getBoundingClientRect();
+                    const centerX = (rect.width / 2 - this.pan.x) / this.scale - 50;
+                    const centerY = (rect.height / 2 - this.pan.y) / this.scale - 40;
+
+                    this.showQuickAppendMenuAt(centerX, centerY, e);
+                });
+            }
         }
 
         handleModalAction() {
@@ -735,6 +734,11 @@
             this.modalAction = null;
         }
 
+        closeDrawer() {
+            if (this.drawer.el) this.drawer.el.classList.remove('open');
+            this.editingNode = null;
+        }
+
         handleMouseDown(e) {
             if (this.spacePressed) {
                 this.isPanning = true;
@@ -750,9 +754,15 @@
             if (nodeEl && !isButton) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
-                // El nodo ahora mide 100px de ancho para centrar el box de 70px
-                this.initialX = e.clientX / this.scale - nodeEl.offsetLeft;
-                this.initialY = e.clientY / this.scale - nodeEl.offsetTop;
+
+                const rect = this.canvas.getBoundingClientRect();
+                // Coordenada del mouse en el espacio del lienzo (0,0 es top-left de canvasContent)
+                const mouseCanvasX = (e.clientX - rect.left - this.pan.x) / this.scale;
+                const mouseCanvasY = (e.clientY - rect.top - this.pan.y) / this.scale;
+
+                // Offset relativo al nodo
+                this.initialX = mouseCanvasX - nodeEl.offsetLeft;
+                this.initialY = mouseCanvasY - nodeEl.offsetTop;
                 nodeEl.style.zIndex = 1000;
             }
         }
@@ -766,12 +776,12 @@
             }
 
             const rect = this.canvas.getBoundingClientRect();
-            const mouseX = (e.clientX - rect.left - this.pan.x) / this.scale;
-            const mouseY = (e.clientY - rect.top - this.pan.y) / this.scale;
+            const mouseCanvasX = (e.clientX - rect.left - this.pan.x) / this.scale;
+            const mouseCanvasY = (e.clientY - rect.top - this.pan.y) / this.scale;
 
             if (this.isDragging && this.dragTarget) {
-                let x = e.clientX / this.scale - this.initialX;
-                let y = e.clientY / this.scale - this.initialY;
+                let x = mouseCanvasX - this.initialX;
+                let y = mouseCanvasY - this.initialY;
 
                 this.dragTarget.style.left = `${x}px`;
                 this.dragTarget.style.top = `${y}px`;
@@ -787,13 +797,7 @@
                 const x1 = nodeFrom.x + fromTerm.offsetLeft + 6;
                 const y1 = nodeFrom.y + fromTerm.offsetTop + 6;
 
-                // Ocultar si estamos paneando
                 let temp = document.getElementById('temp-connection-line');
-                if (this.isPanning && temp) {
-                    temp.style.display = 'none';
-                    return;
-                }
-
                 if (!temp) {
                     temp = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     temp.id = 'temp-connection-line';
@@ -803,8 +807,8 @@
                 }
                 temp.style.display = 'block';
 
-                const dx = Math.abs(mouseX - x1) * 0.5;
-                temp.setAttribute("d", `M ${x1} ${y1} C ${x1 + dx} ${y1} ${mouseX - dx} ${mouseY} ${mouseX} ${mouseY}`);
+                const dx = Math.abs(mouseCanvasX - x1) * 0.5;
+                temp.setAttribute("d", `M ${x1} ${y1} C ${x1 + dx} ${y1} ${mouseCanvasX - dx} ${mouseCanvasY} ${mouseCanvasX} ${mouseCanvasY}`);
             }
         }
 
@@ -889,6 +893,57 @@
                 }
             };
             setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+
+        showQuickAppendMenuAt(x, y, event) {
+            this.removeQuickMenu();
+
+            const menu = document.createElement('div');
+            menu.className = 'alezux-quick-menu';
+            menu.style.left = `${x}px`;
+            menu.style.top = `${y}px`;
+
+            const items = [
+                { type: 'trigger', icon: '⚡', label: 'Nuevo Trigger', module: 'Disparadores' },
+                { type: 'email', icon: '✉️', label: 'Enviar Email', module: 'Marketing' },
+                { type: 'condition', icon: '🔄', label: 'Condición', module: 'Lógica' },
+                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' }
+            ];
+
+            let currentModule = '';
+            items.forEach(item => {
+                if (item.module !== currentModule) {
+                    currentModule = item.module;
+                    const header = document.createElement('div');
+                    header.className = 'quick-menu-header';
+                    header.innerText = currentModule;
+                    menu.appendChild(header);
+                }
+
+                const div = document.createElement('div');
+                div.className = `quick-menu-item type-${item.type}`;
+                div.innerHTML = `<span>${item.icon}</span> ${item.label}`;
+                div.onclick = () => {
+                    this.addNode(item.type, x, y);
+                    this.removeQuickMenu();
+                };
+                menu.appendChild(div);
+            });
+
+            this.canvasContent.appendChild(menu); // Usar canvasContent para que se mueva con el pan
+
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    this.removeQuickMenu();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+
+        removeQuickMenu() {
+            const m = this.canvasContent.querySelector('.alezux-quick-menu');
+            if (m) m.remove();
         }
 
         // CONTEXT MENU LOGIC

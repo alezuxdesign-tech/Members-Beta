@@ -69,7 +69,7 @@ class Marketing_Automation_Widget extends Widget_Base {
     }
 
 	protected function render() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! \current_user_can( 'manage_options' ) ) {
             echo '<div style="padding: 20px; color: #718096; font-weight: bold;">' . \esc_html__( 'No tienes permisos administrativos', 'alezux-members' ) . '</div>';
             return;
         }
@@ -120,6 +120,9 @@ class Marketing_Automation_Widget extends Widget_Base {
                             <input type="text" id="automation-name" placeholder="Nombre de la automatización..." class="alezux-popup-input">
                         </div>
                         <div class="popup-actions">
+                            <button id="add-global-node" class="alezux-action-btn" style="background: #4a5568;">
+                                <span class="dashicons dashicons-plus"></span> Añadir Nodo
+                            </button>
                             <button id="save-marketing-automation" class="alezux-action-btn">
                                 <span class="dashicons dashicons-saved"></span> Guardar
                             </button>
