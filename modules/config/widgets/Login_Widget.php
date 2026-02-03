@@ -203,7 +203,7 @@ class Login_Widget extends Widget_Base {
 				<div class="alezux-auth-field alezux-auth-pass-wrapper">
 					<input type="password" name="password" id="alezux-login-password" placeholder="<?php echo esc_attr( $settings['pass_placeholder'] ); ?>" required>
 					<span class="alezux-toggle-password">
-						<i class="far fa-eye"></i>
+						<i class="fas fa-eye"></i>
 					</span>
 				</div>
 
