@@ -489,45 +489,22 @@
             const node = this.nodes.find(n => n.id === nodeId);
             if (!node) return;
 
+            if (node.type === 'trigger' || node.type === 'inactivity' || node.type === 'expiration') {
+                this.closeModal();
+                this.openTriggerLibrary(node);
+                return;
+            }
+
             this.editingNode = node;
             this.modalAction = 'save_settings';
             this.modal.title.innerText = `Configurar ${node.type.toUpperCase()}`;
             this.modal.fields.innerHTML = '';
 
-            if (node.type === 'trigger') {
-                let options = '<option value="">Selecciona un evento...</option>';
-                const dict = window.alezuxEventsDictionary || {};
-
-                if (Object.keys(dict).length === 0) {
-                    this.modal.fields.innerHTML = '<p style="color:red;">Error: Diccionario de eventos no encontrado.</p>';
-                } else {
-                    for (const [key, label] of Object.entries(dict)) {
-                        options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
-                    }
-                    this.modal.fields.innerHTML = `
-                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Trigger / Evento:</label>
-                        <select id="field-event" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                            ${options}
-                        </select>
-                    `;
-                }
-            } else if (node.type === 'email') {
+            if (node.type === 'email') {
                 // Sustituir modal por Drawer para Emails
                 this.closeModal();
                 this.openDrawer(node);
                 return;
-            } else if (node.type === 'inactivity') {
-                this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días de inactividad:</label>
-                    <input type="number" id="field-days" value="${node.data.days || '4'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                    <p style="color:#555; font-size:11px; margin-top:10px;">Se disparará cuando el alumno lleve exactamente estos días sin entrar.</p>
-                `;
-            } else if (node.type === 'expiration') {
-                this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días antes del vencimiento:</label>
-                    <input type="number" id="field-days" value="${node.data.days || '2'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                    <p style="color:#555; font-size:11px; margin-top:10px;">Se disparará X días antes de la fecha de cobro de la suscripción.</p>
-                `;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
@@ -548,6 +525,164 @@
 
             this.modal.save.innerText = "Guardar";
             this.modal.overlay.style.display = 'flex';
+        }
+
+        openTriggerLibrary(node) {
+            this.editingNode = node;
+            const drawerTitle = this.drawer.el.querySelector('.drawer-header h3');
+            if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-forms"></span> Biblioteca de Triggers';
+
+            let html = `
+                <div class="trigger-library">
+                    <p style="color:#718096; font-size:12px; margin-bottom:20px;">Selecciona el evento que iniciará esta automatización:</p>
+                    
+                    <div class="library-section">
+                        <h4 class="library-module-title">Alezux Marketing</h4>
+                        <div class="library-item ${node.data.event_type === 'general' ? 'active' : ''}" data-type="trigger" data-event="general">
+                            <span class="lib-icon">⚡</span>
+                            <div class="lib-info">
+                                <strong>Evento General</strong>
+                                <p>Registro, pagos, cursos...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="library-section">
+                        <h4 class="library-module-title">Estudiantes</h4>
+                        <div class="library-item ${node.type === 'inactivity' ? 'active' : ''}" data-type="inactivity" data-event="inactivity">
+                            <span class="lib-icon">💤</span>
+                            <div class="lib-info">
+                                <strong>Inactividad</strong>
+                                <p>Cuando el alumno deja de entrar.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="library-section">
+                        <h4 class="library-module-title">Finanzas</h4>
+                        <div class="library-item ${node.type === 'expiration' ? 'active' : ''}" data-type="expiration" data-event="expiration">
+                            <span class="lib-icon">📅</span>
+                            <div class="lib-info">
+                                <strong>Vencimiento Cobro</strong>
+                                <p>Días antes del próximo pago.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="trigger-config-area" style="margin-top:25px; border-top:1px solid #2d3748; padding-top:20px; display:none;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            `;
+
+            this.drawer.subject.parentElement.style.display = 'none'; // Ocultar campo asunto
+            this.drawer.content.parentElement.style.display = 'none'; // Ocultar campo mensaje
+            this.drawer.placeholders.style.display = 'none';
+
+            // Crear contenedor temporal si no existe para la librería
+            let libContainer = this.drawer.el.querySelector('.trigger-library-container');
+            if (!libContainer) {
+                libContainer = document.createElement('div');
+                libContainer.className = 'trigger-library-container';
+                this.drawer.el.querySelector('.drawer-content').appendChild(libContainer);
+            }
+            libContainer.innerHTML = html;
+            libContainer.style.display = 'block';
+
+            // Click en items de la librería
+            libContainer.querySelectorAll('.library-item').forEach(item => {
+                item.onclick = () => {
+                    libContainer.querySelectorAll('.library-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    this.showTriggerConfig(item.dataset.type, node);
+                };
+            });
+
+            // Si ya tiene un tipo, mostrar su config
+            if (node.type !== 'trigger' || node.data.event_type) {
+                this.showTriggerConfig(node.type === 'trigger' ? 'general' : node.type, node);
+            }
+
+            this.drawer.el.classList.add('open');
+        }
+
+        showTriggerConfig(type, node) {
+            const configArea = document.getElementById('trigger-config-area');
+            configArea.style.display = 'block';
+
+            if (type === 'general') {
+                let options = '<option value="">Selecciona un evento...</option>';
+                const dict = window.alezuxEventsDictionary || {};
+                for (const [key, label] of Object.entries(dict)) {
+                    options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
+                }
+                configArea.innerHTML = `
+                    <div class="alezux-field-group">
+                        <label>Seleccionar Evento</label>
+                        <select id="lib-field-event" class="alezux-select">${options}</select>
+                    </div>
+                `;
+            } else if (type === 'inactivity') {
+                configArea.innerHTML = `
+                    <div class="alezux-field-group">
+                        <label>Días de inactividad</label>
+                        <input type="number" id="lib-field-days" value="${node.data.days || '4'}" class="alezux-input">
+                    </div>
+                `;
+            } else if (type === 'expiration') {
+                configArea.innerHTML = `
+                    <div class="alezux-field-group">
+                        <label>Días antes del vencimiento</label>
+                        <input type="number" id="lib-field-days" value="${node.data.days || '2'}" class="alezux-input">
+                    </div>
+                `;
+            }
+        }
+
+        saveTriggerSettings() {
+            if (!this.editingNode) return;
+            const node = this.editingNode;
+            const activeItem = this.drawer.el.querySelector('.library-item.active');
+            if (!activeItem) return;
+
+            const newType = activeItem.dataset.type;
+            const oldType = node.type;
+
+            // Metamorfosis de Nodo
+            node.type = newType === 'general' ? 'trigger' : newType;
+            node.el.className = `alezux-automation-node node-${node.type}`;
+
+            let display = '';
+            let icon = '⚙️';
+
+            if (newType === 'general') {
+                const ev = document.getElementById('lib-field-event').value;
+                node.data.event = ev;
+                node.data.event_type = 'general';
+                display = window.alezuxEventsDictionary[ev] || 'Evento General';
+                icon = '⚡';
+            } else if (newType === 'inactivity') {
+                node.data.days = document.getElementById('lib-field-days').value;
+                display = `Inactividad: ${node.data.days} días`;
+                icon = '💤';
+            } else if (newType === 'expiration') {
+                node.data.days = document.getElementById('lib-field-days').value;
+                display = `Vencimiento: ${node.data.days} días antes`;
+                icon = '📅';
+            }
+
+            node.data.description = display;
+
+            // Actualizar visualmente el nodo
+            const iconEl = node.el.querySelector('.node-box-icon');
+            if (iconEl) iconEl.innerText = icon;
+            const titleEl = node.el.querySelector('.node-title');
+            if (titleEl) titleEl.innerText = newType === 'general' ? 'Trigger Evento' : (newType === 'inactivity' ? 'Inactividad' : 'Vencimiento Cobro');
+            const descEl = node.el.querySelector('.node-description');
+            if (descEl) descEl.innerText = display;
+
+            this.closeDrawer();
+            this.updateConnections(); // Por si el cambio de clase altera dimensiones (aunque no debería)
         }
 
         applyModalChanges() {
@@ -1003,7 +1138,13 @@
                 this.loadAutomation(id);
             } else {
                 this.popup.nameInput.value = '';
-                this.updatePlaceholder();
+                // AUTO-INSERT TRIGGER NODE (n8n Style)
+                setTimeout(() => {
+                    if (this.nodes.length === 0) {
+                        this.addNode('trigger', 100, 200, { description: 'Haz clic para seleccionar activador' });
+                        this.updatePlaceholder();
+                    }
+                }, 100);
             }
             this.popup.container.style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -1061,8 +1202,18 @@
 
         openDrawer(node) {
             this.editingNode = node;
+            const drawerTitle = this.drawer.el.querySelector('.drawer-header h3');
+            if (drawerTitle) drawerTitle.innerHTML = '<span class="dashicons dashicons-email"></span> Configurar Email';
+
             this.drawer.subject.value = node.data.subject || '';
             this.drawer.content.value = node.data.message || '';
+
+            // Mostrar campos de email, ocultar biblioteca
+            this.drawer.subject.parentElement.style.display = 'block';
+            this.drawer.content.parentElement.style.display = 'block';
+            this.drawer.placeholders.style.display = 'block';
+            const libContainer = this.drawer.el.querySelector('.trigger-library-container');
+            if (libContainer) libContainer.style.display = 'none';
 
             // Cargar Placeholders dinámicos
             const triggerType = this.getTriggerTypeForNode(node.id);
@@ -1105,21 +1256,23 @@
             this.drawer.el.classList.add('open');
         }
 
-        closeDrawer() {
-            this.drawer.el.classList.remove('open');
-            this.editingNode = null;
-        }
-
         saveDrawerChanges() {
             if (!this.editingNode) return;
+            const node = this.editingNode;
 
-            this.editingNode.data.subject = this.drawer.subject.value;
-            this.editingNode.data.message = this.drawer.content.value;
-            this.editingNode.data.description = "Asunto: " + (this.editingNode.data.subject || 'Sin asunto').substring(0, 20) + "...";
+            if (node.type === 'trigger' || node.type === 'inactivity' || node.type === 'expiration') {
+                this.saveTriggerSettings();
+                return;
+            }
+
+            // Lógica para Emails
+            node.data.subject = this.drawer.subject.value;
+            node.data.message = this.drawer.content.value;
+            node.data.description = "Asunto: " + (node.data.subject || 'Sin asunto').substring(0, 20) + "...";
 
             // Actualizar vista del nodo
-            const descEl = this.editingNode.el.querySelector('.node-description');
-            if (descEl) descEl.innerText = this.editingNode.data.description;
+            const descEl = node.el.querySelector('.node-description');
+            if (descEl) descEl.innerText = node.data.description;
 
             this.closeDrawer();
         }
