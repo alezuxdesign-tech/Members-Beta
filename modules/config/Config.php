@@ -16,8 +16,8 @@ class Config extends Module_Base {
 		// Registrar Widgets de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 
-		// Redirección de Login Personalizado
-		add_action( 'init', [ $this, 'redirect_to_custom_login' ] );
+		// Redirección y Filtros de Login Personalizado
+		add_action( 'init', [ $this, 'setup_custom_auth_logic' ] );
 
 		// AJAX Auth Actions
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
@@ -27,50 +27,57 @@ class Config extends Module_Base {
 		$this->register_shortcode( 'alezux_login_alerts', [ $this, 'render_login_alerts' ], 'Muestra mensajes de error/éxito en el login.' );
 	}
 
-	public function enqueue_assets() {
-		// CSS
-		wp_enqueue_style( 
-			'alezux-config-css', 
-			$this->get_asset_url( 'assets/css/config.css' ), 
-			[], 
-			ALEZUX_MEMBERS_VERSION 
-		);
+	/**
+	 * Configura los filtros y redirecciones solo si la página está seleccionada
+	 */
+	public function setup_custom_auth_logic() {
+		$login_page_id = get_option( 'alezux_login_page_id' );
+		
+		// Solo proceder si hay una página válida seleccionada
+		if ( ! $login_page_id || get_post_status( $login_page_id ) !== 'publish' ) {
+			return;
+		}
 
-		// JS
-		wp_enqueue_script(
-			'alezux-config-js',
-			$this->get_asset_url( 'assets/js/config.js' ),
-			[ 'jquery' ],
-			ALEZUX_MEMBERS_VERSION,
-			true
-		);
-
-		// Localizar script para AJAX
-		wp_localize_script( 'alezux-config-js', 'alezux_auth_obj', [
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'alezux-auth-nonce' ),
-			'home_url' => home_url()
-		]);
+		// Redirección de /wp-login.php
+		add_action( 'template_redirect', [ $this, 'redirect_to_custom_login' ] );
+		
+		// Sobrescribir URLs nativas de WordPress
+		add_filter( 'login_url', [ $this, 'custom_login_url' ], 10, 3 );
+		add_filter( 'lostpassword_url', [ $this, 'custom_lostpassword_url' ], 10, 2 );
 	}
 
-	public function register_elementor_widgets( $widgets_manager ) {
-		require_once __DIR__ . '/widgets/Config_Widget.php';
-		require_once __DIR__ . '/widgets/Login_Widget.php';
-		require_once __DIR__ . '/widgets/Recover_Widget.php';
+	public function custom_login_url( $login_url, $redirect, $force_reauth ) {
+		$login_page_id = get_option( 'alezux_login_page_id' );
+		if ( $login_page_id ) {
+			$url = get_permalink( $login_page_id );
+			if ( ! empty( $redirect ) ) {
+				$url = add_query_arg( 'redirect_to', urlencode( $redirect ), $url );
+			}
+			return $url;
+		}
+		return $login_url;
+	}
 
-		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Config_Widget() );
-		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Login_Widget() );
-		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Recover_Widget() );
+	public function custom_lostpassword_url( $lostpassword_url, $redirect ) {
+		// Por ahora reusamos la misma lógica si el usuario tiene widgets en la misma página 
+		// o el usuario puede personalizar esto después.
+		$login_page_id = get_option( 'alezux_login_page_id' );
+		if ( $login_page_id ) {
+			return get_permalink( $login_page_id ); 
+		}
+		return $lostpassword_url;
 	}
 
 	/**
-	 * Redirigir /wp-login.php a la página personalizada si está configurada
+	 * Redirigir /wp-login.php a la página personalizada
 	 */
 	public function redirect_to_custom_login() {
 		global $pagenow;
-		if ( 'wp-login.php' == $pagenow && ! isset( $_REQUEST['action'] ) && ! isset( $_REQUEST['key'] ) ) {
-			$login_page_id = get_option( 'alezux_login_page_id' );
-			if ( $login_page_id ) {
+		
+		// Si es la página de login nativa y no es un POST (login real) ni acciones especiales
+		if ( 'wp-login.php' == $pagenow && $_SERVER['REQUEST_METHOD'] == 'GET' ) {
+			if ( ! isset( $_REQUEST['action'] ) || in_array( $_REQUEST['action'], [ 'login' ] ) ) {
+				$login_page_id = get_option( 'alezux_login_page_id' );
 				wp_redirect( get_permalink( $login_page_id ) );
 				exit;
 			}
