@@ -19,8 +19,11 @@ jQuery(document).ready(function ($) {
     let limit = 20;
 
     function fetchSales() {
+        if (!alezux_finanzas_vars || !alezux_finanzas_vars.is_logged_in) {
+            return;
+        }
+
         console.log('Fetching sales history...');
-        $tbody.css('opacity', '0.5');
         $spinner.show();
 
         let startDate = '';

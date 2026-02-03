@@ -54,8 +54,9 @@ class Notifications extends Module_Base {
 		);
 
 		wp_localize_script( 'alezux-notifications-js', 'alezux_notifications_obj', [ // Standardizing localized object name if possible, or use module specific
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'alezux_notifications_nonce' ),
+			'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+			'nonce'        => wp_create_nonce( 'alezux_notifications_nonce' ),
+			'is_logged_in' => is_user_logged_in(),
 		] );
 
 		wp_enqueue_script( 'alezux-notifications-js' );

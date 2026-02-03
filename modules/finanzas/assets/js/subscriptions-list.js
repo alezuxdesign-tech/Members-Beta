@@ -15,8 +15,11 @@ jQuery(document).ready(function ($) {
     };
 
     function fetchSubscriptions() {
+        if (!alezux_finanzas_vars || !alezux_finanzas_vars.is_logged_in) {
+            return;
+        }
+
         $tbody.css('opacity', '0.5');
-        // $spinner.show(); // Optional: or show a small loader inside table
 
         currentState.search = $searchInput.val();
         currentState.limit = $('#alezux-limit-select').val();

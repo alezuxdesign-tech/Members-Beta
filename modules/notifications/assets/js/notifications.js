@@ -84,6 +84,10 @@ jQuery(document).ready(function ($) {
 
     // Fetch Notifications
     function fetchNotifications() {
+        if (!alezux_notifications_obj || !alezux_notifications_obj.is_logged_in) {
+            return;
+        }
+
         $.post(alezux_notifications_obj.ajaxurl, {
             action: 'alezux_get_notifications',
             nonce: alezux_notifications_obj.nonce

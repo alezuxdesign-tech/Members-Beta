@@ -104,9 +104,10 @@ class Config extends Module_Base {
 
 		// Localizar script para AJAX
 		wp_localize_script( 'alezux-config-js', 'alezux_auth_obj', [
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce'    => wp_create_nonce( 'alezux-auth-nonce' ),
-			'home_url' => home_url()
+			'ajax_url'     => admin_url( 'admin-ajax.php' ),
+			'nonce'        => wp_create_nonce( 'alezux-auth-nonce' ),
+			'home_url'     => home_url(),
+			'is_logged_in' => is_user_logged_in()
 		]);
 	}
 

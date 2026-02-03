@@ -336,24 +336,27 @@ class Finanzas extends Module_Base {
             wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js'], $version, true );
             
             wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
+                'ajax_url'     => admin_url( 'admin-ajax.php' ),
+                'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
+                'is_logged_in' => is_user_logged_in()
             ] );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/plans-manager.js' ) ) {
              wp_register_script( 'alezux-plans-manager-js', ALEZUX_FINANZAS_URL . 'assets/js/plans-manager.js', ['jquery'], $version, true );
               wp_localize_script( 'alezux-plans-manager-js', 'alezux_finanzas_vars', [
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
+                'ajax_url'     => admin_url( 'admin-ajax.php' ),
+                'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
+                'is_logged_in' => is_user_logged_in()
             ] );
         }
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/subscriptions-list.js' ) ) {
              wp_register_script( 'alezux-subs-list-js', ALEZUX_FINANZAS_URL . 'assets/js/subscriptions-list.js', ['jquery'], $version, true );
               wp_localize_script( 'alezux-subs-list-js', 'alezux_finanzas_vars', [
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                'nonce'    => wp_create_nonce( 'alezux_finanzas_nonce' )
+                'ajax_url'     => admin_url( 'admin-ajax.php' ),
+                'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
+                'is_logged_in' => is_user_logged_in()
             ] );
         }
         

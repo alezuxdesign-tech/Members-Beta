@@ -13,8 +13,11 @@ jQuery(document).ready(function ($) {
     let currentPage = 1;
 
     function fetchPlans() {
+        if (!alezux_finanzas_vars || !alezux_finanzas_vars.is_logged_in) {
+            return;
+        }
+
         $tbody.css('opacity', '0.5');
-        $spinner.show();
 
         const data = {
             action: 'alezux_get_plans_list',
