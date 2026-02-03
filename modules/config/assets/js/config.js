@@ -128,8 +128,10 @@ jQuery(document).ready(function ($) {
     });
 
     // --- TOGGLE PASSWORD VISIBILITY ---
-    $(document).on('click', '.alezux-toggle-password', function () {
-        var $input = $(this).siblings('input');
+    $(document).on('click', '.alezux-toggle-password', function (e) {
+        e.preventDefault();
+        var $wrapper = $(this).closest('.alezux-auth-pass-wrapper');
+        var $input = $wrapper.find('input');
         var $openIcon = $(this).find('.eye-open');
         var $closedIcon = $(this).find('.eye-closed');
 
