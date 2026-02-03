@@ -18,7 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		margin: 20px;
 		max-width: 1200px;
 		font-family: 'Inter', system-ui, -apple-system, sans-serif;
-		padding-bottom: 80px; /* Margen para evitar solapamiento con footer WP */
+		padding-bottom: 200px; /* Bastante espacio para que el footer no tape nada */
+		min-height: 80vh;
 	}
 	.alezux-tabs {
 		display: flex;
@@ -52,6 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	.alezux-tab-panel {
 		/* El control de display se hará via JS inline style para asegurar prioridad */
 		animation: fadeIn 0.3s ease;
+		padding-bottom: 80px; 
 	}
 	
 	@keyframes fadeIn {
