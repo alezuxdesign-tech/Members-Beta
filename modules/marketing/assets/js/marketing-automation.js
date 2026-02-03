@@ -116,9 +116,17 @@
             nodeEl.innerHTML = `
                 <div class="node-header">${icon} ${title}</div>
                 <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
-                <div class="node-terminal terminal-in" data-node="${id}"></div>
-                <div class="node-terminal terminal-out" data-node="${id}"></div>
+                <div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>
+                <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
             `;
+
+            // Evitar que el clic en el terminal se propague al nodo (que abre ajustes)
+            nodeEl.querySelectorAll('.node-terminal').forEach(t => {
+                t.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.handleTerminalClick(t);
+                });
+            });
 
             this.canvas.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
