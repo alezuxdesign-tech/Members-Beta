@@ -331,36 +331,30 @@ class Login_Widget extends Widget_Base {
 				'options' => [
 					'flex-start' => [
 						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
-						'icon' => 'eicon-text-align-left',
+						'icon' => 'eicon-h-align-left',
 					],
 					'center' => [
 						'title' => esc_html__( 'Centro', 'alezux-members' ),
-						'icon' => 'eicon-text-align-center',
+						'icon' => 'eicon-h-align-center',
 					],
 					'flex-end' => [
 						'title' => esc_html__( 'Derecha', 'alezux-members' ),
-						'icon' => 'eicon-text-align-right',
+						'icon' => 'eicon-h-align-right',
 					],
 					'stretch' => [
 						'title' => esc_html__( 'Justificado', 'alezux-members' ),
-						'icon' => 'eicon-text-align-justify',
+						'icon' => 'eicon-h-align-stretch',
 					],
 				],
 				'default' => 'stretch',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}}; width: {{VALUE === "stretch" ? "100%" : "auto"}};',
+					'{{WRAPPER}} .alezux-auth-form' => 'align-items: {{VALUE}};',
+					'{{WRAPPER}} .alezux-auth-submit' => 'width: {{VALUE === "stretch" ? "100%" : "auto"}};',
 				],
 			]
 		);
 
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'button_typography',
-				'label'    => esc_html__( 'Tipografía', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-auth-submit',
-			]
-		);
+
 
 		$this->add_group_control(
 			Group_Control_Text_Shadow::get_type(),
@@ -471,18 +465,7 @@ class Login_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_responsive_control(
-			'button_padding',
-			[
-				'label'      => esc_html__( 'Relleno', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', '%' ],
-				'selectors'  => [
-					'{{WRAPPER}} .alezux-auth-submit' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator' => 'before',
-			]
-		);
+
 
 		$this->add_responsive_control(
 			'button_padding',

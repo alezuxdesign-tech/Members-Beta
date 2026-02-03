@@ -322,9 +322,6 @@
 }
 
 .alezux-auth-submit {
-    width: 100%;
-    align-self: stretch;
-    /* Default alignment */
     background: var(--alezux-primary, #6c5ce7);
     color: #fff;
     border: none;
@@ -349,22 +346,6 @@
 
 /** Button Alignment Utility - Cleanup prefix_class version **/
 /* We return to Elementor selectors for better real-time preview */
-
-.alezux-btn-align-mobile-center .alezux-auth-submit {
-    align-self: center;
-    width: auto;
-}
-
-.alezux-btn-align-mobile-flex-end .alezux-auth-submit {
-    align-self: flex-end;
-    width: auto;
-}
-
-.alezux-btn-align-mobile-stretch .alezux-auth-submit {
-    align-self: stretch;
-    width: 100%;
-}
-}
 
 .alezux-auth-extra {
     display: flex;
