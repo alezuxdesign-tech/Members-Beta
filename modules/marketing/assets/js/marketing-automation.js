@@ -223,13 +223,16 @@
             }
 
             nodeEl.innerHTML = `
-                <div class="node-header">
-                    <span>${icon} ${title}</span>
+                <div class="node-box">
+                    <div class="node-box-icon">${icon}</div>
                     <div class="node-menu-btn" data-node="${id}" title="Opciones">
                         <span></span><span></span><span></span>
                     </div>
                 </div>
-                <div class="node-content">${data.description || 'Haz clic para configurar'}</div>
+                <div class="node-labels">
+                    <div class="node-title">${title}</div>
+                    <div class="node-description">${data.description || 'Haz clic para configurar'}</div>
+                </div>
                 ${type !== 'trigger' ? `<div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>` : ''}
                 ${type === 'condition' ? `
                     <div class="node-terminal terminal-out terminal-true" data-node="${id}" data-branch="true" title="Sí"></div>
@@ -552,6 +555,7 @@
             if (nodeEl && !isButton) {
                 this.isDragging = true;
                 this.dragTarget = nodeEl;
+                // El nodo ahora mide 100px de ancho para centrar el box de 70px
                 this.initialX = e.clientX / this.scale - nodeEl.offsetLeft;
                 this.initialY = e.clientY / this.scale - nodeEl.offsetTop;
                 nodeEl.style.zIndex = 1000;
@@ -664,7 +668,7 @@
                 div.className = `quick-menu-item type-${item.type}`;
                 div.innerHTML = `<span>${item.icon}</span> ${item.label}`;
                 div.onclick = () => {
-                    const newNodeId = this.addNode(item.type, node.x + 300, node.y);
+                    const newNodeId = this.addNode(item.type, node.x + 150, node.y);
                     this.createConnection(nodeId, newNodeId);
                     this.removeQuickMenu();
                 };
