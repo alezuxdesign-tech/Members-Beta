@@ -277,6 +277,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 
+				<div style="border-top: 1px solid #333; margin: 25px 0;"></div>
+
+				<div class="alezux-form-group">
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px;">🚪 Autenticación Personalizada</h3>
+					<div>
+						<label class="alezux-form-label">Página de Login Personalizada</label>
+						<?php 
+						wp_dropdown_pages([
+							'name'              => 'alezux_login_page_id',
+							'selected'          => get_option('alezux_login_page_id'),
+							'show_option_none'  => 'Usar WordPress por defecto',
+							'option_none_value' => '0',
+							'class'             => 'alezux-select-input',
+							'style'             => 'background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;'
+						]); 
+						?>
+						<p style="font-size: 12px; color: #777; margin-top: 5px;">Selecciona la página donde has colocado el widget de Login. Las peticiones a /wp-login.php serán redirigidas aquí.</p>
+					</div>
+				</div>
+
 				<div style="margin-top: 40px; text-align: right;">
 					<button type="submit" class="button button-primary" 
 							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">

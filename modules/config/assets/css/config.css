@@ -219,3 +219,223 @@
     /* Can add a subtle hover effect if desired */
     box-shadow: var(--alezux-box-shadow-hover, 0 6px 15px rgba(0, 0, 0, 0.15));
 }
+
+/* --- AUTH FORMS & CUSTOM MODAL --- */
+
+.alezux-auth-form-card {
+    background: var(--alezux-bg-card, #1a1a1a);
+    padding: 40px;
+    border-radius: var(--alezux-border-radius, 20px);
+    border: 1px solid var(--alezux-border-color, #333);
+    box-shadow: var(--alezux-box-shadow, 0 10px 30px rgba(0, 0, 0, 0.3));
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.alezux-auth-title {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.alezux-auth-desc {
+    color: #aaa;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.alezux-auth-field {
+    margin-bottom: 20px;
+}
+
+.alezux-auth-field input[type="text"],
+.alezux-auth-field input[type="password"],
+.alezux-auth-field input[type="email"] {
+    width: 100%;
+    background: #252525;
+    border: 1px solid #444;
+    padding: 12px 15px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.alezux-auth-field input:focus {
+    border-color: var(--alezux-primary, #6c5ce7);
+    outline: none;
+    background: #2a2a2a;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.alezux-auth-submit {
+    width: 100%;
+    background: var(--alezux-primary, #6c5ce7);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.alezux-auth-submit:hover {
+    background: var(--alezux-primary-hover, #5649c0);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+.alezux-auth-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.alezux-remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ccc;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.alezux-auth-footer {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.alezux-auth-link {
+    color: var(--alezux-primary, #6c5ce7);
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.alezux-auth-link:hover {
+    opacity: 0.8;
+}
+
+/* Modales Personalizados */
+.alezux-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.alezux-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.alezux-modal-card {
+    background: #1a1a1a;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid #333;
+    text-align: center;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.alezux-modal-overlay.active .alezux-modal-card {
+    transform: scale(1);
+}
+
+.alezux-modal-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.alezux-modal-icon.error {
+    color: #ff7675;
+}
+
+.alezux-modal-icon.success {
+    color: #55efc4;
+}
+
+.alezux-modal-title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.alezux-modal-message {
+    color: #aaa;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.alezux-modal-close {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.alezux-modal-close:hover {
+    background: #444;
+}
+
+/* Loader */
+.alezux-loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: alezux-spin 0.8s linear infinite;
+}
+
+@keyframes alezux-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Alerts */
+.alezux-auth-alert {
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alezux-auth-alert.error {
+    background: rgba(255, 118, 117, 0.1);
+    border: 1px solid #ff7675;
+    color: #ff7675;
+}
