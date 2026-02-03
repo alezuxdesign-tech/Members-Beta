@@ -70,13 +70,7 @@ class Marketing_Automation_Widget extends Widget_Base {
 
 	protected function render() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            ?>
-            <div style="padding: 40px; text-align: center; background: #0b0e14; border-radius: 20px; border: 1px solid #333; color: #718096;">
-                <span class="dashicons dashicons-lock" style="font-size: 40px; width: 40px; height: 40px; margin-bottom: 20px; display: inline-block;"></span>
-                <h3 style="color: #fff; margin-bottom: 10px;">Acceso Restringido</h3>
-                <p><?php \esc_html_e( 'Solo los administradores pueden gestionar las automatizaciones de marketing.', 'alezux-members' ); ?></p>
-            </div>
-            <?php
+            echo '<div style="padding: 20px; color: #718096; font-weight: bold;">' . \esc_html__( 'No tienes permisos administrativos', 'alezux-members' ) . '</div>';
             return;
         }
 		?>
