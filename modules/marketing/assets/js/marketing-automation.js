@@ -750,6 +750,24 @@
             return id;
         }
 
+        getTriggerTypeForNode(nodeId) {
+            // Seguir conexiones hacia atrás para encontrar el trigger original
+            let currentId = nodeId;
+            let visited = new Set();
+
+            while (currentId && !visited.has(currentId)) {
+                visited.add(currentId);
+                const node = this.nodes.find(n => n.id === currentId);
+                if (!node) break;
+                if (node.type === 'trigger') return node.data.event;
+
+                const incoming = this.connections.find(c => c.to === currentId);
+                if (!incoming) break;
+                currentId = incoming.from;
+            }
+            return null;
+        }
+
     }
 
     $(document).ready(() => {
