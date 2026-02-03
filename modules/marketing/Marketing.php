@@ -115,7 +115,7 @@ class Marketing extends Module_Base {
 
         $id        = isset( $_POST['id'] ) ? \intval( $_POST['id'] ) : 0;
         $name      = isset( $_POST['name'] ) ? \sanitize_text_field( $_POST['name'] ) : 'Sin Nombre';
-        $blueprint = isset( $_POST['blueprint'] ) ? $_POST['blueprint'] : ''; // JSON raw
+        $blueprint = isset( $_POST['blueprint'] ) ? \wp_unslash( $_POST['blueprint'] ) : ''; // JSON raw
         
         // Extraer el trigger del blueprint para indexar
         $blueprint_data = \json_decode( $blueprint, true );
@@ -182,6 +182,11 @@ class Marketing extends Module_Base {
         global $wpdb;
         $table = $wpdb->prefix . 'alezux_marketing_automations';
         $results = $wpdb->get_results( "SELECT id, name, blueprint, created_at FROM $table ORDER BY created_at DESC" );
+
+        // Decodificar blueprint para que llegue como objeto al JS
+        foreach ( $results as $item ) {
+            $item->blueprint = \json_decode( $item->blueprint );
+        }
 
         \wp_send_json_success( $results );
     }

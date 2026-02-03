@@ -502,6 +502,45 @@
             });
         }
 
+        loadAutomation(id) {
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_load_automation',
+                    nonce: alezux_marketing_vars.nonce,
+                    id: id
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.doClearCanvas();
+                        this.currentAutomationId = response.data.id;
+                        this.popup.nameInput.value = response.data.name;
+
+                        const blueprint = response.data.blueprint;
+                        if (!blueprint) return;
+
+                        // Cargar Nodos
+                        if (blueprint.nodes) {
+                            blueprint.nodes.forEach(n => {
+                                this.addNode(n.type, n.x, n.y, n.data, n.id);
+                            });
+                        }
+
+                        // Cargar Conexiones
+                        setTimeout(() => {
+                            if (blueprint.connections) {
+                                blueprint.connections.forEach(c => {
+                                    this.createConnection(c.from, c.to);
+                                });
+                            }
+                            this.updatePlaceholder();
+                        }, 50);
+                    }
+                }
+            });
+        }
+
         loadAutomationsTable() {
             const list = document.getElementById('marketing-automations-list');
             if (!list) return;
@@ -523,8 +562,8 @@
                         let html = '';
                         response.data.forEach(item => {
                             const date = new Date(item.created_at).toLocaleDateString();
-                            const blueprint = JSON.parse(item.blueprint || '{}');
-                            const nodeCount = blueprint.nodes ? blueprint.nodes.length : 0;
+                            const blueprint = item.blueprint || {};
+                            const nodeCount = (blueprint.nodes && Array.isArray(blueprint.nodes)) ? blueprint.nodes.length : 0;
 
                             html += `
                                 <tr>
