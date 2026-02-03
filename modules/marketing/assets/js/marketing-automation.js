@@ -289,11 +289,41 @@
                     `;
                 }
             } else if (node.type === 'email') {
+                const triggerType = this.getTriggerTypeForNode(nodeId);
+                let placeholdersInfo = '';
+
+                if (triggerType === 'new_student') {
+                    placeholdersInfo = `
+                        <div style="background: rgba(66, 153, 225, 0.1); border: 1px dashed #4299e1; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                            <span style="color: #4299e1; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles (Registro):</span>
+                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_name}}</code>
+                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_email}}</code>
+                        </div>
+                    `;
+                } else if (['primer_pago', 'pago_exitoso', 'pago_fallido'].includes(triggerType)) {
+                    placeholdersInfo = `
+                        <div style="background: rgba(72, 187, 120, 0.1); border: 1px dashed #48bb78; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                            <span style="color: #48bb78; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Variables disponibles (Pago):</span>
+                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{student_name}}</code>
+                            <code style="background: #2d3748; padding: 2px 5px; border-radius: 4px; font-size: 10px; color: #fff;">{{plan_name}}</code>
+                        </div>
+                    `;
+                }
+                else {
+                    placeholdersInfo = `
+                        <div style="background: rgba(113, 128, 150, 0.1); border: 1px dashed #4a5568; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                            <span style="color: #a0aec0; font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Nota:</span>
+                            <p style="color: #718096; font-size: 10px; margin: 0;">Conecta un trigger para ver las variables disponibles.</p>
+                        </div>
+                    `;
+                }
+
                 this.modal.fields.innerHTML = `
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Asunto:</label>
-                    <input type="text" id="field-subject" value="${node.data.subject || ''}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                    <input type="text" id="field-subject" value="${node.data.subject || ''}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;" placeholder="Ej: Bienvenido {{student_name}}">
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Mensaje:</label>
-                    <textarea id="field-content" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; height:80px;">${node.data.content || ''}</textarea>
+                    <textarea id="field-content" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; height:120px;">${node.data.content || ''}</textarea>
+                    ${placeholdersInfo}
                 `;
             } else if (node.type === 'delay') {
                 this.modal.fields.innerHTML = `
@@ -558,7 +588,7 @@
                 success: (response) => {
                     if (response.success) {
                         if (response.data.length === 0) {
-                            list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#718096;">No hay automatizaciones creadas aún.</td></tr>';
+                            list.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#718096;">No hay automatizaciones creadas aún.</td></tr>';
                             return;
                         }
 
@@ -573,9 +603,8 @@
 
                             html += `
                                 <tr>
-                                    <td>#${item.id}</td>
                                     <td style="font-weight:600; color:#fff;">${item.name}</td>
-                                    <td><span class="alezux-badge">${nodeCount} nodos</span></td>
+                                    <td><span class="alezux-badge" style="background: rgba(72, 187, 120, 0.1); color: #48bb78; border-color: rgba(72, 187, 120, 0.2);">${item.total_executions || 0} disparos</span></td>
                                     <td>${date}</td>
                                     <td style="text-align: right;">
                                         <button class="alezux-action-btn edit-auto" data-id="${item.id}">

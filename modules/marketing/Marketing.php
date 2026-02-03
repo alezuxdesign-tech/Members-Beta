@@ -181,7 +181,7 @@ class Marketing extends Module_Base {
         
         global $wpdb;
         $table = $wpdb->prefix . 'alezux_marketing_automations';
-        $results = $wpdb->get_results( "SELECT id, name, blueprint, created_at FROM $table ORDER BY created_at DESC" );
+        $results = $wpdb->get_results( "SELECT id, name, total_executions, created_at, blueprint FROM $table ORDER BY created_at DESC" );
 
         // Decodificar blueprint para que llegue como objeto al JS
         foreach ( $results as $item ) {

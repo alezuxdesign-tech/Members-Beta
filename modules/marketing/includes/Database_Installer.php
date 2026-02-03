@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Database_Installer {
 
     public static function check_updates() {
-        if ( \get_option( 'alezux_marketing_db_version' ) !== '1.0.0' ) {
+        if ( \get_option( 'alezux_marketing_db_version' ) !== '1.1.0' ) {
             self::install();
         }
     }
@@ -25,6 +25,7 @@ class Database_Installer {
             event_trigger varchar(100) NOT NULL,
             blueprint longtext NOT NULL,
             status varchar(20) DEFAULT 'active' NOT NULL,
+            total_executions bigint(20) DEFAULT 0 NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY (id),
@@ -68,6 +69,6 @@ class Database_Installer {
         dbDelta( $sql2 );
         dbDelta( $sql3 );
 
-        \update_option( 'alezux_marketing_db_version', '1.0.0' );
+        \update_option( 'alezux_marketing_db_version', '1.1.0' );
     }
 }
