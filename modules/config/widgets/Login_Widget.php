@@ -346,11 +346,8 @@ class Login_Widget extends Widget_Base {
 						'icon' => 'eicon-h-align-stretch',
 					],
 				],
+				'prefix_class' => 'alezux-button-align%s-',
 				'default' => 'stretch',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-form' => 'align-items: {{VALUE}};',
-					'{{WRAPPER}} .alezux-auth-submit' => 'width: {{VALUE === "stretch" ? "100%" : "auto"}};',
-				],
 			]
 		);
 
