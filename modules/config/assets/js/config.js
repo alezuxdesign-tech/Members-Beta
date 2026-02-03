@@ -130,14 +130,17 @@ jQuery(document).ready(function ($) {
     // --- TOGGLE PASSWORD VISIBILITY ---
     $(document).on('click', '.alezux-toggle-password', function () {
         var $input = $(this).siblings('input');
-        var $icon = $(this).find('i');
+        var $openIcon = $(this).find('.eye-open');
+        var $closedIcon = $(this).find('.eye-closed');
 
         if ($input.attr('type') === 'password') {
             $input.attr('type', 'text');
-            $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            $openIcon.hide();
+            $closedIcon.show();
         } else {
             $input.attr('type', 'password');
-            $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            $openIcon.show();
+            $closedIcon.hide();
         }
     });
 });

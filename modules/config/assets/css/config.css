@@ -266,13 +266,22 @@
     cursor: pointer !important;
     color: #888 !important;
     z-index: 999 !important;
-    /* Valor muy alto para evitar solapamientos */
-    font-size: 16px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: color 0.3s ease !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    width: 30px !important;
+    height: 30px !important;
     pointer-events: all !important;
+}
+
+.alezux-eye-icon {
+    width: 20px !important;
+    height: 20px !important;
+    display: block !important;
+    pointer-events: none !important;
 }
 
 .alezux-toggle-password:hover {
