@@ -1377,12 +1377,22 @@ class Estudiantes_Widget extends Widget_Base {
 				</table>
 			</div>
 			
-			<!-- Footer: Pagination -->
+			<!-- Footer: Pagination & Limit -->
 			<div class="alezux-table-footer">
 				<div class="alezux-pagination alezux-estudiantes-pagination" 
 					 data-total-pages="<?php echo \esc_attr( $total_pages ); ?>" 
 					 data-current-page="1">
 				<!-- Pagination rendered via JS -->
+				</div>
+
+				<div class="alezux-row-limit-wrapper">
+					<span class="alezux-row-limit-label"><?php \esc_html_e( 'Filas:', 'alezux-members' ); ?></span>
+					<select class="alezux-row-limit-select">
+						<option value="10" <?php \selected( $limit, 10 ); ?>>10</option>
+						<option value="20" <?php \selected( $limit, 20 ); ?>>20</option>
+						<option value="50" <?php \selected( $limit, 50 ); ?>>50</option>
+						<option value="100" <?php \selected( $limit, 100 ); ?>>100</option>
+					</select>
 				</div>
 			</div>
 

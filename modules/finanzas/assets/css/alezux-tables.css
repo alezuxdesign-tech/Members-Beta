@@ -195,6 +195,47 @@
     padding: 6px;
 }
 
+/* Footer Layout */
+.alezux-table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #2d3748;
+}
+
+.alezux-row-limit-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alezux-row-limit-label {
+    font-size: 13px;
+    color: #718096;
+}
+
+.alezux-row-limit-select {
+    background: #121620;
+    border: 1px solid #2d3748;
+    color: #fff;
+    padding: 5px 30px 5px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 70px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.185 5.355 2.408 4.8 2.812 4.8h9.576a.792.792 0 0 1 .626 1.258l-4.796 5.482a.793.793 0 0 1-1.213 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.alezux-row-limit-select:focus {
+    border-color: #5a8dee;
+    outline: none;
+}
+
 
 /* Table Structure */
 .alezux-table-wrapper {

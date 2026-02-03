@@ -87,6 +87,16 @@ jQuery(document).ready(function ($) {
         $input.val('').trigger('input').focus();
     });
 
+    $(document).on('change', '.alezux-row-limit-select', function () {
+        var newLimit = $(this).val();
+        console.log('[Alezux] Cambiando límite a:', newLimit);
+
+        var $wrapper = $(this).closest('.alezux-estudiantes-wrapper');
+        $wrapper.data('limit', newLimit);
+
+        loadStudents(1, currentSearch);
+    });
+
     function loadStudents(page, search) {
         console.log('[Alezux] Buscando:', search, 'Página:', page);
         var $tableBody = $('.alezux-estudiantes-table tbody');
