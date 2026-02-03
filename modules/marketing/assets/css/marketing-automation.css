@@ -132,3 +132,48 @@
 .automation-node-template:hover {
     transform: translateY(-3px) scale(1.02);
 }
+
+/* Modales Premium */
+.alezux-modal-overlay {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.alezux-modal-content {
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Inputs de Modal */
+.alezux-modal-content input,
+.alezux-modal-content select,
+.alezux-modal-content textarea {
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.alezux-modal-content input:focus,
+.alezux-modal-content select:focus,
+.alezux-modal-content textarea:focus {
+    border-color: #e74c3c !important;
+}

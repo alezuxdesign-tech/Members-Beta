@@ -13,8 +13,15 @@
             this.currentY = 0;
             this.initialX = 0;
             this.initialY = 0;
-            this.xOffset = 0;
-            this.yOffset = 0;
+            this.editingNode = null;
+
+            this.modal = {
+                overlay: document.getElementById('alezux-node-modal'),
+                fields: document.getElementById('modal-fields'),
+                save: document.getElementById('modal-save'),
+                cancel: document.getElementById('modal-cancel'),
+                title: document.getElementById('modal-title')
+            };
 
             this.initEvents();
         }
@@ -49,6 +56,10 @@
             // Save Button
             const saveBtn = document.getElementById('save-automation');
             if (saveBtn) saveBtn.addEventListener('click', () => this.saveAutomation());
+
+            // Modal Events
+            this.modal.cancel.addEventListener('click', () => this.closeModal());
+            this.modal.save.addEventListener('click', () => this.applyModalChanges());
         }
 
         handleDrop(e) {
@@ -158,11 +169,68 @@
 
         openNodeSettings(nodeId) {
             const node = this.nodes.find(n => n.id === nodeId);
-            const newDesc = prompt("Nombre/Descripción del nodo:", node.data.description || "");
-            if (newDesc !== null) {
-                node.data.description = newDesc;
-                node.el.querySelector('.node-content').innerText = newDesc;
+            this.editingNode = node;
+
+            this.modal.title.innerText = `Configurar ${node.type.charAt(0).toUpperCase() + node.type.slice(1)}`;
+            this.modal.fields.innerHTML = ''; // Limpiar
+
+            if (node.type === 'trigger') {
+                let options = '<option value="">Selecciona un evento...</option>';
+                for (const [key, label] of Object.entries(window.alezuxEventsDictionary || {})) {
+                    options += `<option value="${key}" ${node.data.event === key ? 'selected' : ''}>${label}</option>`;
+                }
+
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Evento que dispara la acción:</label>
+                    <select id="field-event" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                        ${options}
+                    </select>
+                `;
+            } else if (node.type === 'email') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Asunto del correo:</label>
+                    <input type="text" id="field-subject" value="${node.data.subject || ''}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">ID de Plantilla / Contenido:</label>
+                    <textarea id="field-content" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; height:80px;">${node.data.content || ''}</textarea>
+                `;
+            } else if (node.type === 'delay') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Tiempo de espera (minutos):</label>
+                    <input type="number" id="field-minutes" value="${node.data.minutes || '0'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                `;
             }
+
+            this.modal.overlay.style.display = 'flex';
+        }
+
+        closeModal() {
+            this.modal.overlay.style.display = 'none';
+            this.editingNode = null;
+        }
+
+        applyModalChanges() {
+            if (!this.editingNode) return;
+
+            const node = this.editingNode;
+            let description = '';
+
+            if (node.type === 'trigger') {
+                const event = document.getElementById('field-event').value;
+                node.data.event = event;
+                description = window.alezuxEventsDictionary[event] || 'Evento no configurado';
+            } else if (node.type === 'email') {
+                node.data.subject = document.getElementById('field-subject').value;
+                node.data.content = document.getElementById('field-content').value;
+                description = `Email: ${node.data.subject || 'Sin asunto'}`;
+            } else if (node.type === 'delay') {
+                node.data.minutes = document.getElementById('field-minutes').value;
+                description = `Esperar ${node.data.minutes} min`;
+            }
+
+            node.data.description = description;
+            node.el.querySelector('.node-content').innerText = description;
+
+            this.closeModal();
         }
 
         saveAutomation() {

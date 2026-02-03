@@ -98,6 +98,32 @@ class Marketing_Automation_Widget extends Widget_Base {
                 </div>
             </div>
 
+            <!-- Modal Personalizado Alezux -->
+            <div id="alezux-node-modal" class="alezux-modal-overlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter: blur(5px); justify-content: center; align-items: center;">
+                <div class="alezux-modal-content" style="background: #1a1a1a; width: 400px; border-radius: 30px; border: 1px solid #333; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,1);">
+                    <h3 id="modal-title" style="color:#fff; margin-bottom: 20px;">Configurar Nodo</h3>
+                    
+                    <div id="modal-fields">
+                        <!-- Campos dinámicos aquí -->
+                    </div>
+
+                    <div style="margin-top: 30px; display: flex; gap: 10px;">
+                        <button id="modal-save" style="flex:1; background: #e74c3c; color:#fff; border:none; padding:12px; border-radius:50px; cursor:pointer; font-weight:bold;">Guardar</button>
+                        <button id="modal-cancel" style="flex:1; background: transparent; color:#888; border:1px solid #333; padding:12px; border-radius:50px; cursor:pointer;">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                window.alezuxEventsDictionary = {
+                    'primer_pago': 'Primer Pago Exitoso',
+                    'pago_exitoso': 'Pago Recibido (General)',
+                    'registro_usuario': 'Nuevo Registro de Usuario',
+                    'curso_completado': 'Curso Finalizado',
+                    'logro_obtenido': 'Nuevo Logro Desbloqueado'
+                };
+            </script>
+
             <div style="clear: both;"></div>
             
             <div class="alezux-canvas-actions" style="margin-top: 20px; text-align: right;">
