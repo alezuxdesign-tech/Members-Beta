@@ -200,8 +200,11 @@ class Login_Widget extends Widget_Base {
 				<div class="alezux-auth-field">
 					<input type="text" name="username" placeholder="<?php echo esc_attr( $settings['user_placeholder'] ); ?>" required>
 				</div>
-				<div class="alezux-auth-field">
-					<input type="password" name="password" placeholder="<?php echo esc_attr( $settings['pass_placeholder'] ); ?>" required>
+				<div class="alezux-auth-field alezux-auth-pass-wrapper">
+					<input type="password" name="password" id="alezux-login-password" placeholder="<?php echo esc_attr( $settings['pass_placeholder'] ); ?>" required>
+					<span class="alezux-toggle-password">
+						<i class="far fa-eye"></i>
+					</span>
 				</div>
 
 				<?php if ( 'yes' === $settings['show_remember'] ) : ?>
