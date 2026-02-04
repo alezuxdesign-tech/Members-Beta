@@ -23,8 +23,15 @@ class Config extends Module_Base {
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
 
+		// AJAX Profile & Password
+		add_action( 'wp_ajax_alezux_update_profile', [ $this, 'handle_update_profile' ] );
+		add_action( 'wp_ajax_alezux_change_password', [ $this, 'handle_change_password' ] );
+
 		// Shortcode de Alertas
 		$this->register_shortcode( 'alezux_login_alerts', [ $this, 'render_login_alerts' ], 'Muestra mensajes de error/éxito en el login.' );
+
+		// Filtro para Avatar Personalizado
+		add_filter( 'get_avatar_url', [ $this, 'custom_avatar_url' ], 10, 3 );
 	}
 
 	/**
@@ -109,16 +116,28 @@ class Config extends Module_Base {
 			'home_url'     => home_url(),
 			'is_logged_in' => is_user_logged_in()
 		]);
+
+		// Profile Assets
+		wp_enqueue_style( 'alezux-profile-css', $this->get_asset_url( 'assets/css/profile-widget.css' ), [], file_exists( __DIR__ . '/assets/css/profile-widget.css' ) ? filemtime( __DIR__ . '/assets/css/profile-widget.css' ) : ALEZUX_MEMBERS_VERSION );
+		wp_enqueue_script( 'alezux-profile-js', $this->get_asset_url( 'assets/js/profile-widget.js' ), [ 'jquery' ], file_exists( __DIR__ . '/assets/js/profile-widget.js' ) ? filemtime( __DIR__ . '/assets/js/profile-widget.js' ) : ALEZUX_MEMBERS_VERSION, true );
+
+		// Password Assets
+		wp_enqueue_style( 'alezux-password-css', $this->get_asset_url( 'assets/css/password-widget.css' ), [], file_exists( __DIR__ . '/assets/css/password-widget.css' ) ? filemtime( __DIR__ . '/assets/css/password-widget.css' ) : ALEZUX_MEMBERS_VERSION );
+		wp_enqueue_script( 'alezux-password-js', $this->get_asset_url( 'assets/js/password-widget.js' ), [ 'jquery' ], file_exists( __DIR__ . '/assets/js/password-widget.js' ) ? filemtime( __DIR__ . '/assets/js/password-widget.js' ) : ALEZUX_MEMBERS_VERSION, true );
 	}
 
 	public function register_elementor_widgets( $widgets_manager ) {
 		require_once __DIR__ . '/widgets/Config_Widget.php';
 		require_once __DIR__ . '/widgets/Login_Widget.php';
 		require_once __DIR__ . '/widgets/Recover_Widget.php';
+		require_once __DIR__ . '/widgets/Profile_Widget.php';
+		require_once __DIR__ . '/widgets/Password_Widget.php';
 
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Config_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Login_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Recover_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Profile_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Password_Widget() );
 	}
 
 	/**
@@ -139,6 +158,146 @@ class Config extends Module_Base {
 		} else {
 			wp_send_json_success( [ 'redirect' => home_url() ] );
 		}
+	}
+
+	/**
+	 * Manejar actualización de perfil por AJAX
+	 */
+	public function handle_update_profile() {
+		check_ajax_referer( 'alezux-auth-nonce', 'nonce' );
+		
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( [ 'message' => 'Debes iniciar sesión para realizar esta acción.' ] );
+		}
+
+		$user_id = get_current_user_id();
+		$errors = [];
+
+		// Sanitización y validación
+		$first_name = sanitize_text_field( $_POST['first_name'] );
+		$last_name  = sanitize_text_field( $_POST['last_name'] );
+		$user_email = sanitize_email( $_POST['user_email'] );
+
+		if ( ! is_email( $user_email ) ) {
+			wp_send_json_error( [ 'message' => 'El correo electrónico no es válido.' ] );
+		}
+
+		// Verificar si el correo ya existe en otro usuario
+		$existing_user = get_user_by( 'email', $user_email );
+		if ( $existing_user && $existing_user->ID !== $user_id ) {
+			wp_send_json_error( [ 'message' => 'Este correo ya está en uso por otro usuario.' ] );
+		}
+
+		// Actualizar datos básicos
+		$user_data = [
+			'ID'         => $user_id,
+			'first_name' => $first_name,
+			'last_name'  => $last_name,
+			'user_email' => $user_email,
+		];
+
+		$updated_user_id = wp_update_user( $user_data );
+
+		if ( is_wp_error( $updated_user_id ) ) {
+			wp_send_json_error( [ 'message' => 'Error al actualizar el perfil: ' . $updated_user_id->get_error_message() ] );
+		}
+
+		// Gestión de Avatar
+		if ( ! empty( $_FILES['alezux_avatar']['name'] ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/file.php' );
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+			$attachment_id = media_handle_upload( 'alezux_avatar', 0 ); // 0 para no asociar a un post específico
+
+			if ( is_wp_error( $attachment_id ) ) {
+				wp_send_json_error( [ 'message' => 'Error al subir la imagen: ' . $attachment_id->get_error_message() ] );
+			}
+
+			$avatar_url = wp_get_attachment_url( $attachment_id );
+			update_user_meta( $user_id, 'alezux_user_avatar', $avatar_url );
+			update_user_meta( $user_id, 'alezux_user_avatar_id', $attachment_id );
+		}
+
+		wp_send_json_success( [ 'message' => 'Perfil actualizado correctamente.' ] );
+	}
+
+	/**
+	 * Filtro para usar el avatar personalizado si existe
+	 */
+	public function custom_avatar_url( $url, $id_or_email, $args ) {
+		$user_id = 0;
+
+		if ( is_numeric( $id_or_email ) ) {
+			$user_id = (int) $id_or_email;
+		} elseif ( is_string( $id_or_email ) && ( $user = get_user_by( 'email', $id_or_email ) ) ) {
+			$user_id = $user->ID;
+		} elseif ( is_object( $id_or_email ) && isset( $id_or_email->user_id ) ) {
+			$user_id = (int) $id_or_email->user_id;
+		}
+
+		if ( $user_id ) {
+			$custom_avatar = get_user_meta( $user_id, 'alezux_user_avatar', true );
+			if ( $custom_avatar ) {
+				return $custom_avatar;
+			}
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Manejar cambio de contraseña por AJAX
+	 */
+	public function handle_change_password() {
+		check_ajax_referer( 'alezux-auth-nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( [ 'message' => 'Debes iniciar sesión para realizar esta acción.' ] );
+		}
+
+		$user_id = get_current_user_id();
+		$user    = get_userdata( $user_id );
+
+		$old_password     = $_POST['old_password'];
+		$new_password     = $_POST['new_password'];
+		$confirm_password = $_POST['confirm_password'];
+
+		// 1. Verificar restricción de tiempo (24 horas)
+		$last_change = get_user_meta( $user_id, 'alezux_last_password_change', true );
+		if ( $last_change && ( time() - $last_change ) < DAY_IN_SECONDS ) {
+			$remaining = round( ( DAY_IN_SECONDS - ( time() - $last_change ) ) / 3600, 1 );
+			wp_send_json_error( [ 'message' => sprintf( 'Solo puedes cambiar tu contraseña una vez cada 24 horas. Intenta de nuevo en %s horas.', $remaining ) ] );
+		}
+
+		// 2. Verificar contraseña antigua
+		if ( ! wp_check_password( $old_password, $user->user_pass, $user_id ) ) {
+			wp_send_json_error( [ 'message' => 'La contraseña actual es incorrecta.' ] );
+		}
+
+		// 3. Verificar que coincidan
+		if ( $new_password !== $confirm_password ) {
+			wp_send_json_error( [ 'message' => 'Las nuevas contraseñas no coinciden.' ] );
+		}
+
+		// 4. Validar requisitos de fortaleza (Servidor)
+		$errors = [];
+		if ( strlen( $new_password ) < 8 ) $errors[] = 'Mínimo 8 caracteres.';
+		if ( ! preg_match( '/[A-Z]/', $new_password ) ) $errors[] = 'Al menos una mayúscula.';
+		if ( ! preg_match( '/[0-9]/', $new_password ) ) $errors[] = 'Al menos un número.';
+		if ( ! preg_match( '/[^A-Za-z0-9]/', $new_password ) ) $errors[] = 'Al menos un signo especial.';
+
+		if ( ! empty( $errors ) ) {
+			wp_send_json_error( [ 'message' => 'La nueva contraseña no cumple los requisitos: ' . implode( ' ', $errors ) ] );
+		}
+
+		// 5. Actualizar contraseña
+		wp_set_password( $new_password, $user_id );
+		
+		// Registrar tiempo del cambio
+		update_user_meta( $user_id, 'alezux_last_password_change', time() );
+
+		wp_send_json_success( [ 'message' => 'Contraseña actualizada correctamente.' ] );
 	}
 
 	/**
