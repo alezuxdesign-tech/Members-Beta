@@ -133,6 +133,46 @@ class Password_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'field_spacing',
+			[
+				'label' => esc_html__( 'Rows Gap', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .field-group:not(:last-child)' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'label_heading',
+			[
+				'label' => esc_html__( 'Label', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_responsive_control(
+			'label_spacing',
+			[
+				'label' => esc_html__( 'Spacing', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 0, 'max' => 50 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .field-group label' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- STYLE SECTION: STRENGTH METER ---

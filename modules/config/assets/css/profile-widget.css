@@ -78,17 +78,15 @@
 .field-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
-
-.field-group.full-width {
-    grid-column: span 2;
 }
 
 .field-group label {
     font-size: 14px;
     font-weight: 600;
     color: #444;
+    display: block;
+    margin-bottom: 8px;
+    /* Valor por defecto */
 }
 
 .field-group input {
