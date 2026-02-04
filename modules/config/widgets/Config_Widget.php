@@ -142,6 +142,9 @@ class Config_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Link', 'alezux-members' ),
 				'type' => Controls_Manager::URL,
+				'dynamic' => [
+					'active' => true,
+				],
 				'placeholder' => esc_html__( 'https://your-link.com', 'alezux-members' ),
 				'default' => [
 					'url' => '#',
