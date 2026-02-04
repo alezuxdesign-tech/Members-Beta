@@ -315,6 +315,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 						?>
 						<p style="font-size: 12px; color: #777; margin-top: 5px;">Selecciona la página donde has colocado el widget de Login. Las peticiones a /wp-login.php serán redirigidas aquí.</p>
 					</div>
+
+					<div style="margin-top: 15px;">
+						<label class="alezux-form-label">Página de Restablecer Contraseña (Reset Password)</label>
+						<?php 
+						wp_dropdown_pages([
+							'name'              => 'alezux_reset_page_id',
+							'selected'          => get_option('alezux_reset_page_id'),
+							'show_option_none'  => 'Usar misma del Login',
+							'option_none_value' => '0',
+							'class'             => 'alezux-select-input',
+							'style'             => 'background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;'
+						]); 
+						?>
+						<p style="font-size: 12px; color: #777; margin-top: 5px;">Selecciona la página donde has colocado el widget <strong>Alezux Reset Password</strong>. El correo de recuperación apuntará aquí.</p>
+					</div>
 				</div>
 
 				<div style="margin-top: 40px; text-align: right;">

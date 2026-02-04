@@ -141,6 +141,9 @@ class Admin_Dashboard {
 		if ( isset( $_POST['alezux_login_page_id'] ) ) {
 			update_option( 'alezux_login_page_id', intval( $_POST['alezux_login_page_id'] ) );
 		}
+		if ( isset( $_POST['alezux_reset_page_id'] ) ) {
+			update_option( 'alezux_reset_page_id', intval( $_POST['alezux_reset_page_id'] ) );
+		}
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );
 		exit;
