@@ -79,35 +79,6 @@ class Config extends Module_Base {
 		return $lostpassword_url;
 	}
 
-	/**
-	 * Personalizar el mensaje de correo de recuperación para cambiar el link
-	 */
-	public function custom_retrieve_password_message( $message, $key, $user_login, $user_data ) {
-		$reset_page_id = get_option( 'alezux_reset_page_id' ); 
-		
-		if ( ! $reset_page_id ) {
-			// Fallback: Si no hay página de reset definida, intentamos usar la de login
-			$reset_page_id = get_option( 'alezux_login_page_id' );
-		}
-
-		if ( $reset_page_id ) {
-			$reset_url = get_permalink( $reset_page_id );
-			$reset_url = add_query_arg( [
-				'key' => $key,
-				'login' => rawurlencode( $user_login )
-			], $reset_url );
-
-			// Reemplazamos el link nativo por el nuestro
-			$message  = __( 'Alguien ha solicitado restablecer la contraseña de la siguiente cuenta:', 'alezux-members' ) . "\r\n\r\n";
-			$message .= network_home_url( '/' ) . "\r\n\r\n";
-			$message .= sprintf( __( 'Nombre de usuario: %s', 'alezux-members' ), $user_login ) . "\r\n\r\n";
-			$message .= __( 'Si ha sido un error, ignora este correo.', 'alezux-members' ) . "\r\n\r\n";
-			$message .= __( 'Para restablecer la contraseña, visita la siguiente dirección:', 'alezux-members' ) . "\r\n\r\n";
-			$message .= $reset_url . "\r\n";
-		}
-
-		return $message;
-	}
 
 	/**
 	 * Personalizar el mensaje de correo de recuperación para cambiar el link
@@ -411,7 +382,20 @@ class Config extends Module_Base {
 		$message .= sprintf( 'Nombre de usuario: %s', $user_data->user_login ) . "\r\n\r\n";
 		$message .= "Si ha sido un error, ignora este correo.\r\n\r\n";
 		$message .= "Para restablecer la contraseña, visita la siguiente dirección:\r\n\r\n";
-		$message .= network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user_data->user_login ), 'login' ) . "\r\n";
+		$reset_page_id = get_option( 'alezux_reset_page_id' );
+		if ( ! $reset_page_id ) $reset_page_id = get_option( 'alezux_login_page_id' );
+		
+		if ( $reset_page_id ) {
+			$reset_url = get_permalink( $reset_page_id );
+			$reset_url = add_query_arg( [
+				'key' => $key,
+				'login' => rawurlencode( $user_data->user_login )
+			], $reset_url );
+		} else {
+			$reset_url = network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user_data->user_login ), 'login' );
+		}
+
+		$message .= $reset_url . "\r\n";
 
 		if ( false !== wp_mail( $user_data->user_email, 'Recuperación de Contraseña', $message ) ) {
 			wp_send_json_success( [ 'message' => 'Se ha enviado un correo con instrucciones.' ] );
