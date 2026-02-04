@@ -90,7 +90,7 @@ class Config extends Module_Base {
 			'alezux-config-css', 
 			$this->get_asset_url( 'assets/css/config.css' ), 
 			[], 
-			ALEZUX_MEMBERS_VERSION 
+			filemtime( $this->get_asset_path( 'assets/css/config.css' ) ) 
 		);
 
 		// JS
