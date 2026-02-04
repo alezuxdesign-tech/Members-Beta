@@ -437,6 +437,79 @@ class Login_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// --- STYLE SECTION: PASSWORD TOGGLE ---
+		$this->start_controls_section(
+			'section_style_password_toggle',
+			[
+				'label' => esc_html__( 'Toggle de Contraseña', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_password_toggle_style' );
+
+		$this->start_controls_tab(
+			'tab_password_toggle_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'password_toggle_color',
+			[
+				'label' => esc_html__( 'Color del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-toggle-password' => 'color: {{VALUE}} !important;',
+				],
+				'default' => '#888',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_password_toggle_hover',
+			[
+				'label' => esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'password_toggle_color_hover',
+			[
+				'label' => esc_html__( 'Color del Icono (Hover)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-toggle-password:hover' => 'color: {{VALUE}} !important;',
+				],
+				'default' => '#6c5ce7',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_responsive_control(
+			'password_toggle_size',
+			[
+				'label' => esc_html__( 'Tamaño del Icono', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 10, 'max' => 40 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-eye-icon' => 'width: {{SIZE}}{{UNIT}} !important; height: {{SIZE}}{{UNIT}} !important;',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->end_controls_section();
+
 		// --- STYLE SECTION: BUTTON ---
 		$this->start_controls_section(
 			'section_style_button',
