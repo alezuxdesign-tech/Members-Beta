@@ -40,14 +40,14 @@ jQuery(document).ready(function ($) {
                     $btn.prop('disabled', false);
                     $text.show();
                     $loader.hide();
-                    showAlezuxModal('Error', response.data.message, 'error');
+                    alezuxShowModal('Error', response.data.message, 'error');
                 }
             },
             error: function () {
                 $btn.prop('disabled', false);
                 $text.show();
                 $loader.hide();
-                showAlezuxModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
+                alezuxShowModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
             }
         });
     });
@@ -79,14 +79,14 @@ jQuery(document).ready(function ($) {
                     window.alezuxShowModal('Éxito', response.data.message, 'success');
                     $form[0].reset();
                 } else {
-                    showAlezuxModal('Error', response.data.message, 'error');
+                    alezuxShowModal('Error', response.data.message, 'error');
                 }
             },
             error: function () {
                 $btn.prop('disabled', false);
                 $text.show();
                 $loader.hide();
-                showAlezuxModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
+                alezuxShowModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
             }
         });
     });

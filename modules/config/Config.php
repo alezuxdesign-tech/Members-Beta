@@ -20,10 +20,14 @@ class Config extends Module_Base {
 		add_action( 'init', [ $this, 'setup_custom_auth_logic' ] );
 
 		// AJAX Auth Actions
+		// AJAX Auth Actions
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
+		
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
+		add_action( 'wp_ajax_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] ); // Fix 400 Bad Request for logged in users
+		
 		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
-		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
+		add_action( 'wp_ajax_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
 
 		// AJAX Profile & Password
 		add_action( 'wp_ajax_alezux_update_profile', [ $this, 'handle_update_profile' ] );
