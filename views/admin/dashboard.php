@@ -360,16 +360,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #e55039;">🚫 Páginas Restringidas (Solo Admin)</h3>
 					<p class="alezux-text" style="font-size: 13px; margin-bottom: 15px;">Selecciona las páginas que solo podrán ser vistas por Administradores.</p>
                     
-                    <div style="max-height: 300px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px;">
+                    <!-- Search Input -->
+                    <input type="text" id="alezux-page-search" placeholder="🔍 Buscar página..." onkeyup="filterPages()" style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+
+                    <div id="alezux-pages-list" style="max-height: 400px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
                         <?php if ( ! empty( $all_pages ) ) : ?>
                             <?php foreach ( $all_pages as $page ) : ?>
                                 <?php 
                                     $is_checked = in_array( $page->ID, $restricted_pages ) ? 'checked' : ''; 
+                                    $page_title = ! empty( $page->post_title ) ? $page->post_title : '(Sin Título)';
                                 ?>
-                                <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                                    <input type="checkbox" name="alezux_restricted_pages[]" value="<?php echo esc_attr( $page->ID ); ?>" <?php echo $is_checked; ?> style="margin-right: 10px;">
-                                    <?php echo esc_html( $page->post_title ); ?> 
-                                    <span style="color: #666; font-size: 11px;">(ID: <?php echo $page->ID; ?>)</span>
+                                <label class="alezux-page-item" style="display: flex; align-items: center; padding: 10px; background: #2a2a2a; border: 1px solid #333; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
+                                    <input type="checkbox" name="alezux_restricted_pages[]" value="<?php echo esc_attr( $page->ID ); ?>" <?php echo $is_checked; ?> style="margin-right: 12px; width: 18px; height: 18px; accent-color: #e55039;">
+                                    <div style="flex-grow: 1;">
+                                        <span class="page-title" style="display: block; font-weight: 500; font-size: 14px; color: #eee;"><?php echo esc_html( $page_title ); ?></span>
+                                        <span style="display: block; color: #777; font-size: 11px;">ID: <?php echo $page->ID; ?> &bull; <?php echo $page->post_status; ?></span>
+                                    </div>
                                 </label>
                             <?php endforeach; ?>
                         <?php else : ?>
@@ -377,6 +383,37 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <style>
+                    .alezux-page-item:hover {
+                        border-color: #666 !important;
+                        background: #333 !important;
+                    }
+                    .alezux-page-item:has(input:checked) {
+                        border-color: #e55039 !important;
+                        background: rgba(229, 80, 57, 0.1) !important;
+                    }
+                </style>
+                <script>
+                    function filterPages() {
+                        var input = document.getElementById("alezux-page-search");
+                        var filter = input.value.toUpperCase();
+                        var container = document.getElementById("alezux-pages-list");
+                        var labels = container.getElementsByTagName("label");
+
+                        for (var i = 0; i < labels.length; i++) {
+                            var span = labels[i].getElementsByClassName("page-title")[0];
+                            if (span) {
+                                var txtValue = span.textContent || span.innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    labels[i].style.display = "flex";
+                                } else {
+                                    labels[i].style.display = "none";
+                                }
+                            }       
+                        }
+                    }
+                </script>
 
 				<div style="margin-top: 40px; text-align: right;">
 					<button type="submit" class="button button-primary" 
