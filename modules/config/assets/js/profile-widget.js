@@ -8,13 +8,21 @@ jQuery(document).ready(function ($) {
 
     // Forzar clic en el input de archivo al presionar el botón/label
     $btnUpload.on('click', function (e) {
+        console.log('Botón de subida clickeado');
         $avatarInput.trigger('click');
+    });
+
+    // Detectar si el input recibe el clic
+    $avatarInput.on('click', function () {
+        console.log('Input de archivo activado');
     });
 
     // Previsualización de Avatar
     $avatarInput.on('change', function () {
+        console.log('Cambio detectado en el input de archivo');
         const file = this.files[0];
         if (file) {
+            console.log('Archivo seleccionado:', file.name);
             const reader = new FileReader();
             reader.onload = function (e) {
                 $avatarPreview.attr('src', e.target.result);
