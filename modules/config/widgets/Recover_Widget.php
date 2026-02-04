@@ -115,7 +115,7 @@ class Recover_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-form-card' => 'margin-left: {{VALUE === "flex-start" ? "0" : "auto"}}; margin-right: {{VALUE === "flex-end" ? "0" : "auto"}};',
+					'{{WRAPPER}} .elementor-widget-container' => 'display: flex; flex-direction: column; align-items: {{VALUE}};',
 				],
 				'default' => 'center',
 			]
@@ -458,7 +458,7 @@ class Recover_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}}; width: {{VALUE === "stretch" ? "100%" : "auto"}};',
+					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}};',
 				],
 				'default' => 'stretch',
 			]
