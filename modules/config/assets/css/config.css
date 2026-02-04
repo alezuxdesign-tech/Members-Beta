@@ -344,75 +344,7 @@
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
-/* --- Button Alignment via prefix_class --- */
-.alezux-button-align-stretch .alezux-auth-submit {
-    width: 100% !important;
-    align-self: stretch !important;
-}
-
-.alezux-button-align-center .alezux-auth-submit {
-    width: auto !important;
-    align-self: center !important;
-}
-
-.alezux-button-align-flex-start .alezux-auth-submit {
-    width: auto !important;
-    align-self: flex-start !important;
-}
-
-.alezux-button-align-flex-end .alezux-auth-submit {
-    width: auto !important;
-    align-self: flex-end !important;
-}
-
-/* Tablet */
-@media (max-width: 1024px) {
-    .alezux-button-align-tablet-stretch .alezux-auth-submit {
-        width: 100% !important;
-        align-self: stretch !important;
-    }
-
-    .alezux-button-align-tablet-center .alezux-auth-submit {
-        width: auto !important;
-        align-self: center !important;
-    }
-
-    .alezux-button-align-tablet-flex-start .alezux-auth-submit {
-        width: auto !important;
-        align-self: flex-start !important;
-    }
-
-    .alezux-button-align-tablet-flex-end .alezux-auth-submit {
-        width: auto !important;
-        align-self: flex-end !important;
-    }
-}
-
-/* Mobile */
-@media (max-width: 767px) {
-    .alezux-button-align-mobile-stretch .alezux-auth-submit {
-        width: 100% !important;
-        align-self: stretch !important;
-    }
-
-    .alezux-button-align-mobile-center .alezux-auth-submit {
-        width: auto !important;
-        align-self: center !important;
-    }
-
-    .alezux-button-align-mobile-flex-start .alezux-auth-submit {
-        width: auto !important;
-        align-self: flex-start !important;
-    }
-
-    .alezux-button-align-mobile-flex-end .alezux-auth-submit {
-        width: auto !important;
-        align-self: flex-end !important;
-    }
-}
-
-/** Button Alignment Utility - Cleanup prefix_class version **/
-/* We return to Elementor selectors for better real-time preview */
+/* --- Button Alignment via Selectors (Handled in Widget PHP) --- */
 
 .alezux-auth-extra {
     display: flex;

@@ -86,48 +86,58 @@ class Recover_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// --- STYLE SECTION: CONTAINER ---
+		// --- STYLE SECTION: CARD (CONTAINER) ---
 		$this->start_controls_section(
-			'section_style_container',
+			'section_style_card',
 			[
-				'label' => esc_html__( 'Contenedor', 'alezux-members' ),
+				'label' => esc_html__( 'Contenedor (Card)', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
 
-		$this->add_control(
-			'container_bg',
+		$this->add_responsive_control(
+			'card_align',
 			[
-				'label' => esc_html__( 'Fondo', 'alezux-members' ),
-				'type' => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-form-card' => 'background-color: {{VALUE}};',
+				'label' => esc_html__( 'Alineación Contenedor', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'flex-start' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-h-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-h-align-center',
+					],
+					'flex-end' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-h-align-right',
+					],
 				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
-			[
-				'name' => 'container_border',
-				'selector' => '{{WRAPPER}} .alezux-auth-form-card',
-			]
-		);
-
-		$this->add_control(
-			'container_radius',
-			[
-				'label' => esc_html__( 'Borde Redondeado', 'alezux-members' ),
-				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-form-card' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-auth-form-card' => 'margin-left: {{VALUE === "flex-start" ? "0" : "auto"}}; margin-right: {{VALUE === "flex-end" ? "0" : "auto"}};',
+				],
+				'default' => 'center',
+			]
+		);
+
+		$this->add_responsive_control(
+			'card_max_width',
+			[
+				'label' => esc_html__( 'Ancho Máximo', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%', 'em' ],
+				'range' => [
+					'px' => [ 'min' => 200, 'max' => 1000 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-auth-form-card' => 'max-width: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
 
 		$this->add_responsive_control(
-			'container_padding',
+			'card_padding',
 			[
 				'label' => esc_html__( 'Padding', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
@@ -138,18 +148,41 @@ class Recover_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_responsive_control(
-			'container_max_width',
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
 			[
-				'label' => esc_html__( 'Ancho Máximo', 'alezux-members' ),
-				'type' => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%' ],
-				'range' => [
-					'px' => [ 'min' => 200, 'max' => 1200 ],
-				],
+				'name' => 'card_background',
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-auth-form-card',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'card_border',
+				'selector' => '{{WRAPPER}} .alezux-auth-form-card',
+			]
+		);
+
+		$this->add_control(
+			'card_border_radius',
+			[
+				'label' => esc_html__( 'Borde Redondeado', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-auth-form-card' => 'max-width: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-auth-form-card' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'card_shadow',
+				'selector' => '{{WRAPPER}} .alezux-auth-form-card',
 			]
 		);
 
@@ -188,6 +221,31 @@ class Recover_Widget extends Widget_Base {
 			[
 				'name' => 'title_typography',
 				'selector' => '{{WRAPPER}} .alezux-auth-title',
+			]
+		);
+
+		$this->add_responsive_control(
+			'title_align',
+			[
+				'label' => esc_html__( 'Alineación', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'right' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-auth-title' => 'text-align: {{VALUE}};',
+				],
 			]
 		);
 
@@ -379,7 +437,7 @@ class Recover_Widget extends Widget_Base {
 		$this->add_responsive_control(
 			'button_align',
 			[
-				'label' => esc_html__( 'Posición', 'alezux-members' ),
+				'label' => esc_html__( 'Alineación', 'alezux-members' ),
 				'type' => Controls_Manager::CHOOSE,
 				'options' => [
 					'flex-start' => [
@@ -399,7 +457,9 @@ class Recover_Widget extends Widget_Base {
 						'icon' => 'eicon-h-align-stretch',
 					],
 				],
-				'prefix_class' => 'alezux-button-align%s-',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-auth-submit' => 'align-self: {{VALUE}}; width: {{VALUE === "stretch" ? "100%" : "auto"}};',
+				],
 				'default' => 'stretch',
 			]
 		);
