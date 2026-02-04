@@ -133,6 +133,10 @@ class Recover_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-auth-form-card' => 'max-width: {{SIZE}}{{UNIT}};',
 				],
+				'default' => [
+					'size' => 100,
+					'unit' => '%',
+				],
 			]
 		);
 
