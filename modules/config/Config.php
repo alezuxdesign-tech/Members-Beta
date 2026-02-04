@@ -36,9 +36,23 @@ class Config extends Module_Base {
 		// Shortcode de Alertas
 		$this->register_shortcode( 'alezux_login_alerts', [ $this, 'render_login_alerts' ], 'Muestra mensajes de error/éxito en el login.' );
 
+        // Shortcode para URL de Logout
+        $this->register_shortcode( 'alezux_logout_url', [ $this, 'render_logout_url' ], 'Devuelve la URL para cerrar sesión. Úsalo en los campos de enlace de tus botones.' );
+
 		// Filtro para Avatar Personalizado
 		add_filter( 'get_avatar_url', [ $this, 'custom_avatar_url' ], 10, 3 );
 	}
+
+    /**
+     * Renderiza la URL de logout
+     */
+    public function render_logout_url( $atts ) {
+        $atts = \shortcode_atts( [
+            'redirect' => \home_url(),
+        ], $atts );
+
+        return \wp_logout_url( $atts['redirect'] );
+    }
 
 	/**
 	 * Configura los filtros y redirecciones solo si la página está seleccionada
