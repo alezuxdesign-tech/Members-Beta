@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Config extends Module_Base {
 
 	public function init() {
+        file_put_contents( ALEZUX_MEMBERS_PATH . 'debug_status.txt', "Config::init fired at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND );
 		// Encolar estilos específicos del módulo
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		
