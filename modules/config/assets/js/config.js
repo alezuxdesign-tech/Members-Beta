@@ -91,6 +91,93 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // --- AJAX RESET PASSWORD (NEW) ---
+    $(document).on('submit', '#alezux-reset-password-form', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('.alezux-submit-btn'); // Note: Class is different in Reset Widget usually? Checked PHP: alezux-submit-btn
+        var $loader = $btn.find('.btn-loader');
+        var $text = $btn.find('.btn-text');
+
+        $btn.prop('disabled', true);
+        $text.hide();
+        $loader.show();
+
+        var formData = $form.serialize();
+        // Action is already in hidden input but we ensure it matches the PHP hook
+        // In PHP: wp_ajax_alezux_reset_password
+        // In Form hidden input: value="alezux_reset_password" (Check Reset_Widget loop if visible)
+        // Reset_Widget.php line 413: <input type="hidden" name="action" value="alezux_reset_password"> - OK
+        // Nonce is also in hidden input
+
+        $.ajax({
+            type: 'POST',
+            url: alezux_auth_obj.ajax_url,
+            data: formData,
+            success: function (response) {
+                $btn.prop('disabled', false);
+                $text.show();
+                $loader.hide();
+
+                if (response.success) {
+                    window.alezuxShowModal('¡Contraseña Restablecida!', response.data.message, 'success');
+                    // Reset form and redirection
+                    $form[0].reset();
+                    if (response.data.redirect) {
+                        setTimeout(function () {
+                            window.location.href = response.data.redirect;
+                        }, 2000);
+                    }
+                } else {
+                    alezuxShowModal('Error', response.data.message, 'error');
+                }
+            },
+            error: function () {
+                $btn.prop('disabled', false);
+                $text.show();
+                $loader.hide();
+                alezuxShowModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
+            }
+        });
+    });
+
+    // --- RESET PASSWORD STRENGTH METER ---
+    $(document).on('input', '#alezux-reset-password-form #pass1', function () {
+        var val = $(this).val();
+        var strength = 0;
+        var $form = $(this).closest('form');
+        var $container = $form.find('.password-strength-wrapper');
+        var $meterFill = $container.find('.meter-fill');
+
+        var requirements = {
+            length: val.length >= 8,
+            upper: /[A-Z]/.test(val),
+            number: /[0-9]/.test(val),
+            special: /[^A-Za-z0-9]/.test(val)
+        };
+
+        $.each(requirements, function (req, met) {
+            var $li = $container.find('.password-requirements li[data-req="' + req + '"]');
+            if (met) {
+                $li.addClass('met');
+                strength++;
+            } else {
+                $li.removeClass('met');
+            }
+        });
+
+        $meterFill.removeClass('strength-weak strength-fair strength-good strength-strong').css('width', '');
+
+        if (val.length > 0) {
+            if (strength <= 1) $meterFill.addClass('strength-weak').css('width', '25%');
+            else if (strength === 2) $meterFill.addClass('strength-fair').css('width', '50%');
+            else if (strength === 3) $meterFill.addClass('strength-good').css('width', '75%');
+            else if (strength === 4) $meterFill.addClass('strength-strong').css('width', '100%');
+        } else {
+            $meterFill.css('width', '0');
+        }
+    });
+
     // --- CUSTOM MODAL FUNCTIONS ---
     window.alezuxShowModal = function (title, message, type) {
         // Remove existing modal if any
