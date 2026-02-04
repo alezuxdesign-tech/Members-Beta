@@ -23,6 +23,7 @@ class Config extends Module_Base {
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
 		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
+		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
 
 		// AJAX Profile & Password
 		add_action( 'wp_ajax_alezux_update_profile', [ $this, 'handle_update_profile' ] );
@@ -53,6 +54,7 @@ class Config extends Module_Base {
 		add_filter( 'login_url', [ $this, 'custom_login_url' ], 10, 3 );
 		add_filter( 'lostpassword_url', [ $this, 'custom_lostpassword_url' ], 10, 2 );
 		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
+		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 	}
 
 	public function custom_login_url( $login_url, $redirect, $force_reauth ) {
@@ -75,6 +77,36 @@ class Config extends Module_Base {
 			return get_permalink( $login_page_id ); 
 		}
 		return $lostpassword_url;
+	}
+
+	/**
+	 * Personalizar el mensaje de correo de recuperación para cambiar el link
+	 */
+	public function custom_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+		$reset_page_id = get_option( 'alezux_reset_page_id' ); 
+		
+		if ( ! $reset_page_id ) {
+			// Fallback: Si no hay página de reset definida, intentamos usar la de login
+			$reset_page_id = get_option( 'alezux_login_page_id' );
+		}
+
+		if ( $reset_page_id ) {
+			$reset_url = get_permalink( $reset_page_id );
+			$reset_url = add_query_arg( [
+				'key' => $key,
+				'login' => rawurlencode( $user_login )
+			], $reset_url );
+
+			// Reemplazamos el link nativo por el nuestro
+			$message  = __( 'Alguien ha solicitado restablecer la contraseña de la siguiente cuenta:', 'alezux-members' ) . "\r\n\r\n";
+			$message .= network_home_url( '/' ) . "\r\n\r\n";
+			$message .= sprintf( __( 'Nombre de usuario: %s', 'alezux-members' ), $user_login ) . "\r\n\r\n";
+			$message .= __( 'Si ha sido un error, ignora este correo.', 'alezux-members' ) . "\r\n\r\n";
+			$message .= __( 'Para restablecer la contraseña, visita la siguiente dirección:', 'alezux-members' ) . "\r\n\r\n";
+			$message .= $reset_url . "\r\n";
+		}
+
+		return $message;
 	}
 
 	/**
