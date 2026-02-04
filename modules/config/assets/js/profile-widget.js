@@ -8,21 +8,14 @@ jQuery(document).ready(function ($) {
 
     // Forzar clic en el input de archivo al presionar el botón/overlay
     $btnUpload.on('click', function (e) {
-        console.log('Botón de subida (Trigger) clickeado');
         $avatarInput.trigger('click');
     });
 
-    // Detectar si el input recibe el clic
-    $avatarInput.on('click', function () {
-        console.log('Input de archivo activado');
-    });
 
     // Previsualización de Avatar
     $avatarInput.on('change', function () {
-        console.log('Cambio detectado en el input de archivo');
         const file = this.files[0];
         if (file) {
-            console.log('Archivo seleccionado:', file.name);
             const reader = new FileReader();
             reader.onload = function (e) {
                 $avatarPreview.attr('src', e.target.result);
@@ -49,25 +42,13 @@ jQuery(document).ready(function ($) {
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    if (window.alezuxShowModal) {
-                        window.alezuxShowModal('¡Éxito!', response.data.message, 'success');
-                    } else {
-                        alert(response.data.message);
-                    }
+                    window.alezuxShowModal('¡Éxito!', response.data.message, 'success');
                 } else {
-                    if (window.alezuxShowModal) {
-                        window.alezuxShowModal('Error', response.data.message, 'error');
-                    } else {
-                        alert(response.data.message);
-                    }
+                    window.alezuxShowModal('Error', response.data.message, 'error');
                 }
             },
             error: function () {
-                if (window.alezuxShowModal) {
-                    window.alezuxShowModal('Error', 'Hubo un problema en el servidor.', 'error');
-                } else {
-                    alert('Error en el servidor.');
-                }
+                window.alezuxShowModal('Error', 'Hubo un problema en el servidor.', 'error');
             },
             complete: function () {
                 $submitBtn.find('.btn-text').show();

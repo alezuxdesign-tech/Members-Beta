@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
                 $text.show();
                 $loader.hide();
                 if (response.success) {
-                    showAlezuxModal('Éxito', response.data.message, 'success');
+                    window.alezuxShowModal('Éxito', response.data.message, 'success');
                     $form[0].reset();
                 } else {
                     showAlezuxModal('Error', response.data.message, 'error');
@@ -92,7 +92,7 @@ jQuery(document).ready(function ($) {
     });
 
     // --- CUSTOM MODAL FUNCTIONS ---
-    function showAlezuxModal(title, message, type) {
+    window.alezuxShowModal = function (title, message, type) {
         // Remove existing modal if any
         $('.alezux-modal-overlay').remove();
 

@@ -68,28 +68,16 @@ jQuery(document).ready(function ($) {
             data: data,
             success: function (response) {
                 if (response.success) {
-                    if (window.alezuxShowModal) {
-                        window.alezuxShowModal('¡Éxito!', response.data.message, 'success');
-                    } else {
-                        alert(response.data.message);
-                    }
+                    window.alezuxShowModal('¡Éxito!', response.data.message, 'success');
                     $form[0].reset();
                     $meterFill.css('width', '0').removeClass('strength-weak strength-fair strength-good strength-strong');
                     $('.password-requirements li').removeClass('met');
                 } else {
-                    if (window.alezuxShowModal) {
-                        window.alezuxShowModal('Error', response.data.message, 'error');
-                    } else {
-                        alert(response.data.message);
-                    }
+                    window.alezuxShowModal('Error', response.data.message, 'error');
                 }
             },
             error: function () {
-                if (window.alezuxShowModal) {
-                    window.alezuxShowModal('Error', 'Hubo un problema en el servidor.', 'error');
-                } else {
-                    alert('Error en el servidor.');
-                }
+                window.alezuxShowModal('Error', 'Hubo un problema en el servidor.', 'error');
             },
             complete: function () {
                 $submitBtn.find('.btn-text').show();

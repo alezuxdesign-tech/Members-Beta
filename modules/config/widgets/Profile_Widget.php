@@ -131,6 +131,17 @@ class Profile_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'avatar_overlay_bg',
+			[
+				'label' => esc_html__( 'Color de Fondo Icono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .avatar-overlay' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- STYLE SECTION: FIELDS ---
@@ -367,7 +378,7 @@ class Profile_Widget extends Widget_Base {
 					<div class="profile-avatar">
 						<img src="<?php echo esc_url( $avatar_url ); ?>" alt="Avatar" id="alezux-avatar-preview">
 						<div class="avatar-overlay" id="alezux-avatar-trigger">
-							<i class="eicon-camera"></i>
+							<i class="fas fa-camera"></i>
 						</div>
 					</div>
 					<input type="file" name="alezux_avatar" id="alezux-avatar-input" accept="image/*" style="display: none;">
