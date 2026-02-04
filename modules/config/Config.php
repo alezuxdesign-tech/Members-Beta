@@ -22,6 +22,7 @@ class Config extends Module_Base {
 		// AJAX Auth Actions
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
+		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
 
 		// AJAX Profile & Password
 		add_action( 'wp_ajax_alezux_update_profile', [ $this, 'handle_update_profile' ] );
@@ -51,6 +52,7 @@ class Config extends Module_Base {
 		// Sobrescribir URLs nativas de WordPress
 		add_filter( 'login_url', [ $this, 'custom_login_url' ], 10, 3 );
 		add_filter( 'lostpassword_url', [ $this, 'custom_lostpassword_url' ], 10, 2 );
+		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 	}
 
 	public function custom_login_url( $login_url, $redirect, $force_reauth ) {
@@ -73,6 +75,46 @@ class Config extends Module_Base {
 			return get_permalink( $login_page_id ); 
 		}
 		return $lostpassword_url;
+	}
+
+	/**
+	 * Personalizar el mensaje de correo de recuperación para cambiar el link
+	 */
+	public function custom_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+		// Intentamos obtener la página de login personalizada para construir el link
+		// OJO: Idealmente deberíamos tener una opción específica para "Página de Reset"
+		// Por ahora asumimos que el widget Reset estará en una página que definiremos o usaremos la login_page_id como base si no hay otra.
+		
+		// NOTA: El usuario debe configurar la página donde puso el widget Reset.
+		// Vamos a asumir una opción 'alezux_reset_page_id' o usar un placeholder.
+		$reset_page_id = get_option( 'alezux_reset_page_id' ); 
+		
+		if ( ! $reset_page_id ) {
+			// Fallback: Si no hay página de reset definida, intentamos usar la de login
+			// Pero esto solo funcionaría si el widget Reset también está en la página de login (o mostramos uno u otro según parámetros)
+			$reset_page_id = get_option( 'alezux_login_page_id' );
+		}
+
+		if ( $reset_page_id ) {
+			$reset_url = get_permalink( $reset_page_id );
+			$reset_url = add_query_arg( [
+				'key' => $key,
+				'login' => rawurlencode( $user_login )
+			], $reset_url );
+
+			// Reemplazamos el link nativo por el nuestro
+			// El mensaje original de WP es simple, podemos reemplazar todo o buscar el link.
+			// Para ser seguros y totalmente personalizados, recreamos el mensaje.
+			
+			$message  = __( 'Alguien ha solicitado restablecer la contraseña de la siguiente cuenta:', 'alezux-members' ) . "\r\n\r\n";
+			$message .= network_home_url( '/' ) . "\r\n\r\n";
+			$message .= sprintf( __( 'Nombre de usuario: %s', 'alezux-members' ), $user_login ) . "\r\n\r\n";
+			$message .= __( 'Si ha sido un error, ignora este correo.', 'alezux-members' ) . "\r\n\r\n";
+			$message .= __( 'Para restablecer la contraseña, visita la siguiente dirección:', 'alezux-members' ) . "\r\n\r\n";
+			$message .= $reset_url . "\r\n";
+		}
+
+		return $message;
 	}
 
 	/**
@@ -130,12 +172,14 @@ class Config extends Module_Base {
 		require_once __DIR__ . '/widgets/Config_Widget.php';
 		require_once __DIR__ . '/widgets/Login_Widget.php';
 		require_once __DIR__ . '/widgets/Recover_Widget.php';
+		require_once __DIR__ . '/widgets/Reset_Widget.php';
 		require_once __DIR__ . '/widgets/Profile_Widget.php';
 		require_once __DIR__ . '/widgets/Password_Widget.php';
 
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Config_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Login_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Recover_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Reset_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Profile_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Password_Widget() );
 	}
