@@ -214,7 +214,7 @@ class Password_Widget extends Widget_Base {
 						'icon' => 'eicon-text-align-justify',
 					],
 				],
-				'prefix_class' => 'elementor-align-',
+				'prefix_class' => 'alezux-btn-align-',
 				'default' => 'center',
 			]
 		);

@@ -44,6 +44,12 @@
     box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
     transition: transform 0.3s ease;
     z-index: 10;
+    color: #ffffff;
+}
+
+.avatar-overlay i {
+    color: #ffffff !important;
+    font-size: 20px;
 }
 
 .avatar-overlay:hover {
@@ -105,19 +111,19 @@
     width: 100%;
 }
 
-.elementor-align-left .button-wrapper {
+.alezux-btn-align-left .button-wrapper {
     text-align: left;
 }
 
-.elementor-align-center .button-wrapper {
+.alezux-btn-align-center .button-wrapper {
     text-align: center;
 }
 
-.elementor-align-right .button-wrapper {
+.alezux-btn-align-right .button-wrapper {
     text-align: right;
 }
 
-.elementor-align-justify .button-wrapper {
+.alezux-btn-align-justify .button-wrapper {
     text-align: justify;
 }
 
@@ -134,7 +140,7 @@
     gap: 10px;
 }
 
-.elementor-align-justify .alezux-submit-btn {
+.alezux-btn-align-justify .alezux-submit-btn {
     width: 100%;
 }
 
