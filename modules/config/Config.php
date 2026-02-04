@@ -417,4 +417,50 @@ class Config extends Module_Base {
 		}
 		return '';
 	}
+
+	public function handle_ajax_reset_password() {
+		check_ajax_referer( 'alezux-auth-nonce', 'nonce' );
+	
+		$key   = isset( $_POST['key'] ) ? sanitize_text_field( $_POST['key'] ) : '';
+		$login = isset( $_POST['login'] ) ? sanitize_user( $_POST['login'] ) : '';
+		$pass1 = $_POST['pass1'];
+		$pass2 = $_POST['pass2'];
+	
+		if ( empty( $key ) || empty( $login ) ) {
+			wp_send_json_error( [ 'message' => 'Falta información de verificación.' ] );
+		}
+	
+		// 1. Verificar Key Nuevamente (Seguridad)
+		$user = check_password_reset_key( $key, $login );
+		if ( is_wp_error( $user ) ) {
+			wp_send_json_error( [ 'message' => 'El enlace ha expirado o no es válido.' ] );
+		}
+	
+		// 2. Verificar Contraseñas
+		if ( empty( $pass1 ) || empty( $pass2 ) ) {
+			wp_send_json_error( [ 'message' => 'Por favor ingresa tu nueva contraseña.' ] );
+		}
+	
+		if ( $pass1 !== $pass2 ) {
+			wp_send_json_error( [ 'message' => 'Las contraseñas no coinciden.' ] );
+		}
+	
+		// 3. Validar fortaleza (Opcional, pero recomendado replicar lo de JS)
+		if ( strlen( $pass1 ) < 8 ) {
+			wp_send_json_error( [ 'message' => 'La contraseña es muy corta.' ] );
+		}
+	
+		// 4. Resetear
+		reset_password( $user, $pass1 );
+	
+		// 5. Éxito
+		// Podemos redirigir al login
+		$login_page_id = get_option( 'alezux_login_page_id' );
+		$redirect_url = $login_page_id ? get_permalink( $login_page_id ) : home_url();
+	
+		wp_send_json_success( [ 
+			'message' => 'Contraseña actualizada correctamente. Redirigiendo...',
+			'redirect' => $redirect_url
+		] );
+	}
 }
