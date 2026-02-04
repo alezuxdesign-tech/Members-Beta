@@ -456,7 +456,9 @@ class Config extends Module_Base {
 		// 5. Éxito
 		// Podemos redirigir al login
 		$login_page_id = get_option( 'alezux_login_page_id' );
-		$redirect_url = $login_page_id ? get_permalink( $login_page_id ) : home_url();
+		
+		// Si hay página personalizada, vamos ahí. Si no, al login de WP por defecto.
+		$redirect_url = $login_page_id ? get_permalink( $login_page_id ) : wp_login_url();
 	
 		wp_send_json_success( [ 
 			'message' => 'Contraseña actualizada correctamente. Redirigiendo...',
