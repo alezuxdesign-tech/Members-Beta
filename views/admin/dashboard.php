@@ -225,6 +225,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<!-- TABS NAVIGATION -->
 	<div class="alezux-tabs">
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-settings')" class="alezux-tab-link active" id="link-tab-settings">Configuración Global</a>
+		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-permissions')" class="alezux-tab-link" id="link-tab-permissions">Permisos</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-shortcodes')" class="alezux-tab-link" id="link-tab-shortcodes">Shortcodes</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-notifications')" class="alezux-tab-link" id="link-tab-notifications">Notificaciones</a>
 		<a href="javascript:void(0);" onclick="openAlezuxTab(event, 'tab-finanzas')" class="alezux-tab-link" id="link-tab-finanzas">Finanzas</a>
@@ -297,10 +298,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 
-				<div style="border-top: 1px solid #333; margin: 25px 0;"></div>
+				<div style="margin-top: 40px; text-align: right;">
+					<button type="submit" class="button button-primary" 
+							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						Guardar Cambios
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
 
+	<!-- TAB PERMISSIONS (NUEVO) -->
+	<div id="tab-permissions" class="alezux-tab-panel" style="display: none;">
+		<div class="alezux-card">
+			<h2 class="alezux-title">🔒 Control de Acceso y Permisos</h2>
+			<p class="alezux-text">Gestiona qué páginas son visibles y configura las redirecciones de autenticación.</p>
+			
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
+				<input type="hidden" name="action" value="alezux_save_settings">
+                <input type="hidden" name="alezux_saving_tab" value="permissions">
+				<?php wp_nonce_field( 'alezux_save_settings_action', 'alezux_settings_nonce' ); ?>
+				
+                <!-- AUTH MOVIDO AQUÍ -->
 				<div class="alezux-form-group">
-					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px;">🚪 Autenticación Personalizada</h3>
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #ff9f43;">🚪 Autenticación Personalizada</h3>
 					<div>
 						<label class="alezux-form-label">Página de Login Personalizada</label>
 						<?php 
@@ -313,11 +334,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'style'             => 'background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;'
 						]); 
 						?>
-						<p style="font-size: 12px; color: #777; margin-top: 5px;">Selecciona la página donde has colocado el widget de Login. Las peticiones a /wp-login.php serán redirigidas aquí.</p>
+						<p style="font-size: 12px; color: #777; margin-top: 5px;">Las peticiones a /wp-login.php serán redirigidas aquí.</p>
 					</div>
 
 					<div style="margin-top: 15px;">
-						<label class="alezux-form-label">Página de Restablecer Contraseña (Reset Password)</label>
+						<label class="alezux-form-label">Página de Restablecer Contraseña</label>
 						<?php 
 						wp_dropdown_pages([
 							'name'              => 'alezux_reset_page_id',
@@ -328,14 +349,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 							'style'             => 'background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;'
 						]); 
 						?>
-						<p style="font-size: 12px; color: #777; margin-top: 5px;">Selecciona la página donde has colocado el widget <strong>Alezux Reset Password</strong>. El correo de recuperación apuntará aquí.</p>
+						<p style="font-size: 12px; color: #777; margin-top: 5px;">El correo de recuperación apuntará aquí.</p>
 					</div>
 				</div>
+
+				<div style="border-top: 1px solid #333; margin: 25px 0;"></div>
+
+                <!-- PÁGINAS RESTRINGIDAS -->
+                <div class="alezux-form-group">
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #e55039;">🚫 Páginas Restringidas (Solo Admin)</h3>
+					<p class="alezux-text" style="font-size: 13px; margin-bottom: 15px;">Selecciona las páginas que solo podrán ser vistas por Administradores.</p>
+                    
+                    <div style="max-height: 300px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px;">
+                        <?php if ( ! empty( $all_pages ) ) : ?>
+                            <?php foreach ( $all_pages as $page ) : ?>
+                                <?php 
+                                    $is_checked = in_array( $page->ID, $restricted_pages ) ? 'checked' : ''; 
+                                ?>
+                                <label style="display: block; margin-bottom: 8px; cursor: pointer;">
+                                    <input type="checkbox" name="alezux_restricted_pages[]" value="<?php echo esc_attr( $page->ID ); ?>" <?php echo $is_checked; ?> style="margin-right: 10px;">
+                                    <?php echo esc_html( $page->post_title ); ?> 
+                                    <span style="color: #666; font-size: 11px;">(ID: <?php echo $page->ID; ?>)</span>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <p style="color: #888;">No hay páginas creadas.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
 				<div style="margin-top: 40px; text-align: right;">
 					<button type="submit" class="button button-primary" 
 							style="background: var(--alezux-primary, #6c5ce7); border-color: var(--alezux-primary, #6c5ce7); padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
-						Guardar Cambios
+						Guardar Permisos
 					</button>
 				</div>
 			</form>

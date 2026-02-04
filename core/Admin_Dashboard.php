@@ -94,6 +94,10 @@ class Admin_Dashboard {
 		// Obtener shortcodes registrados desde Module_Base
 		$shortcodes = Module_Base::get_registered_shortcodes();
 
+        // Obtener todas las páginas para el selector de permisos
+        $all_pages = get_pages();
+        $restricted_pages = get_option( 'alezux_restricted_pages', [] );
+
 		include ALEZUX_MEMBERS_PATH . 'views/admin/dashboard.php';
 	}
 
@@ -138,12 +142,26 @@ class Admin_Dashboard {
 			update_option( 'alezux_stripe_webhook_secret', sanitize_text_field( $_POST['alezux_stripe_webhook_secret'] ) );
 		}
 
+        // Auth Pages
 		if ( isset( $_POST['alezux_login_page_id'] ) ) {
 			update_option( 'alezux_login_page_id', intval( $_POST['alezux_login_page_id'] ) );
 		}
 		if ( isset( $_POST['alezux_reset_page_id'] ) ) {
 			update_option( 'alezux_reset_page_id', intval( $_POST['alezux_reset_page_id'] ) );
 		}
+
+        // Restricted Pages
+        if ( isset( $_POST['alezux_restricted_pages'] ) ) {
+            $restricted = array_map( 'intval', $_POST['alezux_restricted_pages'] );
+            update_option( 'alezux_restricted_pages', $restricted );
+        } else {
+            // Si el campo no viene (pero se envió el formulario de permisos), significa que el usuario desmarcó todo
+            // OJO: Hay que detectar si venimos del tab de permisos para no borrarlo si guardamos desde "Global"
+            // Usaremos un campo hidden 'alezux_saving_tab' para saber qué form se envió.
+            if ( isset( $_POST['alezux_saving_tab'] ) && 'permissions' === $_POST['alezux_saving_tab'] ) {
+                 update_option( 'alezux_restricted_pages', [] );
+            }
+        }
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );
 		exit;

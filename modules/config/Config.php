@@ -59,6 +59,10 @@ class Config extends Module_Base {
 	 * Configura los filtros y redirecciones solo si la página está seleccionada
 	 */
 	public function setup_custom_auth_logic() {
+        // Redirección de páginas restringidas (Admin Only)
+        // Esto siempre se debe verificar, independientemente del login personalizado
+        add_action( 'template_redirect', [ $this, 'check_restricted_pages' ] );
+
 		$login_page_id = get_option( 'alezux_login_page_id' );
 		
 		// Solo proceder si hay una página válida seleccionada
@@ -75,6 +79,27 @@ class Config extends Module_Base {
 		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 	}
+
+    /**
+     * Verifica si la página actual está restringida a administradores
+     */
+    public function check_restricted_pages() {
+        $restricted_pages = get_option( 'alezux_restricted_pages', [] );
+        
+        if ( empty( $restricted_pages ) || ! is_array( $restricted_pages ) ) {
+            return;
+        }
+
+        if ( is_page( $restricted_pages ) ) {
+            if ( ! is_user_logged_in() || ! current_user_can( 'administrator' ) ) {
+                // Redirigir a Home o Login. Por seguridad y UX, mejor home o login.
+                // Si redirigimos a login, el usuario podría intentar loguearse y seguir sin permiso.
+                // Redirigir al inicio es más seguro/claro: "No tienes acceso".
+                wp_redirect( home_url() );
+                exit;
+            }
+        }
+    }
 
 	public function custom_login_url( $login_url, $redirect, $force_reauth ) {
 		$login_page_id = get_option( 'alezux_login_page_id' );
