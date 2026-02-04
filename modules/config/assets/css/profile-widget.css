@@ -41,15 +41,13 @@
     justify-content: center;
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
-    transition: transform 0.3s ease;
     z-index: 10;
-    color: #ffffff;
 }
 
 .avatar-overlay i {
     color: #ffffff !important;
     font-size: 20px;
+    display: block;
 }
 
 .avatar-overlay:hover {

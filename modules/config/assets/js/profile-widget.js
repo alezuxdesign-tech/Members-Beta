@@ -4,11 +4,11 @@ jQuery(document).ready(function ($) {
     const $avatarPreview = $('#alezux-avatar-preview');
     const $submitBtn = $form.find('.alezux-submit-btn');
 
-    const $btnUpload = $form.find('.btn-upload');
+    const $btnUpload = $('#alezux-avatar-trigger');
 
-    // Forzar clic en el input de archivo al presionar el botón/label
+    // Forzar clic en el input de archivo al presionar el botón/overlay
     $btnUpload.on('click', function (e) {
-        console.log('Botón de subida clickeado');
+        console.log('Botón de subida (Trigger) clickeado');
         $avatarInput.trigger('click');
     });
 

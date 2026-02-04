@@ -366,10 +366,8 @@ class Profile_Widget extends Widget_Base {
 				<div class="profile-avatar-wrapper">
 					<div class="profile-avatar">
 						<img src="<?php echo esc_url( $avatar_url ); ?>" alt="Avatar" id="alezux-avatar-preview">
-						<div class="avatar-overlay">
-							<label for="alezux-avatar-input" class="btn-upload">
-								<i class="eicon-camera"></i>
-							</label>
+						<div class="avatar-overlay" id="alezux-avatar-trigger">
+							<i class="eicon-camera"></i>
 						</div>
 					</div>
 					<input type="file" name="alezux_avatar" id="alezux-avatar-input" accept="image/*" style="display: none;">
