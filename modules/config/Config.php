@@ -423,8 +423,8 @@ class Config extends Module_Base {
 	
 		$key   = isset( $_POST['key'] ) ? sanitize_text_field( $_POST['key'] ) : '';
 		$login = isset( $_POST['login'] ) ? sanitize_user( $_POST['login'] ) : '';
-		$pass1 = $_POST['pass1'];
-		$pass2 = $_POST['pass2'];
+		$pass1 = isset( $_POST['pass1'] ) ? wp_unslash( $_POST['pass1'] ) : '';
+		$pass2 = isset( $_POST['pass2'] ) ? wp_unslash( $_POST['pass2'] ) : '';
 	
 		if ( empty( $key ) || empty( $login ) ) {
 			wp_send_json_error( [ 'message' => 'Falta información de verificación.' ] );
