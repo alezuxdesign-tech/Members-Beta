@@ -98,7 +98,7 @@ class Config extends Module_Base {
 			'alezux-config-js',
 			$this->get_asset_url( 'assets/js/config.js' ),
 			[ 'jquery' ],
-			ALEZUX_MEMBERS_VERSION,
+			file_exists( __DIR__ . '/assets/js/config.js' ) ? filemtime( __DIR__ . '/assets/js/config.js' ) : ALEZUX_MEMBERS_VERSION,
 			true
 		);
 
