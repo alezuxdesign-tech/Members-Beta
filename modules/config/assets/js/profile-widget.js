@@ -4,6 +4,13 @@ jQuery(document).ready(function ($) {
     const $avatarPreview = $('#alezux-avatar-preview');
     const $submitBtn = $form.find('.alezux-submit-btn');
 
+    const $btnUpload = $form.find('.btn-upload');
+
+    // Forzar clic en el input de archivo al presionar el botón/label
+    $btnUpload.on('click', function (e) {
+        $avatarInput.trigger('click');
+    });
+
     // Previsualización de Avatar
     $avatarInput.on('change', function () {
         const file = this.files[0];

@@ -40,13 +40,13 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        $meterFill.removeClass('strength-weak strength-fair strength-good strength-strong');
+        $meterFill.removeClass('strength-weak strength-fair strength-good strength-strong').css('width', '');
 
         if (val.length > 0) {
-            if (strength <= 1) $meterFill.addClass('strength-weak');
-            else if (strength === 2) $meterFill.addClass('strength-fair');
-            else if (strength === 3) $meterFill.addClass('strength-good');
-            else if (strength === 4) $meterFill.addClass('strength-strong');
+            if (strength <= 1) $meterFill.addClass('strength-weak').css('width', '25%');
+            else if (strength === 2) $meterFill.addClass('strength-fair').css('width', '50%');
+            else if (strength === 3) $meterFill.addClass('strength-good').css('width', '75%');
+            else if (strength === 4) $meterFill.addClass('strength-strong').css('width', '100%');
         } else {
             $meterFill.css('width', '0');
         }

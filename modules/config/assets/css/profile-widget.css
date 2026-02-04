@@ -1,6 +1,6 @@
 /* Profile Widget Premium Styles */
 .alezux-profile-form {
-    max-width: 600px;
+    width: 100%;
     margin: 0 auto;
     background: #ffffff;
     padding: 40px;
@@ -43,6 +43,7 @@
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
     transition: transform 0.3s ease;
+    z-index: 10;
 }
 
 .avatar-overlay:hover {
@@ -101,7 +102,23 @@
 }
 
 .button-wrapper {
+    width: 100%;
+}
+
+.elementor-align-left .button-wrapper {
+    text-align: left;
+}
+
+.elementor-align-center .button-wrapper {
     text-align: center;
+}
+
+.elementor-align-right .button-wrapper {
+    text-align: right;
+}
+
+.elementor-align-justify .button-wrapper {
+    text-align: justify;
 }
 
 .alezux-submit-btn {
@@ -114,11 +131,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     gap: 10px;
-    min-width: 200px;
+}
+
+.elementor-align-justify .alezux-submit-btn {
+    width: 100%;
 }
 
 .alezux-submit-btn:hover {

@@ -182,6 +182,78 @@ class Profile_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'button_align',
+			[
+				'label' => esc_html__( 'Alineación', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'right' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'justify' => [
+						'title' => esc_html__( 'Justificado', 'alezux-members' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+				],
+				'prefix_class' => 'elementor-align-',
+				'default' => 'center',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_align',
+			[
+				'label' => esc_html__( 'Alineación', 'alezux-members' ),
+				'type' => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Izquierda', 'alezux-members' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Centro', 'alezux-members' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'right' => [
+						'title' => esc_html__( 'Derecha', 'alezux-members' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'justify' => [
+						'title' => esc_html__( 'Justificado', 'alezux-members' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+				],
+				'prefix_class' => 'elementor-align-',
+				'default' => 'center',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
 		$this->start_controls_tabs( 'tabs_button_style' );
 
 		$this->start_controls_tab(
@@ -206,6 +278,22 @@ class Profile_Widget extends Widget_Base {
 			Group_Control_Background::get_type(),
 			[
 				'name'     => 'button_bg',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'button_border',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'button_border',
 				'selector' => '{{WRAPPER}} .alezux-submit-btn',
 			]
 		);
@@ -238,6 +326,22 @@ class Profile_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'button_border_hover',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn:hover',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'button_border_hover',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn:hover',
+			]
+		);
+
 		$this->end_controls_tab();
 
 		$this->end_controls_tabs();
@@ -250,6 +354,48 @@ class Profile_Widget extends Widget_Base {
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-submit-btn' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'button_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-submit-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'button_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-submit-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-submit-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 				'separator' => 'before',
 			]
