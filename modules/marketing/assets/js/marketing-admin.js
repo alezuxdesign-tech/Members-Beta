@@ -289,7 +289,19 @@ jQuery(document).ready(function ($) {
             file_frame = wp.media({
                 title: 'Seleccionar Logo',
                 button: { text: 'Usar este logo' },
-                multiple: false
+                multiple: false,
+                library: {
+                    type: 'image'
+                }
+            });
+
+            // Force Upload Tab on Open to encourage PC upload
+            file_frame.on('open', function () {
+                // Find the first tab (usually "Upload Files") and click it
+                var tabs = file_frame.el.querySelectorAll('.media-router .media-menu-item');
+                if (tabs.length > 0) {
+                    tabs[0].click();
+                }
             });
 
             file_frame.on('select', function () {
