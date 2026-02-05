@@ -269,12 +269,17 @@ jQuery(document).ready(function ($) {
 
         // Click on Upload Box or Button -> Trigger Hidden Input
         wrapper.find('#logo-upload-trigger').on('click', function (e) {
+            // STOP RECURSION: If the event came from the file input itself (bubbling), ignore it.
+            if ($(e.target).is('#logo-file-input')) {
+                return;
+            }
+
             // Prevent if clicking remove link
             if ($(e.target).is('#remove-logo')) return;
 
             e.preventDefault();
             // Trigger native file input
-            wrapper.find('#logo-file-input').click();
+            wrapper.find('#logo-file-input').trigger('click');
         });
 
         // Handle File Selection (Native Input)
