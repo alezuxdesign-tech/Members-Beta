@@ -160,7 +160,6 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
 		$level_step = $max_seconds > 0 ? $max_seconds / 4 : 1;
 
 		?>
-		<style>
 			.alezux-heatmap-container {
 				display: flex;
 				flex-direction: column;
@@ -177,57 +176,60 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
             }
 
             .alezux-heatmap-content {
-                display: inline-flex; /* content grows horizontally */
+                display: flex;
                 flex-direction: column;
                 gap: 5px;
-                min-width: 100%; /* Ensure it fills at least the container */
+                width: 100%; /* Ensure full width */
+                min-width: 600px; /* Minimum legible width before scrolling kicks in */
             }
 
             .alezux-heatmap-months {
                 display: grid;
-                grid-template-columns: repeat(53, 13px); /* 13px = 10px width + 3px gap roughly, needs precise mapping */
-                grid-auto-columns: 13px; 
-                grid-auto-flow: column;
-                height: 15px;
-                font-size: 10px; /* Default, overridden by control */
-                line-height: 15px;
-                color: #767676; /* Default, overridden by control */
+                grid-template-columns: repeat(53, 1fr); /* Fluid columns matching days */
+                gap: 2px; /* Fluid gap match */
+                width: 100%;
+                height: auto;
+                font-size: 10px; 
+                line-height: 1.5;
+                color: #767676; 
+                margin-bottom: 5px;
             }
 
-            /* Dark mode text adjustment - ONLY if control not set (CSS specificity will handle override if ID used but here we use selectors) */
+            /* Dark mode text adjustment */
             @media (prefers-color-scheme: dark) {
                 .alezux-heatmap-months {
-                    color: inherit; /* Let elementor control handle it mostly, or fallback */
+                    color: inherit; 
                 }
             }
             
             /* Ensure text doesn't overflow */
             .alezux-month-label {
-                grid-column-end: span 3; 
-                overflow: visible;
+                grid-column-end: span 4; /* Allow overlapping into next columns visually */
+                overflow: hidden;
                 white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
 			.alezux-heatmap-grid {
 				display: grid;
-				grid-template-rows: repeat(7, 10px); 
+                grid-template-columns: repeat(53, 1fr); /* Fluid columns */
+				grid-template-rows: repeat(7, 1fr); /* Fluid rows */
 				grid-auto-flow: column;
 				gap: 3px;
+                width: 100%;
 			}
 
 			.alezux-heatmap-day {
-				width: 10px; 
-				height: 10px;
+				width: 100%; /* Fill the grid cell */
+				height: auto;
+                aspect-ratio: 1 / 1; /* Keep it square */
 				border-radius: 2px;
 				background-color: #ebedf0;
 				position: relative;
 			}
             
-            /* Make sure grid fills space if needed, though heatmaps are usually fixed size squares. 
-               To make it "adjust to container", we let scroll wrapper handle overflow. 
-               If user wants squares to stretch, that's different mechanics (SVG usually). 
-               PHP Grid is hard to justify width without SVG.
-               We keep fixed square size but allow full container width scrolling. */
+            /* Make sure grid fills space. 
+               Used aspect-ratio to keep squares square while stretching width. */
 
             @media (prefers-color-scheme: dark) {
                 .alezux-heatmap-day {
@@ -261,13 +263,19 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
-                gap: 4px;
-                font-size: 11px; /* Default */
-                color: #767676; /* Default */
+                gap: 5px;
+                font-size: 11px; 
+                color: #767676; 
+                margin-top: 5px;
+            }
+            @media (prefers-color-scheme: dark) {
+                .alezux-heatmap-legend {
+                    color: #8b949e;
+                }
             }
             .legend-item {
-                width: 10px;
-                height: 10px;
+                width: 12px;
+                height: 12px;
                 border-radius: 2px;
             }
 		</style>
