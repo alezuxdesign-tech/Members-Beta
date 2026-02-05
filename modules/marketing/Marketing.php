@@ -59,12 +59,18 @@ class Marketing extends Module_Base {
 
 	public function enqueue_assets() {
 		// Reusamos estilos de tabla globales
-		wp_enqueue_style( 'alezux-tables-css', plugin_dir_url( dirname( __FILE__ ) ) . 'finanzas/assets/css/alezux-tables.css', [], '1.0.5' );
+		wp_enqueue_style( 
+			'alezux-tables-css', 
+			// Go up from modules/marketing to modules/finanzas
+			plugin_dir_url( dirname( __DIR__ ) . '/finanzas/dummy.php' ) . 'assets/css/alezux-tables.css', 
+			[], 
+			'1.0.5' 
+		);
 		
 		// Estilos propios del módulo (Modal, etc)
 		wp_enqueue_style( 
 			'alezux-marketing-admin-css', 
-			$this->get_asset_url( 'assets/css/marketing-admin.css' ), 
+			plugin_dir_url( __FILE__ ) . 'assets/css/marketing-admin.css', 
 			[], 
 			time() 
 		);
@@ -72,8 +78,8 @@ class Marketing extends Module_Base {
 		// JS
 		wp_register_script(
 			'alezux-marketing-admin-js',
-			$this->get_asset_url( 'assets/js/marketing-admin.js' ),
-			[ 'jquery' ],
+			plugin_dir_url( __FILE__ ) . 'assets/js/marketing-admin.js',
+			[ 'jquery', 'elementor-frontend' ], // Depend on elementor-frontend if possible, or just jquery
 			time(),
 			true
 		);
