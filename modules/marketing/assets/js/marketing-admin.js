@@ -26,6 +26,11 @@ jQuery(document).ready(function ($) {
 
         // 1. Load Templates
         function loadTemplates() {
+            // Skip AJAX if in editor mode (preserve PHP dummy data)
+            if (wrapper.data('is-editor') === 'yes') {
+                return;
+            }
+
             if (typeof alezux_marketing_vars === 'undefined') {
                 // If no vars, show dummy empty or msg
                 if (tableBody.find('tr').length === 0) {

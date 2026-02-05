@@ -38,9 +38,37 @@ class Marketing_Config_Widget extends Widget_Base {
 		$this->start_controls_section(
 			'section_content',
 			[
-				'label' => __( 'Configuración', 'alezux-members' ),
+				'label' => __( 'Modo Editor (Preview)', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
+
+		$this->add_control(
+			'show_editor_modal_template',
+			[
+				'label' => __( 'Mostrar Modal Edición', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __( 'Sí', 'alezux-members' ),
+				'label_off' => __( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => 'Activa esto para ver y diseñar la ventana modal de edición de plantilla.',
+			]
+		);
+
+		$this->add_control(
+			'show_editor_modal_settings',
+			[
+				'label' => __( 'Mostrar Modal Ajustes', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => __( 'Sí', 'alezux-members' ),
+				'label_off' => __( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => 'Activa esto para ver y diseñar la ventana modal de configuración.',
+			]
+		);
+
 		$this->end_controls_section();
 
 		// 1. DISEÑO DE LA TABLA (Tabla y Encabezados)
@@ -447,8 +475,15 @@ class Marketing_Config_Widget extends Widget_Base {
 			echo '<p>Acceso restringido.</p>';
 			return;
 		}
+
+		$settings = $this->get_settings_for_display();
+		$show_edit_modal = $is_edit && 'yes' === $settings['show_editor_modal_template'];
+		$show_settings_modal = $is_edit && 'yes' === $settings['show_editor_modal_settings'];
+		
+		// Data attr to prevent JS overwrite in editor
+		$wrapper_attrs = $is_edit ? ' data-is-editor="yes"' : '';
 		?>
-		<div class="alezux-finanzas-app alezux-marketing-app">
+		<div class="alezux-finanzas-app alezux-marketing-app"<?php echo $wrapper_attrs; ?>>
 			
 			<!-- Cabecera Estándar -->
 			<div class="alezux-table-header">
@@ -508,24 +543,22 @@ class Marketing_Config_Widget extends Widget_Base {
 
 			<?php if ( $is_edit ) : ?>
 				<div style="margin-top:20px; padding:10px; border:1px dashed #666; color:#aaa; font-size:12px;">
-					<strong>Modo Editor:</strong> Los modales no son visibles aquí por defecto. Puedes usar el botón de "Configuración General" o "Editar" (simulado) para verlos. 
-					<br>
-					<em>Nota: La funcionalidad real requiere cargar en el frontend.</em>
+					<strong>Modo Editor:</strong> Los modales no son visibles aquí por defecto. Usa los controles "Modo Editor (Preview)" para mostrarlos y diseñarlos.
 				</div>
 			<?php endif; ?>
 
 			<!-- MODAL TEMPLATE EDITOR -->
-			<div id="marketing-template-modal" class="alezux-modal" style="display:none;">
+			<div id="marketing-template-modal" class="alezux-modal" style="<?php echo $show_edit_modal ? 'display:flex !important;' : 'display:none;'; ?>">
 				<div class="alezux-modal-content" style="max-width: 800px;">
 					<span class="alezux-close-modal">&times;</span>
-					<h3 id="modal-title">Editar Plantilla</h3>
+					<h3 id="modal-title">Editar Plantilla (Preview)</h3>
 					
-					<form id="marketing-template-form">
-						<input type="hidden" id="tpl-type" name="type">
+					<form id="marketing-template-form" onsubmit="return false;">
+						<input type="hidden" id="tpl-type" name="type" value="dummy">
 						
 						<div class="form-group">
 							<label>Asunto:</label>
-							<input type="text" id="tpl-subject" name="subject" class="alezux-input" required>
+							<input type="text" id="tpl-subject" name="subject" class="alezux-input" value="Asunto de Ejemplo" required>
 							<small>Variables disponibles: {{user.name}}, {{site_name}}...</small>
 						</div>
 
@@ -538,7 +571,7 @@ class Marketing_Config_Widget extends Widget_Base {
                             </div>
 
                             <div id="tab-content-edit">
-							    <textarea id="tpl-content" name="content" rows="15" class="alezux-input" style="font-family: monospace;"></textarea>
+							    <textarea id="tpl-content" name="content" rows="15" class="alezux-input" style="font-family: monospace;">&lt;h1&gt;Hola Mundo&lt;/h1&gt;</textarea>
 							    <small>Pega aquí tu código HTML. La etiqueta &lt;body&gt; es opcional.</small>
                             </div>
 
@@ -552,43 +585,43 @@ class Marketing_Config_Widget extends Widget_Base {
 						<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
 							<label>Activo:</label>
 							<label class="switch">
-								<input type="checkbox" id="tpl-active" name="is_active">
+								<input type="checkbox" id="tpl-active" name="is_active" checked>
 								<span class="slider round"></span>
 							</label>
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar Cambios</button>
+							<button type="submit" class="alezux-marketing-btn primary">Guardar (Simulado)</button>
 						</div>
 					</form>
 				</div>
 			</div>
 
 			<!-- MODAL SETTINGS -->
-			<div id="marketing-settings-modal" class="alezux-modal" style="display:none;">
+			<div id="marketing-settings-modal" class="alezux-modal" style="<?php echo $show_settings_modal ? 'display:flex !important;' : 'display:none;'; ?>">
 				<div class="alezux-modal-content">
 					<span class="alezux-close-modal">&times;</span>
-					<h3>Configuración General</h3>
+					<h3>Configuración General (Preview)</h3>
 					
-					<form id="marketing-settings-form">
+					<form id="marketing-settings-form" onsubmit="return false;">
 						<div class="form-group">
 							<label>Nombre del Remitente (From Name):</label>
-							<input type="text" id="set-from-name" name="from_name" class="alezux-input">
+							<input type="text" id="set-from-name" name="from_name" class="alezux-input" value="Mi Escuela">
 						</div>
 
 						<div class="form-group">
 							<label>Email del Remitente (From Email):</label>
-							<input type="email" id="set-from-email" name="from_email" class="alezux-input">
+							<input type="email" id="set-from-email" name="from_email" class="alezux-input" value="info@escuela.com">
 						</div>
 
 						<div class="form-group">
 							<label>URL del Logo (Variable {{logo_url}}):</label>
-							<input type="url" id="set-logo-url" name="logo_url" class="alezux-input">
+							<input type="url" id="set-logo-url" name="logo_url" class="alezux-input" value="https://via.placeholder.com/150">
 							<small>Sube tu logo a Medios y pega la URL aquí.</small>
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar Configuración</button>
+							<button type="submit" class="alezux-marketing-btn primary">Guardar (Simulado)</button>
 						</div>
 					</form>
 				</div>
