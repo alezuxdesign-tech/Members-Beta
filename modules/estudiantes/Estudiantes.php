@@ -72,6 +72,11 @@ class Estudiantes extends Module_Base {
 			require_once __DIR__ . '/widgets/Estudiantes_CSV_Widget.php';
 			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Estudiantes_CSV_Widget() );
 		}
+
+		if ( file_exists( __DIR__ . '/widgets/Elementor_Widget_Estudiantes_Cursos_Grid.php' ) ) {
+			require_once __DIR__ . '/widgets/Elementor_Widget_Estudiantes_Cursos_Grid.php';
+			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Elementor_Widget_Estudiantes_Cursos_Grid() );
+		}
 	}
 
 	public function shortcode_total_students() {
