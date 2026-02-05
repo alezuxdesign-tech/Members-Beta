@@ -24,17 +24,19 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
 	}
 
 	protected function register_controls() {
+		// Sección de Contenido / Configuración Principal
 		$this->start_controls_section(
 			'section_content',
 			[
 				'label' => __( 'Configuración', 'alezux-members' ),
+                'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
 
 		$this->add_control(
 			'color_base',
 			[
-				'label' => __( 'Color Principal', 'alezux-members' ),
+				'label' => __( 'Color Principal (Actividad)', 'alezux-members' ),
 				'type' => \Elementor\Controls_Manager::COLOR,
 				'default' => '#40c463', // GitHub Green
 				'selectors' => [
@@ -47,6 +49,70 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+        // Sección de Estilo: Meses
+        $this->start_controls_section(
+            'section_style_months',
+            [
+                'label' => __( 'Estilo de Meses', 'alezux-members' ),
+                'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'typography_months',
+                'label' => __( 'Tipografía', 'alezux-members' ),
+                'selector' => '{{WRAPPER}} .alezux-heatmap-months',
+            ]
+        );
+
+        $this->add_control(
+            'color_months',
+            [
+                'label' => __( 'Color', 'alezux-members' ),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#767676',
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-heatmap-months' => 'color: {{VALUE}}',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        // Sección de Estilo: Leyenda
+        $this->start_controls_section(
+            'section_style_legend',
+            [
+                'label' => __( 'Estilo de Leyenda', 'alezux-members' ),
+                'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'typography_legend',
+                'label' => __( 'Tipografía', 'alezux-members' ),
+                'selector' => '{{WRAPPER}} .alezux-heatmap-legend',
+            ]
+        );
+
+        $this->add_control(
+            'color_legend',
+            [
+                'label' => __( 'Color', 'alezux-members' ),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#767676',
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-heatmap-legend' => 'color: {{VALUE}}',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
 	}
 
 	protected function render() {
@@ -100,6 +166,7 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
 				flex-direction: column;
 				gap: 10px;
 				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                width: 100%; /* Full width */
 			}
             
             /* Wrapper for scrolling both months and grid together */
@@ -113,48 +180,54 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
                 display: inline-flex; /* content grows horizontally */
                 flex-direction: column;
                 gap: 5px;
+                min-width: 100%; /* Ensure it fills at least the container */
             }
 
             .alezux-heatmap-months {
                 display: grid;
                 grid-template-columns: repeat(53, 13px); /* 13px = 10px width + 3px gap roughly, needs precise mapping */
-                /* Better: use same column sizing as grid */
-                grid-auto-columns: 13px; /* 10px box + 3px gap */
+                grid-auto-columns: 13px; 
                 grid-auto-flow: column;
                 height: 15px;
-                font-size: 10px;
+                font-size: 10px; /* Default, overridden by control */
                 line-height: 15px;
-                color: #767676; /* Light mode default */
+                color: #767676; /* Default, overridden by control */
             }
 
-            /* Dark mode text adjustment */
+            /* Dark mode text adjustment - ONLY if control not set (CSS specificity will handle override if ID used but here we use selectors) */
             @media (prefers-color-scheme: dark) {
                 .alezux-heatmap-months {
-                    color: #8b949e;
+                    color: inherit; /* Let elementor control handle it mostly, or fallback */
                 }
             }
             
             /* Ensure text doesn't overflow */
             .alezux-month-label {
-                grid-column-end: span 3; /* Give plenty of space */
+                grid-column-end: span 3; 
                 overflow: visible;
                 white-space: nowrap;
             }
 
 			.alezux-heatmap-grid {
 				display: grid;
-				grid-template-rows: repeat(7, 10px); /* 10px squares */
+				grid-template-rows: repeat(7, 10px); 
 				grid-auto-flow: column;
 				gap: 3px;
 			}
 
 			.alezux-heatmap-day {
-				width: 10px; /* Reduced slightly to fit better standard screens */
+				width: 10px; 
 				height: 10px;
 				border-radius: 2px;
 				background-color: #ebedf0;
 				position: relative;
 			}
+            
+            /* Make sure grid fills space if needed, though heatmaps are usually fixed size squares. 
+               To make it "adjust to container", we let scroll wrapper handle overflow. 
+               If user wants squares to stretch, that's different mechanics (SVG usually). 
+               PHP Grid is hard to justify width without SVG.
+               We keep fixed square size but allow full container width scrolling. */
 
             @media (prefers-color-scheme: dark) {
                 .alezux-heatmap-day {
@@ -189,13 +262,8 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
                 align-items: center;
                 justify-content: flex-end;
                 gap: 4px;
-                font-size: 11px;
-                color: #767676;
-            }
-            @media (prefers-color-scheme: dark) {
-                .alezux-heatmap-legend {
-                    color: #8b949e;
-                }
+                font-size: 11px; /* Default */
+                color: #767676; /* Default */
             }
             .legend-item {
                 width: 10px;
