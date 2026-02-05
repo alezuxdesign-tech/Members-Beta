@@ -2,7 +2,7 @@ jQuery(document).ready(function ($) {
 
     // Main Init Function
     function initMarketingAdmin($scope) {
-        var wrapper = $scope ? $scope.find('.alezux-marketing-wrapper') : $('.alezux-marketing-wrapper');
+        var wrapper = $scope ? $scope.find('.alezux-marketing-app') : $('.alezux-marketing-app');
 
         if (wrapper.length === 0) return;
 
@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
                         <td>${item.subject}</td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}">
+                            <button class="alezux-action-btn edit-template-btn" data-type="${item.type}">
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
                         </td>

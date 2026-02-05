@@ -240,21 +240,31 @@ class Marketing_Config_Widget extends Widget_Base {
 	}
 
 	protected function render() {
+		// $settings = $this->get_settings_for_display(); // Si tuviera controles dinámicos de título
 		if ( ! current_user_can( 'administrator' ) ) {
 			echo '<p>Acceso restringido.</p>';
 			return;
 		}
-
 		?>
-		<div class="alezux-marketing-wrapper">
+		<div class="alezux-finanzas-app alezux-marketing-app">
 			
-			<div class="marketing-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-				<h2 style="margin:0;">Gestor de Correos</h2>
-				<button id="btn-marketing-settings" class="alezux-marketing-btn primary">
-					<i class="fa fa-cog"></i> Configuración General
-				</button>
+			<!-- Cabecera Estándar (Igual a Finanzas) -->
+			<div class="alezux-table-header">
+				<div class="alezux-header-left">
+					<h3 class="alezux-table-title">Gestor de Correos</h3>
+					<p class="alezux-table-desc">Administra las plantillas de email del sistema.</p>
+				</div>
+
+				<div class="alezux-header-right alezux-filters-inline">
+					<div class="alezux-filter-item">
+						<button id="btn-marketing-settings" class="alezux-action-btn primary">
+							<i class="fa fa-cog"></i> Configuración General
+						</button>
+					</div>
+				</div>
 			</div>
 
+			<!-- Tabla Container -->
 			<div class="alezux-table-wrapper">
 				<table class="alezux-finanzas-table" id="marketing-templates-table">
 					<thead>
@@ -267,7 +277,7 @@ class Marketing_Config_Widget extends Widget_Base {
 					</thead>
 					<tbody>
 						<!-- AJAX Loaded -->
-						<tr><td colspan="4" style="text-align:center;">Cargando plantillas...</td></tr>
+						<tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando plantillas...</td></tr>
 					</tbody>
 				</table>
 			</div>
@@ -302,7 +312,7 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar Cambios</button>
+							<button type="submit" class="alezux-action-btn primary">Guardar Cambios</button>
 						</div>
 					</form>
 				</div>
@@ -332,7 +342,7 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar Configuración</button>
+							<button type="submit" class="alezux-action-btn primary">Guardar Configuración</button>
 						</div>
 					</form>
 				</div>
