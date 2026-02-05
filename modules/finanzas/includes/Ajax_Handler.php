@@ -532,4 +532,26 @@ class Ajax_Handler {
         
         \wp_send_json_success( 'Pago registrado y suscripción actualizada.' );
     }
+
+    public static function get_finance_kpis() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        // Obtener parametros de filtro
+        $start = isset($_POST['start_date']) ? \sanitize_text_field($_POST['start_date']) : \date('Y-m-01');
+        $end = isset($_POST['end_date']) ? \sanitize_text_field($_POST['end_date']) : \date('Y-m-t');
+
+        // Calcular usando helpers
+        $revenue = \Alezux_Members\Modules\Finanzas\Includes\Shortcodes::calculate_revenue( $start, $end );
+        $projected = \Alezux_Members\Modules\Finanzas\Includes\Shortcodes::calculate_projected( $start, $end );
+        
+        // Devolver respuesta JSON
+        \wp_send_json_success( [
+            'revenue_period' => $revenue,
+            'projected_period' => $projected,
+            'formatted' => [
+                'revenue_period' => '$' . \number_format( $revenue, 2 ),
+                'projected_period' => '$' . \number_format( $projected, 2 )
+            ]
+        ] );
+    }
 }

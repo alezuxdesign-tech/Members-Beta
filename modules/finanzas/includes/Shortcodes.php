@@ -64,15 +64,59 @@ class Shortcodes {
         $t_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
         $t_plans = $wpdb->prefix . 'alezux_finanzas_plans';
         
-        // Sumar quota_amount de suscripciones ACTIVAS cuyo next_payment_date cae en el rango
-        $sql = "SELECT SUM( p.quota_amount ) 
+        // Obtener suscripciones activas (o atrasadas, pues se espera cobrar) que tienen próxima fecha definida
+        $sql = "SELECT s.id, s.next_payment_date, s.quotas_paid, p.quota_amount, p.total_quotas, p.frequency 
                 FROM $t_subs s
                 JOIN $t_plans p ON s.plan_id = p.id
-                WHERE s.status = 'active'
-                AND s.next_payment_date BETWEEN %s AND %s";
+                WHERE s.status IN ('active', 'past_due') 
+                AND s.next_payment_date IS NOT NULL";
+        
+        $subs = $wpdb->get_results( $sql );
+        $total = 0.0;
+        
+        // Convertir strings a timestamp para comparación
+        $period_start = strtotime( $start_date . ' 00:00:00' );
+        $period_end = strtotime( $end_date . ' 23:59:59' );
+        
+        foreach ( $subs as $sub ) {
+            // Fecha del próximo pago real registrado en DB
+            $payment_date = strtotime( $sub->next_payment_date );
+            $quotas_paid = (int) $sub->quotas_paid;
+            $max_quotas = (int) $sub->total_quotas; 
+            
+            // Si es 0, asumimos indefinido (o lógica de negocio específica). 
+            // Si es 1, es pago único, ya debería estar pagado si está activo, pero verificamos.
+            if ( $max_quotas <= 0 ) $max_quotas = 9999; 
 
-        $amount = $wpdb->get_var( $wpdb->prepare( $sql, $start_date . ' 00:00:00', $end_date . ' 23:59:59' ) );
-        return $amount ? (float) $amount : 0.00;
+            // Si el próximo pago ya está fuera del rango futuro, ignorar esta subs
+            if ( $payment_date > $period_end ) continue;
+            
+            // Proyección Iterativa: Simular ocurrencias dentro del rango
+            // Safety break: max 50 iteraciones para evitar bucles infinitos (ej. 1 año de pagos diarios)
+            $iterations = 0;
+            
+            while ( $payment_date <= $period_end && $quotas_paid < $max_quotas && $iterations < 50 ) {
+                
+                // Si la fecha cae dentro del rango seleccionado (y es >= inicio), sumar
+                if ( $payment_date >= $period_start ) {
+                    $total += (float) $sub->quota_amount;
+                }
+                
+                // Avanzar fecha según frecuencia
+                $freq = $sub->frequency ?: 'month';
+                $freq_str = '+1 month';
+                if ( $freq === 'week' ) $freq_str = '+1 week';
+                if ( $freq === 'year' ) $freq_str = '+1 year';
+                if ( $freq === 'day' ) $freq_str = '+1 day';
+                if ( $freq === 'contado' ) break; // No recurre
+                
+                $payment_date = strtotime( $freq_str, $payment_date );
+                $quotas_paid++;
+                $iterations++;
+            }
+        }
+        
+        return $total;
     }
 
     /**
