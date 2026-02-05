@@ -71,7 +71,129 @@
             };
 
             this.initEvents();
+            this.initTestButton(); // [NEW] Botón de prueba
             this.loadAutomationsTable();
+        }
+
+        /**
+         * Inicializa el botón "Ejecutar Prueba" en la barra de herramientas existente.
+         */
+        initTestButton() {
+            const headerActions = document.querySelector('.alezux-marketing-header .header-actions');
+            if (!headerActions) return;
+
+            const btn = document.createElement('button');
+            btn.className = 'alezux-btn btn-secondary';
+            btn.innerHTML = '<i class="fas fa-play"></i> Probar Flujo';
+            btn.style.marginRight = '10px';
+            btn.onclick = () => this.openTestModal();
+
+            headerActions.insertBefore(btn, headerActions.firstChild);
+        }
+
+        openTestModal() {
+            if (!this.currentAutomationId) {
+                this.showMessage('Error', 'Primero debes guardar y abrir una automatización.');
+                return;
+            }
+
+            const userId = prompt("Ingresa el ID del usuario de prueba (o deja en blanco para usar tu usuario actual):");
+            if (userId === null) return; // Cancelado
+
+            this.runDryRun(userId);
+        }
+
+        async runDryRun(testUserId) {
+            const btn = document.querySelector('.icon-play')?.closest('button') || document.body;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ejecutando...';
+            btn.disabled = true;
+
+            // Limpiar visualizaciones previas
+            this.clearExecutionTrace();
+
+            try {
+                const response = await $.ajax({
+                    url: alezux_marketing_vars.ajax_url,
+                    method: 'POST',
+                    data: {
+                        action: 'alezux_dry_run_automation',
+                        nonce: alezux_marketing_vars.nonce,
+                        automation_id: this.currentAutomationId,
+                        test_user_id: testUserId
+                    }
+                });
+
+                if (response.success) {
+                    this.visualizeExecution(response.data.trace);
+                    this.showMessage('Éxito', `Prueba completada en ${response.data.duration}ms. Revisa el canvas.`);
+                } else {
+                    this.showMessage('Error', response.data);
+                }
+            } catch (err) {
+                console.error(err);
+                this.showMessage('Error', 'Falló la solicitud de prueba.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        visualizeExecution(trace) {
+            if (!trace || !Array.isArray(trace)) return;
+
+            let delay = 0;
+            const delayStep = 300; // ms entre pasos para animación
+
+            trace.forEach((step, index) => {
+                const nodeId = step.node_id;
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                setTimeout(() => {
+                    // 1. Resaltar nodo
+                    node.el.classList.add('trace-active');
+                    if (step.status === 'error') node.el.classList.add('trace-error');
+
+                    // Tooltip con info
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'trace-tooltip';
+                    let content = `<strong>Paso ${index + 1}</strong>`;
+
+                    if (step.output) {
+                        if (step.output.condition_result !== undefined) {
+                            content += `<br>Resultado: ${step.output.condition_result ? 'Verdadero (' + step.output.branch + ')' : 'Falso (' + step.output.branch + ')'}`;
+                        }
+                        if (step.output.dry_run_skipped) {
+                            content += `<br><em>Acción simulada</em>`;
+                        }
+                        if (step.output.delay_minutes) {
+                            content += `<br>Pausado: ${step.output.delay_minutes} min`;
+                        }
+                    }
+                    tooltip.innerHTML = content;
+                    node.el.appendChild(tooltip);
+
+                    // 2. Resaltar conexión al siguiente paso
+                    if (index < trace.length - 1) {
+                        const nextStep = trace[index + 1];
+                        const conn = this.connections.find(c => c.from === nodeId && c.to === nextStep.node_id);
+                        if (conn) {
+                            conn.path.classList.add('trace-path-active');
+                        }
+                    }
+
+                }, delay);
+
+                delay += delayStep;
+            });
+        }
+
+        clearExecutionTrace() {
+            document.querySelectorAll('.trace-active').forEach(el => el.classList.remove('trace-active'));
+            document.querySelectorAll('.trace-error').forEach(el => el.classList.remove('trace-error'));
+            document.querySelectorAll('.trace-path-active').forEach(el => el.classList.remove('trace-path-active'));
+            document.querySelectorAll('.trace-tooltip').forEach(el => el.remove());
         }
 
         initCanvasContent() {

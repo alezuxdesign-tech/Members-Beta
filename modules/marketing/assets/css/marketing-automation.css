@@ -1046,3 +1046,76 @@
     color: #fff;
     box-shadow: 0 0 15px rgba(72, 187, 120, 0.4);
 }
+/* =========================================
+   Execution Trace Visualization (n8n Style)
+   ========================================= */
+
+/* Active Node Success */
+.alezux-automation-node.trace-active {
+    box-shadow: 0 0 0 2px #4caf50, 0 0 20px rgba(76, 175, 80, 0.4) !important;
+    border-color: #4caf50 !important;
+    transform: scale(1.02);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Active Node Error */
+.alezux-automation-node.trace-error {
+    box-shadow: 0 0 0 2px #f44336, 0 0 20px rgba(244, 67, 54, 0.4) !important;
+    border-color: #f44336 !important;
+}
+
+/* Active Connection Path (SVG) */
+.automation-line.trace-path-active {
+    stroke: #4caf50 !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 3px #4caf50);
+    animation: trace-dash 1s linear infinite;
+    stroke-dasharray: 10;
+}
+
+@keyframes trace-dash {
+    to {
+        stroke-dashoffset: -20;
+    }
+}
+
+/* Execution Tooltip/Badge */
+.trace-tooltip {
+    position: absolute;
+    top: -60px; /* Above the node */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 25, 30, 0.95);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    border: 1px solid #4caf50;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    opacity: 0;
+    animation: trace-tooltip-in 0.3s forwards 0.2s;
+    text-align: center;
+}
+
+.trace-error .trace-tooltip {
+    border-color: #f44336;
+}
+
+@keyframes trace-tooltip-in {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.trace-tooltip strong {
+    color: #4caf50;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.trace-error .trace-tooltip strong {
+    color: #f44336;
+}
+

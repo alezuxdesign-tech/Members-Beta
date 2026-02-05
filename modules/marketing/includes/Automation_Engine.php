@@ -38,15 +38,25 @@ class Automation_Engine {
 
     /**
      * Inicia una automatización desde cero.
+     * @param object $automation Objeto de la BD
+     * @param array $context_data Datos del trigger
+     * @param bool $is_dry_run Si es true, no ejecuta acciones reales
+     * @return array|void Retorna el trace si es dry_run
      */
-    public static function start_automation( $automation, $context_data ) {
+    public static function start_automation( $automation, $context_data, $is_dry_run = false ) {
         $blueprint = \json_decode( $automation->blueprint, true );
         if ( ! $blueprint || ! isset( $blueprint['nodes'] ) ) return;
 
-        // 1. Encontrar el Nodo Trigger (o el primer nodo del tipo correcto)
+        // Validar usuario
+        $user_id = $context_data['user']->ID ?? 0;
+
+        // Contexto de Ejecución
+        $execution_id = uniqid('exec_');
+        $trace = []; // Array de pasos
+
+        // 1. Encontrar el Nodo Trigger
         $trigger_node = null;
         foreach ( $blueprint['nodes'] as $node ) {
-            // Buscamos nodos que actúan como entrada
             if ( \in_array( $node['type'], ['trigger', 'inactivity', 'expiration'] ) ) {
                 $trigger_node = $node;
                 break;
@@ -55,8 +65,40 @@ class Automation_Engine {
 
         if ( ! $trigger_node ) return;
 
-        // 2. Iniciar ejecución desde el Trigger
-        self::run_step( $trigger_node['id'], $blueprint, $context_data, $automation->id );
+        // Registro inicial del log
+        if ( ! $is_dry_run ) {
+            // Podríamos crear el registro "running" aquí y actualizarlo al final
+        }
+
+        // 2. Iniciar ejecución
+        $start_time = microtime(true);
+        
+        // Pasamos el trace por referencia para ir llenándolo
+        self::run_step( $trigger_node['id'], $blueprint, $context_data, $automation->id, $is_dry_run, $trace );
+
+        $duration =  round((microtime(true) - $start_time) * 1000);
+
+        // 3. Guardar log en BD
+        if ( ! $is_dry_run ) {
+             global $wpdb;
+             $table_logs = $wpdb->prefix . 'alezux_marketing_logs';
+             $wpdb->insert( $table_logs, [
+                 'automation_id'  => $automation->id,
+                 'user_id'        => $user_id,
+                 'execution_mode' => 'production',
+                 'status'         => 'success', // Ojo: Si hay un error fatal en PHP morirá antes, mejorar con try/catch en run_step
+                 'steps_trace'    => \json_encode( $trace ),
+                 'duration_ms'    => $duration
+             ] );
+        }
+
+        if ( $is_dry_run ) {
+            return [
+                'status' => 'success',
+                'trace'  => $trace,
+                'duration' => $duration
+            ];
+        }
     }
 
     /**
@@ -85,13 +127,26 @@ class Automation_Engine {
     }
 
     /**
-     * Ejecuta la lógica de un nodo recursivamente hasta encontrar una pausa o final.
+     * Ejecuta la lógica de un nodo recursivamente.
      */
-    private static function run_step( $node_id, $blueprint, $context, $automation_id ) {
+    private static function run_step( $node_id, $blueprint, $context, $automation_id, $is_dry_run = false, &$trace = [] ) {
         $node = self::get_node_by_id( $node_id, $blueprint['nodes'] );
         if ( ! $node ) return;
 
-        $next_branch = 'default'; // Por defecto seguimos la conexión normal
+        // Registrar paso en el trace
+        $step_log = [
+            'node_id'   => $node_id,
+            'node_type' => $node['type'],
+            'status'    => 'running',
+            'timestamp' => current_time('mysql'),
+            'output'    => []
+        ];
+
+        /* =========================================
+           LÓGICA DRY RUN: SIMULACIÓN DE ACCIONES
+           ========================================= */
+
+        $next_branch = 'default';
 
         // --- EJECUCIÓN DEL NODO ---
         switch ( $node['type'] ) {
@@ -102,23 +157,41 @@ class Automation_Engine {
                 break;
 
             case 'email':
-                self::action_send_email( $node, $context, $automation_id );
+                $step_log['output']['action'] = 'send_email';
+                if ( $is_dry_run ) {
+                    $step_log['output']['dry_run_skipped'] = true;
+                    $step_log['output']['email_data'] = $node['data'];
+                } else {
+                    self::action_send_email( $node, $context, $automation_id );
+                    $step_log['output']['sent'] = true;
+                }
                 break;
 
             case 'condition':
                 $result = self::evaluate_condition( $node, $context );
                 $next_branch = $result ? 'true' : 'false';
+                $step_log['output']['condition_result'] = $result;
+                $step_log['output']['branch'] = $next_branch;
                 break;
 
             case 'delay':
                 // Calcular tiempo y PAUSAR
                 $minutes = \intval( $node['data']['minutes'] ?? 0 );
+                $step_log['output']['delay_minutes'] = $minutes;
+                
                 if ( $minutes > 0 ) {
-                    $next_node_id = self::get_next_node_id( $node_id, $blueprint['connections'], 'default' );
-                    if ( $next_node_id ) {
-                        self::schedule_task( $next_node_id, $minutes, $context, $automation_id );
+                    if ( $is_dry_run ) {
+                        $step_log['output']['dry_run_note'] = "Delay skipped for simulation (would wait $minutes mins)";
+                        // En Dry Run seguimos ejecutando como si hubiera pasado el tiempo
+                    } else {
+                        $next_node_id = self::get_next_node_id( $node_id, $blueprint['connections'], 'default' );
+                        if ( $next_node_id ) {
+                            self::schedule_task( $next_node_id, $minutes, $context, $automation_id );
+                        }
+                        $step_log['status'] = 'paused';
+                        $trace[] = $step_log; // Guardar log antes de pausar
+                        return; // DETENEMOS LA EJECUCIÓN AQUÍ
                     }
-                    return; // DETENEMOS LA EJECUCIÓN AQUÍ
                 }
                 break;
 
@@ -127,8 +200,17 @@ class Automation_Engine {
                 if ( ($node['data']['action'] ?? '') === 'check' ) {
                     $result = self::evaluate_condition( $node, $context );
                     $next_branch = $result ? 'true' : 'false';
+                    $step_log['output']['condition_result'] = $result;
+                    $step_log['output']['branch'] = $next_branch;
                 } else {
-                    self::action_course( $node, $context );
+                     if ( $is_dry_run ) {
+                        $step_log['output']['dry_run_skipped'] = true;
+                        $step_log['output']['action'] = 'enroll_course';
+                        $step_log['output']['course_id'] = $node['data']['course_id'];
+                    } else {
+                        self::action_course( $node, $context );
+                        $step_log['output']['enrolled'] = true;
+                    }
                 }
                 break;
 
@@ -137,22 +219,39 @@ class Automation_Engine {
                 if ( ($node['data']['action'] ?? '') === 'check_has' ) {
                     $result = self::evaluate_condition( $node, $context );
                     $next_branch = $result ? 'true' : 'false';
+                    $step_log['output']['condition_result'] = $result;
+                    $step_log['output']['branch'] = $next_branch;
                 } else {
-                    self::action_student_tag( $node, $context );
+                     if ( $is_dry_run ) {
+                        $step_log['output']['dry_run_skipped'] = true;
+                        $step_log['output']['action'] = 'change_tag';
+                        $step_log['output']['tag_action'] = $node['data']['action'];
+                        $step_log['output']['tag'] = $node['data']['tag'];
+                    } else {
+                        self::action_student_tag( $node, $context );
+                        $step_log['output']['tag_changed'] = true;
+                    }
                 }
                 break;
 
             case 'payment_status':
                 $result = self::evaluate_condition( $node, $context );
                 $next_branch = $result ? 'true' : 'false';
+                $step_log['output']['condition_result'] = $result;
+                $step_log['output']['branch'] = $next_branch;
                 break;
         }
+
+
+
+        $step_log['status'] = 'completed';
+        $trace[] = $step_log;
 
         // --- NAVEGACIÓN AL SIGUIENTE NODO ---
         $next_node_id = self::get_next_node_id( $node_id, $blueprint['connections'], $next_branch );
 
         if ( $next_node_id ) {
-            self::run_step( $next_node_id, $blueprint, $context, $automation_id );
+            self::run_step( $next_node_id, $blueprint, $context, $automation_id, $is_dry_run, $trace );
         }
     }
 

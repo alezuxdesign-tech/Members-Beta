@@ -58,6 +58,7 @@ class Marketing extends Module_Base {
         \add_action( 'wp_ajax_alezux_get_automations_list', [ $this, 'ajax_get_automations_list' ] );
         \add_action( 'wp_ajax_alezux_delete_automation', [ $this, 'ajax_delete_automation' ] );
         \add_action( 'wp_ajax_alezux_toggle_automation_status', [ $this, 'ajax_toggle_automation_status' ] );
+        \add_action( 'wp_ajax_alezux_dry_run_automation', [ $this, 'ajax_dry_run_automation' ] ); // [NEW] Dry Run Handler
 	}
 
     public function register_widgets( $widgets_manager ) {
@@ -256,5 +257,49 @@ class Marketing extends Module_Base {
         $wpdb->update( $table, [ 'status' => $status ], [ 'id' => $id ] );
 
         \wp_send_json_success( 'Estado actualizado correctamente.' );
+    }
+
+    /**
+     * AJAX: Ejecuta una automatización en modo "Dry Run" (Prueba Simulada)
+     */
+    public function ajax_dry_run_automation() {
+        \check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Sin permisos.' );
+        }
+
+        $automation_id = isset( $_POST['automation_id'] ) ? \intval( $_POST['automation_id'] ) : 0;
+        $test_user_id = isset( $_POST['test_user_id'] ) ? \intval( $_POST['test_user_id'] ) : \get_current_user_id();
+
+        if ( ! $automation_id ) \wp_send_json_error( 'Falta ID de automatización.' );
+
+        // Cargar usuario de prueba
+        $user = \get_userdata( $test_user_id );
+        if ( ! $user ) \wp_send_json_error( 'Usuario de prueba no encontrado.' );
+
+        // Cargar automatización
+        global $wpdb;
+        $table = $wpdb->prefix . 'alezux_marketing_automations';
+        $automation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE id = %d", $automation_id ) );
+
+        if ( ! $automation ) \wp_send_json_error( 'Automatización no encontrada.' );
+
+        // Datos de contexto simulados
+        $context = [
+            'user' => $user,
+            'source' => 'dry_run_test',
+            'timestamp' => \current_time('mysql'),
+            'trigger_data' => [ 'mock' => true ] 
+        ];
+
+        // Ejecutar en modo Dry Run
+        $result = \Alezux_Members\Modules\Marketing\Includes\Automation_Engine::start_automation( $automation, $context, true );
+
+        if ( $result ) {
+            \wp_send_json_success( $result );
+        } else {
+            \wp_send_json_error( 'Error al ejecutar la prueba.' );
+        }
     }
 }
