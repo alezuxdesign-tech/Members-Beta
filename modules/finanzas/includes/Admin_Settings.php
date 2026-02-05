@@ -125,6 +125,28 @@ class Admin_Settings {
                 'tag'         => 'alezux_plans_list',
                 'module'      => 'FINANZAS',
                 'description' => 'Lista de planes disponibles para compra.'
+            ],
+            // ESTUDIANTES
+            [
+                'tag'         => 'alezux_estudiantes_total',
+                'module'      => 'ESTUDIANTES',
+                'description' => 'Muestra el número total de estudiantes registrados.'
+            ],
+            [
+                'tag'         => 'alezux_estudiantes_nuevos_mes',
+                'module'      => 'ESTUDIANTES',
+                'description' => 'Muestra el número de nuevos estudiantes en el mes actual.'
+            ],
+            [
+                'tag'         => 'alezux_student_momentum',
+                'module'      => 'ESTUDIANTES',
+                'description' => 'Muestra el indicador de momentum (progreso semanal vs semana pasada).'
+            ],
+            // CORE
+             [
+                'tag'         => 'alezux_profile',
+                'module'      => 'CORE',
+                'description' => 'Muestra el perfil del usuario con tabs (General, Password, Logros).'
             ]
         ];
     }

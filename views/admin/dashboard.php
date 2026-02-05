@@ -458,24 +458,46 @@ $shortcodes[] = [
 					<p>No se encontraron shortcodes registrados.</p>
 				</div>
 			<?php else : ?>
-				<div class="alezux-shortcodes-list">
-					<?php foreach ( $shortcodes as $sc ) : ?>
-						<div class="alezux-shortcode-item">
-							<div style="width: 100%;">
-								<div class="alezux-shortcode-header">
-									<span class="alezux-shortcode-tag">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
-									<span class="alezux-module-badge"><?php echo esc_html( $sc['module'] ); ?></span>
-								</div>
-								<p class="alezux-text" style="margin-bottom: 20px; font-size: 14px; color: #aaa; min-height: 40px;"><?php echo esc_html( $sc['description'] ); ?></p>
-							</div>
-							
-							<button class="alezux-copy-btn" onclick="copyToClipboard(this, '[<?php echo esc_js( $sc['tag'] ); ?>]')">
-								<span class="dashicons dashicons-admin-page"></span>
-								<span class="btn-text">Copiar Shortcode</span>
-							</button>
-						</div>
-					<?php endforeach; ?>
+				<div class="alezux-table-wrapper" style="background: #1a1a1a; border-radius: 12px; padding: 0;">
+                    <table class="alezux-finanzas-table" style="border: none;">
+                        <thead>
+                            <tr>
+                                <th style="width: 250px;">Shortcode</th>
+                                <th style="width: 100px;">Módulo</th>
+                                <th>Descripción</th>
+                                <th style="width: 100px; text-align: right;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ( $shortcodes as $sc ) : ?>
+                                <tr>
+                                    <td>
+                                        <span class="alezux-shortcode-tag" style="margin: 0;">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
+                                    </td>
+                                    <td>
+                                        <span class="alezux-status-badge status-completed" style="font-size: 10px;"><?php echo esc_html( $sc['module'] ); ?></span>
+                                    </td>
+                                    <td style="color: #aaa; font-size: 13px;">
+                                        <?php echo esc_html( $sc['description'] ); ?>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <button class="alezux-action-btn" onclick="copyToClipboard(this, '[<?php echo esc_js( $sc['tag'] ); ?>]')" style="padding: 6px 12px; font-size: 11px;">
+                                            <span class="dashicons dashicons-admin-page" style="font-size: 14px; width: 14px; height: 14px; line-height: 1.2;"></span>
+                                            <span class="btn-text">Copiar</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
 				</div>
+                
+                <!-- Estilos de tabla inline para asegurar compatibilidad si no carga el CSS externo -->
+                <style>
+                    .alezux-finanzas-table th { background: rgba(26, 32, 44, 0.5); padding: 12px 15px; text-align: left; color: #a1a1aa; font-weight: 600; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid #333; }
+                    .alezux-finanzas-table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #222; color: #fff; }
+                    .alezux-finanzas-table tr:last-child td { border-bottom: none; }
+                </style>
 			<?php endif; ?>
 		</div>
 	</div>
