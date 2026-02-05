@@ -42,6 +42,7 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_save_template', [ $this, 'ajax_save_template' ] );
 		add_action( 'wp_ajax_alezux_marketing_save_settings', [ $this, 'ajax_save_settings' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_settings', [ $this, 'ajax_get_settings' ] );
+		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); // New Handler
 	}
 
 	public function get_engine() {

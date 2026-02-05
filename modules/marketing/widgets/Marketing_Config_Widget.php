@@ -622,6 +622,8 @@ class Marketing_Config_Widget extends Widget_Base {
                         <!-- UPLOAD BOX -->
                         <div class="alezux-upload-box" id="logo-upload-trigger">
                             <input type="hidden" id="set-logo-url" name="logo_url">
+                            <!-- Hidden File Input for Native Upload -->
+                            <input type="file" id="logo-file-input" accept="image/png, image/jpeg, image/gif" style="display:none;">
                             
                             <div id="logo-preview-area" style="display:none;">
                                 <img src="" class="alezux-preview-image" id="logo-preview-img">
