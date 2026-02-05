@@ -586,14 +586,15 @@
                         return;
                     }
                     modalParams.overlay = overlay;
+                    // Intentar recuperar fields también si faltaba
+                    if (!modalParams.fields) modalParams.fields = document.getElementById('modal-fields');
                 }
 
                 modalParams.overlay.style.zIndex = '99999999';
 
                 if (modalParams.title) modalParams.title.innerText = `Configurar ${node.type.toUpperCase()}`;
-                if (modalParams.fields) modalParams.fields.innerHTML = '';
 
-                let innerHTML = '';
+                let innerHTML = ''; // Initialize innerHTML here
 
                 if (node.type === 'trigger') {
                     let options = '<option value="">Selecciona un evento...</option>';
@@ -608,32 +609,31 @@
                         </select>
                     `;
                 } else if (node.type === 'inactivity') {
-                } else if (node.type === 'inactivity') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días de Inactividad:</label>
-                    <input type="number" id="field-days" value="${node.data.days || '4'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días de Inactividad:</label>
+                        <input type="number" id="field-days" value="${node.data.days || '4'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    `;
                 } else if (node.type === 'expiration') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días antes del vencimiento:</label>
-                    <input type="number" id="field-days" value="${node.data.days || '2'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Días antes del vencimiento:</label>
+                        <input type="number" id="field-days" value="${node.data.days || '2'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    `;
                 } else if (node.type === 'delay') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
-                    <input type="number" id="field-minutes" value="${node.data.minutes || '5'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Retraso (minutos):</label>
+                        <input type="number" id="field-minutes" value="${node.data.minutes || '5'}" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    `;
                 } else if (node.type === 'condition') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Si el usuario...</label>
-                    <select id="field-condition-type" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
-                        <option value="has_tag" ${node.data.condition_type === 'has_tag' ? 'selected' : ''}>Tiene la etiqueta</option>
-                        <option value="in_course" ${node.data.condition_type === 'in_course' ? 'selected' : ''}>Está en el curso</option>
-                        <option value="payment_status" ${node.data.condition_type === 'payment_status' ? 'selected' : ''}>Estado de pago es</option>
-                    </select>
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Valor a comparar:</label>
-                    <input type="text" id="field-condition-value" value="${node.data.condition_value || ''}" placeholder="Ej: VIP, 123, paid" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Si el usuario...</label>
+                        <select id="field-condition-type" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                            <option value="has_tag" ${node.data.condition_type === 'has_tag' ? 'selected' : ''}>Tiene la etiqueta</option>
+                            <option value="in_course" ${node.data.condition_type === 'in_course' ? 'selected' : ''}>Está en el curso</option>
+                            <option value="payment_status" ${node.data.condition_type === 'payment_status' ? 'selected' : ''}>Estado de pago es</option>
+                        </select>
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Valor a comparar:</label>
+                        <input type="text" id="field-condition-value" value="${node.data.condition_value || ''}" placeholder="Ej: VIP, 123, paid" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    `;
                 } else if (node.type === 'course') {
                     let courseOptions = '<option value="">Selecciona Curso...</option>';
                     // Safe check para alezux_marketing_vars
@@ -642,51 +642,49 @@
                     courses.forEach(c => {
                         courseOptions += `<option value="${c.id}" ${node.data.course_id == c.id ? 'selected' : ''}>${c.title}</option>`;
                     });
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
-                    <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
-                        <option value="enroll" ${node.data.action === 'enroll' ? 'selected' : ''}>Inscribir al curso</option>
-                        <option value="check" ${node.data.action === 'check' ? 'selected' : ''}>¿Está inscrito? (Condición)</option>
-                    </select>
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Curso:</label>
-                    <select id="field-course-id" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                        ${courseOptions}
-                    </select>
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
+                        <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                            <option value="enroll" ${node.data.action === 'enroll' ? 'selected' : ''}>Inscribir al curso</option>
+                            <option value="check" ${node.data.action === 'check' ? 'selected' : ''}>¿Está inscrito? (Condición)</option>
+                        </select>
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Curso:</label>
+                        <select id="field-course-id" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                            ${courseOptions}
+                        </select>
+                    `;
                 } else if (node.type === 'student_tag') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
-                    <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
-                        <option value="add" ${node.data.action === 'add' ? 'selected' : ''}>Añadir Etiqueta</option>
-                        <option value="remove" ${node.data.action === 'remove' ? 'selected' : ''}>Quitar Etiqueta</option>
-                        <option value="check_has" ${node.data.action === 'check_has' ? 'selected' : ''}>¿Tiene la etiqueta? (Condición)</option>
-                    </select>
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Nombre Etiqueta:</label>
-                    <input type="text" id="field-tag" value="${node.data.tag || ''}" placeholder="Ej: VIP, Deudor, Becado" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
+                        <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                            <option value="add" ${node.data.action === 'add' ? 'selected' : ''}>Añadir Etiqueta</option>
+                            <option value="remove" ${node.data.action === 'remove' ? 'selected' : ''}>Quitar Etiqueta</option>
+                            <option value="check_has" ${node.data.action === 'check_has' ? 'selected' : ''}>¿Tiene la etiqueta? (Condición)</option>
+                        </select>
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Nombre Etiqueta:</label>
+                        <input type="text" id="field-tag" value="${node.data.tag || ''}" placeholder="Ej: VIP, Deudor, Becado" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                    `;
                 } else if (node.type === 'payment_status') {
-                    this.modal.fields.innerHTML = `
-                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Verificar si el usuario está:</label>
-                    <select id="field-status" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
-                        <option value="active" ${node.data.status === 'active' ? 'selected' : ''}>Al día (Activo)</option>
-                        <option value="overdue" ${node.data.status === 'overdue' ? 'selected' : ''}>Con Deuda (Atrasado)</option>
-                        <option value="cancelled" ${node.data.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
-                    </select>
-                `;
+                    innerHTML = `
+                        <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Verificar si el usuario está:</label>
+                        <select id="field-status" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                            <option value="active" ${node.data.status === 'active' ? 'selected' : ''}>Al día (Activo)</option>
+                            <option value="overdue" ${node.data.status === 'overdue' ? 'selected' : ''}>Con Deuda (Atrasado)</option>
+                            <option value="cancelled" ${node.data.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                        </select>
+                    `;
                 }
 
-                this.modal.save.innerText = "Guardar";
+                if (modalParams.fields) modalParams.fields.innerHTML = innerHTML;
+                if (modalParams.save) modalParams.save.innerText = "Guardar";
 
                 // Re-query and Force Display
-                const overlay = document.getElementById('alezux-node-modal');
-                if (overlay) {
-                    overlay.style.display = 'flex';
-                    overlay.style.zIndex = '2147483647'; // Max Int 32-bit
-                    overlay.style.visibility = 'visible';
-                    overlay.style.opacity = '1';
-                    console.log("Forzando display: flex en modal", overlay);
-                } else {
-                    console.error("ERROR CRÍTICO: No se encuentra el elemento #alezux-node-modal en el DOM");
+                if (modalParams.overlay) {
+                    modalParams.overlay.style.display = 'flex';
+                    modalParams.overlay.style.zIndex = '2147483647'; // Max Int 32-bit
+                    modalParams.overlay.style.visibility = 'visible';
+                    modalParams.overlay.style.opacity = '1';
+                    console.log("Forzando display: flex en modal", modalParams.overlay);
                 }
             } catch (err) {
                 console.error("EXCEPCIÓN CRÍTICA en openNodeSettings:", err);
