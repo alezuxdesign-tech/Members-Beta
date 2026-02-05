@@ -481,7 +481,7 @@ $shortcodes[] = [
                                         <?php echo esc_html( $sc['description'] ); ?>
                                     </td>
                                     <td style="text-align: right;">
-                                        <button class="alezux-action-btn" onclick="copyToClipboard(this, '[<?php echo esc_js( $sc['tag'] ); ?>]')" style="padding: 6px 12px; font-size: 11px;">
+                                        <button class="alezux-copy-action-btn" onclick="copyToClipboard(this, '[<?php echo esc_js( $sc['tag'] ); ?>]')" style="padding: 6px 12px; font-size: 11px;">
                                             <span class="dashicons dashicons-admin-page" style="font-size: 14px; width: 14px; height: 14px; line-height: 1.2;"></span>
                                             <span class="btn-text">Copiar</span>
                                         </button>
@@ -497,6 +497,26 @@ $shortcodes[] = [
                     .alezux-finanzas-table th { background: rgba(26, 32, 44, 0.5); padding: 12px 15px; text-align: left; color: #a1a1aa; font-weight: 600; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid #333; }
                     .alezux-finanzas-table td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #222; color: #fff; }
                     .alezux-finanzas-table tr:last-child td { border-bottom: none; }
+                    
+                    /* Custom Copy Button Style to avoid conflicts */
+                    .alezux-copy-action-btn {
+                        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+                        border: none;
+                        color: #fff;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        transition: opacity 0.2s;
+                        box-shadow: 0 4px 6px rgba(108, 92, 231, 0.3);
+                        text-decoration: none;
+                    }
+                    .alezux-copy-action-btn:hover { opacity: 0.9; }
+                    .alezux-copy-action-btn.copied { background: #00b894; }
                 </style>
 			<?php endif; ?>
 		</div>
