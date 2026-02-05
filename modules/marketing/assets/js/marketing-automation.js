@@ -28,11 +28,16 @@
 
             this.modal = {
                 overlay: document.getElementById('alezux-node-modal'),
+                title: document.getElementById('modal-title'),
                 fields: document.getElementById('modal-fields'),
                 save: document.getElementById('modal-save'),
-                cancel: document.getElementById('modal-cancel'),
-                title: document.getElementById('modal-title')
+                cancel: document.getElementById('modal-cancel')
             };
+
+            // FIX: Move modal to body to avoid z-index/transform issues from Elementor
+            if (this.modal.overlay && this.modal.overlay.parentElement !== document.body) {
+                document.body.appendChild(this.modal.overlay);
+            }
 
             this.currentAutomationId = null;
 
@@ -524,12 +529,20 @@
         }
 
         openNodeSettings(nodeId) {
+            console.log("Intentando abrir ajustes para nodo:", nodeId);
             const node = this.nodes.find(n => n.id === nodeId);
-            if (!node) return;
+            if (!node) {
+                console.error("Nodo no encontrado:", nodeId);
+                return;
+            }
 
             // Asegurar que cerramos otros paneles
             this.closeDrawer();
             this.closeModal();
+
+            if (this.modal.overlay) {
+                this.modal.overlay.style.zIndex = '99999999'; // Force top
+            }
 
             if (node.type === 'email') {
                 this.openDrawer(node);
