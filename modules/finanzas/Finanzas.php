@@ -293,6 +293,7 @@ class Finanzas extends Module_Base {
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Subscriptions_List_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Plans_List_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Financial_Performance_Widget.php';
 
         // Registrar Widgets
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
@@ -313,6 +314,10 @@ class Finanzas extends Module_Base {
         
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Manual_Payment_Widget' ) ) {
             $widgets_manager->register( new Widgets\Manual_Payment_Widget() );
+        }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Financial_Performance_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Financial_Performance_Widget() );
         }
 	}
 
