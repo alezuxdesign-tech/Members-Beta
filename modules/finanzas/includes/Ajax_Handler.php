@@ -15,6 +15,7 @@ class Ajax_Handler {
         \add_action( 'wp_ajax_alezux_get_subscriptions_list', [ __CLASS__, 'get_subscriptions_list' ] );
         \add_action( 'wp_ajax_alezux_delete_plan', [ __CLASS__, 'delete_plan' ] );
         \add_action( 'wp_ajax_alezux_manual_subs_payment', [ __CLASS__, 'manual_subscription_payment' ] );
+        \add_action( 'wp_ajax_alezux_get_finance_kpis', [ __CLASS__, 'get_finance_kpis' ] );
 	}
 
 	public static function get_course_modules() {

@@ -37,7 +37,10 @@ class Finanzas extends Module_Base {
         // require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; // Dejamos este activo por si acaso, no lo toqué
         require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; 
         require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // REACTIVATED
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Webhook_Handler.php'; 
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Access_Control.php'; // REACTIVATED
         require_once ALEZUX_FINANZAS_PATH . 'includes/Enrollment_Manager.php'; // REACTIVATED
+        require_once ALEZUX_FINANZAS_PATH . 'includes/Shortcodes.php'; // NUEVO: Shortcodes KPIs
 
 		// Inicializar manejadores
 		\Alezux_Members\Modules\Finanzas\Includes\Ajax_Handler::init();
@@ -47,6 +50,11 @@ class Finanzas extends Module_Base {
         // Inicializar Control de Acceso (Hooks LearnDash)
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Access_Control' ) ) {
             \Alezux_Members\Modules\Finanzas\Includes\Access_Control::init();
+        }
+        
+        // Inicializar Shortcodes
+         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Shortcodes' ) ) {
+            \Alezux_Members\Modules\Finanzas\Includes\Shortcodes::init();
         }
 
         // Dashboard legacy (opcional, mantener por si acaso se necesita lógica interna)
@@ -294,6 +302,7 @@ class Finanzas extends Module_Base {
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Plans_List_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Financial_Performance_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Filter_Date_Widget.php'; // NUEVO
 
         // Registrar Widgets
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
@@ -318,6 +327,10 @@ class Finanzas extends Module_Base {
 
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Financial_Performance_Widget' ) ) {
             $widgets_manager->register( new Widgets\Financial_Performance_Widget() );
+        }
+        
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Filter_Date_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Filter_Date_Widget() );
         }
 	}
 
@@ -367,6 +380,23 @@ class Finanzas extends Module_Base {
         
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/manual-payment.css' ) ) {
             wp_register_style( 'alezux-manual-payment-css', ALEZUX_FINANZAS_URL . 'assets/css/manual-payment.css', [], '1.0.0' );
+        }
+        
+        // Script Dashboard Financiero (KPIs + Filtros)
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/finance-dashboard.js' ) ) {
+             wp_register_script( 'alezux-finance-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/finance-dashboard.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js'], '1.0.0', true );
+             
+             wp_localize_script( 'alezux-finance-dashboard-js', 'alezux_finanzas_vars', [
+                'ajax_url'     => admin_url( 'admin-ajax.php' ),
+                'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' )
+            ] );
+             
+             // Enqueue globalmente o solo donde esté el shortcode? Como es para el dashboard, mejor global si el modulo está activo.
+             wp_enqueue_script('alezux-finance-dashboard-js');
+             
+             // Asegurar estilos base flatpickr y tablas tambien
+             wp_enqueue_style('flatpickr-css');
+             wp_enqueue_style('alezux-finanzas-tables-css');
         }
     }
 }

@@ -200,6 +200,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 </style>
 
+<?php
+// Recopilar Shortcodes de módulos activos
+$shortcodes = [];
+
+// 1. Finanzas
+if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Admin_Settings' ) ) {
+    $fin_sc = \Alezux_Members\Modules\Finanzas\Includes\Admin_Settings::get_registered_shortcodes();
+    $shortcodes = array_merge( $shortcodes, $fin_sc );
+}
+
+// 2. Otros (Hardcoded o futuros hooks)
+$shortcodes[] = [
+    'tag' => 'alezux_profile',
+    'module' => 'CORE',
+    'description' => 'Muestra el perfil del usuario con tabs (General, Password, Logros).'
+];
+// ...
+?>
+
 <div class="alezux-dashboard-wrapper">
 	<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
 		<h1 class="alezux-title" style="margin: 0; font-size: 28px;">

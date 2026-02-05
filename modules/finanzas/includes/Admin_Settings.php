@@ -98,4 +98,34 @@ class Admin_Settings {
         <?php
     }
 
+    public static function get_registered_shortcodes() {
+        return [
+            [
+                'tag'         => 'ax_fin_revenue_period',
+                'module'      => 'FINANZAS',
+                'description' => 'Muestra los ingresos del periodo seleccionado (o mes actual por defecto).'
+            ],
+            [
+                'tag'         => 'ax_fin_pending_total',
+                'module'      => 'FINANZAS',
+                'description' => 'Muestra la deuda total por cobrar (Global).'
+            ],
+            [
+                'tag'         => 'ax_fin_projected_period',
+                'module'      => 'FINANZAS',
+                'description' => 'Muestra la proyección de cobro para el periodo seleccionado.'
+            ],
+            [
+                'tag'         => 'ax_fin_revenue_today',
+                'module'      => 'FINANZAS',
+                'description' => 'Muestra lo facturado el día de hoy (Ticker Diario).'
+            ],
+            // Otros shortcodes existentes (asumidos, si hay más módulos, deberían inyectarse via filter, pero por ahora estático aqui)
+            [
+                'tag'         => 'alezux_plans_list',
+                'module'      => 'FINANZAS',
+                'description' => 'Lista de planes disponibles para compra.'
+            ]
+        ];
+    }
 }
