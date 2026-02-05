@@ -634,7 +634,18 @@
             }
 
             this.modal.save.innerText = "Guardar";
-            this.modal.overlay.style.display = 'flex';
+
+            // Re-query and Force Display
+            const overlay = document.getElementById('alezux-node-modal');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                overlay.style.zIndex = '2147483647'; // Max Int 32-bit
+                overlay.style.visibility = 'visible';
+                overlay.style.opacity = '1';
+                console.log("Forzando display: flex en modal", overlay);
+            } else {
+                console.error("ERROR CRÍTICO: No se encuentra el elemento #alezux-node-modal en el DOM");
+            }
         }
 
         openNodeLibrary(context = 'create', node = null) {
