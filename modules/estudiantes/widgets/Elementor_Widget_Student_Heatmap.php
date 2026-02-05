@@ -169,11 +169,10 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
                 width: 100%; /* Full width */
 			}
             
-            /* Wrapper for scrolling both months and grid together */
+            /* Wrapper used to handle layout, now simply a container */
             .alezux-heatmap-scroll-wrapper {
-                overflow-x: auto;
-                padding-bottom: 10px;
                 width: 100%;
+                overflow: visible; /* Disable scrollbar */
             }
 
             .alezux-heatmap-content {
@@ -181,7 +180,7 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
                 flex-direction: column;
                 gap: 5px;
                 width: 100%; /* Ensure full width */
-                min-width: 600px; /* Minimum legible width before scrolling kicks in */
+                /* Removed min-width to prevent forcing scrollbar */
             }
 
             .alezux-heatmap-months {
