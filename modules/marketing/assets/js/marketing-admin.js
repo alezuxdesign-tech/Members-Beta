@@ -267,49 +267,55 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        // Click on Upload Box or Button
+        // Click on Upload Box or Button -> Trigger Hidden Input
         wrapper.find('#logo-upload-trigger').on('click', function (e) {
             // Prevent if clicking remove link
             if ($(e.target).is('#remove-logo')) return;
 
             e.preventDefault();
+            // Trigger native file input
+            wrapper.find('#logo-file-input').click();
+        });
 
-            // Check if wp.media exists
-            if (typeof wp === 'undefined' || !wp.media) {
-                alert('El gestor de medios no está disponible.');
-                return;
+        // Handle File Selection (Native Input)
+        wrapper.find('#logo-file-input').on('change', function () {
+            var fileInput = this;
+            if (fileInput.files && fileInput.files[0]) {
+                var file = fileInput.files[0];
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('action', 'alezux_marketing_upload_logo');
+                formData.append('nonce', alezux_marketing_vars.nonce);
+
+                // Show loading state
+                var btn = wrapper.find('.alezux-upload-btn-styled');
+                var originalText = btn.text();
+                btn.text('Subiendo...').prop('disabled', true);
+
+                $.ajax({
+                    url: alezux_marketing_vars.ajax_url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        btn.text(originalText).prop('disabled', false);
+                        if (res.success) {
+                            updateLogoPreview(res.data.url);
+                        } else {
+                            // Show error in modal
+                            showModalMessage('Error', 'Error al subir la imagen: ' + (res.data || 'Desconocido'), true);
+                        }
+                        // Clear input to allow re-uploading same file if needed
+                        $(fileInput).val('');
+                    },
+                    error: function (err) {
+                        btn.text(originalText).prop('disabled', false);
+                        console.error('Upload error', err);
+                        showModalMessage('Error', 'Error de conexión al subir la imagen.', true);
+                    }
+                });
             }
-
-            var file_frame;
-            if (file_frame) {
-                file_frame.open();
-                return;
-            }
-
-            file_frame = wp.media({
-                title: 'Seleccionar Logo',
-                button: { text: 'Usar este logo' },
-                multiple: false,
-                library: {
-                    type: 'image'
-                }
-            });
-
-            // Force Upload Tab on Open to encourage PC upload
-            file_frame.on('open', function () {
-                // Find the first tab (usually "Upload Files") and click it
-                var tabs = file_frame.el.querySelectorAll('.media-router .media-menu-item');
-                if (tabs.length > 0) {
-                    tabs[0].click();
-                }
-            });
-
-            file_frame.on('select', function () {
-                var attachment = file_frame.state().get('selection').first().toJSON();
-                updateLogoPreview(attachment.url);
-            });
-
-            file_frame.open();
         });
 
         // Remove Image
