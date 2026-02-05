@@ -11,8 +11,10 @@ class Estudiantes extends Module_Base {
 
 	public function init() {
 		// Registrar Shortcodes
+
 		\add_shortcode( 'alezux_estudiantes_total', [ $this, 'shortcode_total_students' ] );
 		\add_shortcode( 'alezux_estudiantes_nuevos_mes', [ $this, 'shortcode_new_students_month' ] );
+		\add_shortcode( 'alezux_student_momentum', [ $this, 'shortcode_study_momentum' ] );
 
 		// Registrar Widgets de Elementor
 		\add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
@@ -76,6 +78,11 @@ class Estudiantes extends Module_Base {
 		if ( file_exists( __DIR__ . '/widgets/Elementor_Widget_Estudiantes_Cursos_Grid.php' ) ) {
 			require_once __DIR__ . '/widgets/Elementor_Widget_Estudiantes_Cursos_Grid.php';
 			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Elementor_Widget_Estudiantes_Cursos_Grid() );
+		}
+
+		if ( file_exists( __DIR__ . '/widgets/Elementor_Widget_Student_Heatmap.php' ) ) {
+			require_once __DIR__ . '/widgets/Elementor_Widget_Student_Heatmap.php';
+			$widgets_manager->register( new \Alezux_Members\Modules\Estudiantes\Widgets\Elementor_Widget_Student_Heatmap() );
 		}
 	}
 
@@ -561,5 +568,74 @@ class Estudiantes extends Module_Base {
 			\ld_update_course_access( $user_id, $course_id, true ); // true = remove
 			\wp_send_json_success( [ 'message' => 'Acceso revocado.' ] );
 		}
+	}
+
+	public function shortcode_study_momentum() {
+		if ( ! is_user_logged_in() ) {
+			return '';
+		}
+
+		$user_id = get_current_user_id();
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'alezux_study_log';
+
+		// Verificar si tabla existe (por si acaso Modulo Formaciones no activo)
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
+			return '';
+		}
+
+		// Fechas (Semana = Lunes a Domingo)
+		// Semana Actual
+		$this_week_start = date( 'Y-m-d', strtotime( 'monday this week' ) );
+		$this_week_end   = date( 'Y-m-d', strtotime( 'sunday this week' ) );
+
+		// Semana Pasada
+		$last_week_start = date( 'Y-m-d', strtotime( 'monday last week' ) );
+		$last_week_end   = date( 'Y-m-d', strtotime( 'sunday last week' ) );
+
+		// Query Current Week
+		$current_seconds = $wpdb->get_var( $wpdb->prepare(
+			"SELECT SUM(seconds) FROM $table_name WHERE user_id = %d AND date BETWEEN %s AND %s",
+			$user_id, $this_week_start, $this_week_end
+		) );
+		$current_seconds = intval( $current_seconds );
+
+		// Query Last Week
+		$last_seconds = $wpdb->get_var( $wpdb->prepare(
+			"SELECT SUM(seconds) FROM $table_name WHERE user_id = %d AND date BETWEEN %s AND %s",
+			$user_id, $last_week_start, $last_week_end
+		) );
+		$last_seconds = intval( $last_seconds );
+
+		// Cálculos
+		if ( $last_seconds > 0 ) {
+			if ( $current_seconds >= $last_seconds ) {
+				// Crecimiento
+				$diff = $current_seconds - $last_seconds;
+				$percentage = round( ( $diff / $last_seconds ) * 100 );
+				$html = sprintf( 
+					'<span class="alezux-momentum positive">🚀 %s%% %s</span>', 
+					$percentage, 
+					__( 'más que la semana pasada', 'alezux-members' ) 
+				);
+			} else {
+				// Decrecimiento
+				$diff = $last_seconds - $current_seconds;
+				$percentage = round( ( $diff / $last_seconds ) * 100 );
+				$html = sprintf( 
+					'<span class="alezux-momentum negative">📉 %s%% %s</span>', 
+					$percentage, 
+					__( 'menos que la semana pasada', 'alezux-members' ) 
+				);
+			}
+		} elseif ( $current_seconds > 0 ) {
+			// Pasó de nada a algo
+			$html = '<span class="alezux-momentum positive">🔥 ' . __( '¡Has comenzado con fuerza esta semana!', 'alezux-members' ) . '</span>';
+		} else {
+			// Sin actividad relevante
+			$html = '<span class="alezux-momentum neutral">' . __( 'Sin actividad reciente', 'alezux-members' ) . '</span>';
+		}
+
+		return $html;
 	}
 }
