@@ -565,12 +565,15 @@ class Marketing_Config_Widget extends Widget_Base {
 						<div class="form-group">
 							<label>Contenido:</label>
                             
-                            <div class="editor-tabs">
-                                <button type="button" class="tab-btn active" data-tab="edit">Editor HTML</button>
-                                <button type="button" class="tab-btn" data-tab="preview">Vista Previa</button>
-                            </div>
+    						<div class="editor-mode-switcher" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <span id="mode-status-text" style="font-weight:bold; font-size:13px; color:#444;">Editor HTML</span>
+                            <label class="switch">
+                                <input type="checkbox" id="toggle-preview-mode">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
 
-                            <div id="tab-content-edit">
+                        <div id="tab-content-edit">
 							    <textarea id="tpl-content" name="content" rows="15" class="alezux-input" style="font-family: monospace;">&lt;h1&gt;Hola Mundo&lt;/h1&gt;</textarea>
 							    <small>Pega aquí tu código HTML. La etiqueta &lt;body&gt; es opcional.</small>
                             </div>
@@ -626,6 +629,19 @@ class Marketing_Config_Widget extends Widget_Base {
 					</form>
 				</div>
 			</div>
+
+		<!-- GENERIC MESSAGE MODAL -->
+		<div id="alezux-message-modal" class="alezux-modal" style="display:none; z-index: 99999;">
+			<div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
+				<span class="alezux-close-modal">&times;</span>
+				<div style="margin-bottom: 15px;">
+					<i id="msg-modal-icon" class="fa fa-info-circle" style="font-size: 40px; color: #2271b1;"></i>
+				</div>
+				<h3 id="msg-modal-title" style="margin-top:0;">Mensaje</h3>
+				<p id="msg-modal-content" style="margin: 20px 0; font-size: 15px; color: #555; line-height: 1.5;"></p>
+				<button type="button" class="alezux-marketing-btn primary" id="msg-modal-btn">Entendido</button>
+			</div>
+		</div>
 
 		</div>
 		<?php

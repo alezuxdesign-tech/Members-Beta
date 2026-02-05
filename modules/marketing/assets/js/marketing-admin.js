@@ -113,7 +113,8 @@ jQuery(document).ready(function ($) {
                 modalTemplate.css('display', 'flex');
 
                 // Trigger preview logic for dummy
-                wrapper.find('.tab-btn[data-tab="edit"]').click();
+                // Reset mode to edit
+                $('#toggle-preview-mode').prop('checked', false).trigger('change');
                 return;
             }
 
@@ -137,31 +138,74 @@ jQuery(document).ready(function ($) {
                         $('#modal-title').text('Editando: ' + type);
                         modalTemplate.css('display', 'flex');
 
-                        // Reset tab to edit
-                        wrapper.find('.tab-btn[data-tab="edit"]').click();
+                        // Reset mode to edit
+                        $('#toggle-preview-mode').prop('checked', false).trigger('change');
                     }
                 }
             });
         });
 
         // Tab Handler (Preview)
-        wrapper.find('.tab-btn').on('click', function () {
-            var tab = $(this).data('tab');
-            wrapper.find('.tab-btn').removeClass('active');
-            $(this).addClass('active');
+        // Toggle Edit/Preview Mode
+        wrapper.find('#toggle-preview-mode').on('change', function () {
+            var isPreview = $(this).is(':checked');
 
-            if (tab === 'edit') {
-                wrapper.find('#tab-content-edit').show();
-                wrapper.find('#tab-content-preview').hide();
-            } else {
-                wrapper.find('#tab-content-edit').hide();
-                wrapper.find('#tab-content-preview').show();
+            if (isPreview) {
+                // Switch to Preview
+                wrapper.find('#mode-status-text').text('Vista Previa');
+                $('#tab-content-edit').hide();
+                $('#tab-content-preview').show();
 
-                // Render Preview
+                // Render Preview with Variable Replacement
                 var content = wrapper.find('#tpl-content').val();
-                var previewFrame = wrapper.find('#email-preview-frame');
-                previewFrame.html(content);
+
+                // Replace common vars to avoid 404s and show better preview
+                var logoUrl = (typeof alezux_marketing_vars !== 'undefined' && alezux_marketing_vars.logo_url)
+                    ? alezux_marketing_vars.logo_url
+                    : 'https://via.placeholder.com/150x50?text=LOGO';
+
+                // Replace {{logo_url}} BEFORE inserting into DOM to prevent 404 request
+                content = content.replace(/{{logo_url}}/g, logoUrl);
+                content = content.replace(/{{site_name}}/g, 'Mi Escuela');
+                content = content.replace(/{{user.name}}/g, 'Estudiante');
+                content = content.replace(/{{home_url}}/g, '#');
+
+                wrapper.find('#email-preview-frame').html(content);
+
+            } else {
+                // Switch to Edit
+                wrapper.find('#mode-status-text').text('Editor HTML');
+                $('#tab-content-edit').show();
+                $('#tab-content-preview').hide();
             }
+        });
+
+        // Helper: Show Message Modal
+        function showModalMessage(title, message, isError) {
+            var modal = $('#alezux-message-modal');
+            modal.find('#msg-modal-title').text(title);
+            modal.find('#msg-modal-content').html(message);
+
+            var icon = modal.find('#msg-modal-icon');
+            var btn = modal.find('#msg-modal-btn');
+
+            // Customize based on type
+            icon.removeClass('fa-info-circle fa-check-circle fa-times-circle fa-exclamation-triangle');
+
+            if (isError) {
+                icon.addClass('fa-times-circle').css('color', '#d63638');
+                btn.css('background-color', '#d63638');
+            } else {
+                icon.addClass('fa-check-circle').css('color', '#2271b1');
+                btn.css('background-color', '#2271b1');
+            }
+
+            modal.css('display', 'flex');
+        }
+
+        // Close Message Modal
+        wrapper.find('#msg-modal-btn').on('click', function () {
+            $('#alezux-message-modal').hide();
         });
 
         // 3. Open Settings Modal
@@ -206,11 +250,11 @@ jQuery(document).ready(function ($) {
 
             $.post(alezux_marketing_vars.ajax_url, formData, function (res) {
                 if (res.success) {
-                    alert(res.data.message);
+                    showModalMessage('Éxito', res.data.message, false);
                     modalTemplate.hide();
                     loadTemplates();
                 } else {
-                    alert('Error: ' + res.data);
+                    showModalMessage('Error', 'No se pudo guardar: ' + res.data, true);
                 }
             });
         });
@@ -223,7 +267,7 @@ jQuery(document).ready(function ($) {
 
             $.post(alezux_marketing_vars.ajax_url, formData, function (res) {
                 if (res.success) {
-                    alert(res.data.message);
+                    showModalMessage('Guardado', res.data.message, false);
                     modalSettings.hide();
                 }
             });

@@ -85,6 +85,7 @@ class Marketing extends Module_Base {
 		wp_localize_script( 'alezux-marketing-admin-js', 'alezux_marketing_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'alezux_marketing_nonce' ),
+			'logo_url' => get_option( 'alezux_marketing_logo_url', '' ),
 		] );
 	}
 
