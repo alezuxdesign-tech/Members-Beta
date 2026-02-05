@@ -1,3 +1,4 @@
+```javascript
 jQuery(document).ready(function ($) {
 
     // Main Init Function
@@ -6,12 +7,18 @@ jQuery(document).ready(function ($) {
 
         if (wrapper.length === 0) return;
 
+        // Check for localize vars before using
+        if (typeof alezux_marketing_vars === 'undefined') {
+            console.warn('Alezux Marketing: Variables not loaded. Likely in Editor mode without frontend assets.');
+        }
+
         var tableBody = wrapper.find('#marketing-templates-table tbody');
         var modalTemplate = wrapper.find('#marketing-template-modal');
         var modalSettings = wrapper.find('#marketing-settings-modal');
 
         // Unbind previous events to avoid duplicates if re-initialized
-        $(document).off('click', '.edit-template-btn');
+        $(document).off('click', '.edit-template-btn'); 
+        
         wrapper.find('#btn-marketing-settings').off('click');
         wrapper.find('#marketing-template-form').off('submit');
         wrapper.find('#marketing-settings-form').off('submit');
@@ -19,6 +26,14 @@ jQuery(document).ready(function ($) {
 
         // 1. Load Templates
         function loadTemplates() {
+            if (typeof alezux_marketing_vars === 'undefined') {
+                 // If no vars, show dummy empty or msg
+                 if (tableBody.find('tr').length === 0) { 
+                     tableBody.html('<tr><td colspan="4">Modo Editor / Sin Conexión (Variables JS faltantes)</td></tr>');
+                 }
+                 return;
+            }
+
             tableBody.html('<tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>');
 
             $.ajax({
@@ -48,14 +63,14 @@ jQuery(document).ready(function ($) {
                 tableBody.html('<tr><td colspan="4">No hay plantillas disponibles.</td></tr>');
                 return;
             }
-
+    
             data.forEach(function (item) {
                 var statusBadge = item.is_active
                     ? '<span class="status-badge status-active">Activo</span>'
                     : '<span class="status-badge status-inactive">Inactivo</span>';
-
+    
                 var row = `
-                    <tr>
+    < tr >
                         <td><strong>${item.label}</strong><br><small style="color:#888">${item.type}</small></td>
                         <td>${item.subject}</td>
                         <td>${statusBadge}</td>
@@ -64,8 +79,8 @@ jQuery(document).ready(function ($) {
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
                         </td>
-                    </tr>
-                `;
+                    </tr >
+    `;
                 tableBody.append(row);
             });
         }
@@ -75,7 +90,7 @@ jQuery(document).ready(function ($) {
         // 2. Open Edit Modal
         $(document).on('click', '.edit-template-btn', function (e) {
             e.preventDefault();
-            var type = $(this).data('type');
+            var type = $(this).data('type'); // data-type is on the button
 
             // Logic for Dummy/Editor buttons (no data-type)
             if (!type) {
@@ -85,6 +100,9 @@ jQuery(document).ready(function ($) {
                 $('#tpl-active').prop('checked', true);
                 $('#modal-title').text('Editando: Plantilla de Prueba');
                 modalTemplate.css('display', 'flex');
+                
+                // Trigger preview logic for dummy
+                wrapper.find('.tab-btn[data-tab="edit"]').click();
                 return;
             }
 
@@ -137,9 +155,9 @@ jQuery(document).ready(function ($) {
 
         // 3. Open Settings Modal
         wrapper.find('#btn-marketing-settings').on('click', function (e) {
-            e.preventDefault(); // Prevent default link behavior if any form styling interferes
+            e.preventDefault(); 
 
-            // Check if backend vars exist (might be missing in editor frame sometimes)
+            // Check if backend vars exist
             if (typeof alezux_marketing_vars === 'undefined') {
                 modalSettings.css('display', 'flex'); // Just open in dummy mode
                 return;
@@ -179,7 +197,7 @@ jQuery(document).ready(function ($) {
                 if (res.success) {
                     alert(res.data.message);
                     modalTemplate.hide();
-                    loadTemplates(); // Reload table
+                    loadTemplates(); 
                 } else {
                     alert('Error: ' + res.data);
                 }
@@ -205,8 +223,9 @@ jQuery(document).ready(function ($) {
             $(this).closest('.alezux-modal').hide();
         });
 
-        $(window).on('click', function (e) {
-            if ($(e.target).hasClass('alezux-modal')) {
+        // Global modal click listener
+        $(window).off('click.alezuxMarketingModal').on('click.alezuxMarketingModal', function (e) {
+             if ($(e.target).hasClass('alezux-modal')) {
                 $('.alezux-modal').hide();
             }
         });
@@ -219,7 +238,8 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // Also fallback for direct load (if not loaded via Elementor JS framework or standalone)
+    // Also fallback for direct load
     initMarketingAdmin(null);
 
 });
+```

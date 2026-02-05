@@ -33,7 +33,7 @@ class Marketing extends Module_Base {
 
 		// Encolar assets admin
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-		// Encolar assets frontend si el widget se usa en frontend (aunque es admin tool)
+		// Encolar assets frontend si el widget se usa en frontend
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		// AJAX Actions
@@ -42,10 +42,6 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_save_template', [ $this, 'ajax_save_template' ] );
 		add_action( 'wp_ajax_alezux_marketing_save_settings', [ $this, 'ajax_save_settings' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_settings', [ $this, 'ajax_get_settings' ] );
-
-		// Inicializar Cron Handler (para Inactividad y Pagos)
-		// require_once __DIR__ . '/includes/Cron_Handler.php';
-		// \Alezux_Members\Modules\Marketing\Includes\Cron_Handler::init();
 	}
 
 	public function get_engine() {
@@ -58,16 +54,18 @@ class Marketing extends Module_Base {
 	}
 
 	public function enqueue_assets() {
-		// Reusamos estilos de tabla globales
+		// Reusamos estilos de tabla globales. Calculamos URL relativa a modules/finanzas
+		// __DIR__ = modules/marketing. Ups lvl to modules -> finanzas
+		$custom_url = plugin_dir_url( dirname( __DIR__ ) . '/finanzas/dummy.php' ); 
+		
 		wp_enqueue_style( 
 			'alezux-tables-css', 
-			// Go up from modules/marketing to modules/finanzas
-			plugin_dir_url( dirname( __DIR__ ) . '/finanzas/dummy.php' ) . 'assets/css/alezux-tables.css', 
+			$custom_url . 'assets/css/alezux-tables.css', 
 			[], 
 			'1.0.5' 
 		);
 		
-		// Estilos propios del módulo (Modal, etc)
+		// Estilos propios del módulo
 		wp_enqueue_style( 
 			'alezux-marketing-admin-css', 
 			plugin_dir_url( __FILE__ ) . 'assets/css/marketing-admin.css', 
@@ -79,7 +77,7 @@ class Marketing extends Module_Base {
 		wp_register_script(
 			'alezux-marketing-admin-js',
 			plugin_dir_url( __FILE__ ) . 'assets/js/marketing-admin.js',
-			[ 'jquery', 'elementor-frontend' ], // Depend on elementor-frontend if possible, or just jquery
+			[ 'jquery', 'elementor-frontend' ], 
 			time(),
 			true
 		);
@@ -88,9 +86,6 @@ class Marketing extends Module_Base {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'alezux_marketing_nonce' ),
 		] );
-
-		// Solo encolar si detectamos widget o admin page, pero por seguridad encolamos si está presente el shortcode/widget
-		// O simplificamos y encolamos siempre que se cargue el widget. Elementor lo hace auto si está registrado.
 	}
 
 	private function maybe_create_table() {
@@ -117,15 +112,7 @@ class Marketing extends Module_Base {
 			dbDelta( $sql );
 
 			update_option( 'alezux_marketing_db_version', $version );
-			
-			// Poblar con defaults si está vacío
-			$this->seed_default_templates();
 		}
-	}
-
-	private function seed_default_templates() {
-		// Esto se delegará a Default_Templates en el futuro o se insertan vacíos para que aparezcan en la lista
-		// La lista la definiremos en Email_Engine::get_registered_types()
 	}
 
 	// --- AJAX HANDLERS ---
@@ -137,16 +124,23 @@ class Marketing extends Module_Base {
 		global $wpdb;
 		$table = $wpdb->prefix . 'alezux_marketing_templates';
 		
-		// 1. Obtener tipos registrados (Hardcoded list of what system supports)
+		// 1. Obtener tipos registrados
 		$registered_types = $this->email_engine->get_registered_types();
 		
 		// 2. Obtener configuraciones guardadas
-		$saved_templates = $wpdb->get_results( "SELECT * FROM $table", OBJECT_K ); // Key by 'type' if possible id logic... better fetch all
+		$saved_templates = $wpdb->get_results( "SELECT * FROM $table", OBJECT_K ); 
 		
-		// Reorganizar key por type
+		// Safety check if table missing or error
+		if ( ! is_array( $saved_templates ) ) {
+			$saved_templates = [];
+		}
+		
+		// Reorganizar key por type (OBJECT_K ya lo hace si funcionó, pero aseguramos)
 		$saved_by_type = [];
 		foreach($saved_templates as $tpl) {
-			$saved_by_type[$tpl->type] = $tpl;
+			if ( isset( $tpl->type ) ) {
+				$saved_by_type[$tpl->type] = $tpl;
+			}
 		}
 
 		$data = [];
