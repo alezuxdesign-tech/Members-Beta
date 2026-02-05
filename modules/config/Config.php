@@ -20,6 +20,10 @@ class Config extends Module_Base {
 		// Redirección y Filtros de Login Personalizado
 		add_action( 'init', [ $this, 'setup_custom_auth_logic' ] );
 
+		// Inicializar Estadísticas Dashboard Admin
+		require_once __DIR__ . '/includes/Admin_Dashboard_Stats.php';
+		\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::init();
+
 		// AJAX Auth Actions
 		// AJAX Auth Actions
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
@@ -222,6 +226,9 @@ class Config extends Module_Base {
 		require_once __DIR__ . '/widgets/Reset_Widget.php';
 		require_once __DIR__ . '/widgets/Profile_Widget.php';
 		require_once __DIR__ . '/widgets/Password_Widget.php';
+		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Resumen.php';
+		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Seguridad.php';
+		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Ingresos.php';
 
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Config_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Login_Widget() );
@@ -229,6 +236,17 @@ class Config extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Reset_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Profile_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Password_Widget() );
+		
+		// Dashboard Admin Widgets
+		if ( class_exists( '\Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Resumen' ) ) {
+			$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Resumen() );
+		}
+		if ( class_exists( '\Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Seguridad' ) ) {
+			$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Seguridad() );
+		}
+		if ( class_exists( '\Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Ingresos' ) ) {
+			$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Ingresos() );
+		}
 	}
 
 	/**
