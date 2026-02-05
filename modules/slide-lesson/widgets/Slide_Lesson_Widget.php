@@ -29,7 +29,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-lms' ];
 	}
 
 	public function get_script_depends() {

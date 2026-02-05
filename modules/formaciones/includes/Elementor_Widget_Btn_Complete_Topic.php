@@ -27,6 +27,10 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		return 'eicon-check-circle-o';
 	}
 
+	public function get_categories() {
+		return [ 'alezux-lms' ];
+	}
+
 	protected function register_widget_controls() {
 
 		// --- Sección Contenido ---

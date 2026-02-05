@@ -28,7 +28,7 @@ class Estudiantes_CSV_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-admin' ];
+		return [ 'alezux-estudiantes' ];
 	}
 
 	public function get_script_depends() {

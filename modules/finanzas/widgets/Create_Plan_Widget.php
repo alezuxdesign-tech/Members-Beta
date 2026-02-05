@@ -23,7 +23,7 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-finanzas' ];
 	}
 
 	protected function register_widget_controls() {

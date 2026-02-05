@@ -26,6 +26,10 @@ class Elementor_Widget_Topics extends Elementor_Widget_Base {
 		return 'eicon-bullet-list';
 	}
 
+	public function get_categories() {
+		return [ 'alezux-lms' ];
+	}
+
 	protected function register_widget_controls() {
 		
 		// --- Sección de Contenido ---

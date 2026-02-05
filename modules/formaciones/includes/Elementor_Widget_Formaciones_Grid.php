@@ -28,6 +28,10 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		return 'eicon-gallery-masonry';
 	}
 
+	public function get_categories() {
+		return [ 'alezux-lms' ];
+	}
+
 	protected function register_widget_controls() {
 		
 		// --- Sección de Contenido ---

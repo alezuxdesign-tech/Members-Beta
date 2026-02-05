@@ -22,6 +22,10 @@ class Demo_Block_Widget extends Elementor_Widget_Base {
 		return 'eicon-code';
 	}
 
+	public function get_categories() {
+		return [ 'alezux-lms' ];
+	}
+
 	protected function register_widget_controls() {
 		$this->start_controls_section(
 			'content_section',

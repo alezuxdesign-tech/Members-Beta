@@ -28,7 +28,7 @@ class Config_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-perfil' ];
 	}
 
 	public function get_style_depends() {

@@ -116,16 +116,43 @@ add_action( 'admin_enqueue_scripts', function() {
 });
 
 /**
- * Registrar categoría personalizada en Elementor
+ * Registrar categorías personalizadas en Elementor
  */
 add_action( 'elementor/elements/categories_registered', function( $elements_manager ) {
-	$elements_manager->add_category(
-		'alezux-members',
-		[
-			'title' => esc_html__( 'Alezux Members', 'alezux-members' ),
-			'icon'  => 'fa fa-plug',
-		]
-	);
+	$categories = [
+		'alezux-auth'       => [
+			'title' => esc_html__( 'Alezux: Autenticación', 'alezux-members' ),
+			'icon'  => 'eicon-lock-user',
+		],
+		'alezux-perfil'     => [
+			'title' => esc_html__( 'Alezux: Perfil & Config', 'alezux-members' ),
+			'icon'  => 'eicon-user-circle-o',
+		],
+		'alezux-finanzas'   => [
+			'title' => esc_html__( 'Alezux: Finanzas', 'alezux-members' ),
+			'icon'  => 'eicon-price-table',
+		],
+		'alezux-estudiantes' => [
+			'title' => esc_html__( 'Alezux: Estudiantes', 'alezux-members' ),
+			'icon'  => 'eicon-person',
+		],
+		'alezux-lms'        => [
+			'title' => esc_html__( 'Alezux: LMS & Contenido', 'alezux-members' ),
+			'icon'  => 'eicon-edu-cap',
+		],
+		'alezux-marketing'  => [
+			'title' => esc_html__( 'Alezux: Marketing', 'alezux-members' ),
+			'icon'  => 'eicon-site-search',
+		],
+		'alezux-otros'      => [
+			'title' => esc_html__( 'Alezux: Utilidades', 'alezux-members' ),
+			'icon'  => 'eicon-tools',
+		],
+	];
+
+	foreach ( $categories as $id => $config ) {
+		$elements_manager->add_category( $id, $config );
+	}
 } );
 
 

@@ -28,7 +28,7 @@ class Recover_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-auth' ];
 	}
 
 	public function get_style_depends() {

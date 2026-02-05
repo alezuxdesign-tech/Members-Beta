@@ -26,7 +26,7 @@ class Estudiantes_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-admin' ];
+		return [ 'alezux-estudiantes' ];
 	}
 
 	public function get_style_depends() {

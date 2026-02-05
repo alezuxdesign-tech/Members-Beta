@@ -26,7 +26,7 @@ class Manual_Payment_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-finanzas' ];
 	}
 
     public function get_style_depends() {

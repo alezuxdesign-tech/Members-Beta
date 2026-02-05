@@ -27,7 +27,7 @@ class Profile_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-perfil' ];
 	}
 
 	protected function register_controls() {

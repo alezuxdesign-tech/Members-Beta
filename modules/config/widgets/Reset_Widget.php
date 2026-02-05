@@ -28,7 +28,7 @@ class Reset_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-auth' ];
 	}
 
 	protected function register_controls() {

@@ -27,7 +27,7 @@ class Subscriptions_List_Widget extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-finanzas' ];
 	}
 
 	public function get_script_depends() {

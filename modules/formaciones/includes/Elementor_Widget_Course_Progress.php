@@ -25,7 +25,7 @@ class Elementor_Widget_Course_Progress extends Widget_Base {
 	}
 
 	public function get_categories() {
-		return [ 'alezux-members' ];
+		return [ 'alezux-lms' ];
 	}
 
 	protected function register_controls() {
