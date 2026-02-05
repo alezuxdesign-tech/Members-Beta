@@ -44,6 +44,11 @@ class Config extends Module_Base {
         // Shortcode para URL de Logout
         $this->register_shortcode( 'alezux_logout_url', [ $this, 'render_logout_url' ], 'Devuelve la URL para cerrar sesión. Úsalo en los campos de enlace de tus botones.' );
 
+        // Shortcodes Dashboard Admin (KPIs)
+        $this->register_shortcode( 'alezux_admin_total_students', [ $this, 'sc_total_students' ], 'Muestra el número total de estudiantes.' );
+        $this->register_shortcode( 'alezux_admin_new_students', [ $this, 'sc_new_students' ], 'Muestra nuevos estudiantes (Mes actual).' );
+        $this->register_shortcode( 'alezux_admin_online_users', [ $this, 'sc_online_users' ], 'Muestra usuarios online en tiempo real.' );
+
 		// Filtro para Avatar Personalizado
 		add_filter( 'get_avatar_url', [ $this, 'custom_avatar_url' ], 10, 3 );
 	}
@@ -226,7 +231,7 @@ class Config extends Module_Base {
 		require_once __DIR__ . '/widgets/Reset_Widget.php';
 		require_once __DIR__ . '/widgets/Profile_Widget.php';
 		require_once __DIR__ . '/widgets/Password_Widget.php';
-		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Resumen.php';
+		// require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Resumen.php'; // Eliminado a petición
 		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Seguridad.php';
 		require_once __DIR__ . '/widgets/Elementor_Widget_Admin_Ingresos.php';
 
@@ -238,9 +243,11 @@ class Config extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Password_Widget() );
 		
 		// Dashboard Admin Widgets
+		/*
 		if ( class_exists( '\Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Resumen' ) ) {
 			$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Resumen() );
 		}
+		*/
 		if ( class_exists( '\Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Seguridad' ) ) {
 			$widgets_manager->register( new \Alezux_Members\Modules\Config\Widgets\Elementor_Widget_Admin_Seguridad() );
 		}
@@ -523,4 +530,21 @@ class Config extends Module_Base {
 			'redirect' => $redirect_url
 		] );
 	}
+
+    // --- Shortcodes Callbacks ---
+
+    public function sc_total_students() {
+        if ( ! class_exists( '\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats' ) ) return '0';
+        return number_format( \Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::get_total_students() );
+    }
+
+    public function sc_new_students() {
+        if ( ! class_exists( '\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats' ) ) return '0';
+        return number_format( \Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::get_new_students('month') );
+    }
+
+    public function sc_online_users() {
+        if ( ! class_exists( '\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats' ) ) return '0';
+        return number_format( \Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::get_online_users_count() );
+    }
 }
