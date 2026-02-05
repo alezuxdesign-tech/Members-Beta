@@ -216,6 +216,23 @@ $shortcodes[] = [
     'module' => 'CORE',
     'description' => 'Muestra el perfil del usuario con tabs (General, Password, Logros).'
 ];
+
+// 3. Dashboard Admin (KPIs)
+$shortcodes[] = [
+    'tag' => 'alezux_admin_total_students',
+    'module' => 'CONFIG',
+    'description' => 'Devuelve el número total de estudiantes registrados.'
+];
+$shortcodes[] = [
+    'tag' => 'alezux_admin_new_students',
+    'module' => 'CONFIG',
+    'description' => 'Devuelve la cantidad de nuevos estudiantes registrados este mes.'
+];
+$shortcodes[] = [
+    'tag' => 'alezux_admin_online_users',
+    'module' => 'CONFIG',
+    'description' => 'Muestra la cantidad de usuarios conectados en los últimos 5 minutos.'
+];
 // ...
 ?>
 
