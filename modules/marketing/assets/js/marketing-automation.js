@@ -296,19 +296,19 @@
             });
 
             // Abrir ajustes con CLIC o DOBLE CLIC (si no se ha arrastrado significativamente)
-            const handleConfigOpen = (e) => {
+            // Evento CLICK: Solo para seleccionar (futuro) o lógica simple
+            nodeEl.addEventListener('click', (e) => {
                 if (e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn')) return;
+                // Dejamos el click simple vacío o para selección
+            });
 
-                // Si la distancia de arrastre es pequeña (< 5px), lo tratamos como clic
-                const dragDistance = Math.sqrt(Math.pow(this.dragDiffX || 0, 2) + Math.pow(this.dragDiffY || 0, 2));
-                if (dragDistance > 5) return;
-
+            // Evento DBLCLICK: Abrir Configuración SIEMPRE
+            nodeEl.addEventListener('dblclick', (e) => {
+                if (e.target.closest('.node-terminal') || e.target.closest('.node-menu-btn') || e.target.closest('.node-plus-btn')) return;
+                e.preventDefault();
                 e.stopPropagation();
                 this.openNodeSettings(id);
-            };
-
-            nodeEl.addEventListener('click', handleConfigOpen);
-            nodeEl.addEventListener('dblclick', handleConfigOpen);
+            });
 
             this.canvasContent.appendChild(nodeEl);
             this.nodes.push({ id, type, x, y, el: nodeEl, data });
@@ -581,7 +581,9 @@
                 `;
             } else if (node.type === 'course') {
                 let courseOptions = '<option value="">Selecciona Curso...</option>';
-                const courses = window.alezux_marketing_vars.courses || [];
+                // Safe check para alezux_marketing_vars
+                const vars = window.alezux_marketing_vars || {};
+                const courses = vars.courses || [];
                 courses.forEach(c => {
                     courseOptions += `<option value="${c.id}" ${node.data.course_id == c.id ? 'selected' : ''}>${c.title}</option>`;
                 });
