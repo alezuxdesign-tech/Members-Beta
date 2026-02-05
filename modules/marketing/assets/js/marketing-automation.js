@@ -1433,6 +1433,17 @@
             // Implementando deleteAutomation si no existe abajo.
         }
 
+        showMessage(title, message) {
+            // Implementación robusta para evitar bucles de error
+            try {
+                // Si ya hay un modal de error abierto/toast, no spammear
+                console.log(`[Alezux Message] ${title}: ${message}`);
+                alert(`${title}\n\n${message}`);
+            } catch (e) {
+                console.error("Error mostrando mensaje:", e);
+            }
+        }
+
         toggleAutomationStatus(id, currentStatus) {
             const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
