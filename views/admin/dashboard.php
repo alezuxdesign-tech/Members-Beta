@@ -475,8 +475,21 @@ $shortcodes[] = [
 					<p>No se encontraron shortcodes registrados.</p>
 				</div>
 			<?php else : ?>
+                <!-- Filtro de Módulos -->
+                <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <label style="color: #aaa; font-size: 13px;">Filtrar por Módulo:</label>
+                    <select id="alezux-shortcode-filter" onchange="filterShortcodes()" style="background: #252525; border: 1px solid #444; color: white; padding: 6px 12px; border-radius: 6px;">
+                        <option value="all">Todos</option>
+                        <?php 
+                        $modules = array_unique( array_column( $shortcodes, 'module' ) );
+                        foreach ( $modules as $mod ) : ?>
+                            <option value="<?php echo esc_attr( $mod ); ?>"><?php echo esc_html( $mod ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
 				<div class="alezux-table-wrapper" style="background: #1a1a1a; border-radius: 12px; padding: 0;">
-                    <table class="alezux-finanzas-table" style="border: none;">
+                    <table class="alezux-finanzas-table" id="alezux-shortcodes-table" style="border: none;">
                         <thead>
                             <tr>
                                 <th style="width: 250px;">Shortcode</th>
@@ -487,7 +500,7 @@ $shortcodes[] = [
                         </thead>
                         <tbody>
                             <?php foreach ( $shortcodes as $sc ) : ?>
-                                <tr>
+                                <tr data-module="<?php echo esc_attr( $sc['module'] ); ?>">
                                     <td>
                                         <span class="alezux-shortcode-tag" style="margin: 0;">[<?php echo esc_html( $sc['tag'] ); ?>]</span>
                                     </td>
@@ -705,5 +718,23 @@ function copyToClipboard(btnElement, text) {
 		console.error('Error al copiar:', err);
 		alert('No se pudo copiar el texto automáticamente.');
 	});
+}
+
+function filterShortcodes() {
+    var filter = document.getElementById("alezux-shortcode-filter").value;
+    var table = document.getElementById("alezux-shortcodes-table");
+    var tr = table.getElementsByTagName("tr");
+
+    for (var i = 0; i < tr.length; i++) {
+        // Ignorar encabezado
+        if (tr[i].getElementsByTagName("th").length > 0) continue;
+
+        var module = tr[i].getAttribute("data-module");
+        if (filter === "all" || module === filter) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
 }
 </script>
