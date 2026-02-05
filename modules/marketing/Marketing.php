@@ -58,6 +58,9 @@ class Marketing extends Module_Base {
 		// __DIR__ = modules/marketing. Ups lvl to modules -> finanzas
 		$custom_url = plugin_dir_url( dirname( __DIR__ ) . '/finanzas/dummy.php' ); 
 		
+		// Encolar media uploader para selector de imágenes
+		wp_enqueue_media();
+
 		wp_enqueue_style( 
 			'alezux-tables-css', 
 			$custom_url . 'assets/css/alezux-tables.css', 

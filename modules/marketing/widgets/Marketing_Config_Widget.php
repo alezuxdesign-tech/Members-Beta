@@ -618,14 +618,28 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-group">
-							<label>URL del Logo (Variable {{logo_url}}):</label>
-							<input type="url" id="set-logo-url" name="logo_url" class="alezux-input" value="https://via.placeholder.com/150">
-							<small>Sube tu logo a Medios y pega la URL aquí.</small>
-						</div>
+						<label>URL del Logo (Variable {{logo_url}}):</label>
+                        <!-- UPLOAD BOX -->
+                        <div class="alezux-upload-box" id="logo-upload-trigger">
+                            <input type="hidden" id="set-logo-url" name="logo_url">
+                            
+                            <div id="logo-preview-area" style="display:none;">
+                                <img src="" class="alezux-preview-image" id="logo-preview-img">
+                                <span class="remove-image-link" id="remove-logo">Eliminar imagen</span>
+                            </div>
 
-						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar (Simulado)</button>
-						</div>
+                            <div id="logo-upload-placeholder">
+                                <span class="alezux-upload-icon"><i class="fa fa-cloud-upload"></i></span>
+                                <span class="alezux-upload-title">Subir logo</span>
+                                <span class="alezux-upload-desc">JPEG, PNG, máximo 50 MB.</span>
+                                <button type="button" class="alezux-upload-btn-styled">Subir imagen</button>
+                            </div>
+                        </div>
+					</div>
+
+					<div class="form-actions" style="margin-top: 20px; text-align: right;">
+						<button type="submit" class="alezux-marketing-btn primary">Guardar Configuración</button>
+					</div>
 					</form>
 				</div>
 			</div>

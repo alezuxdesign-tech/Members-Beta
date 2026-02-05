@@ -232,6 +232,10 @@ jQuery(document).ready(function ($) {
                         $('#set-from-name').val(s.from_name);
                         $('#set-from-email').val(s.from_email);
                         $('#set-logo-url').val(s.logo_url);
+
+                        // Update Logo Preview
+                        updateLogoPreview(s.logo_url);
+
                         modalSettings.css('display', 'flex');
                     }
                 },
@@ -241,6 +245,68 @@ jQuery(document).ready(function ($) {
                 }
             });
         });
+
+        // --- MEDIA UPLOADER LOGIC ---
+
+        function updateLogoPreview(url) {
+            var previewArea = wrapper.find('#logo-preview-area');
+            var uploadPlace = wrapper.find('#logo-upload-placeholder');
+            var input = wrapper.find('#set-logo-url');
+            var img = wrapper.find('#logo-preview-img');
+
+            if (url) {
+                input.val(url);
+                img.attr('src', url);
+                previewArea.show();
+                uploadPlace.hide();
+            } else {
+                input.val('');
+                img.attr('src', '');
+                previewArea.hide();
+                uploadPlace.show();
+            }
+        }
+
+        // Click on Upload Box or Button
+        wrapper.find('#logo-upload-trigger').on('click', function (e) {
+            // Prevent if clicking remove link
+            if ($(e.target).is('#remove-logo')) return;
+
+            e.preventDefault();
+
+            // Check if wp.media exists
+            if (typeof wp === 'undefined' || !wp.media) {
+                alert('El gestor de medios no está disponible.');
+                return;
+            }
+
+            var file_frame;
+            if (file_frame) {
+                file_frame.open();
+                return;
+            }
+
+            file_frame = wp.media({
+                title: 'Seleccionar Logo',
+                button: { text: 'Usar este logo' },
+                multiple: false
+            });
+
+            file_frame.on('select', function () {
+                var attachment = file_frame.state().get('selection').first().toJSON();
+                updateLogoPreview(attachment.url);
+            });
+
+            file_frame.open();
+        });
+
+        // Remove Image
+        wrapper.find('#remove-logo').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation(); // prevent bubbling to upload trigger
+            updateLogoPreview('');
+        });
+
 
         // 4. Save Template
         wrapper.find('#marketing-template-form').on('submit', function (e) {
