@@ -942,7 +942,8 @@
                 try {
                     const json = JSON.parse(e.target.result);
                     if (confirm('Esto reemplazará la automatización actual. ¿Continuar?')) {
-                        this.loadAutomation(json);
+                        this.doClearCanvas();
+                        this.renderBlueprint(json); // Use renderBlueprint, not loadAutomation
                         this.unsavedChanges = true;
                     }
                 } catch (err) {
@@ -1092,8 +1093,11 @@
 
             const items = [
                 { type: 'email', icon: '✉️', label: 'Enviar Email', module: 'Marketing' },
+                { type: 'course', icon: '🎓', label: 'Curso', module: 'Marketing' },
+                { type: 'student_tag', icon: '🏷️', label: 'Etiqueta', module: 'Marketing' },
                 { type: 'condition', icon: '🔄', label: 'Condición', module: 'Lógica' },
-                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' }
+                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' },
+                { type: 'payment_status', icon: '💰', label: 'Estado Pago', module: 'Lógica' }
             ];
 
             let currentModule = '';
@@ -1139,8 +1143,11 @@
             const items = [
                 { type: 'trigger', icon: '⚡', label: 'Nuevo Trigger', module: 'Disparadores' },
                 { type: 'email', icon: '✉️', label: 'Enviar Email', module: 'Marketing' },
+                { type: 'course', icon: '🎓', label: 'Curso', module: 'Marketing' },
+                { type: 'student_tag', icon: '🏷️', label: 'Etiqueta', module: 'Marketing' },
                 { type: 'condition', icon: '🔄', label: 'Condición', module: 'Lógica' },
-                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' }
+                { type: 'delay', icon: '⏳', label: 'Esperar', module: 'Lógica' },
+                { type: 'payment_status', icon: '💰', label: 'Estado Pago', module: 'Lógica' }
             ];
 
             let currentModule = '';
@@ -1320,28 +1327,32 @@
                         if (typeof blueprint === 'string') {
                             try { blueprint = JSON.parse(blueprint); } catch (e) { blueprint = {}; }
                         }
-                        if (!blueprint) return;
-
-                        // Cargar Nodos
-                        if (blueprint.nodes) {
-                            blueprint.nodes.forEach(n => {
-                                this.addNode(n.type, n.x, n.y, n.data, n.id);
-                            });
-                        }
-
-                        // Cargar Conexiones
-                        setTimeout(() => {
-                            if (blueprint.connections) {
-                                blueprint.connections.forEach(c => {
-                                    this.createConnection(c.from, c.to, c.sourceHandle || 'default');
-                                });
-                            }
-                            this.updatePlaceholder();
-                            this.updatePlusButtons();
-                        }, 200);
+                        this.renderBlueprint(blueprint);
                     }
                 }
             });
+        }
+
+        renderBlueprint(blueprint) {
+            if (!blueprint) return;
+
+            // Cargar Nodos
+            if (blueprint.nodes) {
+                blueprint.nodes.forEach(n => {
+                    this.addNode(n.type, n.x, n.y, n.data, n.id);
+                });
+            }
+
+            // Cargar Conexiones
+            setTimeout(() => {
+                if (blueprint.connections) {
+                    blueprint.connections.forEach(c => {
+                        this.createConnection(c.from, c.to, c.sourceHandle || 'default');
+                    });
+                }
+                this.updatePlaceholder();
+                this.updatePlusButtons();
+            }, 200);
         }
 
         loadAutomationsTable() {
