@@ -268,4 +268,34 @@ class Marketing extends Module_Base {
 
 		wp_send_json_success( $data );
 	}
+	public function ajax_upload_logo() {
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
+
+			if ( empty( $_FILES['file'] ) ) {
+				throw new \Exception( 'No se ha subido ningún archivo.' );
+			}
+
+			// Load WP Media functions
+			if ( ! function_exists( 'media_handle_upload' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once( ABSPATH . 'wp-admin/includes/file.php' );
+				require_once( ABSPATH . 'wp-admin/includes/media.php' );
+			}
+
+			$attachment_id = media_handle_upload( 'file', 0 );
+
+			if ( is_wp_error( $attachment_id ) ) {
+				throw new \Exception( $attachment_id->get_error_message() );
+			}
+
+			$url = wp_get_attachment_url( $attachment_id );
+			
+			wp_send_json_success( [ 'url' => $url ] );
+
+		} catch ( \Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
+		}
+	}
 }
