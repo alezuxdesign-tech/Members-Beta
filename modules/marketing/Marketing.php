@@ -118,99 +118,126 @@ class Marketing extends Module_Base {
 	// --- AJAX HANDLERS ---
 
 	public function ajax_get_templates() {
-		check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
-		if ( ! current_user_can( 'administrator' ) ) wp_send_json_error( 'Forbidden' );
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
 
-		global $wpdb;
-		$table = $wpdb->prefix . 'alezux_marketing_templates';
-		
-		// 1. Obtener tipos registrados
-		$registered_types = $this->email_engine->get_registered_types();
-		
-		// 2. Obtener configuraciones guardadas
-		$saved_templates = $wpdb->get_results( "SELECT * FROM $table", OBJECT_K ); 
-		
-		// Safety check if table missing or error
-		if ( ! is_array( $saved_templates ) ) {
-			$saved_templates = [];
-		}
-		
-		// Reorganizar key por type (OBJECT_K ya lo hace si funcionó, pero aseguramos)
-		$saved_by_type = [];
-		foreach($saved_templates as $tpl) {
-			if ( isset( $tpl->type ) ) {
-				$saved_by_type[$tpl->type] = $tpl;
+			global $wpdb;
+			$table = $wpdb->prefix . 'alezux_marketing_templates';
+			
+			// Ensure engine is loaded
+			if ( ! $this->email_engine ) {
+				require_once __DIR__ . '/includes/Email_Engine.php';
+				$this->email_engine = new Email_Engine();
 			}
-		}
 
-		$data = [];
-		foreach ( $registered_types as $key => $label ) {
-			$s = isset( $saved_by_type[$key] ) ? $saved_by_type[$key] : null;
-			$data[] = [
-				'type'      => $key,
-				'label'     => $label,
-				'subject'   => $s ? $s->subject : '(Por defecto)',
-				'is_active' => $s ? (bool)$s->is_active : true, // Default active if not set? Or default logic handles it. Let's say true.
-				'has_custom'=> (bool)$s
-			];
-		}
+			// 1. Obtener tipos registrados
+			$registered_types = $this->email_engine->get_registered_types();
+			
+			// 2. Obtener configuraciones guardadas
+			$saved_templates = $wpdb->get_results( "SELECT * FROM $table", OBJECT_K ); 
+			
+			// Safety check if table missing or error
+			if ( ! is_array( $saved_templates ) ) {
+				$saved_templates = [];
+				// If error was strictly DB related (e.g. table not found despite checks), log it
+				if ( $wpdb->last_error ) {
+					error_log( 'Alezux Marketing DB Error: ' . $wpdb->last_error );
+				}
+			}
+			
+			// Reorganizar key por type
+			$saved_by_type = [];
+			foreach($saved_templates as $tpl) {
+				if ( isset( $tpl->type ) ) {
+					$saved_by_type[$tpl->type] = $tpl;
+				}
+			}
 
-		wp_send_json_success( $data );
+			$data = [];
+			foreach ( $registered_types as $key => $label ) {
+				$s = isset( $saved_by_type[$key] ) ? $saved_by_type[$key] : null;
+				$data[] = [
+					'type'      => $key,
+					'label'     => $label,
+					'subject'   => $s ? $s->subject : '(Por defecto)',
+					'is_active' => $s ? (bool)$s->is_active : true, // Default active
+					'has_custom'=> (bool)$s
+				];
+			}
+
+			wp_send_json_success( $data );
+
+		} catch ( \Exception $e ) {
+			error_log( 'Alezux Marketing Error (get_templates): ' . $e->getMessage() );
+			wp_send_json_error( $e->getMessage() );
+		} catch ( \Error $e ) {
+			error_log( 'Alezux Marketing Fatal Error (get_templates): ' . $e->getMessage() );
+			wp_send_json_error( 'Server Error: ' . $e->getMessage() );
+		}
 	}
 
 	public function ajax_get_template() {
-		check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
-		if ( ! current_user_can( 'administrator' ) ) wp_send_json_error( 'Forbidden' );
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
 
-		$type = sanitize_text_field( $_POST['type'] );
-		
-		global $wpdb;
-		$table = $wpdb->prefix . 'alezux_marketing_templates';
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE type = %s", $type ) );
-
-		if ( ! $row ) {
-			// Return default content if not saved yet
-			require_once __DIR__ . '/includes/Default_Templates.php';
-			$defaults = \Alezux_Members\Modules\Marketing\Includes\Default_Templates::get( $type );
+			$type = sanitize_text_field( $_POST['type'] );
 			
-			wp_send_json_success( [
-				'type'    => $type,
-				'subject' => $defaults['subject'],
-				'content' => $defaults['content'],
-				'is_active' => 1
-			] );
-		} else {
-			wp_send_json_success( $row );
+			global $wpdb;
+			$table = $wpdb->prefix . 'alezux_marketing_templates';
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE type = %s", $type ) );
+
+			if ( ! $row ) {
+				// Return default content if not saved yet
+				require_once __DIR__ . '/includes/Default_Templates.php';
+				$defaults = \Alezux_Members\Modules\Marketing\Includes\Default_Templates::get( $type );
+				
+				wp_send_json_success( [
+					'type'    => $type,
+					'subject' => $defaults['subject'],
+					'content' => $defaults['content'],
+					'is_active' => 1
+				] );
+			} else {
+				wp_send_json_success( $row );
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
 		}
 	}
 
 	public function ajax_save_template() {
-		check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
-		if ( ! current_user_can( 'administrator' ) ) wp_send_json_error( 'Forbidden' );
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
 
-		$type    = sanitize_text_field( $_POST['type'] );
-		$subject = sanitize_text_field( $_POST['subject'] );
-		$content = wp_kses_post( $_POST['content'] ); // Allow HTML
-		$is_active = isset( $_POST['is_active'] ) ? 1 : 0;
+			$type    = sanitize_text_field( $_POST['type'] );
+			$subject = sanitize_text_field( $_POST['subject'] );
+			$content = wp_kses_post( $_POST['content'] ); // Allow HTML
+			$is_active = isset( $_POST['is_active'] ) ? 1 : 0;
 
-		global $wpdb;
-		$table = $wpdb->prefix . 'alezux_marketing_templates';
+			global $wpdb;
+			$table = $wpdb->prefix . 'alezux_marketing_templates';
 
-		// Check if exists
-		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table WHERE type = %s", $type ) );
+			// Check if exists
+			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $table WHERE type = %s", $type ) );
 
-		if ( $exists ) {
-			$wpdb->update( $table, 
-				[ 'subject' => $subject, 'content' => $content, 'is_active' => $is_active ], 
-				[ 'type' => $type ] 
-			);
-		} else {
-			$wpdb->insert( $table, 
-				[ 'type' => $type, 'subject' => $subject, 'content' => $content, 'is_active' => $is_active ] 
-			);
+			if ( $exists ) {
+				$wpdb->update( $table, 
+					[ 'subject' => $subject, 'content' => $content, 'is_active' => $is_active ], 
+					[ 'type' => $type ] 
+				);
+			} else {
+				$wpdb->insert( $table, 
+					[ 'type' => $type, 'subject' => $subject, 'content' => $content, 'is_active' => $is_active ] 
+				);
+			}
+
+			wp_send_json_success( [ 'message' => 'Plantilla guardada.' ] );
+		} catch ( \Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
 		}
-
-		wp_send_json_success( [ 'message' => 'Plantilla guardada.' ] );
 	}
 
 	public function ajax_save_settings() {

@@ -1,4 +1,4 @@
-```javascript
+
 jQuery(document).ready(function ($) {
 
     // Main Init Function
@@ -17,8 +17,8 @@ jQuery(document).ready(function ($) {
         var modalSettings = wrapper.find('#marketing-settings-modal');
 
         // Unbind previous events to avoid duplicates if re-initialized
-        $(document).off('click', '.edit-template-btn'); 
-        
+        $(document).off('click', '.edit-template-btn');
+
         wrapper.find('#btn-marketing-settings').off('click');
         wrapper.find('#marketing-template-form').off('submit');
         wrapper.find('#marketing-settings-form').off('submit');
@@ -27,11 +27,11 @@ jQuery(document).ready(function ($) {
         // 1. Load Templates
         function loadTemplates() {
             if (typeof alezux_marketing_vars === 'undefined') {
-                 // If no vars, show dummy empty or msg
-                 if (tableBody.find('tr').length === 0) { 
-                     tableBody.html('<tr><td colspan="4">Modo Editor / Sin Conexión (Variables JS faltantes)</td></tr>');
-                 }
-                 return;
+                // If no vars, show dummy empty or msg
+                if (tableBody.find('tr').length === 0) {
+                    tableBody.html('<tr><td colspan="4">Modo Editor / Sin Conexión (Variables JS faltantes)</td></tr>');
+                }
+                return;
             }
 
             tableBody.html('<tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>');
@@ -63,12 +63,12 @@ jQuery(document).ready(function ($) {
                 tableBody.html('<tr><td colspan="4">No hay plantillas disponibles.</td></tr>');
                 return;
             }
-    
+
             data.forEach(function (item) {
                 var statusBadge = item.is_active
                     ? '<span class="status-badge status-active">Activo</span>'
                     : '<span class="status-badge status-inactive">Inactivo</span>';
-    
+
                 var row = `
     < tr >
                         <td><strong>${item.label}</strong><br><small style="color:#888">${item.type}</small></td>
@@ -100,7 +100,7 @@ jQuery(document).ready(function ($) {
                 $('#tpl-active').prop('checked', true);
                 $('#modal-title').text('Editando: Plantilla de Prueba');
                 modalTemplate.css('display', 'flex');
-                
+
                 // Trigger preview logic for dummy
                 wrapper.find('.tab-btn[data-tab="edit"]').click();
                 return;
@@ -155,7 +155,7 @@ jQuery(document).ready(function ($) {
 
         // 3. Open Settings Modal
         wrapper.find('#btn-marketing-settings').on('click', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
 
             // Check if backend vars exist
             if (typeof alezux_marketing_vars === 'undefined') {
@@ -197,7 +197,7 @@ jQuery(document).ready(function ($) {
                 if (res.success) {
                     alert(res.data.message);
                     modalTemplate.hide();
-                    loadTemplates(); 
+                    loadTemplates();
                 } else {
                     alert('Error: ' + res.data);
                 }
@@ -225,7 +225,7 @@ jQuery(document).ready(function ($) {
 
         // Global modal click listener
         $(window).off('click.alezuxMarketingModal').on('click.alezuxMarketingModal', function (e) {
-             if ($(e.target).hasClass('alezux-modal')) {
+            if ($(e.target).hasClass('alezux-modal')) {
                 $('.alezux-modal').hide();
             }
         });
@@ -242,4 +242,3 @@ jQuery(document).ready(function ($) {
     initMarketingAdmin(null);
 
 });
-```
