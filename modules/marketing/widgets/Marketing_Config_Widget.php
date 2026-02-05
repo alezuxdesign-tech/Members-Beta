@@ -503,7 +503,7 @@ class Marketing_Config_Widget extends Widget_Base {
 
 			<!-- Tabla Container -->
 			<div class="alezux-table-wrapper">
-				<table class="alezux-finanzas-table" id="marketing-templates-table">
+				<table class="alezux-finanzas-table marketing-templates-table" id="marketing-templates-table">
 					<thead>
 						<tr>
 							<th>Tipo de Correo</th>

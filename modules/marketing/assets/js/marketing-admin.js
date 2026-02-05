@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
             console.warn('Alezux Marketing: Variables not loaded. Likely in Editor mode without frontend assets.');
         }
 
-        var tableBody = wrapper.find('#marketing-templates-table tbody');
+        var tableBody = wrapper.find('.marketing-templates-table tbody');
         var modalTemplate = wrapper.find('#marketing-template-modal');
         var modalSettings = wrapper.find('#marketing-settings-modal');
 
@@ -25,21 +25,25 @@ jQuery(document).ready(function ($) {
         wrapper.find('.alezux-close-modal').off('click');
 
         // 1. Load Templates
+        // 1. Load Templates
         function loadTemplates() {
             // Skip AJAX if in editor mode (preserve PHP dummy data)
             if (wrapper.data('is-editor') === 'yes') {
                 return;
             }
 
+            console.log('Alezux Marketing: Loading templates...', { vars: typeof alezux_marketing_vars });
+
             if (typeof alezux_marketing_vars === 'undefined') {
+                console.error('Alezux Marketing: alezux_marketing_vars missing');
                 // If no vars, show dummy empty or msg
                 if (tableBody.find('tr').length === 0) {
-                    tableBody.html('<tr><td colspan="4">Modo Editor / Sin Conexión (Variables JS faltantes)</td></tr>');
+                    tableBody.html('<tr><td colspan="4">Error: Variables no cargadas.</td></tr>');
                 }
                 return;
             }
 
-            tableBody.html('<tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>');
+            tableBody.html('<tr><td colspan="4" style="text-align:center;">Cargando datos...</td></tr>');
 
             $.ajax({
                 url: alezux_marketing_vars.ajax_url,
@@ -49,15 +53,17 @@ jQuery(document).ready(function ($) {
                     nonce: alezux_marketing_vars.nonce
                 },
                 success: function (res) {
+                    console.log('Alezux Marketing: AJAX Success', res);
                     if (res.success) {
                         renderTable(res.data);
                     } else {
-                        tableBody.html('<tr><td colspan="4">Error al cargar datos.</td></tr>');
+                        console.error('Alezux Marketing: AJAX Error Message', res);
+                        tableBody.html('<tr><td colspan="4">Error: ' + (res.data || 'Respuesta desconocida') + '</td></tr>');
                     }
                 },
                 error: function (err) {
-                    console.error('Marketing AJAX Error', err);
-                    tableBody.html('<tr><td colspan="4">Error de conexión.</td></tr>');
+                    console.error('Alezux Marketing: AJAX Network Error', err);
+                    tableBody.html('<tr><td colspan="4">Error de conexión (' + err.status + ').</td></tr>');
                 }
             });
         }
@@ -75,7 +81,7 @@ jQuery(document).ready(function ($) {
                     : '<span class="status-badge status-inactive">Inactivo</span>';
 
                 var row = `
-    < tr >
+                    <tr>
                         <td><strong>${item.label}</strong><br><small style="color:#888">${item.type}</small></td>
                         <td>${item.subject}</td>
                         <td>${statusBadge}</td>
@@ -84,8 +90,8 @@ jQuery(document).ready(function ($) {
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
                         </td>
-                    </tr >
-    `;
+                    </tr>
+                `;
                 tableBody.append(row);
             });
         }
