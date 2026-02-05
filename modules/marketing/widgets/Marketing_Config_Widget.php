@@ -26,6 +26,10 @@ class Marketing_Config_Widget extends Widget_Base {
 		return [ 'alezux-admin' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'alezux-marketing-admin-js' ];
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
