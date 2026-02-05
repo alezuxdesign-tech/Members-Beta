@@ -172,6 +172,32 @@ jQuery(document).ready(function ($) {
 
                 wrapper.find('#email-preview-frame').html(content);
 
+                // CSS Fix: If content starts with "body {", wrap it in <style>
+                // This handles cases where raw CSS is stored at the beginning of the template
+                var isRawCss = content.trim().startsWith('body {') || content.trim().startsWith('.container {');
+                if (isRawCss) {
+                    wrapper.find('#email-preview-frame').html('<style>' + content + '</style><body><p>Vista previa no disponible para este formato de CSS.</p></body>');
+                }
+
+                // BETTER APPROACH for the specific issue shown in screenshot:
+                // The screenshot shows raw CSS text being rendered as body content.
+                // This means the template likely contains the CSS *outside* of a <style> tag or inside <body> but intended for head.
+
+                // Let's wrap standard CSS patterns in <style> if they appear raw at start
+                var previewHtml = content;
+                if (previewHtml.trim().indexOf('body {') === 0) {
+                    // It seems the template is JUST css + html mixed without tags?
+                    // Or maybe it was saved without <style> tags.
+                    // Let's look for the first HTML tag
+                    var firstTag = previewHtml.indexOf('<');
+                    if (firstTag > 0) {
+                        var cssPart = previewHtml.substring(0, firstTag);
+                        var htmlPart = previewHtml.substring(firstTag);
+                        previewHtml = '<style>' + cssPart + '</style>' + htmlPart;
+                    }
+                }
+                wrapper.find('#email-preview-frame').html(previewHtml);
+
             } else {
                 // Switch to Edit
                 wrapper.find('#mode-status-text').text('Editor HTML');
