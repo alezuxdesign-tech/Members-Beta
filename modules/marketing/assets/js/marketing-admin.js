@@ -170,33 +170,32 @@ jQuery(document).ready(function ($) {
                 content = content.replace(/{{user.name}}/g, 'Estudiante');
                 content = content.replace(/{{home_url}}/g, '#');
 
-                wrapper.find('#email-preview-frame').html(content);
+                // iframe Implementation for Isolated Preview
+                var frameContainer = wrapper.find('#email-preview-frame');
+                frameContainer.empty();
 
-                // CSS Fix: If content starts with "body {", wrap it in <style>
-                // This handles cases where raw CSS is stored at the beginning of the template
-                var isRawCss = content.trim().startsWith('body {') || content.trim().startsWith('.container {');
-                if (isRawCss) {
-                    wrapper.find('#email-preview-frame').html('<style>' + content + '</style><body><p>Vista previa no disponible para este formato de CSS.</p></body>');
+                var iframe = document.createElement('iframe');
+                iframe.style.width = '100%';
+                iframe.style.height = '600px';
+                iframe.style.border = '1px solid #e5e5e5';
+                iframe.style.background = '#fff';
+                frameContainer.append(iframe);
+
+                var doc = iframe.contentWindow.document;
+                doc.open();
+
+                // Ensure charset
+                var fullHtml = content;
+                // If it doesn't have a doctype or html tag, we might want to wrap it, 
+                // but let's trust the browser to handle partials in an iframe.
+                // Exception: If it starts strictly with CSS-like text but has no <style> tags (RARE case from before),
+                // we might still want to catch that.
+                if (fullHtml.trim().indexOf('body {') === 0 && fullHtml.indexOf('<style>') === -1) {
+                    fullHtml = '<style>' + fullHtml + '</style><body><p>Vista previa (Estilos puros)</p></body>';
                 }
 
-                // BETTER APPROACH for the specific issue shown in screenshot:
-                // The screenshot shows raw CSS text being rendered as body content.
-                // This means the template likely contains the CSS *outside* of a <style> tag or inside <body> but intended for head.
-
-                // Let's wrap standard CSS patterns in <style> if they appear raw at start
-                var previewHtml = content;
-                if (previewHtml.trim().indexOf('body {') === 0) {
-                    // It seems the template is JUST css + html mixed without tags?
-                    // Or maybe it was saved without <style> tags.
-                    // Let's look for the first HTML tag
-                    var firstTag = previewHtml.indexOf('<');
-                    if (firstTag > 0) {
-                        var cssPart = previewHtml.substring(0, firstTag);
-                        var htmlPart = previewHtml.substring(firstTag);
-                        previewHtml = '<style>' + cssPart + '</style>' + htmlPart;
-                    }
-                }
-                wrapper.find('#email-preview-frame').html(previewHtml);
+                doc.write(fullHtml);
+                doc.close();
 
             } else {
                 // Switch to Edit
