@@ -64,11 +64,31 @@ class Database_Installer {
             KEY queue_id (queue_id)
         ) $charset_collate;";
 
-        require_once \ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta( $sql1 );
-        dbDelta( $sql2 );
-        dbDelta( $sql3 );
+        // 4. Tabla de Tareas de Automatización (Para Delays y Estado)
+        $table_tasks = $wpdb->prefix . 'alezux_marketing_tasks';
+        $sql4 = "CREATE TABLE $table_tasks (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            automation_id bigint(20) NOT NULL,
+            user_id bigint(20) NOT NULL,
+            node_id varchar(50) NOT NULL,
+            context_data longtext,
+            status varchar(20) DEFAULT 'pending' NOT NULL,
+            scheduled_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY (id),
+            KEY status (status),
+            KEY scheduled_at (scheduled_at)
+        ) $charset_collate;";
 
-        \update_option( 'alezux_marketing_db_version', '1.1.0' );
+        if ( ! function_exists( 'dbDelta' ) ) {
+            require_once( \ABSPATH . 'wp-admin/includes/upgrade.php' );
+        }
+
+        \dbDelta( $sql1 );
+        \dbDelta( $sql2 );
+        \dbDelta( $sql3 );
+        \dbDelta( $sql4 );
+
+        \update_option( 'alezux_marketing_db_version', '1.2.0' );
     }
 }

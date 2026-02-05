@@ -72,8 +72,25 @@ class Marketing extends Module_Base {
 
         \wp_localize_script( 'alezux-marketing-js', 'alezux_marketing_vars', [
             'ajax_url' => \admin_url( 'admin-ajax.php' ),
-            'nonce'    => \wp_create_nonce( 'alezux_marketing_nonce' )
+            'nonce'    => \wp_create_nonce( 'alezux_marketing_nonce' ),
+            'courses'  => $this->get_courses_list()
         ] );
+    }
+
+    private function get_courses_list() {
+        // Intentar obtener cursos de LearnDash o Post Type personalizado
+        $courses = \get_posts( [
+            'post_type'      => ['sfwd-courses', 'course', 'formacion'], // Varios intentos
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'fields'         => 'ids' // Optimizacion inicial, luego nombres
+        ] );
+        
+        $list = [];
+        foreach ( $courses as $id ) {
+            $list[] = [ 'id' => $id, 'title' => \get_the_title( $id ) ];
+        }
+        return $list;
     }
 
     /**

@@ -19,10 +19,13 @@ class Queue_Runner {
         // 1. Procesar disparadores de tiempo (Inactividad / Vencimiento)
         self::process_time_triggers();
 
+        // 2. Procesar tareas pausadas (Delays que ya vencieron)
+        self::process_pending_tasks( $limit );
+
         global $wpdb;
         $table_queue = $wpdb->prefix . 'alezux_marketing_queue';
 
-        // 2. Obtener correos pendientes que ya deberían haberse enviado
+        // 3. Obtener correos pendientes que ya deberían haberse enviado
         $now = \current_time('mysql');
         $emails = $wpdb->get_results( $wpdb->prepare(
             "SELECT * FROM $table_queue 
@@ -32,12 +35,34 @@ class Queue_Runner {
             $limit
         ) );
 
-        if ( empty( $emails ) ) {
-            return;
+        if ( ! empty( $emails ) ) {
+            foreach ( $emails as $email ) {
+                self::send_single_email( $email );
+            }
         }
+    }
 
-        foreach ( $emails as $email ) {
-            self::send_single_email( $email );
+    /**
+     * Revisa si hay tareas programadas (Delays) que deben retomarse.
+     */
+    private static function process_pending_tasks( $limit ) {
+        global $wpdb;
+        $table_tasks = $wpdb->prefix . 'alezux_marketing_tasks';
+        $now = \current_time('mysql');
+
+        $tasks = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id FROM $table_tasks 
+             WHERE status = 'pending' AND scheduled_at <= %s 
+             ORDER BY scheduled_at ASC LIMIT %d",
+            $now,
+            $limit
+        ) );
+
+        if ( empty( $tasks ) ) return;
+
+        foreach ( $tasks as $task ) {
+            // Retomamos la ejecución en el Automation Engine
+            Automation_Engine::resume_automation( $task->id );
         }
     }
 
@@ -93,7 +118,7 @@ class Queue_Runner {
             $user = \get_userdata( $user_id );
             if ( ! $user ) continue;
 
-            Automation_Engine::execute_automation( $automation, [ 'user' => $user ] );
+            Automation_Engine::start_automation( $automation, [ 'user' => $user ] );
             self::mark_as_triggered_today( $user_id, $automation->id );
         }
     }
@@ -131,7 +156,7 @@ class Queue_Runner {
             $user = \get_userdata( $sub->user_id );
             if ( ! $user ) continue;
 
-            Automation_Engine::execute_automation( $automation, [
+            Automation_Engine::start_automation( $automation, [
                 'user'       => $user,
                 'plan_name'  => $sub->plan_name,
                 'plan_token' => $sub->plan_token,

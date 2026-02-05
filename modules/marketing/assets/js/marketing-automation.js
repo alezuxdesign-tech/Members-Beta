@@ -129,6 +129,20 @@
             const clearBtn = document.getElementById('clear-canvas');
             if (clearBtn) clearBtn.addEventListener('click', () => this.clearCanvas());
 
+            // Zoom Buttons
+            const zoomInBtn = document.getElementById('btn-zoom-in');
+            if (zoomInBtn) zoomInBtn.addEventListener('click', () => this.zoomCanvas(0.1));
+            const zoomOutBtn = document.getElementById('btn-zoom-out');
+            if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.zoomCanvas(-0.1));
+
+            // Import / Export
+            const exportBtn = document.getElementById('btn-export');
+            if (exportBtn) exportBtn.addEventListener('click', () => this.exportAutomation());
+            const importBtn = document.getElementById('btn-import');
+            if (importBtn) importBtn.addEventListener('click', () => document.getElementById('import-file').click());
+            const importFile = document.getElementById('import-file');
+            if (importFile) importFile.addEventListener('change', (e) => this.handleImportFile(e));
+
             // Save Button
             const saveBtn = document.getElementById('save-marketing-automation');
             if (saveBtn) saveBtn.addEventListener('click', () => this.persistAutomation());
@@ -230,6 +244,10 @@
                 case 'condition': title = 'Condición (If/Else)'; icon = '🔄'; break;
                 case 'inactivity': title = 'Inactividad'; icon = '💤'; break;
                 case 'expiration': title = 'Vencimiento Cobro'; icon = '📅'; break;
+                // Nuevos Nodos
+                case 'course': title = 'Curso'; icon = '🎓'; break;
+                case 'student_tag': title = 'Etiqueta Estudiante'; icon = '🏷️'; break;
+                case 'payment_status': title = 'Estado Pago'; icon = '💰'; break;
             }
 
             nodeEl.innerHTML = `
@@ -244,13 +262,13 @@
                     <div class="node-description">${data.description || 'Haz clic para configurar'}</div>
                 </div>
                 ${type !== 'trigger' ? `<div class="node-terminal terminal-in" data-node="${id}" title="Entrada"></div>` : ''}
-                ${type === 'condition' ? `
+                ${(type === 'condition' || type === 'payment_status' || (type === 'course' && data.action === 'check') || (type === 'student_tag' && data.action === 'check_has')) ? `
                     <div class="node-terminal terminal-out terminal-true" data-node="${id}" data-branch="true" title="Sí"></div>
                     <div class="node-terminal terminal-out terminal-false" data-node="${id}" data-branch="false" title="No"></div>
                 ` : `
                     <div class="node-terminal terminal-out" data-node="${id}" title="Salida"></div>
                 `}
-                ${(type !== 'delay' && type !== 'condition') ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
+                ${(type !== 'delay' && type !== 'condition' && !(type === 'course' && data.action === 'check') && !(type === 'student_tag' && data.action === 'check_has')) ? `<div class="node-plus-btn" data-node="${id}" title="Añadir siguiente paso">+</div>` : ''}
             `;
 
             const menuBtn = nodeEl.querySelector('.node-menu-btn');
@@ -363,17 +381,20 @@
         handleTerminalClick(terminal) {
             const nodeId = terminal.dataset.node;
             const isOut = terminal.classList.contains('terminal-out');
+            const branch = terminal.dataset.branch || 'default';
 
             if (!this.pendingConnection) {
-                // Solo empezar desde puerto de salida o permitir cualquier dirección?
-                // Vamos a permitir empezar desde cualquier puerto por facilidad
-                this.pendingConnection = { from: nodeId, fromTerminal: terminal, isOut: isOut };
+                this.pendingConnection = {
+                    from: nodeId,
+                    fromTerminal: terminal,
+                    isOut: isOut,
+                    sourceHandle: branch
+                };
                 terminal.classList.add('active');
-                console.log("Iniciando conexión desde:", nodeId);
+                console.log("Iniciando conexión desde:", nodeId, "Branch:", branch);
             } else {
                 const targetIsOut = terminal.classList.contains('terminal-out');
 
-                // No conectar el mismo nodo
                 if (this.pendingConnection.from === nodeId) {
                     this.pendingConnection.fromTerminal.classList.remove('active');
                     this.pendingConnection = null;
@@ -381,12 +402,12 @@
                     return;
                 }
 
-                // Deben ser tipos opuestos (in -> out o out -> in)
                 if (this.pendingConnection.isOut !== targetIsOut) {
                     const fromNode = this.pendingConnection.isOut ? this.pendingConnection.from : nodeId;
                     const toNode = this.pendingConnection.isOut ? nodeId : this.pendingConnection.from;
+                    const handle = this.pendingConnection.isOut ? this.pendingConnection.sourceHandle : branch;
 
-                    this.createConnection(fromNode, toNode);
+                    this.createConnection(fromNode, toNode, handle);
                     this.pendingConnection.fromTerminal.classList.remove('active');
                     this.pendingConnection = null;
                     this.removeTempLine();
@@ -399,11 +420,10 @@
             }
         }
 
-        createConnection(fromId, toId) {
+        createConnection(fromId, toId, sourceHandle = 'default') {
             // Evitar duplicados (bidireccional)
             const exists = this.connections.some(c =>
-                (c.from === fromId && c.to === toId) ||
-                (c.from === toId && c.to === fromId)
+                c.from === fromId && c.to === toId && c.sourceHandle === sourceHandle
             );
 
             if (exists) {
@@ -411,15 +431,18 @@
                 return;
             }
 
-            const connId = `conn_${fromId}_${toId}`;
+            const connId = `conn_${fromId}_${toId}_${sourceHandle}`;
 
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.id = connId;
             path.setAttribute("class", "automation-line active");
+            if (sourceHandle === 'true') path.setAttribute("class", "automation-line active line-true");
+            if (sourceHandle === 'false') path.setAttribute("class", "automation-line active line-false");
+
             path.style.cursor = "pointer"; // Indicar que es clickeable
             this.svgLayer.appendChild(path);
 
-            this.connections.push({ id: connId, from: fromId, to: toId, path });
+            this.connections.push({ id: connId, from: fromId, to: toId, sourceHandle: sourceHandle, path });
             this.updateConnections();
             this.updatePlusButtons();
         }
@@ -430,7 +453,11 @@
                 const nodeTo = this.nodes.find(n => n.id === conn.to);
 
                 if (nodeFrom && nodeTo) {
-                    const fromTerm = nodeFrom.el.querySelector('.terminal-out');
+                    let selector = '.terminal-out';
+                    if (conn.sourceHandle === 'true') selector = '.terminal-true';
+                    else if (conn.sourceHandle === 'false') selector = '.terminal-false';
+
+                    const fromTerm = nodeFrom.el.querySelector(selector) || nodeFrom.el.querySelector('.terminal-out');
                     const toTerm = nodeTo.el.querySelector('.terminal-in');
 
                     if (fromTerm && toTerm) {
@@ -452,13 +479,15 @@
 
         handleZoom(e) {
             e.preventDefault();
-            const rect = this.canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            this.zoomCanvas(-e.deltaY * 0.001, e.clientX, e.clientY);
+        }
 
-            const zoomSpeed = 0.001;
-            const delta = -e.deltaY;
-            const newScale = Math.min(Math.max(0.2, this.scale + delta * zoomSpeed), 2);
+        zoomCanvas(delta, mouseX = null, mouseY = null) {
+            const rect = this.canvas.getBoundingClientRect();
+            mouseX = mouseX !== null ? mouseX - rect.left : rect.width / 2;
+            mouseY = mouseY !== null ? mouseY - rect.top : rect.height / 2;
+
+            const newScale = Math.min(Math.max(0.2, this.scale + delta), 2);
 
             // Zoom hacia el puntero del ratón
             this.pan.x -= (mouseX / newScale - mouseX / this.scale) * newScale;
@@ -486,7 +515,7 @@
                 const hasOutgoing = this.connections.some(c => c.from === node.id);
 
                 // No mostrar en condiciones (tienen ramas) o si ya tiene salida
-                if (hasOutgoing || node.type === 'condition' || node.type === 'delay') {
+                if (hasOutgoing || node.type === 'condition' || node.type === 'payment_status' || (node.type === 'course' && node.data.action === 'check') || (node.type === 'student_tag' && node.data.action === 'check_has') || node.type === 'delay') {
                     plusBtn.classList.remove('is-terminal');
                 } else {
                     plusBtn.classList.add('is-terminal');
@@ -550,6 +579,43 @@
                     <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Valor a comparar:</label>
                     <input type="text" id="field-condition-value" value="${node.data.condition_value || ''}" placeholder="Ej: VIP, 123, paid" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
                 `;
+            } else if (node.type === 'course') {
+                let courseOptions = '<option value="">Selecciona Curso...</option>';
+                const courses = window.alezux_marketing_vars.courses || [];
+                courses.forEach(c => {
+                    courseOptions += `<option value="${c.id}" ${node.data.course_id == c.id ? 'selected' : ''}>${c.title}</option>`;
+                });
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
+                    <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                        <option value="enroll" ${node.data.action === 'enroll' ? 'selected' : ''}>Inscribir al curso</option>
+                        <option value="check" ${node.data.action === 'check' ? 'selected' : ''}>¿Está inscrito? (Condición)</option>
+                    </select>
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Curso:</label>
+                    <select id="field-course-id" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                        ${courseOptions}
+                    </select>
+                `;
+            } else if (node.type === 'student_tag') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Acción:</label>
+                    <select id="field-action" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px; margin-bottom:15px;">
+                        <option value="add" ${node.data.action === 'add' ? 'selected' : ''}>Añadir Etiqueta</option>
+                        <option value="remove" ${node.data.action === 'remove' ? 'selected' : ''}>Quitar Etiqueta</option>
+                        <option value="check_has" ${node.data.action === 'check_has' ? 'selected' : ''}>¿Tiene la etiqueta? (Condición)</option>
+                    </select>
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Nombre Etiqueta:</label>
+                    <input type="text" id="field-tag" value="${node.data.tag || ''}" placeholder="Ej: VIP, Deudor, Becado" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                `;
+            } else if (node.type === 'payment_status') {
+                this.modal.fields.innerHTML = `
+                    <label style="color:#888; display:block; margin-bottom:10px; font-size:12px;">Verificar si el usuario está:</label>
+                    <select id="field-status" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:10px; border-radius:10px;">
+                        <option value="active" ${node.data.status === 'active' ? 'selected' : ''}>Al día (Activo)</option>
+                        <option value="overdue" ${node.data.status === 'overdue' ? 'selected' : ''}>Con Deuda (Atrasado)</option>
+                        <option value="cancelled" ${node.data.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                    </select>
+                `;
             }
 
             this.modal.save.innerText = "Guardar";
@@ -607,6 +673,20 @@
                                 <p>Crea y envía un correo HTML.</p>
                             </div>
                         </div>
+                        <div class="library-item" draggable="true" data-type="course">
+                            <span class="lib-icon">🎓</span>
+                            <div class="lib-info">
+                                <strong>Curso</strong>
+                                <p>Inscribir o verificar curso.</p>
+                            </div>
+                        </div>
+                        <div class="library-item" draggable="true" data-type="student_tag">
+                            <span class="lib-icon">🏷️</span>
+                            <div class="lib-info">
+                                <strong>Etiqueta Usuario</strong>
+                                <p>Asignar rol o etiqueta.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="library-section">
@@ -614,8 +694,15 @@
                         <div class="library-item" draggable="true" data-type="condition">
                             <span class="lib-icon">🔄</span>
                             <div class="lib-info">
-                                <strong>Condición</strong>
+                                <strong>Condición Simple</strong>
                                 <p>Divide el flujo (Sí / No).</p>
+                            </div>
+                        </div>
+                        <div class="library-item" draggable="true" data-type="payment_status">
+                            <span class="lib-icon">💰</span>
+                            <div class="lib-info">
+                                <strong>Estado Pagos</strong>
+                                <p>Verificar si tiene deuda.</p>
                             </div>
                         </div>
                         <div class="library-item ${node && node.type === 'expiration' ? 'active' : ''}" 
@@ -752,8 +839,12 @@
             if (descEl) descEl.innerText = display;
             if (iconEl) iconEl.innerText = icon;
 
+            this.renderTerminals(node); // Re-render terminals based on new type/data
+            this.updatePlusButtons(); // Update plus button visibility
+            this.updateConnections(); // Update connections if terminals changed
+
             this.closeDrawer();
-            this.updateConnections(); // Por si el cambio de clase altera dimensiones (aunque no debería)
+            this.unsavedChanges = true;
         }
 
         applyModalChanges() {
@@ -783,12 +874,83 @@
             } else if (node.type === 'expiration') {
                 node.data.days = document.getElementById('field-days').value;
                 display = `Vencimiento: ${node.data.days} días antes`;
+            } else if (node.type === 'course') {
+                node.data.action = document.getElementById('field-action').value;
+                node.data.course_id = document.getElementById('field-course-id').value;
+                const courseName = document.getElementById('field-course-id').options[document.getElementById('field-course-id').selectedIndex].text;
+                display = (node.data.action === 'enroll' ? 'Inscribir: ' : '¿Está en?: ') + courseName;
+            } else if (node.type === 'student_tag') {
+                node.data.action = document.getElementById('field-action').value;
+                node.data.tag = document.getElementById('field-tag').value;
+                const verb = node.data.action === 'add' ? 'Añadir' : (node.data.action === 'remove' ? 'Quitar' : '¿Tiene?');
+                display = `${verb} etiqueta: ${node.data.tag}`;
+            } else if (node.type === 'payment_status') {
+                node.data.status = document.getElementById('field-status').value;
+                const statusMap = { 'active': 'Al día', 'overdue': 'Deudor', 'cancelled': 'Cancelado' };
+                display = `¿Estado es ${statusMap[node.data.status]}?`;
             }
 
             node.data.description = display;
             const descEl = node.el.querySelector('.node-description');
             if (descEl) descEl.innerText = display;
+
+            // Actualizar terminales si cambió el modo (Acción vs Condición)
+            this.renderTerminals(node);
+            this.updatePlusButtons(); // Update plus button visibility
+            this.updateConnections(); // Update connections if terminals changed
+
             this.closeModal();
+            this.unsavedChanges = true;
+        }
+
+        renderTerminals(node) {
+            // Eliminar terminales de salida existentes
+            const existingOuts = node.el.querySelectorAll('.terminal-out');
+            existingOuts.forEach(el => el.remove());
+
+            let html = '';
+            if (node.type === 'condition' || node.type === 'payment_status' || (node.type === 'course' && node.data.action === 'check') || (node.type === 'student_tag' && node.data.action === 'check_has')) {
+                html = `
+                    <div class="node-terminal terminal-out terminal-true" data-node="${node.id}" data-branch="true" title="Sí"></div>
+                    <div class="node-terminal terminal-out terminal-false" data-node="${node.id}" data-branch="false" title="No"></div>
+                `;
+            } else {
+                html = `<div class="node-terminal terminal-out" data-node="${node.id}" title="Salida"></div>`;
+            }
+            node.el.insertAdjacentHTML('beforeend', html);
+        }
+
+        exportAutomation() {
+            const blueprint = {
+                nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
+                connections: this.connections.map(c => ({ from: c.from, to: c.to, sourceHandle: c.sourceHandle }))
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blueprint));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "alezux_automation.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (confirm('Esto reemplazará la automatización actual. ¿Continuar?')) {
+                        this.loadAutomation(json);
+                        this.unsavedChanges = true;
+                    }
+                } catch (err) {
+                    alert('Error al leer el archivo JSON.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
         }
 
         closeModal() {
@@ -1102,7 +1264,7 @@
 
             const blueprint = {
                 nodes: this.nodes.map(n => ({ id: n.id, type: n.type, x: n.x, y: n.y, data: n.data })),
-                connections: this.connections.map(c => ({ from: c.from, to: c.to }))
+                connections: this.connections.map(c => ({ from: c.from, to: c.to, sourceHandle: c.sourceHandle }))
             };
 
             const saveBtn = document.getElementById('save-marketing-automation');
@@ -1171,7 +1333,7 @@
                         setTimeout(() => {
                             if (blueprint.connections) {
                                 blueprint.connections.forEach(c => {
-                                    this.createConnection(c.from, c.to);
+                                    this.createConnection(c.from, c.to, c.sourceHandle || 'default');
                                 });
                             }
                             this.updatePlaceholder();
