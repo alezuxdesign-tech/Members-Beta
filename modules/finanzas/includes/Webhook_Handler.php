@@ -170,7 +170,31 @@ class Webhook_Handler {
             [ 'stripe_subscription_id' => $stripe_sub_id ]
         );
 
-        // TODO: Enviar email de fallo (Módulo Marketing)
+        // Enviar email de fallo (Módulo Marketing)
+        if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+            $subscription = $wpdb->get_row( $wpdb->prepare( "SELECT user_id, plan_id FROM $subs_table WHERE stripe_subscription_id = %s", $stripe_sub_id ) );
+            if ( $subscription ) {
+                $user = get_user_by( 'id', $subscription->user_id );
+                if ( $user ) {
+                    \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+                        'payment_failed',
+                        $user->user_email,
+                        [
+                            'user' => $user,
+                            'payment' => [
+                                'amount' => number_format($invoice->amount_due / 100, 2),
+                                'currency' => strtoupper($invoice->currency),
+                                'ref' => $invoice->number
+                            ],
+                            'plan' => [
+                                'name' => 'Suscripción' // Idealmente buscar nombre del plan
+                            ]
+                        ]
+                    );
+                }
+            }
+        }
+
         \error_log( "Alezux: Pago fallido para suscripción stripe $stripe_sub_id" );
         
         // Obtener user y plan para el evento

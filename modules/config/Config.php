@@ -444,33 +444,40 @@ class Config extends Module_Base {
 			wp_send_json_error( [ 'message' => 'No se pudo generar la clave de recuperación.' ] );
 		}
 
-		// Enviar el correo nativo de WP o personalizarlo
-		// Por ahora usaremos la lógica nativa simplificada para asegurar entrega
-		$message = "Alguien ha solicitado restablecer la contraseña de la siguiente cuenta:\r\n\r\n";
-		$message .= network_home_url( '/' ) . "\r\n\r\n";
-		$message .= sprintf( 'Nombre de usuario: %s', $user_data->user_login ) . "\r\n\r\n";
-		$message .= "Si ha sido un error, ignora este correo.\r\n\r\n";
-		$message .= "Para restablecer la contraseña, visita la siguiente dirección:\r\n\r\n";
-		$reset_page_id = get_option( 'alezux_reset_page_id' );
-		if ( ! $reset_page_id ) $reset_page_id = get_option( 'alezux_login_page_id' );
-		
-		if ( $reset_page_id ) {
-			$reset_url = get_permalink( $reset_page_id );
-			$reset_url = add_query_arg( [
-				'key' => $key,
-				'login' => rawurlencode( $user_data->user_login )
-			], $reset_url );
-		} else {
-			$reset_url = network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user_data->user_login ), 'login' );
-		}
+		// Enviar email (Delegado a Marketing)
+		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+			
+			$reset_page_id = get_option( 'alezux_reset_page_id' );
+			if ( ! $reset_page_id ) $reset_page_id = get_option( 'alezux_login_page_id' );
+			
+			if ( $reset_page_id ) {
+				$reset_url = get_permalink( $reset_page_id );
+				$reset_url = add_query_arg( [
+					'key' => $key,
+					'login' => rawurlencode( $user_data->user_login )
+				], $reset_url );
+			} else {
+				$reset_url = network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user_data->user_login ), 'login' );
+			}
 
-		$message .= $reset_url . "\r\n";
+			$sent = \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+				'user_recover_password',
+				$user_data->user_email,
+				[
+					'user' => $user_data,
+					'reset_link' => $reset_url
+				]
+			);
 
-		if ( false !== wp_mail( $user_data->user_email, 'Recuperación de Contraseña', $message ) ) {
-			wp_send_json_success( [ 'message' => 'Se ha enviado un correo con instrucciones.' ] );
+			if ( $sent ) {
+				wp_send_json_success( [ 'message' => 'Se ha enviado un correo con instrucciones.' ] );
+			} else {
+				wp_send_json_error( [ 'message' => 'El correo no pudo ser enviado.' ] );
+			}
 		} else {
-			wp_send_json_error( [ 'message' => 'El correo no pudo ser enviado.' ] );
-		}
+             // Fallback Legacy (Should not happen if module active)
+             wp_send_json_error( [ 'message' => 'Error sistema de correo no disponible.' ] );
+        }
 	}
 
 	/**

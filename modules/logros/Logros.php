@@ -211,6 +211,66 @@ class Logros extends Module_Base {
 				}
 			}
 
+
+			// --- EMAIL MARKETING ---
+			if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+				// Reuses logic to find users from Notifications part if possible, 
+				// but let's keep it simple and parallel for now.
+				
+				// 1. Single User
+				if ( ! empty( $user_id ) ) {
+					$u_obj = get_user_by( 'id', $user_id );
+					if ( $u_obj ) {
+						\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+							'achievement_assigned',
+							$u_obj->user_email,
+							[
+								'user' => $u_obj,
+								'achievement' => [
+									'title' => $title,
+									'message' => $message,
+									'image' => $image_url
+								]
+							]
+						);
+					}
+				}
+				
+				// 2. Course Users (Bulk)
+				if ( ! empty( $course_id ) ) {
+					// We need to fetch users same as Notifications logic.
+					// If easy to reuse 'notification' recipients logic... 
+					// Let's replicate the query since it's cleaner than coupling with Notifications.
+					$args = [
+						'meta_key' => "course_{$course_id}_access_from", 
+						'meta_compare' => 'EXISTS',
+						'fields' => 'all_with_meta' // get full objects
+					];
+					$user_query = new \WP_User_Query( $args );
+					$enrolled_users = $user_query->get_results();
+
+					if ( ! empty( $enrolled_users ) ) {
+						foreach ( $enrolled_users as $enrolled_user ) {
+							// Avoid double send if user_id was also specified (rare edge case in UI but possible)
+							if ( ! empty( $user_id ) && $enrolled_user->ID == $user_id ) continue;
+
+							\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+								'achievement_assigned',
+								$enrolled_user->user_email,
+								[
+									'user' => $enrolled_user,
+									'achievement' => [
+										'title' => $title,
+										'message' => $message,
+										'image' => $image_url
+									]
+								]
+							);
+						}
+					}
+				}
+			}
+
 			wp_send_json_success( [ 'message' => 'Logro guardado y notificado correctamente.' ] );
 		} else {
 			wp_send_json_error( [ 'message' => 'Error al guardar en la base de datos.' ] );

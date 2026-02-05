@@ -331,43 +331,29 @@ class Estudiantes extends Module_Base {
 	}
 
 	/**
-	 * Enviar Correo con Credenciales
+	 * Enviar Correo con Credenciales (Delegado a Marketing)
 	 */
 	private function send_new_user_email( $user, $password, $course_id ) {
-		$site_name = \get_bloginfo( 'name' );
-		$site_url  = \home_url(); // URL para ingresar
-		$login_url = \wp_login_url(); // O URL personalizada de login
-		
+		if ( ! class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+			return; // Fallback o error log
+		}
+
 		$course_title = '';
 		if ( $course_id ) {
 			$course = \get_post( $course_id );
 			if ( $course ) $course_title = $course->post_title;
 		}
 
-		$subject = "Bienvenido a $site_name - Tus Credenciales de Acceso";
-		
-		$message  = "<p>Hola <strong>" . \esc_html( $user->first_name ) . "</strong>,</p>";
-		$message .= "<p>Se ha creado tu cuenta en <strong>$site_name</strong> exitosamente.</p>";
-		
-		if ( $course_title ) {
-			$message .= "<p>Has sido inscrito en el curso: <strong>$course_title</strong>.</p>";
-		}
-
-		$message .= "<p>Aquí tienes tus datos de acceso:</p>";
-		$message .= "<ul>";
-		$message .= "<li><strong>URL de Acceso:</strong> <a href='$login_url'>$login_url</a></li>";
-		$message .= "<li><strong>Usuario:</strong> " . \esc_html( $user->user_login ) . "</li>";
-		$message .= "<li><strong>Contraseña:</strong> " . \esc_html( $password ) . "</li>";
-		$message .= "</ul>";
-		$message .= "<p>Te recomendamos cambiar tu contraseña al ingresar.</p>";
-		$message .= "<p>¡Nos vemos dentro!</p>";
-
-		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-		// From header personalizado con nombre del dominio
-		$domain = $_SERVER['SERVER_NAME'];
-		$headers[] = "From: $site_name <no-reply@$domain>";
-
-		\wp_mail( $user->user_email, $subject, $message, $headers );
+		\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email( 
+			'student_welcome', 
+			$user->user_email, 
+			[
+				'user' => $user,
+				'password' => $password,
+				'course_title' => $course_title,
+				'login_url' => \wp_login_url()
+			]
+		);
 	}
 
 	/**
@@ -509,17 +495,18 @@ class Estudiantes extends Module_Base {
 		$new_pass = \wp_generate_password( 12, true );
 		\wp_set_password( $new_pass, $user_id );
 
-		// Enviar email (reusamos lógica o mandamos uno específico)
-		// Por simplicidad, mandamos uno específico aquí
-		$site_name = \get_bloginfo( 'name' );
-		$subject = "Nueva contraseña para $site_name";
-		$message = "<p>Hola " . \esc_html( $user->first_name ) . ",</p>";
-		$message .= "<p>Un administrador ha restablecido tu contraseña.</p>";
-		$message .= "<p><strong>Nueva contraseña:</strong> " . \esc_html( $new_pass ) . "</p>";
-		$message .= "<p>Te recomendamos cambiarla al ingresar.</p>";
-
-		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-		\wp_mail( $user->user_email, $subject, $message, $headers );
+		// Enviar email (Delegado a Marketing)
+		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+			\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+				'admin_reset_password',
+				$user->user_email,
+				[
+					'user' => $user,
+					'password' => $new_pass,
+					'login_url' => \wp_login_url()
+				]
+			);
+		}
 
 		\wp_send_json_success( [ 'message' => 'Contraseña restablecida y enviada por correo.' ] );
 	}
