@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
                         <td>${item.subject}</td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="alezux-action-btn edit-template-btn" data-type="${item.type}">
+                            <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}">
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
                         </td>
