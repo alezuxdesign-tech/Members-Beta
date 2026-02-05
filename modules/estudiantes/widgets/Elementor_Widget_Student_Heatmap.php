@@ -160,6 +160,7 @@ class Elementor_Widget_Student_Heatmap extends \Elementor\Widget_Base {
 		$level_step = $max_seconds > 0 ? $max_seconds / 4 : 1;
 
 		?>
+		<style>
 			.alezux-heatmap-container {
 				display: flex;
 				flex-direction: column;
