@@ -140,10 +140,7 @@ add_action( 'elementor/elements/categories_registered', function( $elements_mana
 			'title' => esc_html__( 'Alezux: LMS & Contenido', 'alezux-members' ),
 			'icon'  => 'eicon-edu-cap',
 		],
-		'alezux-marketing'  => [
-			'title' => esc_html__( 'Alezux: Marketing', 'alezux-members' ),
-			'icon'  => 'eicon-site-search',
-		],
+
 		'alezux-otros'      => [
 			'title' => esc_html__( 'Alezux: Utilidades', 'alezux-members' ),
 			'icon'  => 'eicon-tools',
