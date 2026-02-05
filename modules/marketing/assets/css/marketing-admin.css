@@ -4,7 +4,34 @@
     /* Uses inherited alezux-table styles */
 }
 
-/* Modal Styles (Simplified Reuse) */
+/* --- BUTTONS (Independent class to avoid conflicts) --- */
+.alezux-marketing-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 6px rgba(118, 75, 162, 0.3);
+    text-decoration: none;
+}
+
+.alezux-marketing-btn:hover {
+    opacity: 0.9;
+    color: #fff;
+}
+
+.alezux-marketing-btn.primary {
+    /* Just reuse base style or add specific overrides if needed */
+}
+
+/* --- MODALS --- */
 .alezux-modal {
     display: none;
     position: fixed;
@@ -14,23 +41,30 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
     align-items: center;
     justify-content: center;
-    display: none;
-    /* JS toggles flex */
 }
 
 .alezux-modal-content {
     background-color: #fff;
-    /* Dark mode managed via wrapper class? keeping simple for now */
-    margin: 10% auto;
+    margin: auto;
     padding: 25px;
     border-radius: 12px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     position: relative;
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark Mode Modal Defaults (Can be overridden by Elementor controls) */
+@media (prefers-color-scheme: dark) {
+    .alezux-modal-content {
+        background: #1a202c;
+        color: #e2e8f0;
+        border: 1px solid #2d3748;
+    }
 }
 
 .alezux-close-modal {
@@ -40,11 +74,12 @@
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    color: #aaa;
+    color: #a0aec0;
+    line-height: 1;
 }
 
 .alezux-close-modal:hover {
-    color: #000;
+    color: #fff;
 }
 
 .form-group {
@@ -55,19 +90,30 @@
     display: block;
     font-weight: 600;
     margin-bottom: 5px;
+    color: inherit;
 }
 
 .alezux-input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Transparent-ish for dark mode compat */
+    color: inherit;
+}
+
+.alezux-input:focus {
+    border-color: #667eea;
+    outline: none;
 }
 
 small {
-    color: #777;
+    color: #718096;
     font-size: 0.85em;
+    display: block;
+    margin-top: 4px;
 }
 
 /* Switch Slider */
@@ -116,21 +162,38 @@ input:checked+.slider:before {
     transform: translateX(20px);
 }
 
-/* Dark Mode Support (Basic) */
-@media (prefers-color-scheme: dark) {
-    .alezux-modal-content {
-        background: #1e1e1e;
-        color: #fff;
-        border: 1px solid #333;
-    }
+/* --- PREVIEW FEATURE --- */
+.editor-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #2d3748;
+    padding-bottom: 10px;
+}
 
-    .alezux-input {
-        background: #2c2c2c;
-        border-color: #444;
-        color: #fff;
-    }
+.tab-btn {
+    background: none;
+    border: none;
+    color: #718096;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+}
 
-    .alezux-close-modal {
-        color: #ddd;
-    }
+.tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+.preview-container {
+    border: 1px solid #2d3748;
+    background: #fff;
+    /* Email preview usually needs white background */
+    color: #000;
+    padding: 20px;
+    border-radius: 6px;
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
 }

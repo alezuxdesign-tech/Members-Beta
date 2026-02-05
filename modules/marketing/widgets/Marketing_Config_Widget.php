@@ -237,18 +237,220 @@ class Marketing_Config_Widget extends Widget_Base {
         $this->add_control('badge_inactive_bg', ['label' => 'Fondo (Inactivo)', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-inactive' => 'background-color: {{VALUE}};']]);
 
         $this->end_controls_section();
+
+        // 4. MODALES
+        $this->start_controls_section(
+            'style_section_modals',
+            [
+                'label' => esc_html__('Ventanas Emergentes (Modales)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'modal_overlay_bg',
+            [
+                'label' => esc_html__('Color Fondo Overlay', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'modal_content_bg',
+            [
+                'label' => esc_html__('Color Fondo Contenido', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name' => 'modal_border',
+                'selector' => '{{WRAPPER}} .alezux-modal-content',
+            ]
+        );
+
+        $this->add_control(
+            'modal_radius',
+            [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'modal_shadow',
+                'selector' => '{{WRAPPER}} .alezux-modal-content',
+            ]
+        );
+
+        $this->add_control(
+            'modal_title_color',
+            [
+                'label' => esc_html__('Color Título', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content h3' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name' => 'modal_title_typography',
+                'selector' => '{{WRAPPER}} .alezux-modal-content h3',
+            ]
+        );
+
+         $this->add_control(
+            'modal_label_color',
+            [
+                'label' => esc_html__('Color Etiquetas (Labels)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content label' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        // 5. BOTONES (Marketing)
+        $this->start_controls_section(
+            'style_section_buttons',
+            [
+                'label' => esc_html__('Botones', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->start_controls_tabs('tabs_buttons_style');
+
+        $this->start_controls_tab(
+            'tab_button_normal',
+            [
+                'label' => esc_html__('Normal', 'alezux-members'),
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name' => 'button_typography',
+                'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+            ]
+        );
+
+        $this->add_control(
+            'button_text_color',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-marketing-btn' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Background::get_type(),
+            [
+                'name' => 'button_background',
+                'label' => esc_html__('Fondo', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name' => 'button_border',
+                'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+            ]
+        );
+
+        $this->add_control(
+            'button_radius',
+            [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-marketing-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'tab_button_hover',
+            [
+                'label' => esc_html__('Hover', 'alezux-members'),
+            ]
+        );
+
+        $this->add_control(
+            'button_text_color_hover',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-marketing-btn:hover' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Background::get_type(),
+            [
+                'name' => 'button_background_hover',
+                'label' => esc_html__('Fondo', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'button_hover_shadow',
+                'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
+            ]
+        );
+
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+
+        $this->end_controls_section();
 	}
 
 	protected function render() {
-		// $settings = $this->get_settings_for_display(); // Si tuviera controles dinámicos de título
-		if ( ! current_user_can( 'administrator' ) ) {
+		$is_edit = \Elementor\Plugin::instance()->editor->is_edit_mode();
+		
+		if ( ! current_user_can( 'administrator' ) && ! $is_edit ) {
 			echo '<p>Acceso restringido.</p>';
 			return;
 		}
 		?>
 		<div class="alezux-finanzas-app alezux-marketing-app">
 			
-			<!-- Cabecera Estándar (Igual a Finanzas) -->
+			<!-- Cabecera Estándar -->
 			<div class="alezux-table-header">
 				<div class="alezux-header-left">
 					<h3 class="alezux-table-title">Gestor de Correos</h3>
@@ -257,7 +459,7 @@ class Marketing_Config_Widget extends Widget_Base {
 
 				<div class="alezux-header-right alezux-filters-inline">
 					<div class="alezux-filter-item">
-						<button id="btn-marketing-settings" class="alezux-action-btn primary">
+						<button id="btn-marketing-settings" class="alezux-marketing-btn primary">
 							<i class="fa fa-cog"></i> Configuración General
 						</button>
 					</div>
@@ -276,11 +478,41 @@ class Marketing_Config_Widget extends Widget_Base {
 						</tr>
 					</thead>
 					<tbody>
-						<!-- AJAX Loaded -->
-						<tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando plantillas...</td></tr>
+						<?php if ( $is_edit ) : ?>
+							<!-- Dummy Data for Editor -->
+							<tr>
+								<td><strong>Registro - Bienvenida</strong><br><small style="color:#888">student_welcome</small></td>
+								<td>¡Bienvenido a la Academia!</td>
+								<td><span class="status-badge status-active">Activo</span></td>
+								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
+							</tr>
+							<tr>
+								<td><strong>Finanzas - Pago Exitoso</strong><br><small style="color:#888">payment_success</small></td>
+								<td>Recibo de tu pago</td>
+								<td><span class="status-badge status-active">Activo</span></td>
+								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
+							</tr>
+                             <tr>
+								<td><strong>Logros - Nuevo Logro</strong><br><small style="color:#888">achievement_assigned</small></td>
+								<td>¡Felicidades! Has desbloqueado un logro</td>
+								<td><span class="status-badge status-inactive">Inactivo</span></td>
+								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
+							</tr>
+						<?php else : ?>
+							<!-- AJAX Loaded -->
+							<tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando plantillas...</td></tr>
+						<?php endif; ?>
 					</tbody>
 				</table>
 			</div>
+
+			<?php if ( $is_edit ) : ?>
+				<div style="margin-top:20px; padding:10px; border:1px dashed #666; color:#aaa; font-size:12px;">
+					<strong>Modo Editor:</strong> Los modales no son visibles aquí por defecto. Puedes usar el botón de "Configuración General" o "Editar" (simulado) para verlos. 
+					<br>
+					<em>Nota: La funcionalidad real requiere cargar en el frontend.</em>
+				</div>
+			<?php endif; ?>
 
 			<!-- MODAL TEMPLATE EDITOR -->
 			<div id="marketing-template-modal" class="alezux-modal" style="display:none;">
@@ -298,9 +530,23 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-group">
-							<label>Contenido (HTML):</label>
-							<textarea id="tpl-content" name="content" rows="15" class="alezux-input" style="font-family: monospace;"></textarea>
-							<small>Pega aquí tu código HTML. La etiqueta &lt;body&gt; es opcional.</small>
+							<label>Contenido:</label>
+                            
+                            <div class="editor-tabs">
+                                <button type="button" class="tab-btn active" data-tab="edit">Editor HTML</button>
+                                <button type="button" class="tab-btn" data-tab="preview">Vista Previa</button>
+                            </div>
+
+                            <div id="tab-content-edit">
+							    <textarea id="tpl-content" name="content" rows="15" class="alezux-input" style="font-family: monospace;"></textarea>
+							    <small>Pega aquí tu código HTML. La etiqueta &lt;body&gt; es opcional.</small>
+                            </div>
+
+                            <div id="tab-content-preview" style="display:none;">
+                                <div id="email-preview-frame" class="preview-container">
+                                    <!-- Preview rendered here -->
+                                </div>
+                            </div>
 						</div>
 
 						<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
@@ -312,7 +558,7 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-action-btn primary">Guardar Cambios</button>
+							<button type="submit" class="alezux-marketing-btn primary">Guardar Cambios</button>
 						</div>
 					</form>
 				</div>
@@ -342,7 +588,7 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-action-btn primary">Guardar Configuración</button>
+							<button type="submit" class="alezux-marketing-btn primary">Guardar Configuración</button>
 						</div>
 					</form>
 				</div>

@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
                         <td>${item.subject}</td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="alezux-action-btn edit-template-btn" data-type="${item.type}">
+                            <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}">
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
                         </td>
@@ -72,12 +72,23 @@ jQuery(document).ready(function ($) {
 
         loadTemplates();
 
-        // 2. Open Edit Modal - Delegated to document for dynamic elements, but scoped check would be good. 
-        // using document is safer for re-renders.
-        $(document).on('click', '.edit-template-btn', function () {
+        // 2. Open Edit Modal
+        $(document).on('click', '.edit-template-btn', function (e) {
+            e.preventDefault();
             var type = $(this).data('type');
 
-            // Cargar datos individuales
+            // Logic for Dummy/Editor buttons (no data-type)
+            if (!type) {
+                $('#tpl-type').val('dummy_type');
+                $('#tpl-subject').val('Asunto de Prueba para Diseño');
+                $('#tpl-content').val('<h1>Hola [Nombre]</h1><p>Este es un cotenido de prueba para visualizar estilos.</p>');
+                $('#tpl-active').prop('checked', true);
+                $('#modal-title').text('Editando: Plantilla de Prueba');
+                modalTemplate.css('display', 'flex');
+                return;
+            }
+
+            // Real Data Load
             $.ajax({
                 url: alezux_marketing_vars.ajax_url,
                 method: 'POST',
@@ -96,13 +107,44 @@ jQuery(document).ready(function ($) {
 
                         $('#modal-title').text('Editando: ' + type);
                         modalTemplate.css('display', 'flex');
+
+                        // Reset tab to edit
+                        wrapper.find('.tab-btn[data-tab="edit"]').click();
                     }
                 }
             });
         });
 
+        // Tab Handler (Preview)
+        wrapper.find('.tab-btn').on('click', function () {
+            var tab = $(this).data('tab');
+            wrapper.find('.tab-btn').removeClass('active');
+            $(this).addClass('active');
+
+            if (tab === 'edit') {
+                wrapper.find('#tab-content-edit').show();
+                wrapper.find('#tab-content-preview').hide();
+            } else {
+                wrapper.find('#tab-content-edit').hide();
+                wrapper.find('#tab-content-preview').show();
+
+                // Render Preview
+                var content = wrapper.find('#tpl-content').val();
+                var previewFrame = wrapper.find('#email-preview-frame');
+                previewFrame.html(content);
+            }
+        });
+
         // 3. Open Settings Modal
-        wrapper.find('#btn-marketing-settings').on('click', function () {
+        wrapper.find('#btn-marketing-settings').on('click', function (e) {
+            e.preventDefault(); // Prevent default link behavior if any form styling interferes
+
+            // Check if backend vars exist (might be missing in editor frame sometimes)
+            if (typeof alezux_marketing_vars === 'undefined') {
+                modalSettings.css('display', 'flex'); // Just open in dummy mode
+                return;
+            }
+
             // Cargar settings
             $.ajax({
                 url: alezux_marketing_vars.ajax_url,
@@ -119,6 +161,10 @@ jQuery(document).ready(function ($) {
                         $('#set-logo-url').val(s.logo_url);
                         modalSettings.css('display', 'flex');
                     }
+                },
+                error: function () {
+                    // Fallback for editor usage if ajax fails
+                    modalSettings.css('display', 'flex');
                 }
             });
         });
