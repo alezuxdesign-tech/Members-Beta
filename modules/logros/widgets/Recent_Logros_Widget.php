@@ -343,17 +343,20 @@ class Recent_Logros_Widget extends Widget_Base {
 
 		foreach ( $results as $row ) {
 			$student_id = $row->student_id;
-			$user_info = get_userdata( $student_id );
+			$user_info = ! empty( $student_id ) ? get_userdata( $student_id ) : false;
 			
-			if ( ! $user_info ) {
-				continue;
+			if ( $user_info ) {
+				// Caso 1: Logro asignado a un estudiante existente
+				$student_name = $user_info->display_name;
+				$avatar_url = get_avatar_url( $student_id, ['size' => 150] );
+			} else {
+				// Caso 2: Sin estudiante asignado (o usuario borrado) -> Mostrar info del Sitio/Admin
+				$student_name = get_bloginfo( 'name' );
+				// Usamos el avatar del email del administrador principal para cumplir "foto de perfil del administrador"
+				$avatar_url = get_avatar_url( get_option( 'admin_email' ), ['size' => 150] );
 			}
 
-			// Nombre del estudiante
-			$student_name = $user_info->display_name;
-			
-			// Avatar
-			$avatar_url = get_avatar_url( $student_id, ['size' => 150] ); // Pedimos tamaño mayor por si acaso el usuario lo agranda
+			// Calcular tiempo transcurrido
 			
 			// Calcular tiempo transcurrido
 			$time_ago = human_time_diff( strtotime( $row->created_at ), current_time( 'timestamp' ) ) . ' ' . esc_html__( 'atrás', 'alezux-members' );
