@@ -898,7 +898,13 @@ class Slide_Lesson_Widget extends Widget_Base {
 		];
 
 		foreach ( $lessons as $lesson ) {
-			if ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $lesson['title'], $matches ) ) {
+			// Decodificar entidades HTML para asegurar que [ ] ( ) y caracteres especiales se lean bien
+			$decoded_title = html_entity_decode( $lesson['title'], ENT_QUOTES | ENT_HTML5 );
+			
+			// Debug para ver qué está pasando (visible en código fuente w/ Ctrl+U)
+			echo '<!-- DEBUG SLIDE: Original: "' . esc_attr( $lesson['title'] ) . '" Decoded: "' . esc_attr( $decoded_title ) . '"Regex: ' . ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $decoded_title ) ? 'MATCH' : 'NO MATCH' ) . ' -->';
+
+			if ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $decoded_title, $matches ) ) {
 				// Si el grupo actual tiene lecciones, lo guardamos
 				if ( ! empty( $current_group['lessons'] ) ) {
 					$slide_groups[] = $current_group;
