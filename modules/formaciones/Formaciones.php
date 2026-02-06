@@ -144,23 +144,15 @@ class Formaciones extends Module_Base {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		// Detectar Post Type de manera robusta
-		$current_post_type = '';
-		
-		if ( isset( $_GET['post_type'] ) ) {
-			$current_post_type = sanitize_text_field( $_GET['post_type'] );
-		} elseif ( isset( $_GET['post'] ) ) {
-			$current_post_type = get_post_type( intval( $_GET['post'] ) );
-		}
+		$screen = get_current_screen();
 
-		// Fallback usando global si aún no lo tenemos
-		if ( ! $current_post_type ) {
-			global $post_type;
-			$current_post_type = $post_type;
+		// Verificar que estamos en una pantalla de edición
+		if ( ! $screen || ! in_array( $screen->base, [ 'post', 'post-new' ] ) ) {
+			return;
 		}
 
 		// Solo cargar en la edición de cursos de LearnDash
-		if ( 'sfwd-courses' !== $current_post_type ) {
+		if ( 'sfwd-courses' !== $screen->post_type ) {
 			return;
 		}
 
@@ -170,16 +162,21 @@ class Formaciones extends Module_Base {
 			'alezux-formaciones-admin',
 			$this->get_asset_url( 'assets/css/admin-formaciones.css' ),
 			[],
-			'1.0.0'
+			'1.0.0' . time() // Cache bust
 		);
 
 		wp_enqueue_script(
 			'alezux-formaciones-admin',
 			$this->get_asset_url( 'assets/js/admin-formaciones.js' ),
 			[ 'jquery' ],
-			'1.0.0',
+			'1.0.0' . time(), // Cache bust
 			true
 		);
+		
+		// Pasar variables localizadas para debug si es necesario, aunque no las usamos aun
+		wp_localize_script( 'alezux-formaciones-admin', 'alezux_admin_vars', [
+			'debug' => true
+		]);
 	}
 	public function handle_topic_completion() {
 		try {
