@@ -144,19 +144,29 @@ class Formaciones extends Module_Base {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
+		global $post_type;
 		$screen = get_current_screen();
+		$screen_post_type = $screen ? $screen->post_type : '';
+		
+		// Debug en consola desde PHP para verificar condiciones
+		$debug_data = [
+			'hook' => $hook,
+			'global_post_type' => $post_type,
+			'screen_id' => $screen ? $screen->id : 'none',
+			'screen_post_type' => $screen_post_type,
+		];
+		echo "<script>console.log('ALEZUX PHP DEBUG ENQUEUE:', " . json_encode($debug_data) . ");</script>";
 
-		// Verificar que estamos en una pantalla de edición
-		if ( ! $screen || ! in_array( $screen->base, [ 'post', 'post-new' ] ) ) {
+		// Verificar si es curso de LearnDash (Comprobación amplia)
+		$is_course = false;
+		if ( 'sfwd-courses' === $post_type ) $is_course = true;
+		if ( 'sfwd-courses' === $screen_post_type ) $is_course = true;
+		
+		if ( ! $is_course ) {
 			return;
 		}
 
-		// Solo cargar en la edición de cursos de LearnDash
-		if ( 'sfwd-courses' !== $screen->post_type ) {
-			return;
-		}
-
-		wp_enqueue_media(); // Necesario para el uploader de imágenes
+		wp_enqueue_media(); 
 
 		wp_enqueue_style(
 			'alezux-formaciones-admin',
@@ -172,8 +182,7 @@ class Formaciones extends Module_Base {
 			'1.0.0' . time(), // Cache bust
 			true
 		);
-		
-		// Pasar variables localizadas para debug si es necesario, aunque no las usamos aun
+
 		wp_localize_script( 'alezux-formaciones-admin', 'alezux_admin_vars', [
 			'debug' => true
 		]);
