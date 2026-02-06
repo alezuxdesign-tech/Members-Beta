@@ -174,6 +174,11 @@ class Course_Meta_Fields {
 			update_post_meta( $post_id, '_alezux_course_price', sanitize_text_field( $_POST['alezux_course_price'] ) );
 		}
 
+		// Guardar Portada del Curso
+		if ( isset( $_POST['alezux_course_cover'] ) ) {
+			update_post_meta( $post_id, '_alezux_course_cover', esc_url_raw( $_POST['alezux_course_cover'] ) );
+		}
+
 		// Guardar Whatsapp
 		if ( isset( $_POST['alezux_course_whatsapp'] ) ) {
 			update_post_meta( $post_id, '_alezux_course_whatsapp', esc_url_raw( $_POST['alezux_course_whatsapp'] ) );
