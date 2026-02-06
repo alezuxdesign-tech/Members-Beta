@@ -898,7 +898,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 		];
 
 		foreach ( $lessons as $lesson ) {
-			if ( preg_match( '/\[Separador \(Titulo:\s*(.*?)\)\]/i', $lesson['title'], $matches ) ) {
+			if ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $lesson['title'], $matches ) ) {
 				// Si el grupo actual tiene lecciones, lo guardamos
 				if ( ! empty( $current_group['lessons'] ) ) {
 					$slide_groups[] = $current_group;
