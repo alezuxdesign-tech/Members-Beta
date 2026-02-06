@@ -186,6 +186,17 @@ jQuery(document).ready(function ($) {
 
     function openEditModal(planId) {
         console.log('Opening modal for plan:', planId);
+
+        // Re-query elements to ensure we have the current DOM nodes
+        const $editModal = $('#alezux-edit-plan-modal');
+        const $editForm = $('#alezux-edit-plan-form');
+
+        if ($editModal.length === 0 || $editForm.length === 0) {
+            console.error('Modal or Form not found during openEditModal execution');
+            alert('Error interno: No se encuentra la ventana de edición.');
+            return;
+        }
+
         $editModal.css('display', 'flex').hide().fadeIn(); // Flex for centering
 
         // Reset Form
