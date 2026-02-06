@@ -1076,9 +1076,11 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 						</div>
 
 						<div class="alezux-formacion-footer">
-							<div class="alezux-formacion-price">
-								<?php echo esc_html( $price ); ?>
-							</div>
+							<?php if ( ! $has_access ) : ?>
+								<div class="alezux-formacion-price">
+									<?php echo esc_html( $price ); ?>
+								</div>
+							<?php endif; ?>
 							<a href="<?php echo esc_url( $button_link ); ?>" class="alezux-formacion-button">
 								<?php if ( ! empty( $settings['selected_icon']['value'] ) && 'left' === $settings['icon_align'] ) : ?>
 									<span class="alezux-btn-icon alezux-btn-icon-left">
