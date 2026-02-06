@@ -52,6 +52,9 @@ class Logros extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Logros\Widgets\Form_Logro_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Logros\Widgets\Grid_Logros_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Logros\Widgets\View_Logros_Widget() );
+
+		require_once __DIR__ . '/widgets/Recent_Logros_Widget.php';
+		$widgets_manager->register( new \Alezux_Members\Modules\Logros\Widgets\Recent_Logros_Widget() );
 	}
 
 	public function register_assets() {
@@ -85,6 +88,23 @@ class Logros extends Module_Base {
 			$this->get_asset_url( 'assets/css/grid-logros.css' ),
 			[],
 			time()
+		);
+
+		// RECENT LOGROS WIDGET CSS
+		wp_register_style(
+			'alezux-recent-logros-css',
+			$this->get_asset_url( 'assets/css/widget-recent-logros.css' ),
+			[],
+			time()
+		);
+
+		// RECENT LOGROS WIDGET JS
+		wp_register_script(
+			'alezux-recent-logros-js',
+			$this->get_asset_url( 'assets/js/widget-recent-logros.js' ),
+			[ 'jquery' ],
+			time(),
+			true
 		);
 		
 		// GRID LOGROS JS (Si en el futuro se necesita, por ahora Grid usa JS inline)
