@@ -41,6 +41,7 @@ class Course_Meta_Fields {
 
 		// Recuperar valores guardados
 		$price = get_post_meta( $post->ID, '_alezux_course_price', true );
+		$course_cover = get_post_meta( $post->ID, '_alezux_course_cover', true ); // New field
 		$whatsapp = get_post_meta( $post->ID, '_alezux_course_whatsapp', true );
 		$slack = get_post_meta( $post->ID, '_alezux_course_slack', true );
 		$zoom = get_post_meta( $post->ID, '_alezux_course_zoom', true );
@@ -51,6 +52,26 @@ class Course_Meta_Fields {
 		}
 		?>
 		<div class="alezux-meta-box-container">
+			<!-- Campo Portada del Curso -->
+			<div class="alezux-meta-field">
+				<label for="alezux_course_cover"><strong><?php _e( 'Portada del Curso', 'alezux-members' ); ?></strong></label>
+				<p class="description"><?php _e( 'Sube una imagen para la portada del curso. Esta imagen se podrá usar dinámicamente en Elementor.', 'alezux-members' ); ?></p>
+				
+				<div class="course-cover-wrapper" style="margin-top: 10px; margin-bottom: 20px;">
+					<div class="course-cover-preview" style="margin-bottom: 10px;">
+						<?php if ( ! empty( $course_cover ) ) : ?>
+							<img src="<?php echo esc_url( $course_cover ); ?>" alt="Portada del Curso" style="max-width: 300px; height: auto; border: 1px solid #ddd; padding: 4px; border-radius: 4px;">
+						<?php endif; ?>
+					</div>
+					<input type="hidden" id="alezux_course_cover" name="alezux_course_cover" value="<?php echo esc_attr( $course_cover ); ?>">
+					
+					<button class="button alezux-upload-course-cover"><span class="dashicons dashicons-upload"></span> <?php _e( 'Subir Imagen', 'alezux-members' ); ?></button>
+					<button class="button-link alezux-remove-course-cover" style="color: #d63031; display: <?php echo empty($course_cover) ? 'none' : 'inline-block'; ?>;"><span class="dashicons dashicons-trash"></span> <?php _e( 'Eliminar Imagen', 'alezux-members' ); ?></button>
+				</div>
+			</div>
+
+			<hr>
+
 			<!-- Campo Precio -->
 			<div class="alezux-meta-field">
 				<label for="alezux_course_price"><strong><?php _e( 'Precio del Curso', 'alezux-members' ); ?></strong></label>

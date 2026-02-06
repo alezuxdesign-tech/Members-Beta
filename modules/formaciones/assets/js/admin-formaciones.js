@@ -1,4 +1,37 @@
 jQuery(document).ready(function ($) {
+    // --- Lógica para subir Portada del Curso ---
+
+    $('body').on('click', '.alezux-upload-course-cover', function (e) {
+        e.preventDefault();
+
+        var button = $(this);
+        var wrapper = button.closest('.course-cover-wrapper');
+        var input_url = wrapper.find('#alezux_course_cover');
+        var preview = wrapper.find('.course-cover-preview');
+        var remove_btn = wrapper.find('.alezux-remove-course-cover');
+
+        var custom_uploader = wp.media({
+            title: 'Seleccionar Portada del Curso',
+            button: {
+                text: 'Usar esta imagen'
+            },
+            multiple: false
+        }).on('select', function () {
+            var attachment = custom_uploader.state().get('selection').first().toJSON();
+            input_url.val(attachment.url);
+            preview.html('<img src="' + attachment.url + '" style="max-width: 300px; height: auto; border: 1px solid #ddd; padding: 4px; border-radius: 4px;" />');
+            remove_btn.show();
+        }).open();
+    });
+
+    $('body').on('click', '.alezux-remove-course-cover', function (e) {
+        e.preventDefault();
+        var wrapper = $(this).closest('.course-cover-wrapper');
+        wrapper.find('#alezux_course_cover').val('');
+        wrapper.find('.course-cover-preview').html('');
+        $(this).hide();
+    });
+
     // --- Lógica para subir imagen de Mentores ---
 
     // Delegación de eventos para el botón de subir imagen

@@ -35,6 +35,9 @@ class Formaciones extends Module_Base {
 
 		// Registrar Widget de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
+		
+		// Registrar Etiquetas Dinámicas de Elementor
+		add_action( 'elementor/dynamic_tags/register', [ $this, 'register_dynamic_tags' ] );
 
 		// AJAX para completar/descompletar topic
 		add_action( 'wp_ajax_alezux_toggle_topic_complete', [ $this, 'handle_topic_completion' ] );
