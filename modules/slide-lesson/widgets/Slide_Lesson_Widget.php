@@ -936,6 +936,16 @@ class Slide_Lesson_Widget extends Widget_Base {
 			echo '<div class="alezux-widget-wrapper">';
 			include $view_path;
 			echo '</div>';
+            
+            // DEBUG: Imprimir estructura de grupos y títulos crudos en consola
+            $debug_titles = array_map(function($l) { return $l['title']; }, $lessons);
+            echo '<script>';
+            echo 'console.log("DEBUG RAW TITLES:", ' . json_encode($debug_titles) . ');';
+            echo 'console.log("DEBUG SLIDE GROUPS:", ' . json_encode(array_map(function($g){ 
+                return ['title' => $g['title'], 'count' => count($g['lessons'])]; 
+            }, $slide_groups)) . ');';
+            echo '</script>';
+
 		} else {
 			echo 'View definition not found: ' . esc_html( $view_path );
 		}
