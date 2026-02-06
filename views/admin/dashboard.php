@@ -243,7 +243,34 @@ $shortcodes[] = [
     'description' => 'Indicador de progreso de estudio semanal vs semana pasada.'
 ];
 
-// 3. CONFIG / AUTH
+// 3. FORMACIONES
+$shortcodes[] = [
+    'tag'         => 'alezux_course_whatsapp',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el enlace de WhatsApp configurado en el curso.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_course_slack',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el enlace de Slack configurado en el curso.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_course_zoom',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el enlace de Zoom configurado en el curso.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_resume_topic_name',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el nombre del tema donde quedó el estudiante.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_resume_topic_link',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el enlace del tema donde quedó el estudiante.'
+];
+
+// 4. CONFIG / AUTH
 $shortcodes[] = [
     'tag'         => 'alezux_login_alerts',
     'module'      => 'CONFIG',
@@ -255,7 +282,7 @@ $shortcodes[] = [
     'description' => 'Genera URL de cierre de sesión. Usar en href de botones.'
 ];
 
-// 4. ADMIN DASHBOARD (KPIs)
+// 5. ADMIN DASHBOARD (KPIs)
 $shortcodes[] = [
     'tag' => 'alezux_admin_total_students',
     'module' => 'ADMIN',
