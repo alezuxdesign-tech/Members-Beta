@@ -17,6 +17,10 @@ if ( ! isset( $settings ) || ! is_array( $settings ) ) {
 
 // Valores por defecto
 $show_arrows = isset( $settings['show_arrows'] ) ? $settings['show_arrows'] : 'yes';
+$nav_position_mode = isset( $settings['nav_position_mode'] ) ? $settings['nav_position_mode'] : 'default';
+
+// Clase para el contenedor basada en el modo
+$nav_class = 'alezux-nav-mode-' . $nav_position_mode;
 
 // Helpers para renderizar iconos de Elementor o fallback
 $render_icon = function( $setting_key, $default_class ) use ( $settings ) {
