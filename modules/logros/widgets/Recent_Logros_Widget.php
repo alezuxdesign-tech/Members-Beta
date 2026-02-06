@@ -3,6 +3,10 @@ namespace Alezux_Members\Modules\Logros\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Box_Shadow;
+use Elementor\Group_Control_Background;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -35,6 +39,7 @@ class Recent_Logros_Widget extends Widget_Base {
 	}
 
 	protected function register_controls() {
+		// --- CONTENT SECTION ---
 		$this->start_controls_section(
 			'content_section',
 			[
@@ -68,6 +73,251 @@ class Recent_Logros_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- STYLE SECTION: ITEM ---
+		$this->start_controls_section(
+			'style_section_item',
+			[
+				'label' => esc_html__( 'Item (Contenedor)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'items_gap',
+			[
+				'label' => esc_html__( 'Espacio entre items', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 50,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 15,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-recent-logros-widget' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'item_padding',
+			[
+				'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .aleuz-logro-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'item_background',
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .aleuz-logro-item',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'item_border',
+				'label' => esc_html__( 'Borde', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .aleuz-logro-item',
+			]
+		);
+
+		$this->add_control(
+			'item_border_radius',
+			[
+				'label' => esc_html__( 'Radio de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .aleuz-logro-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'item_box_shadow',
+				'label' => esc_html__( 'Sombra', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .aleuz-logro-item',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE SECTION: AVATAR ---
+		$this->start_controls_section(
+			'style_section_avatar',
+			[
+				'label' => esc_html__( 'Avatar', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'avatar_size',
+			[
+				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 20,
+						'max' => 150,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-logro-avatar img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'avatar_spacing',
+			[
+				'label' => esc_html__( 'Espacio derecho', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 50,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .aleuz-logro-item' => 'gap: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'avatar_border_radius',
+			[
+				'label' => esc_html__( 'Radio de Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-logro-avatar img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE SECTION: CONTENT ---
+		$this->start_controls_section(
+			'style_section_content',
+			[
+				'label' => esc_html__( 'Textos', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		// NOMBRE
+		$this->add_control(
+			'heading_name',
+			[
+				'label' => esc_html__( 'Nombre del Estudiante', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'name_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-logro-name' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'name_typography',
+				'label' => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-logro-name',
+			]
+		);
+
+		// FECHA
+		$this->add_control(
+			'heading_date',
+			[
+				'label' => esc_html__( 'Fecha / Tiempo', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'date_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-logro-time' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'date_typography',
+				'label' => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-logro-time',
+			]
+		);
+
+		// MENSAJE
+		$this->add_control(
+			'heading_message',
+			[
+				'label' => esc_html__( 'Mensaje', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'message_color',
+			[
+				'label' => esc_html__( 'Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-logro-message' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'message_typography',
+				'label' => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-logro-message',
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
@@ -85,7 +335,7 @@ class Recent_Logros_Widget extends Widget_Base {
 		) );
 
 		if ( empty( $results ) ) {
-			echo '<div class="alezux-no-logros">No hay logros recientes.</div>';
+			echo '<div class="alezux-no-logros">' . esc_html__( 'No hay logros recientes.', 'alezux-members' ) . '</div>';
 			return;
 		}
 
@@ -99,14 +349,16 @@ class Recent_Logros_Widget extends Widget_Base {
 				continue;
 			}
 
+			// Nombre del estudiante
 			$student_name = $user_info->display_name;
-			$avatar_url = get_avatar_url( $student_id, ['size' => 96] );
+			
+			// Avatar
+			$avatar_url = get_avatar_url( $student_id, ['size' => 150] ); // Pedimos tamaño mayor por si acaso el usuario lo agranda
 			
 			// Calcular tiempo transcurrido
-			$time_ago = human_time_diff( strtotime( $row->created_at ), current_time( 'timestamp' ) ) . ' atrás';
+			$time_ago = human_time_diff( strtotime( $row->created_at ), current_time( 'timestamp' ) ) . ' ' . esc_html__( 'atrás', 'alezux-members' );
 			
-            // Formatear mensaje corto (si es necesario un truncado extra visual, aunque CSS lo hace)
-            // Aquí usamos mb_substr para asegurar compatibilidad con caracteres especiales
+            // Formatear mensaje corto
             $message_preview = mb_strimwidth( strip_tags( $row->message ), 0, 100, '...' );
 
 			?>
@@ -119,7 +371,9 @@ class Recent_Logros_Widget extends Widget_Base {
 						<span class="alezux-logro-name"><?php echo esc_html( $student_name ); ?></span>
 						<span class="alezux-logro-time"><?php echo esc_html( $time_ago ); ?></span>
 					</div>
-					<p class="alezux-logro-message"><?php echo esc_html( $message_preview ); ?></p>
+					<div class="alezux-logro-body">
+						<p class="alezux-logro-message"><?php echo esc_html( $message_preview ); ?></p>
+					</div>
 				</div>
 			</a>
 			<?php
