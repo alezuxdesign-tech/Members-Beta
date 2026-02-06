@@ -197,7 +197,17 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        $editModal.css('display', 'flex').hide().fadeIn(); // Flex for centering
+        // Move to body to avoid z-index/overflow issues in Elementor
+        if ($editModal.parent()[0].tagName !== 'BODY') {
+            $editModal.appendTo('body');
+        }
+
+        // Force Flex display
+        $editModal.removeClass('alezux-hidden').css({
+            'display': 'flex',
+            'opacity': '1',
+            'visibility': 'visible'
+        }).hide().fadeIn();
 
         // Reset Form
         $editForm[0].reset();
