@@ -54,18 +54,28 @@ $render_icon = function( $setting_key, $default_class ) use ( $settings ) {
 		}
 	?>
 	
-		<!-- Título del Separador (si existe) -->
-		<?php if ( ! empty( $group_title ) ) : ?>
-			<h3 class="alezux-slide-group-title"><?php echo esc_html( $group_title ); ?></h3>
-		<?php endif; ?>
-
 		<div class="alezux-slide-lesson-container <?php echo esc_attr( $nav_class ); ?>">
 			
-			<?php if ( 'yes' === $show_arrows ) : ?>
-				<div class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">
-					<?php $render_icon( 'prev_arrow_icon', 'fas fa-chevron-left' ); ?>
-				</div>
-			<?php endif; ?>
+			<div class="alezux-slide-header">
+				<!-- Título del Separador (si existe) -->
+				<?php if ( ! empty( $group_title ) ) : ?>
+					<h3 class="alezux-slide-group-title"><?php echo esc_html( $group_title ); ?></h3>
+				<?php else: ?>
+					<div class="alezux-slide-group-title-placeholder"></div>
+				<?php endif; ?>
+
+				<!-- Flechas de Navegación -->
+				<?php if ( 'yes' === $show_arrows ) : ?>
+					<div class="alezux-slide-nav-controls">
+						<div class="alezux-slide-nav alezux-slide-nav-prev" aria-label="Anterior">
+							<?php $render_icon( 'prev_arrow_icon', 'fas fa-chevron-left' ); ?>
+						</div>
+						<div class="alezux-slide-nav alezux-slide-nav-next" aria-label="Siguiente">
+							<?php $render_icon( 'next_arrow_icon', 'fas fa-chevron-right' ); ?>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
 			
 			<div class="alezux-slide-wrapper">
 				<?php foreach ( $group_lessons as $lesson ) : ?>
@@ -93,12 +103,6 @@ $render_icon = function( $setting_key, $default_class ) use ( $settings ) {
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
-
-			<?php if ( 'yes' === $show_arrows ) : ?>
-				<div class="alezux-slide-nav alezux-slide-nav-next" aria-label="Siguiente">
-					<?php $render_icon( 'next_arrow_icon', 'fas fa-chevron-right' ); ?>
-				</div>
-			<?php endif; ?>
 		</div>
 
 	<?php endforeach; ?>
