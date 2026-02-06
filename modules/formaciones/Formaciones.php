@@ -137,6 +137,12 @@ class Formaciones extends Module_Base {
 		$widgets_manager->register( new \Alezux_Members\Modules\Formaciones\Includes\Elementor_Widget_Rendimiento() );
 	}
 
+	public function register_dynamic_tags( $dynamic_tags ) {
+		require_once __DIR__ . '/includes/Dynamic_Tag_Course_Cover.php';
+		
+		$dynamic_tags->register( new \Alezux_Members\Modules\Formaciones\Includes\Dynamic_Tag_Course_Cover() );
+	}
+
 	public function enqueue_admin_assets( $hook ) {
 		global $post_type;
 		
