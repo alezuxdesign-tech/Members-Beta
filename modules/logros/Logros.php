@@ -234,58 +234,67 @@ class Logros extends Module_Base {
 
 			// --- EMAIL MARKETING ---
 			if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
-				// Reuses logic to find users from Notifications part if possible, 
-				// but let's keep it simple and parallel for now.
 				
-				// 1. Single User
-				if ( ! empty( $user_id ) ) {
-					$u_obj = get_user_by( 'id', $user_id );
+				// 1. Single User (Usando $student_id en lugar de $user_id)
+				if ( ! empty( $student_id ) ) {
+					$u_obj = get_user_by( 'id', $student_id );
 					if ( $u_obj ) {
-						\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
-							'achievement_assigned',
-							$u_obj->user_email,
-							[
-								'user' => $u_obj,
-								'achievement' => [
-									'title' => $title,
-									'message' => $message,
-									'image' => $image_url
-								]
-							]
-						);
+						// Verificar si el motor de marketing está disponible y tiene send_email
+						$marketing_instance = \Alezux_Members\Modules\Marketing\Marketing::get_instance();
+						if ( $marketing_instance && method_exists( $marketing_instance, 'get_engine' ) ) {
+							$engine = $marketing_instance->get_engine();
+							if ( $engine && method_exists( $engine, 'send_email' ) ) {
+								$engine->send_email(
+									'achievement_assigned',
+									$u_obj->user_email,
+									[
+										'user' => $u_obj,
+										'achievement' => [
+											'title' => $notification_title, // Usar $notification_title
+											'message' => $message,
+											'image' => $avatar_url // Usar $avatar_url
+										]
+									]
+								);
+							}
+						}
 					}
 				}
 				
 				// 2. Course Users (Bulk)
 				if ( ! empty( $course_id ) ) {
-					// We need to fetch users same as Notifications logic.
-					// If easy to reuse 'notification' recipients logic... 
-					// Let's replicate the query since it's cleaner than coupling with Notifications.
 					$args = [
 						'meta_key' => "course_{$course_id}_access_from", 
 						'meta_compare' => 'EXISTS',
-						'fields' => 'all_with_meta' // get full objects
+						'fields' => 'all_with_meta'
 					];
 					$user_query = new \WP_User_Query( $args );
 					$enrolled_users = $user_query->get_results();
 
 					if ( ! empty( $enrolled_users ) ) {
-						foreach ( $enrolled_users as $enrolled_user ) {
-							// Avoid double send if user_id was also specified (rare edge case in UI but possible)
-							if ( ! empty( $user_id ) && $enrolled_user->ID == $user_id ) continue;
+						$marketing_instance = \Alezux_Members\Modules\Marketing\Marketing::get_instance();
+						// Validar instancia y métodos antes del loop para eficiencia
+						if ( $marketing_instance && method_exists( $marketing_instance, 'get_engine' ) ) {
+							$engine = $marketing_instance->get_engine();
+							if ( $engine && method_exists( $engine, 'send_email' ) ) {
+								foreach ( $enrolled_users as $enrolled_user ) {
+									// Evitar doble envío
+									if ( ! empty( $student_id ) && $enrolled_user->ID == $student_id ) continue;
 
-							\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
-								'achievement_assigned',
-								$enrolled_user->user_email,
-								[
-									'user' => $enrolled_user,
-									'achievement' => [
-										'title' => $title,
-										'message' => $message,
-										'image' => $image_url
-									]
-								]
-							);
+									$engine->send_email(
+										'achievement_assigned',
+										$enrolled_user->user_email,
+										[
+											'user' => $enrolled_user,
+											'achievement' => [
+												'title' => $notification_title,
+												'message' => $message,
+												'image' => $avatar_url
+											]
+										]
+									);
+								}
+							}
 						}
 					}
 				}
