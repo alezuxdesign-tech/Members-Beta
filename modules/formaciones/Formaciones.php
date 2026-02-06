@@ -144,10 +144,23 @@ class Formaciones extends Module_Base {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		global $post_type;
+		// Detectar Post Type de manera robusta
+		$current_post_type = '';
 		
+		if ( isset( $_GET['post_type'] ) ) {
+			$current_post_type = sanitize_text_field( $_GET['post_type'] );
+		} elseif ( isset( $_GET['post'] ) ) {
+			$current_post_type = get_post_type( intval( $_GET['post'] ) );
+		}
+
+		// Fallback usando global si aún no lo tenemos
+		if ( ! $current_post_type ) {
+			global $post_type;
+			$current_post_type = $post_type;
+		}
+
 		// Solo cargar en la edición de cursos de LearnDash
-		if ( 'sfwd-courses' !== $post_type ) {
+		if ( 'sfwd-courses' !== $current_post_type ) {
 			return;
 		}
 
