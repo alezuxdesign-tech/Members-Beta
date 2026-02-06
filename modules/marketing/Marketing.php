@@ -28,6 +28,10 @@ class Marketing extends Module_Base {
 		require_once __DIR__ . '/includes/Email_Engine.php';
 		$this->email_engine = new Email_Engine();
 
+		// Inicializar Cron
+		require_once __DIR__ . '/includes/Cron_Handler.php';
+		new Cron_Handler();
+
 		// Registrar Widgets Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 

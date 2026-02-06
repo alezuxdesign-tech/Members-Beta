@@ -68,6 +68,10 @@ class Admin_Dashboard_Stats {
 			
 			// También actualizamos meta para históricos si fuera necesario, pero transient es mejor para "Online Ahora"
 			update_user_meta( $user_id, 'alezux_last_activity', current_time( 'mysql' ) );
+			
+			// LOGIC: Reset Inactivity Email Flag
+			// If user returns, we want to allow sending this email again in the future if they leave again.
+			delete_user_meta( $user_id, 'alezux_inactivity_email_sent' );
 		}
 	}
 
