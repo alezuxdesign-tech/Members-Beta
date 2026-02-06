@@ -163,17 +163,29 @@ jQuery(document).ready(function ($) {
     const $editForm = $('#alezux-edit-plan-form');
 
     // Open Modal
-    $tbody.on('click', '.btn-edit-plan', function () {
+    $tbody.on('click', '.btn-edit-plan', function (e) {
+        e.preventDefault();
+        console.log('Edit button clicked');
         const planId = $(this).data('id');
+        console.log('Plan ID:', planId);
+
+        // Debug Modal Presence
+        if ($('#alezux-edit-plan-modal').length === 0) {
+            console.error('ERROR: Modal #alezux-edit-plan-modal NOT FOUND in DOM.');
+            alert('Error: Modal de edición no encontrado en el HTML.');
+            return;
+        }
+
         openEditModal(planId);
     });
 
     // Close Modal
-    $('.alezux-close-modal').on('click', function () {
-        $editModal.fadeOut();
+    $(document).on('click', '.alezux-close-modal', function () {
+        $('#alezux-edit-plan-modal').fadeOut();
     });
 
     function openEditModal(planId) {
+        console.log('Opening modal for plan:', planId);
         $editModal.css('display', 'flex').hide().fadeIn(); // Flex for centering
 
         // Reset Form
