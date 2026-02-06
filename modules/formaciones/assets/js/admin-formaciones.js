@@ -3,12 +3,21 @@ jQuery(document).ready(function ($) {
 
     $('body').on('click', '.alezux-upload-course-cover', function (e) {
         e.preventDefault();
+        console.log('ALEZUX DEBUG: Click en botón subir imagen detectado');
 
         var button = $(this);
         var wrapper = button.closest('.course-cover-wrapper');
         var input_url = wrapper.find('#alezux_course_cover');
         var preview = wrapper.find('.course-cover-preview');
         var remove_btn = wrapper.find('.alezux-remove-course-cover');
+
+        if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
+            console.error('ALEZUX ERROR: wp.media no está definido. Es posible que wp_enqueue_media() no se haya cargado.');
+            alert('Error: La librería multimedia no se cargó correctamente. Revisa la consola.');
+            return;
+        }
+
+        console.log('ALEZUX DEBUG: Abriendo wp.media');
 
         var custom_uploader = wp.media({
             title: 'Seleccionar Portada del Curso',
@@ -18,6 +27,7 @@ jQuery(document).ready(function ($) {
             multiple: false
         }).on('select', function () {
             var attachment = custom_uploader.state().get('selection').first().toJSON();
+            console.log('ALEZUX DEBUG: Imagen seleccionada', attachment);
             input_url.val(attachment.url);
             preview.html('<img src="' + attachment.url + '" style="max-width: 300px; height: auto; border: 1px solid #ddd; padding: 4px; border-radius: 4px;" />');
             remove_btn.show();
