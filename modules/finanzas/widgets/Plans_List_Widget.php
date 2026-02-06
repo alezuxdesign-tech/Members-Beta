@@ -529,6 +529,7 @@ class Plans_List_Widget extends Widget_Base {
                             <td>Mensual</td>
                             <td>
                                 <button class="page-btn btn-copy-link" title="Copiar Link"><i class="eicon-link"></i> Link</button>
+                                <button class="page-btn btn-edit-plan" title="Editar Plan"><i class="eicon-pencil"></i></button>
                                 <button class="page-btn btn-delete-plan" style="color:#d9534f; border-color:#d9534f;"><i class="eicon-trash"></i></button>
                             </td>
                         </tr>
@@ -541,6 +542,7 @@ class Plans_List_Widget extends Widget_Base {
                             <td>Mensual</td>
                             <td>
                                 <button class="page-btn btn-copy-link" title="Copiar Link"><i class="eicon-link"></i> Link</button>
+                                <button class="page-btn btn-edit-plan" title="Editar Plan"><i class="eicon-pencil"></i></button>
                                 <button class="page-btn btn-delete-plan" style="color:#d9534f; border-color:#d9534f;"><i class="eicon-trash"></i></button>
                             </td>
                         </tr>
@@ -553,6 +555,7 @@ class Plans_List_Widget extends Widget_Base {
                             <td>Semestral</td>
                             <td>
                                 <button class="page-btn btn-copy-link" title="Copiar Link"><i class="eicon-link"></i> Link</button>
+                                <button class="page-btn btn-edit-plan" title="Editar Plan"><i class="eicon-pencil"></i></button>
                                 <button class="page-btn btn-delete-plan" style="color:#d9534f; border-color:#d9534f;"><i class="eicon-trash"></i></button>
                             </td>
                         </tr>

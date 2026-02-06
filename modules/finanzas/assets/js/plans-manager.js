@@ -62,6 +62,9 @@ jQuery(document).ready(function ($) {
                         <button class="page-btn btn-copy-link" data-link="${row.buy_link}" title="Copiar Link de Pago Directo">
                             <i class="eicon-link"></i> Link
                         </button>
+                        <button class="page-btn btn-edit-plan" data-id="${row.id}" title="Editar Plan">
+                            <i class="eicon-pencil"></i>
+                        </button>
                         <button class="page-btn btn-delete-plan" data-id="${row.id}" title="Eliminar Plan" style="color:#d9534f; border-color:#d9534f;">
                             <i class="eicon-trash"></i>
                         </button>
@@ -153,6 +156,122 @@ jQuery(document).ready(function ($) {
         }, function (err) {
             alert('No se pudo copiar el enlace. Cópielo manualmente:\n' + link);
         });
+    });
+
+    /* --- EDIT PLAN LOGIC --- */
+    const $editModal = $('#alezux-edit-plan-modal');
+    const $editForm = $('#alezux-edit-plan-form');
+
+    // Open Modal
+    $tbody.on('click', '.btn-edit-plan', function () {
+        const planId = $(this).data('id');
+        openEditModal(planId);
+    });
+
+    // Close Modal
+    $('.alezux-close-modal').on('click', function () {
+        $editModal.fadeOut();
+    });
+
+    function openEditModal(planId) {
+        $editModal.css('display', 'flex').hide().fadeIn(); // Flex for centering
+
+        // Reset Form
+        $editForm[0].reset();
+        $('#edit-plan-rules-container').html('<div class="alezux-spinner">Cargando datos...</div>');
+        $('#edit-plan-id').val(planId);
+
+        // Fetch Plan Details
+        $.post(alezux_finanzas_vars.ajax_url, {
+            action: 'alezux_get_plan_details',
+            nonce: alezux_finanzas_vars.nonce,
+            plan_id: planId
+        }, function (response) {
+            if (response.success) {
+                const plan = response.data;
+
+                // Populate Basic Fields
+                $('#edit-plan-name').val(plan.name);
+                $('#edit-plan-course').val(plan.course_name);
+                $('#edit-plan-price').val(plan.quota_amount + ' USD');
+                $('#edit-plan-quotas').val(plan.total_quotas);
+
+                // Helper to build rules table
+                fetchCourseModulesForEdit(plan.course_id, plan.access_rules, plan.total_quotas);
+
+            } else {
+                alert('Error recuperando el plan: ' + response.data);
+                $editModal.fadeOut();
+            }
+        });
+    }
+
+    function fetchCourseModulesForEdit(courseId, currentRules, totalQuotas) {
+        $.post(alezux_finanzas_vars.ajax_url, {
+            action: 'alezux_get_course_modules',
+            nonce: alezux_finanzas_vars.nonce,
+            course_id: courseId
+        }, function (response) {
+            if (response.success) {
+                renderEditRulesTable(response.data, currentRules, totalQuotas);
+            } else {
+                $('#edit-plan-rules-container').html('<p style="color:red">Error cargando módulos.</p>');
+            }
+        });
+    }
+
+    function renderEditRulesTable(modules, currentRules, totalQuotas) {
+        // currentRules might be object or array. Convert to object map for easy lookup.
+        // PHP json_encode of object with numeric keys might become array in JS if sequential, or object if gaps.
+        // Let's ensure it's handled.
+
+        let html = '<table class="alezux-rules-table">';
+        html += '<thead><tr><th>Módulo / Lección</th><th>Se desbloquea al pagar:</th></tr></thead><tbody>';
+
+        modules.forEach(function (mod) {
+            const ruleValue = (currentRules && currentRules[mod.id]) ? currentRules[mod.id] : 1;
+
+            html += '<tr>';
+            html += '<td>' + mod.title + '</td>';
+            html += '<td>';
+            html += `<select name="rules[${mod.id}]" class="alezux-quota-select">`;
+            html += '<option value="1">Cuota 1 (Inmediato)</option>';
+            for (var i = 2; i <= totalQuotas; i++) {
+                const selected = (i == ruleValue) ? 'selected' : '';
+                html += `<option value="${i}" ${selected}>Cuota ${i}</option>`;
+            }
+            html += '</select>';
+            html += '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        $('#edit-plan-rules-container').html(html);
+    }
+
+    // Save Changes
+    $editForm.on('submit', function (e) {
+        e.preventDefault();
+        const btn = $(this).find('.alezux-btn-save');
+        const originalText = btn.text();
+        btn.text('Guardando...').prop('disabled', true);
+
+        const formData = $(this).serialize(); // Includes rules array
+
+        $.post(alezux_finanzas_vars.ajax_url,
+            formData + '&action=alezux_update_plan&nonce=' + alezux_finanzas_vars.nonce,
+            function (response) {
+                btn.text(originalText).prop('disabled', false);
+
+                if (response.success) {
+                    alert('Plan actualizado correctamente.');
+                    $editModal.fadeOut();
+                    fetchPlans(); // Refresh Table
+                } else {
+                    alert('Error: ' + response.data);
+                }
+            }
+        );
     });
 
     // Init

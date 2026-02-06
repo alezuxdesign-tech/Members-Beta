@@ -16,6 +16,8 @@ class Ajax_Handler {
         \add_action( 'wp_ajax_alezux_delete_plan', [ __CLASS__, 'delete_plan' ] );
         \add_action( 'wp_ajax_alezux_manual_subs_payment', [ __CLASS__, 'manual_subscription_payment' ] );
         \add_action( 'wp_ajax_alezux_get_finance_kpis', [ __CLASS__, 'get_finance_kpis' ] );
+        \add_action( 'wp_ajax_alezux_get_plan_details', [ __CLASS__, 'get_plan_details' ] ); // NUEVO
+        \add_action( 'wp_ajax_alezux_update_plan', [ __CLASS__, 'update_plan' ] ); // NUEVO
 	}
 
 	public static function get_course_modules() {
@@ -553,5 +555,72 @@ class Ajax_Handler {
                 'projected_period' => '$' . \number_format( $projected, 2 )
             ]
         ] );
+    }
+    public static function get_plan_details() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        $plan_id = isset($_POST['plan_id']) ? \intval($_POST['plan_id']) : 0;
+        
+        if ( ! $plan_id ) {
+            \wp_send_json_error( 'ID de plan inválido.' );
+        }
+
+        global $wpdb;
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_plans WHERE id = %d", $plan_id ) );
+
+        if ( ! $plan ) {
+            \wp_send_json_error( 'El plan no existe.' );
+        }
+
+        // Decodificar reglas
+        $plan->access_rules = \json_decode( $plan->access_rules );
+
+        // Obtener nombre del curso para mostrarlo
+        if ( $plan->course_id ) {
+            $plan->course_name = \get_the_title( $plan->course_id );
+        } else {
+             $plan->course_name = '(Curso Eliminado)';
+        }
+
+        \wp_send_json_success( $plan );
+    }
+
+    public static function update_plan() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \current_user_can( 'manage_options' ) ) {
+            \wp_send_json_error( 'Permisos insuficientes.' );
+        }
+
+        $plan_id = isset($_POST['plan_id']) ? \intval($_POST['plan_id']) : 0;
+        $plan_name = isset($_POST['plan_name']) ? \sanitize_text_field($_POST['plan_name']) : '';
+        $rules = isset($_POST['rules']) ? $_POST['rules'] : [];
+
+        if ( ! $plan_id || empty($plan_name) ) {
+            \wp_send_json_error( 'Datos incompletos.' );
+        }
+
+        global $wpdb;
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+
+        $updated = $wpdb->update( 
+            $table_plans, 
+            [ 
+                'name' => $plan_name, 
+                'access_rules' => \json_encode( $rules )
+            ], 
+            [ 'id' => $plan_id ] 
+        );
+
+        if ( $updated !== false ) {
+            \wp_send_json_success( 'Plan actualizado correctamente.' );
+        } else {
+             \wp_send_json_error( 'No se pudo actualizar o no hubo cambios.' );
+        }
     }
 }
