@@ -583,6 +583,135 @@ class Plans_List_Widget extends Widget_Base {
                         <option value="100">100</option>
                     </select>
                 </div>
+
+        <!-- MODAL DE EDICIÓN (Oculto) -->
+        <div id="alezux-edit-plan-modal" class="alezux-modal-overlay" style="display:none;">
+            <div class="alezux-modal-content">
+                <div class="alezux-modal-header">
+                    <h3>Editar Plan</h3>
+                    <button class="alezux-close-modal">&times;</button>
+                </div>
+                <div class="alezux-modal-body">
+                    <form id="alezux-edit-plan-form">
+                        <input type="hidden" name="plan_id" id="edit-plan-id">
+                        
+                        <div class="alezux-modal-row">
+                             <div class="alezux-form-group">
+                                <label>Nombre del Plan</label>
+                                <input type="text" name="plan_name" id="edit-plan-name" required>
+                            </div>
+                        </div>
+
+                         <div class="alezux-modal-row">
+                             <div class="alezux-form-group">
+                                <label>Curso Asociado (Solo Lectura)</label>
+                                <input type="text" id="edit-plan-course" disabled class="alezux-disabled-input">
+                            </div>
+                        </div>
+
+                        <div class="alezux-modal-row">
+                             <div class="alezux-form-group half">
+                                <label>Precio (Solo Lectura)</label>
+                                <input type="text" id="edit-plan-price" disabled class="alezux-disabled-input">
+                            </div>
+                            <div class="alezux-form-group half">
+                                <label>Cuotas (Solo Lectura)</label>
+                                <input type="text" id="edit-plan-quotas" disabled class="alezux-disabled-input">
+                            </div>
+                        </div>
+
+                         <div class="alezux-form-group">
+                            <label>Reglas de Acceso (Modificable)</label>
+                            <div id="edit-plan-rules-container" class="alezux-rules-container">
+                                <!-- Cargado via JS -->
+                                <div class="alezux-spinner">Cargando reglas...</div>
+                            </div>
+                        </div>
+
+                        <div class="alezux-modal-actions">
+                            <button type="button" class="alezux-btn alezux-btn-cancel alezux-close-modal">Cancelar</button>
+                            <button type="submit" class="alezux-btn alezux-btn-save">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* Modal Styles */
+            .alezux-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .alezux-modal-content {
+                background: #1a1a1a;
+                border: 1px solid #333;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 600px;
+                padding: 0;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                display: flex;
+                flex-direction: column;
+                max-height: 90vh;
+            }
+            .alezux-modal-header {
+                padding: 20px;
+                border-bottom: 1px solid #333;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .alezux-modal-header h3 { margin: 0; color: #fff; }
+            .alezux-close-modal {
+                background: none;
+                border: none;
+                color: #aaa;
+                font-size: 24px;
+                cursor: pointer;
+            }
+            .alezux-modal-body {
+                padding: 20px;
+                overflow-y: auto;
+            }
+            .alezux-form-group { margin-bottom: 15px; }
+            .alezux-form-group label { display: block; margin-bottom: 5px; color: #ccc; font-size: 0.9em; }
+            .alezux-form-group input {
+                width: 100%;
+                padding: 10px;
+                background: #252525;
+                border: 1px solid #444;
+                color: #fff;
+                border-radius: 6px;
+            }
+            .alezux-disabled-input { background: #151515 !important; color: #777 !important; border-color: #222 !important; }
+            .alezux-modal-row { display: flex; gap: 15px; }
+            .alezux-form-group.half { flex: 1; }
+            
+            .alezux-modal-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .alezux-btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+            .alezux-btn-cancel { background: #333; color: #fff; }
+            .alezux-btn-save { background: #6c5ce7; color: #fff; }
+            .alezux-btn-save:hover { background: #5a4ad1; }
+            
+            .alezux-rules-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+            .alezux-rules-table th, .alezux-rules-table td { padding: 8px; border-bottom: 1px solid #333; text-align: left; color:#ddd; }
+            .alezux-quota-select { background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; }
+        </style>
+
             </div>
 
         </div>
