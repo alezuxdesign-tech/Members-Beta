@@ -3,6 +3,7 @@ namespace Alezux_Members\Modules\Marketing;
 
 use Alezux_Members\Core\Module_Base;
 use Alezux_Members\Modules\Marketing\Includes\Email_Engine;
+use Alezux_Members\Modules\Marketing\Includes\Cron_Handler;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
