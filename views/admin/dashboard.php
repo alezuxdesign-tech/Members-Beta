@@ -204,36 +204,73 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Recopilar Shortcodes de módulos activos
 $shortcodes = [];
 
-// 1. Finanzas
-if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Admin_Settings' ) ) {
-    $fin_sc = \Alezux_Members\Modules\Finanzas\Includes\Admin_Settings::get_registered_shortcodes();
-    $shortcodes = array_merge( $shortcodes, $fin_sc );
-}
-
-// 2. Otros (Hardcoded o futuros hooks)
+// 1. FINANZAS
 $shortcodes[] = [
-    'tag' => 'alezux_profile',
-    'module' => 'CORE',
-    'description' => 'Muestra el perfil del usuario con tabs (General, Password, Logros).'
+    'tag'         => 'ax_fin_revenue_period',
+    'module'      => 'FINANZAS',
+    'description' => 'Muestra los ingresos del periodo seleccionado (o mes actual).'
+];
+$shortcodes[] = [
+    'tag'         => 'ax_fin_pending_total',
+    'module'      => 'FINANZAS',
+    'description' => 'Muestra la deuda total por cobrar (Global).'
+];
+$shortcodes[] = [
+    'tag'         => 'ax_fin_projected_period',
+    'module'      => 'FINANZAS',
+    'description' => 'Muestra la proyección de cobro para el periodo seleccionado.'
+];
+$shortcodes[] = [
+    'tag'         => 'ax_fin_revenue_today',
+    'module'      => 'FINANZAS',
+    'description' => 'Muestra lo facturado el día de hoy (Ticker Diario).'
 ];
 
-// 3. Dashboard Admin (KPIs)
+// 2. ESTUDIANTES
+$shortcodes[] = [
+    'tag'         => 'alezux_estudiantes_total',
+    'module'      => 'ESTUDIANTES',
+    'description' => 'Muestra el número total de estudiantes registrados.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_estudiantes_nuevos_mes',
+    'module'      => 'ESTUDIANTES',
+    'description' => 'Muestra nuevos estudiantes registrados este mes.'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_student_momentum',
+    'module'      => 'ESTUDIANTES',
+    'description' => 'Indicador de progreso de estudio semanal vs semana pasada.'
+];
+
+// 3. CONFIG / AUTH
+$shortcodes[] = [
+    'tag'         => 'alezux_login_alerts',
+    'module'      => 'CONFIG',
+    'description' => 'Muestra mensajes de alerta en el login (error/éxito).'
+];
+$shortcodes[] = [
+    'tag'         => 'alezux_logout_url',
+    'module'      => 'CONFIG',
+    'description' => 'Genera URL de cierre de sesión. Usar en href de botones.'
+];
+
+// 4. ADMIN DASHBOARD (KPIs)
 $shortcodes[] = [
     'tag' => 'alezux_admin_total_students',
-    'module' => 'CONFIG',
-    'description' => 'Devuelve el número total de estudiantes registrados.'
+    'module' => 'ADMIN',
+    'description' => 'KPI: Número total de estudiantes.'
 ];
 $shortcodes[] = [
     'tag' => 'alezux_admin_new_students',
-    'module' => 'CONFIG',
-    'description' => 'Devuelve la cantidad de nuevos estudiantes registrados este mes.'
+    'module' => 'ADMIN',
+    'description' => 'KPI: Estudiantes nuevos este mes.'
 ];
 $shortcodes[] = [
     'tag' => 'alezux_admin_online_users',
-    'module' => 'CONFIG',
-    'description' => 'Muestra la cantidad de usuarios conectados en los últimos 5 minutos.'
+    'module' => 'ADMIN',
+    'description' => 'KPI: Usuarios online (últimos 5 min).'
 ];
-// ...
 ?>
 
 <div class="alezux-dashboard-wrapper">
