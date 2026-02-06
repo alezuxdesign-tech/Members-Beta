@@ -177,9 +177,11 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					'2' => '2',
 					'3' => '3',
 					'4' => '4',
+					'5' => '5',
+					'6' => '6',
 				],
 				'selectors' => [
-					'{{WRAPPER}}' => '--alezux-grid-columns: {{VALUE}};',
+					'{{WRAPPER}} .alezux-formaciones-grid' => 'grid-template-columns: repeat({{VALUE}}, 1fr) !important;',
 				],
 			]
 		);
@@ -187,7 +189,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 		$this->add_responsive_control(
 			'gap',
 			[
-				'label' => __( 'Espaciado (Gap)', 'alezux-members' ),
+				'label' => __( 'Espacio entre tarjetas', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'default' => [
 					'size' => 20,
@@ -199,7 +201,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}}' => '--alezux-grid-gap: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-formaciones-grid' => 'gap: {{SIZE}}{{UNIT}} !important;',
 				],
 			]
 		);
