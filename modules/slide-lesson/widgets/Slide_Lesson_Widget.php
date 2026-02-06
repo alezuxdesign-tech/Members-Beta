@@ -900,9 +900,6 @@ class Slide_Lesson_Widget extends Widget_Base {
 		foreach ( $lessons as $lesson ) {
 			// Decodificar entidades HTML para asegurar que [ ] ( ) y caracteres especiales se lean bien
 			$decoded_title = html_entity_decode( $lesson['title'], ENT_QUOTES | ENT_HTML5 );
-			
-			// Debug para ver qué está pasando (visible en código fuente w/ Ctrl+U)
-			echo '<!-- DEBUG SLIDE: Original: "' . esc_attr( $lesson['title'] ) . '" Decoded: "' . esc_attr( $decoded_title ) . '"Regex: ' . ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $decoded_title ) ? 'MATCH' : 'NO MATCH' ) . ' -->';
 
 			if ( preg_match( '/\[\s*Separador\s*\(\s*T[ií]tulo\s*:\s*(.*?)\s*\)\s*\]/iu', $decoded_title, $matches ) ) {
 				// Si el grupo actual tiene lecciones, lo guardamos
@@ -936,16 +933,6 @@ class Slide_Lesson_Widget extends Widget_Base {
 			echo '<div class="alezux-widget-wrapper">';
 			include $view_path;
 			echo '</div>';
-            
-            // DEBUG: Imprimir estructura de grupos y títulos crudos en consola
-            $debug_titles = array_map(function($l) { return $l['title']; }, $lessons);
-            echo '<script>';
-            echo 'console.log("DEBUG RAW TITLES:", ' . json_encode($debug_titles) . ');';
-            echo 'console.log("DEBUG SLIDE GROUPS:", ' . json_encode(array_map(function($g){ 
-                return ['title' => $g['title'], 'count' => count($g['lessons'])]; 
-            }, $slide_groups)) . ');';
-            echo '</script>';
-
 		} else {
 			echo 'View definition not found: ' . esc_html( $view_path );
 		}
