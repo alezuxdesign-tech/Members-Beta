@@ -182,7 +182,7 @@ class Finanzas extends Module_Base {
         $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
         
         // URLs de éxito y cancelación
-        $success_url = home_url( '/?session_id={CHECKOUT_SESSION_ID}' );
+        $success_url = home_url( '/?alezux_payment_success=true&session_id={CHECKOUT_SESSION_ID}' );
         $cancel_url  = home_url( '/' ); // O alguna página específica
 
         // Metadata necesaria
