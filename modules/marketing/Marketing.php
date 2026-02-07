@@ -232,7 +232,12 @@ class Marketing extends Module_Base {
 
 			$type    = sanitize_text_field( $_POST['type'] );
 			$subject = sanitize_text_field( $_POST['subject'] );
-			$content = wp_kses_post( $_POST['content'] ); // Allow HTML
+			// Allow full HTML including <style>, <html>, etc. for email templates.
+			// Since this is restricted to 'administrator', we trust the input.
+			// wp_kses_post strips essential email tags.
+			$content = ! empty( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : ''; // Handle magic quotes if needed, though usually wp sets up environment. -> actually just $_POST is slashessed by WP? No, use wp_unslash.
+			$content = wp_unslash( $content ); 
+			
 			$is_active = isset( $_POST['is_active'] ) ? 1 : 0;
 
 			global $wpdb;

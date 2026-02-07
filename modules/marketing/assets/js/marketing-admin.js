@@ -239,11 +239,6 @@ jQuery(document).ready(function ($) {
                 var fullHtml = content;
                 // If it doesn't have a doctype or html tag, we might want to wrap it, 
                 // but let's trust the browser to handle partials in an iframe.
-                // Exception: If it starts strictly with CSS-like text but has no <style> tags (RARE case from before),
-                // we might still want to catch that.
-                if (fullHtml.trim().indexOf('body {') === 0 && fullHtml.indexOf('<style>') === -1) {
-                    fullHtml = '<style>' + fullHtml + '</style><body><p>Vista previa (Estilos puros)</p></body>';
-                }
 
                 doc.write(fullHtml);
                 doc.close();
