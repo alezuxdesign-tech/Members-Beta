@@ -77,6 +77,7 @@ class Webhook_Handler {
         $amount = ( isset( $session->amount_total ) ) ? ( $session->amount_total / 100 ) : 0;
         $currency = ( isset( $session->currency ) ) ? strtoupper( $session->currency ) : 'USD';
         $transaction_ref = $session->payment_intent ?? $session->id;
+        $customer_name = isset( $session->customer_details->name ) ? sanitize_text_field( $session->customer_details->name ) : '';
 
         // Delegar a Enrollment Manager
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager' ) ) {
@@ -86,7 +87,8 @@ class Webhook_Handler {
                 $stripe_subscription_id, 
                 $amount, 
                 $transaction_ref,
-                $currency
+                $currency,
+                $customer_name
             );
         }
     }

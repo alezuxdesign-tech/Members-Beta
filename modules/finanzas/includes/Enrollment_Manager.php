@@ -17,7 +17,7 @@ class Enrollment_Manager {
      * @param string $transaction_ref ID de referencia (PaymentIntent o Session ID)
      * @return int|false ID del usuario o false si falla
      */
-    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD' ) {
+    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD', $full_name = '' ) {
         global $wpdb;
         
         error_log( "Alezux Enrollment: Iniciando para $email - Plan $plan_id - Ref $transaction_ref" );
@@ -44,6 +44,20 @@ class Enrollment_Manager {
             
             // Asignar rol por defecto
             $user->set_role( 'subscriber' ); 
+            
+            // Actualizar Nombre y Apellido si vienen de Stripe
+            if ( ! empty( $full_name ) ) {
+                $parts = explode( ' ', trim( $full_name ), 2 );
+                $first_name = $parts[0];
+                $last_name  = isset( $parts[1] ) ? $parts[1] : '';
+
+                wp_update_user( [
+                    'ID' => $user_id,
+                    'first_name' => $first_name,
+                    'last_name'  => $last_name,
+                    'display_name' => $full_name
+                ] );
+            }
             
             $is_new_user = true;
             
