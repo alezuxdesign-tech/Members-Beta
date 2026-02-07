@@ -89,6 +89,9 @@ jQuery(document).ready(function ($) {
                             <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}">
                                 <i class="fa fa-pencil"></i> Editar
                             </button>
+                            <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" style="margin-left:5px;" title="Enviar prueba">
+                                <i class="fa fa-play"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -143,6 +146,54 @@ jQuery(document).ready(function ($) {
                     }
                 }
             });
+        });
+
+        // Test Email Handler
+        $(document).on('click', '.send-test-email-btn', function (e) {
+            e.preventDefault();
+            var type = $(this).data('type');
+
+            // Dummy logic
+            if (!type) { // Editor mode
+                alert('En modo editor no se envían correos reales.');
+                return;
+            }
+
+            var defaultEmail = (typeof alezux_marketing_vars !== 'undefined' && alezux_marketing_vars.from_email)
+                ? alezux_marketing_vars.from_email
+                : '';
+
+            var email = prompt("Enviar correo de prueba a:", defaultEmail);
+
+            if (email) {
+                var btn = $(this);
+                var originalHtml = btn.html();
+                btn.html('<i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.ajax({
+                    url: alezux_marketing_vars.ajax_url,
+                    method: 'POST',
+                    data: {
+                        action: 'alezux_marketing_send_test_email',
+                        type: type,
+                        email: email,
+                        nonce: alezux_marketing_vars.nonce
+                    },
+                    success: function (res) {
+                        btn.html(originalHtml).prop('disabled', false);
+                        if (res.success) {
+                            showModalMessage('Éxito', res.data.message, false);
+                        } else {
+                            showModalMessage('Error', 'Error: ' + (res.data || 'Desconocido'), true);
+                        }
+                    },
+                    error: function (err) {
+                        btn.html(originalHtml).prop('disabled', false);
+                        console.error(err);
+                        showModalMessage('Error', 'Error de conexión.', true);
+                    }
+                });
+            }
         });
 
         // Tab Handler (Preview)

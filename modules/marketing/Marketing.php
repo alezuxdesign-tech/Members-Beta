@@ -48,6 +48,7 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_save_settings', [ $this, 'ajax_save_settings' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_settings', [ $this, 'ajax_get_settings' ] );
 		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); // New Handler
+		add_action( 'wp_ajax_alezux_marketing_send_test_email', [ $this, 'ajax_send_test_email' ] );
 	}
 
 	public function get_engine() {
@@ -101,6 +102,7 @@ class Marketing extends Module_Base {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'alezux_marketing_nonce' ),
 			'logo_url' => get_option( 'alezux_marketing_logo_url', '' ),
+			'from_email' => get_option( 'alezux_marketing_from_email', '' ),
 		] );
 	}
 
@@ -304,6 +306,46 @@ class Marketing extends Module_Base {
 			$url = wp_get_attachment_url( $attachment_id );
 			
 			wp_send_json_success( [ 'url' => $url ] );
+
+		} catch ( \Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
+		}
+	}
+
+	public function ajax_send_test_email() {
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
+
+			$type  = sanitize_text_field( $_POST['type'] );
+			$email = sanitize_email( $_POST['email'] );
+
+			if ( ! is_email( $email ) ) {
+				throw new \Exception( 'Email inválido.' );
+			}
+
+			// Ensure engine is loaded
+			if ( ! $this->email_engine ) {
+				require_once __DIR__ . '/includes/Email_Engine.php';
+				$this->email_engine = new Email_Engine();
+			}
+
+			// Mock data for test
+			$test_user = wp_get_current_user();
+			$dummy_data = [
+				'user' => $test_user,
+				'plan_name' => 'Plan de Prueba',
+				'price' => '$99.00',
+				'course_name' => 'Curso Demo'
+			];
+
+			$sent = $this->email_engine->send_email( $type, $email, $dummy_data );
+
+			if ( $sent ) {
+				wp_send_json_success( [ 'message' => 'Correo de prueba enviado a ' . $email ] );
+			} else {
+				throw new \Exception( 'wp_mail devolvió false. Revisa logs del servidor.' );
+			}
 
 		} catch ( \Exception $e ) {
 			wp_send_json_error( $e->getMessage() );
