@@ -10,7 +10,7 @@ class Email_Engine {
 	public function __construct() {
 		// Hook into phpmailer_init or similar if we needed deep SMTP control, 
 		// but wp_mail filters are enough for From Name/Email.
-		add_filter( 'wp_mail_from', [ $this, 'custom_mail_from' ] );
+		// add_filter( 'wp_mail_from', [ $this, 'custom_mail_from' ] ); // DISABLED: Causes blocking on some hosts if domain mismatches
 		add_filter( 'wp_mail_from_name', [ $this, 'custom_mail_from_name' ] );
 		add_filter( 'wp_mail_content_type', [ $this, 'set_html_content_type' ] );
 	}
@@ -94,13 +94,18 @@ class Email_Engine {
 		$content = $this->replace_vars( $content, $vars );
 
 		// 4. Inject Logic (Header/Logo)
-		// If template doesn't have <html> structure, wrapper it?
-		// User said "subir un html con el diseño", implies full control. 
-		// But valid HTML needs <body> etc. We can wrap it if it looks like a fragment.
-		// Also variables like {{logo_url}} are available.
+		// Headers: Add Reply-To if configured
+		$headers = [];
+		$from_email = get_option( 'alezux_marketing_from_email' );
+		$from_name  = get_option( 'alezux_marketing_from_name' );
+
+		if ( ! empty( $from_email ) && is_email( $from_email ) ) {
+			$name_part = ! empty( $from_name ) ? $from_name : get_bloginfo( 'name' );
+			$headers[] = "Reply-To: $name_part <$from_email>";
+		}
 
 		// 5. Send
-		return wp_mail( $recipient_email, $subject, $content );
+		return wp_mail( $recipient_email, $subject, $content, $headers );
 	}
 
 	private function get_template( $type ) {

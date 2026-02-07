@@ -96,17 +96,38 @@ class Enrollment_Manager {
 
         $user_id = $user->ID;
 
+        // ACTUALIZACIÓN: Actualizar nombre siempre si viene de Stripe, incluso para usuarios existentes
+        // Esto corrige el caso donde un usuario existente con datos antiguos/erroneos compra de nuevo con nombre correcto
+        if ( ! empty( $full_name ) ) {
+            $parts = explode( ' ', trim( $full_name ), 2 );
+            $first_name = $parts[0];
+            $last_name  = isset( $parts[1] ) ? $parts[1] : '';
+
+            // Opcional: Podríamos verificar si ya tiene nombre para no sobrescribir, 
+            // pero si viene del checkout reciente, asumimos que es el dato más actual.
+            wp_update_user( [
+                'ID' => $user_id,
+                'first_name' => $first_name,
+                'last_name'  => $last_name,
+                'display_name' => $full_name
+            ] );
+            error_log( "Alezux: Nombre actualizado para usuario $email ($user_id): $full_name" );
+        }
+
         // 2. Obtener Info del Plan Local
         $plan_table = $wpdb->prefix . 'alezux_finanzas_plans';
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $plan_table WHERE id = %d", $plan_id ) );
 
         if ( ! $plan ) {
             error_log( 'Alezux Error: Plan no encontrado ID ' . $plan_id );
-            return false;
+            // Fallback para evitar error fatal si no hay plan, pero continuamos
+             $is_one_time = ( isset( $amount ) && $amount > 0 ); // Adivinar
+        } else {
+             $is_one_time = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 );
         }
 
         // 3. Matricular en LearnDash
-        if ( function_exists( 'ld_update_course_access' ) ) {
+        if ( $plan && function_exists( 'ld_update_course_access' ) ) {
             // Verificar si el curso es valido
             if ( $plan->course_id > 0 ) {
                 ld_update_course_access( $user_id, $plan->course_id );
@@ -114,7 +135,7 @@ class Enrollment_Manager {
             } else {
                  error_log( "Alezux Warning: El plan {$plan_id} no tiene un course_id valido ({$plan->course_id}). No se pudo matricular." );
             }
-        } else {
+        } elseif ( ! function_exists( 'ld_update_course_access' ) ) {
             error_log( "Alezux Error: Función 'ld_update_course_access' no existe. LearnDash no está activo?" );
         }
 
@@ -130,16 +151,14 @@ class Enrollment_Manager {
         $subscription_id = 0;
 
         if ( ! $existing_sub ) {
-            // Determinar si es pago único para marcar como COMPLETADO de inmediato
-            $is_one_time = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 );
             
             $status = $is_one_time ? 'completed' : 'active';
-            $quotas_paid = $is_one_time ? $plan->total_quotas : 1; // Si es contado, asumimos todas pagadas
+            $quotas_paid = $is_one_time ? ( $plan->total_quotas ?? 1 ) : 1; 
 
             $wpdb->insert( $subs_table, [
                 'user_id' => $user_id,
                 'plan_id' => $plan_id,
-                'stripe_subscription_id' => $stripe_sub_id, // Puede ser null si es pago único
+                'stripe_subscription_id' => $stripe_sub_id, 
                 'status' => $status,
                 'quotas_paid' => $quotas_paid,
                 'last_payment_date' => current_time( 'mysql' ),
@@ -148,7 +167,6 @@ class Enrollment_Manager {
             $subscription_id = $wpdb->insert_id;
         } else {
             $subscription_id = $existing_sub;
-            // Podríamos actualizar last_payment_date aquí si es recompra del mismo plan activo (raro)
         }
 
         // 5. Registrar Transacción
