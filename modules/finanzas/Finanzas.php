@@ -107,7 +107,6 @@ class Finanzas extends Module_Base {
             $current_url = home_url( add_query_arg( [], $GLOBALS['wp']->request ) ); // URL actual base (aproximada) o home
             // Mejor redirigir a una página de "Gracias" o al dashboard. Por defecto al home + status
             $success_url = home_url( '/?alezux_payment_success=true&session_id={CHECKOUT_SESSION_ID}' );
-            error_log( "Alezux DEBUG: Success URL: " . $success_url ); 
             $cancel_url  = home_url( '/?alezux_payment_canceled=true' );
 
             // Si el usuario está logueado, pasamos su email para autocompletar en Stripe

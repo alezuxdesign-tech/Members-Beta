@@ -51,6 +51,12 @@ class Marketing extends Module_Base {
 	}
 
 	public function get_engine() {
+		if ( ! $this->email_engine ) {
+			if ( ! class_exists( '\Alezux_Members\Modules\Marketing\Includes\Email_Engine' ) ) {
+				require_once __DIR__ . '/includes/Email_Engine.php';
+			}
+			$this->email_engine = new \Alezux_Members\Modules\Marketing\Includes\Email_Engine();
+		}
 		return $this->email_engine;
 	}
 
