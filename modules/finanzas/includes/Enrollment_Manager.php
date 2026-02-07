@@ -116,15 +116,20 @@ class Enrollment_Manager {
         $subscription_id = 0;
 
         if ( ! $existing_sub ) {
-            // Si es pago único (no hay stripe_sub_id o plan dice contado), marcamos como completed o active
+            // Determinar si es pago único para marcar como COMPLETADO de inmediato
+            $is_one_time = ( ( isset( $plan->frequency ) && $plan->frequency === 'contado' ) || $plan->total_quotas == 1 );
+            
+            $status = $is_one_time ? 'completed' : 'active';
+            $quotas_paid = $is_one_time ? $plan->total_quotas : 1; // Si es contado, asumimos todas pagadas
+
             $wpdb->insert( $subs_table, [
                 'user_id' => $user_id,
                 'plan_id' => $plan_id,
                 'stripe_subscription_id' => $stripe_sub_id, // Puede ser null si es pago único
-                'status' => 'active',
-                'quotas_paid' => 1,
+                'status' => $status,
+                'quotas_paid' => $quotas_paid,
                 'last_payment_date' => current_time( 'mysql' ),
-                'next_payment_date' => ( $stripe_sub_id ) ? date( 'Y-m-d H:i:s', strtotime( '+1 month' ) ) : null
+                'next_payment_date' => ( $stripe_sub_id && ! $is_one_time ) ? date( 'Y-m-d H:i:s', strtotime( '+1 month' ) ) : null
             ] );
             $subscription_id = $wpdb->insert_id;
         } else {
