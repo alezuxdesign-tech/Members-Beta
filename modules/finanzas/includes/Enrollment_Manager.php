@@ -45,10 +45,39 @@ class Enrollment_Manager {
             // Asignar rol por defecto
             $user->set_role( 'subscriber' ); 
             
-            // Notificar usuario nuevo (Opcional, se puede mejorar con módulo Marketing)
-            wp_new_user_notification( $user_id, null, 'user' ); 
-            
             $is_new_user = true;
+            
+            // Enviar correo de Bienvenida (Módulo Marketing)
+            if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+                // Obtener título del curso para el correo
+                $course_title = 'la plataforma';
+                if ( isset( $plan_id ) ) {
+                    global $wpdb;
+                    $p_table = $wpdb->prefix . 'alezux_finanzas_plans';
+                    $p_data = $wpdb->get_row( $wpdb->prepare( "SELECT name, course_name FROM $p_table WHERE id = %d", $plan_id ) );
+                    if ( $p_data && ! empty( $p_data->course_name ) ) {
+                        $course_title = $p_data->course_name;
+                    } elseif ( $p_data ) {
+                        $course_title = $p_data->name;
+                    }
+                }
+
+                \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+                    'student_welcome',
+                    $email,
+                    [
+                        'user' => $user,
+                        'password' => $password,
+                        'course_title' => $course_title,
+                        'login_url' => wp_login_url()
+                    ]
+                );
+                
+                error_log( "Alezux: Correo de bienvenida enviado a $email" );
+            } else {
+                // Fallback si Marketing no está activo
+                wp_new_user_notification( $user_id, null, 'user' ); 
+            }
         }
 
         $user_id = $user->ID;
@@ -126,11 +155,42 @@ class Enrollment_Manager {
                 error_log( "Alezux Transaction: Insertada transacción $transaction_ref para usuario $user_id" );
                 // IMPORTANTE: Disparar evento para Marketing solo si es nueva transacción
                 do_action( 'alezux_finance_payment_received', $user_id, $plan_id, 1 );
+
+                // Enviar correo de Confirmación de Pago (A todos)
+                if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+                    $u = get_user_by( 'id', $user_id );
+                    $model_plan = [ 'name' => 'Producto / Servicio' ]; 
+                    
+                    // Re-query plan name just in case local $plan var isn't fully robust or to be safe
+                    global $wpdb;
+                    $p_table_2 = $wpdb->prefix . 'alezux_finanzas_plans';
+                    $p_info = $wpdb->get_row( $wpdb->prepare( "SELECT name FROM $p_table_2 WHERE id = %d", $plan_id ) );
+                    if ( $p_info ) {
+                        $model_plan['name'] = $p_info->name;
+                    }
+
+                    \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+                        'payment_success',
+                        $email,
+                        [
+                            'user' => $u,
+                            'plan' => $model_plan,
+                            'payment' => [
+                                'amount' => number_format( $amount, 2 ),
+                                'currency' => $currency,
+                                'ref' => $transaction_ref
+                            ]
+                        ]
+                    );
+                    error_log( "Alezux: Correo de confirmación de pago enviado a $email" );
+                }
+
             } else {
                 error_log( "Alezux Error: Fallo al insertar transacción. DB Error: " . $wpdb->last_error );
             }
         } else {
             error_log( "Alezux Info: Transacción $transaction_ref ya existía. Omitiendo insert." );
+            // Si la transacción ya existía, asumimos que el correo ya se envió antes para no duplicar.
         }
 
         return $user_id;
