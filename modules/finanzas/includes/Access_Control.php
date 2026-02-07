@@ -112,20 +112,51 @@ class Access_Control {
         global $wpdb;
         $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
         
-        // 2. Verificar si el curso tiene un Plan asociado en nuestro sistema
-        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $plans_table WHERE course_id = %d LIMIT 1", $course_id ) );
+        // 2. Verificar si el curso tiene Planes asociados (Cualquiera)
+        // Antes hacíamos LIMIT 1, lo cual causaba errores si había plan Cuotas y Plan Contado
+        $plans = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $plans_table WHERE course_id = %d", $course_id ) );
 
-        if ( ! $plan ) {
-            if ( $debug_mode ) \wp_die( "DEBUG: No Plan found for Course $course_id in table $plans_table." );
+        if ( empty( $plans ) ) {
+            if ( $debug_mode ) \wp_die( "DEBUG: No Plans found for Course $course_id in table $plans_table." );
             return false; // El curso no tiene restricciones de pago por cuotas en nuestro sistema
         }
 
-        // 3. Revisar reglas de acceso del Plan (JSON)
-        $access_rules = \json_decode( $plan->access_rules, true );
+        // 3. IDENTIFICAR PLAN ACTIVO DEL USUARIO
+        // Iteramos para buscar si el usuario tiene suscripción en alguno de estos planes.
+        
+        $active_plan = null;
+        $active_subscription = null;
+        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+
+        foreach ( $plans as $p ) {
+            // Buscamos suscripción para ESTE plan específico
+            $sub = $wpdb->get_row( $wpdb->prepare( 
+                "SELECT * FROM $subs_table WHERE user_id = %d AND plan_id = %d AND status IN ('active', 'completed') LIMIT 1", 
+                $user_id, $p->id 
+            ) );
+
+            if ( $sub ) {
+                $active_plan = $p;
+                $active_subscription = $sub;
+                break; // Encontramos el plan que compró el usuario. Usamos ESTE.
+            }
+        }
+
+        // Si no encontramos suscripción, usamos el primer plan como referencia para reglas (fallback)
+        // Esto es útil si queremos bloquear visualmente antes de la compra, o si no ha comprado nada.
+        // Pero si no ha comprado, LearnDash bloquará el acceso globalmente de todas formas.
+        // Lo importante es NO aplicar reglas de un plan que NO tiene si ya pagó otro (Contado).
+        
+        $plan_to_check = $active_plan ? $active_plan : $plans[0];
+        $subscription = $active_subscription; // Puede ser null
+
+        // 4. Revisar reglas de acceso del Plan Elegido
+        $access_rules = \json_decode( $plan_to_check->access_rules, true );
         
         if ( empty( $access_rules ) || ! \is_array( $access_rules ) ) {
-            if ( $debug_mode ) \wp_die( "DEBUG: No Rules found in Plan ID " . $plan->id );
-            return false; // No hay reglas definidas, acceso libre
+            if ( $debug_mode ) \wp_die( "DEBUG: No Rules found in Plan ID " . $plan_to_check->id );
+            // IMPORTANTE: Si es el plan comprado y no tiene reglas, es acceso TOTAL.
+            return false; 
         }
 
         // Hierarchy Check: Detect Parent Lesson (for Topics)
@@ -162,13 +193,8 @@ class Access_Control {
             }
         }
 
-        // 4. Retrieve Subscription for Debug and Logic
-        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
-        $subscription = $wpdb->get_row( $wpdb->prepare( 
-            "SELECT * FROM $subs_table WHERE user_id = %d AND plan_id = %d AND status IN ('active', 'completed') LIMIT 1", 
-            $user_id, $plan->id 
-        ) );
-
+        // 4. Subscription is already retrieved in $active_subscription / $subscription variable
+        
         if ( $debug_mode ) {
             $msg = "<div style='background:white; color:black; padding:20px; border:2px solid red;'>";
             $msg .= "<h3>Alezux Debug (TEMPLATE_REDIRECT MODE)</h3>";
@@ -176,9 +202,10 @@ class Access_Control {
             $msg .= "Parent ID (Lesson): $parent_id <br>";
             $msg .= "User ID: $user_id <br>";
             $msg .= "Course ID: $course_id <br>";
-            $msg .= "Plan ID: " . ($plan ? $plan->id : 'NONE') . "<br>";
+            $msg .= "Checked Plan ID: " . ($plan_to_check ? $plan_to_check->id : 'NONE') . "<br>";
+            $msg .= "User Subscription: " . ($subscription ? 'FOUND (Assigned to Plan ' . $subscription->plan_id . ')' : 'NOT FOUND') . "<br>";
             $msg .= "Required Quota: $required_quota <br>";
-            $msg .= "User Subscription: " . ($subscription ? 'FOUND' : 'NOT FOUND') . "<br>";
+            
             if ( $subscription ) {
                 $msg .= "Sub Status: " . $subscription->status . "<br>";
                 $msg .= "Quotas Paid: " . $subscription->quotas_paid . "<br>";
