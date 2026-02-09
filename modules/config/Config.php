@@ -272,7 +272,25 @@ class Config extends Module_Base {
 		if ( is_wp_error( $user_signon ) ) {
 			wp_send_json_error( [ 'message' => 'Usuario o contraseña incorrectos.' ] );
 		} else {
-			wp_send_json_success( [ 'redirect' => home_url() ] );
+            // Determinar Redirección
+            $redirect_url = home_url();
+            
+            // 1. Redirección General (Fallback inicial)
+            if ( ! empty( $_POST['redirect_to'] ) ) {
+                $redirect_url = esc_url_raw( $_POST['redirect_to'] );
+            }
+
+            // 2. Lógica por Roles
+            $roles = $user_signon->roles;
+
+            if ( in_array( 'administrator', $roles ) && ! empty( $_POST['redirect_admin'] ) ) {
+                $redirect_url = esc_url_raw( $_POST['redirect_admin'] );
+            } elseif ( ( in_array( 'subscriber', $roles ) || in_array( 'student', $roles ) ) && ! empty( $_POST['redirect_student'] ) ) {
+                // Soportamos 'subscriber' (WP) y 'student' (posible custom role)
+                $redirect_url = esc_url_raw( $_POST['redirect_student'] );
+            }
+
+			wp_send_json_success( [ 'redirect' => $redirect_url ] );
 		}
 	}
 

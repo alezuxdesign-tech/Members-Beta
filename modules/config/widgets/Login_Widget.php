@@ -115,6 +115,36 @@ class Login_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'redirect_url',
+			[
+				'label' => esc_html__( 'Redirección General (Opcional)', 'alezux-members' ),
+				'type' => Controls_Manager::URL,
+				'placeholder' => esc_html__( 'https://tudominio.com/inicio', 'alezux-members' ),
+				'description' => esc_html__( 'A dónde irán los usuarios si no tienen un rol específico configurado abajo.', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'redirect_admin_url',
+			[
+				'label' => esc_html__( 'Redirección Administradores', 'alezux-members' ),
+				'type' => Controls_Manager::URL,
+				'placeholder' => esc_html__( 'https://tudominio.com/wp-admin', 'alezux-members' ),
+				'description' => esc_html__( 'URL específica para administradores.', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'redirect_student_url',
+			[
+				'label' => esc_html__( 'Redirección Estudiantes', 'alezux-members' ),
+				'type' => Controls_Manager::URL,
+				'placeholder' => esc_html__( 'https://tudominio.com/mis-cursos', 'alezux-members' ),
+				'description' => esc_html__( 'URL específica para estudiantes (Suscriptores).', 'alezux-members' ),
+			]
+		);
+
 		$this->end_controls_section();
 
 		// --- STYLE SECTION: CARD (CONTAINER) ---
@@ -844,6 +874,15 @@ class Login_Widget extends Widget_Base {
 							<?php esc_html_e( '¿Olvidaste tu contraseña?', 'alezux-members' ); ?>
 						</a>
 					</div>
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['redirect_url']['url'] ) ) : ?>
+					<input type="hidden" name="redirect_to" value="<?php echo esc_url( $settings['redirect_url']['url'] ); ?>">
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['redirect_admin_url']['url'] ) ) : ?>
+					<input type="hidden" name="redirect_admin" value="<?php echo esc_url( $settings['redirect_admin_url']['url'] ); ?>">
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['redirect_student_url']['url'] ) ) : ?>
+					<input type="hidden" name="redirect_student" value="<?php echo esc_url( $settings['redirect_student_url']['url'] ); ?>">
 				<?php endif; ?>
 			</form>
 		</div>
