@@ -370,36 +370,46 @@ class User_Financial_Profile extends Widget_Base {
                 </div>
             </div>
 
-            <!-- MODAL PERSONALIZADO (Teleportado con Alpine) -->
+            <!-- MODAL PERSONALIZADO (Teleportado con Alpine + Estilos Inline Forzados) -->
             <template x-teleport="body">
-                <div x-show="showModal" class="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 999999 !important; display: none;">
-                    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" style="position: fixed; inset: 0; background-color: rgba(0,0,0,0.5);" @click="if(showCancelButton) closeModal()"></div>
-                    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full m-4 relative p-6 z-50">
+                <div x-show="showModal" 
+                     class="alezux-modal-overlay"
+                     style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important;">
+                    
+                    <!-- Backdrop Click Handler -->
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;" @click="if(showCancelButton) closeModal()"></div>
+
+                    <!-- Modal Content -->
+                    <div class="alezux-modal-content"
+                         style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 28rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important;">
                         
-                        <div class="text-center">
-                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
-                                 :class="{ 'bg-red-100': modalType === 'error', 'bg-green-100': modalType === 'success', 'bg-blue-100': modalType === 'info' }">
+                        <div style="text-align: center !important;">
+                            <div style="margin-left: auto; margin-right: auto; display: flex; align-items: center; justify-content: center; height: 3rem; width: 3rem; border-radius: 9999px; margin-bottom: 1rem;"
+                                 :style="modalType === 'error' ? 'background-color: #fee2e2;' : (modalType === 'success' ? 'background-color: #dcfce7;' : 'background-color: #dbeafe;')">
                                 <i class="fas text-xl" :class="{ 
-                                    'fa-exclamation-triangle text-red-600': modalType === 'error', 
-                                    'fa-check text-green-600': modalType === 'success', 
-                                    'fa-info-circle text-blue-600': modalType === 'info' 
-                                }"></i>
+                                    'fa-exclamation-triangle': modalType === 'error', 
+                                    'fa-check': modalType === 'success', 
+                                    'fa-info-circle': modalType === 'info' 
+                                }" :style="modalType === 'error' ? 'color: #dc2626;' : (modalType === 'success' ? 'color: #16a34a;' : 'color: #2563eb;')"></i>
                             </div>
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="modalTitle"></h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500" x-text="modalMessage"></p>
+                            <h3 style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; color: #111827 !important; margin-top: 0;" x-text="modalTitle"></h3>
+                            <div style="margin-top: 0.5rem;">
+                                <p style="font-size: 0.875rem; line-height: 1.25rem; color: #6b7280 !important;" x-text="modalMessage"></p>
                             </div>
                         </div>
 
-                        <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <div style="margin-top: 1.25rem; display: grid; gap: 0.75rem; grid-template-columns: repeat(1, minmax(0, 1fr));">
+                            <!-- Botón Confirmar -->
                             <button type="button" 
-                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none sm:col-start-2 sm:text-sm"
-                                    :class="{ 'bg-red-600 hover:bg-red-700': modalType === 'error', 'bg-green-600 hover:bg-green-700': modalType === 'success', 'bg-blue-600 hover:bg-blue-700': modalType === 'info' }"
+                                    style="width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid transparent; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;"
+                                    :style="modalType === 'error' ? 'background-color: #dc2626 !important;' : (modalType === 'success' ? 'background-color: #16a34a !important;' : 'background-color: #2563eb !important;')"
                                     @click="handleConfirm()">
                                 <span x-text="modalConfirmText"></span>
                             </button>
+                            
+                            <!-- Botón Cancelar -->
                             <button type="button" 
-                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm"
+                                    style="margin-top: 0.75rem; width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #374151 !important; background-color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;"
                                     @click="closeModal()"
                                     x-show="showCancelButton">
                                 Cancelar
