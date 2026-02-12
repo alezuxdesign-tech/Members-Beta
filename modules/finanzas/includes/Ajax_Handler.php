@@ -623,4 +623,194 @@ class Ajax_Handler {
              \wp_send_json_error( 'No se pudo actualizar o no hubo cambios.' );
         }
     }
+
+    /**
+     * Obtiene datos financieros del usuario actual para el perfil.
+     */
+    public static function get_my_financial_data() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \is_user_logged_in() ) {
+            \wp_send_json_error( 'Debes iniciar sesión.' );
+        }
+
+        $user_id = \get_current_user_id();
+        global $wpdb;
+
+        // 1. Obtener Suscripciones (Estado de Cuenta)
+        $table_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        
+        $subscriptions = $wpdb->get_results( $wpdb->prepare(
+            "SELECT 
+                s.*, 
+                p.name as plan_name,
+                p.price as plan_price,
+                p.currency as plan_currency,
+                p.billing_cycle as plan_cycle,
+                p.total_quotas as plan_quotas
+             FROM $table_subs s
+             LEFT JOIN $table_plans p ON s.plan_id = p.id
+             WHERE s.user_id = %d
+             ORDER BY s.created_at DESC", 
+            $user_id
+        ) );
+
+        // Procesar suscripciones para el frontend
+        foreach ( $subscriptions as $sub ) {
+            // Formateo básico de moneda
+            $currency_symbol = ($sub->plan_currency === 'EUR') ? '€' : '$';
+            $sub->formatted_price = $currency_symbol . \number_format( (float)$sub->plan_price, 2 );
+            
+            $sub->next_payment_date_formatted = $sub->next_payment_date ? \date_i18n( \get_option( 'date_format' ), \strtotime( $sub->next_payment_date ) ) : '-';
+            
+            // Lógica para mostrar botón de pago
+            // Si tiene cuotas pendientes y no está cancelado/completado
+            $sub->is_completed = ($sub->status === 'completed');
+            $sub->is_active = ($sub->status === 'active' || $sub->status === 'past_due');
+            
+            // Calcular progreso
+            $total_quotas = (int)$sub->plan_quotas;
+            $paid_quotas = (int)$sub->quotas_paid;
+            
+            // Evitar división por cero
+            if ($total_quotas > 0) {
+                $sub->progress_percent = \min( 100, \round( ($paid_quotas / $total_quotas) * 100 ) );
+            } else {
+                $sub->progress_percent = 100; // Si no hay cuotas definidas, asumimos pago único/completo
+            }
+            
+            $sub->progress_text = "{$paid_quotas} / {$total_quotas}";
+            
+            // Flag para el botón "Pagar cuota manual"
+            // Se habilita si está activo, faltan cuotas, y no es una suscripción automática de Stripe que esté al día
+            // (Simplificación: si el usuario quiere pagar manual, permitimos generar link de la siguiente cuota)
+            $sub->can_pay_manually = ( $sub->is_active && $paid_quotas < $total_quotas );
+        }
+
+        // 2. Obtener Historial de Transacciones
+        $table_trans = $wpdb->prefix . 'alezux_finanzas_transactions';
+        $transactions = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM $table_trans WHERE user_id = %d ORDER BY created_at DESC LIMIT 50",
+            $user_id
+        ) );
+
+        foreach ( $transactions as $trans ) {
+            $currency_symbol = ($trans->currency === 'EUR') ? '€' : '$';
+            $trans->formatted_amount = $currency_symbol . \number_format( (float)$trans->amount, 2 );
+            $trans->date_formatted = \date_i18n( \get_option( 'date_format' ) . ' ' . \get_option( 'time_format' ), \strtotime( $trans->created_at ) );
+            
+            // Traducir estado si es necesario
+            $status_labels = [
+                'succeeded' => 'Exitoso',
+                'pending'   => 'Pendiente',
+                'failed'    => 'Fallido'
+            ];
+            $trans->status_label = isset($status_labels[$trans->status]) ? $status_labels[$trans->status] : $trans->status;
+        }
+
+        \wp_send_json_success( [
+            'subscriptions' => $subscriptions,
+            'transactions' => $transactions
+        ] );
+    }
+
+    /**
+     * Genera una sesión de pago para una cuota específica.
+     */
+    public static function create_installment_checkout() {
+        \check_ajax_referer( 'alezux_finanzas_nonce', 'nonce' );
+
+        if ( ! \is_user_logged_in() ) {
+            \wp_send_json_error( 'Debes iniciar sesión.' );
+        }
+
+        $user_id = \get_current_user_id();
+        $subscription_id = isset( $_POST['subscription_id'] ) ? \intval( $_POST['subscription_id'] ) : 0;
+
+        if ( ! $subscription_id ) {
+            \wp_send_json_error( 'ID de suscripción inválido.' );
+        }
+
+        global $wpdb;
+        $table_subs = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+
+        // Obtener suscripción y validar propiedad
+        $subscription = $wpdb->get_row( $wpdb->prepare(
+            "SELECT 
+                s.*, 
+                p.name as plan_name, 
+                p.price as plan_price,
+                p.currency as plan_currency 
+             FROM $table_subs s
+             JOIN $table_plans p ON s.plan_id = p.id
+             WHERE s.id = %d AND s.user_id = %d",
+            $subscription_id,
+            $user_id
+        ) );
+
+        if ( ! $subscription ) {
+            \wp_send_json_error( 'Suscripción no encontrada o acceso denegado.' );
+        }
+
+        // Validar si es pagable (no completada)
+        if ( $subscription->status === 'completed' || $subscription->quotas_paid >= $subscription->total_quotas ) {
+            \wp_send_json_error( 'Esta suscripción ya está completada.' );
+        }
+
+        // Crear sesión de Stripe
+        $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
+        
+        $current_user = \wp_get_current_user();
+        $customer_email = $current_user->user_email;
+
+        // URLs
+        // Importante: Diferenciar el retorno para no activar 'enroll_user' global
+        $success_url = \home_url( '/?alezux_payment_success=true&session_id={CHECKOUT_SESSION_ID}&type=installment' );
+        $cancel_url  = \home_url( '/perfil/' ); // O URL anterior
+
+        // Datos del precio (Ad-hoc)
+        $currency = $subscription->plan_currency ? \strtolower( $subscription->plan_currency ) : 'usd';
+        $amount_cents = \round( (float)$subscription->plan_price * 100 );
+        $next_quota = $subscription->quotas_paid + 1;
+        
+        $line_items = [[
+            'price_data' => [
+                'currency' => $currency,
+                'product_data' => [
+                    'name' => "Pago de Cuota #{$next_quota} - " . $subscription->plan_name,
+                    'description' => "Pago manual para completar suscripción #{$subscription->id}"
+                ],
+                'unit_amount' => $amount_cents,
+            ],
+            'quantity' => 1,
+        ]];
+
+        $metadata = [
+            'type' => 'installment_payment',
+            'subscription_local_id' => $subscription->id,
+            'plan_id' => $subscription->plan_id,
+            'user_id' => $user_id
+        ];
+
+        $session = $stripe->create_checkout_session(
+            $line_items,
+            $success_url,
+            $cancel_url,
+            $customer_email,
+            'payment', // Modo pago único
+            $metadata
+        );
+
+        if ( \is_wp_error( $session ) ) {
+            \wp_send_json_error( 'Error Stripe: ' . $session->get_error_message() );
+        }
+
+        if ( isset( $session->url ) ) {
+            \wp_send_json_success( [ 'url' => $session->url ] );
+        } else {
+            \wp_send_json_error( 'No se pudo generar el link de pago.' );
+        }
+    }
 }

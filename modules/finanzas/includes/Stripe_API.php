@@ -81,20 +81,29 @@ class Stripe_API {
         ];
     }
 
-    public function create_checkout_session( $price_id, $success_url, $cancel_url, $customer_email = null, $mode = 'subscription', $metadata = [] ) {
+    public function create_checkout_session( $line_items_or_price_id, $success_url, $cancel_url, $customer_email = null, $mode = 'subscription', $metadata = [] ) {
         if ( empty( $this->secret_key ) ) {
             return new \WP_Error( 'stripe_error', 'Falta la Secret Key de Stripe.' );
+        }
+
+        $line_items = [];
+        if ( is_array( $line_items_or_price_id ) ) {
+            // Pasamos array completo de line_items (para precios ad-hoc o múltiples)
+            $line_items = $line_items_or_price_id;
+        } else {
+            // Comportamiento Legacy: string ID
+            $line_items = [
+                [
+                    'price' => $line_items_or_price_id,
+                    'quantity' => 1,
+                ],
+            ];
         }
 
         $payload = [
             'success_url' => $success_url,
             'cancel_url' => $cancel_url,
-            'line_items' => [
-                [
-                    'price' => $price_id,
-                    'quantity' => 1,
-                ],
-            ],
+            'line_items' => $line_items,
             'mode' => $mode,
         ];
 

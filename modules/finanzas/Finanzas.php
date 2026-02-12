@@ -234,6 +234,12 @@ class Finanzas extends Module_Base {
                 wp_die( 'El pago no se ha completado o está pendiente de confirmación.' );
             }
 
+            // Si es pago de cuota manual, redirigir al perfil
+            if ( isset( $session->metadata->type ) && $session->metadata->type === 'installment_payment' ) {
+                 wp_redirect( home_url( '/perfil/?payment_success=true' ) );
+                 exit;
+            }
+
             // Recopilar datos
             $email = $session->customer_details->email;
             $plan_id = $session->metadata->plan_id ?? 0;
@@ -305,6 +311,8 @@ class Finanzas extends Module_Base {
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Manual_Payment_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Financial_Performance_Widget.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Filter_Date_Widget.php'; // NUEVO
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/User_Financial_Profile.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/User_Financial_Profile.php'; // NUEVO: Perfil Usuario
 
         // Registrar Widgets
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
@@ -334,6 +342,14 @@ class Finanzas extends Module_Base {
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Filter_Date_Widget' ) ) {
             $widgets_manager->register( new Widgets\Filter_Date_Widget() );
         }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\User_Financial_Profile' ) ) {
+            $widgets_manager->register( new Widgets\User_Financial_Profile() );
+        }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\User_Financial_Profile' ) ) {
+            $widgets_manager->register( new Widgets\User_Financial_Profile() );
+        }
 	}
 
     public function enqueue_widget_styles() {
@@ -345,17 +361,26 @@ class Finanzas extends Module_Base {
         wp_register_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', ['jquery'], '4.6.13', true);
         wp_register_script('flatpickr-es-js', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js', ['flatpickr-js'], '4.6.13', true);
 
+        // Alpine.js & Frontend
+        wp_register_script('alpinejs', 'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js', [], '3.0.0', true);
+        wp_register_script('alezux-finanzas-frontend', false, ['alpinejs', 'jquery'], $version, true);
+
+        // Register Alpine.js (Remote CDN)
+        wp_register_script('alpinejs', 'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js', [], '3.0.0', true);
+
+        // Register Frontend Script for Financial Profile (depende de Alpine)
+        // Aunque el código principal está inline en el widget, registramos el handle para que Elementor lo maneje.
+        wp_register_script('alezux-finanzas-frontend', false, ['alpinejs', 'jquery'], $version, true);
+
+
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/css/alezux-tables.css' ) ) {
              wp_register_style( 'alezux-finanzas-tables-css', ALEZUX_FINANZAS_URL . 'assets/css/alezux-tables.css', ['flatpickr-css'], $version );
         }
         
-        // Legacy handles alias (to prevent break if usage is missed) - Optional but safer to update widgets
-        // But for now, I will just register the javascripts.
-
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-history.js' ) ) {
-            wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js'], $version, true );
-            
-            wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
+             wp_register_script( 'alezux-sales-history-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-history.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js'], $version, true );
+             
+             wp_localize_script( 'alezux-sales-history-js', 'alezux_finanzas_vars', [
                 'ajax_url'     => admin_url( 'admin-ajax.php' ),
                 'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
                 'is_logged_in' => is_user_logged_in()

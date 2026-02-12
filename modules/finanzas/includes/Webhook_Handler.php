@@ -66,6 +66,12 @@ class Webhook_Handler {
     }
 
     private function handle_checkout_completed( $session ) {
+        // 1. Detectar si es un pago manual de cuota
+        if ( isset( $session->metadata->type ) && $session->metadata->type === 'installment_payment' ) {
+            $this->handle_installment_payment_success( $session );
+            return;
+        }
+
         if ( ! isset( $session->customer_details->email ) ) {
             return;
         }
@@ -90,6 +96,85 @@ class Webhook_Handler {
                 $currency,
                 $customer_name
             );
+        }
+    }
+
+    /**
+     * Maneja el éxito de un pago manual de cuota (Checkout Session).
+     */
+    private function handle_installment_payment_success( $session ) {
+        global $wpdb;
+        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+        
+        $subscription_id = isset( $session->metadata->subscription_local_id ) ? intval( $session->metadata->subscription_local_id ) : 0;
+        
+        if ( ! $subscription_id ) {
+            \error_log( 'Alezux Webhook Error: ID de suscripción no encontrado en metadata de pago manual.' );
+            return;
+        }
+
+        // Obtener suscripción
+        $subscription = $wpdb->get_row( $wpdb->prepare( 
+            "SELECT s.*, p.total_quotas 
+             FROM $subs_table s 
+             JOIN {$wpdb->prefix}alezux_finanzas_plans p ON s.plan_id = p.id 
+             WHERE s.id = %d", 
+            $subscription_id 
+        ) );
+
+        if ( ! $subscription ) {
+            \error_log( "Alezux Webhook Error: Suscripción local #$subscription_id no encontrada." );
+            return;
+        }
+
+        // Registrar Transacción
+        $trans_table = $wpdb->prefix . 'alezux_finanzas_transactions';
+        $amount_paid = ( isset( $session->amount_total ) ) ? ( $session->amount_total / 100 ) : 0;
+        $transaction_ref = $session->payment_intent ?? $session->id;
+
+        $wpdb->insert( $trans_table, [
+            'subscription_id' => $subscription->id,
+            'user_id'         => $subscription->user_id, // Importante registrar user_id
+            'amount'          => $amount_paid,
+            'currency'        => strtoupper( $session->currency ),
+            'method'          => 'stripe',
+            'transaction_ref' => $transaction_ref,
+            'status'          => 'succeeded',
+            'created_at'      => current_time( 'mysql' )
+        ] );
+
+        // Actualizar Cuotas
+        $new_quotas_paid = $subscription->quotas_paid + 1;
+        $wpdb->update( 
+            $subs_table, 
+            [ 
+                'quotas_paid' => $new_quotas_paid,
+                'last_payment_date' => current_time( 'mysql' ),
+                'status' => 'active' // Asegurar que vuelva a activo si estaba past_due
+            ], 
+            [ 'id' => $subscription->id ] 
+        );
+
+        \error_log( "Alezux Manual Payment: Cuota $new_quotas_paid pagada para suscripción Local ID {$subscription->id}" );
+
+        // Disparar evento
+        do_action( 'alezux_finance_payment_received', $subscription->user_id, $subscription->plan_id, $new_quotas_paid );
+
+        // Verificar Completitud
+        if ( $new_quotas_paid >= $subscription->total_quotas ) {
+            // Si tenía sub en Stripe vinculada, cancelarla (aunque esto es pago manual, 
+            // puede ser un híbrido donde canceló y ahora paga manual).
+            if ( ! empty( $subscription->stripe_subscription_id ) ) {
+                $this->cancel_stripe_subscription( $subscription->stripe_subscription_id );
+            }
+            
+            $wpdb->update( 
+                $subs_table, 
+                [ 'status' => 'completed' ], 
+                [ 'id' => $subscription->id ] 
+            );
+            
+            \error_log( "Alezux: Plan completado (Pago Manual). Suscripción #{$subscription->id} finalizada." );
         }
     }
 
