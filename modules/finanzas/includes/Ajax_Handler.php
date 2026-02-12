@@ -18,6 +18,8 @@ class Ajax_Handler {
         \add_action( 'wp_ajax_alezux_get_finance_kpis', [ __CLASS__, 'get_finance_kpis' ] );
         \add_action( 'wp_ajax_alezux_get_plan_details', [ __CLASS__, 'get_plan_details' ] ); // NUEVO
         \add_action( 'wp_ajax_alezux_update_plan', [ __CLASS__, 'update_plan' ] ); // NUEVO
+        \add_action( 'wp_ajax_alezux_get_my_financial_data', [ __CLASS__, 'get_my_financial_data' ] );
+        \add_action( 'wp_ajax_alezux_create_installment_checkout', [ __CLASS__, 'create_installment_checkout' ] );
 	}
 
 	public static function get_course_modules() {
@@ -814,3 +816,4 @@ class Ajax_Handler {
         }
     }
 }
+

@@ -34,6 +34,10 @@ class User_Financial_Profile extends Widget_Base {
 		return [ 'alezux-finanzas-frontend' ];
 	}
 
+	public function get_style_depends() {
+		return [ 'alezux-finanzas-tables-css' ];
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section(
 			'content_section',
@@ -214,12 +218,12 @@ class User_Financial_Profile extends Widget_Base {
             </div>
 
             <!-- SECCIÓN 2: HISTORIAL -->
-            <div class="alezux-financial-section mt-8">
+            <div class="alezux-financial-section mt-8 alezux-finanzas-app">
                 <h3 class="alezux-financial-title text-xl font-bold mb-4"><?php echo esc_html( $settings['title_history'] ); ?></h3>
                 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <div class="alezux-table-wrapper">
+                    <table class="alezux-finanzas-table w-full text-sm text-left">
+                        <thead>
                             <tr>
                                 <th scope="col" class="px-6 py-3">Fecha</th>
                                 <th scope="col" class="px-6 py-3">Concepto</th>
