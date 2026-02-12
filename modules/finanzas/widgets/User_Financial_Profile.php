@@ -219,7 +219,7 @@ class User_Financial_Profile extends Widget_Base {
 
             <!-- SECCIÓN 2: HISTORIAL -->
             <div class="alezux-financial-section mt-8 alezux-finanzas-app">
-                <h3 class="alezux-financial-title text-xl font-bold mb-4"><?php echo esc_html( $settings['title_history'] ); ?></h3>
+
                 
                 <div class="alezux-table-wrapper">
                     <table class="alezux-finanzas-table w-full text-sm text-left">
