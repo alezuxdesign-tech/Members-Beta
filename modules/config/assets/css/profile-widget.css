@@ -164,3 +164,104 @@
         padding: 25px;
     }
 }
+
+/* Estilos Modal Cropper */
+.alezux-crop-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2147483647;
+    /* Same max z-index as global modal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.alezux-crop-container {
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.alezux-crop-body {
+    padding: 20px;
+    max-height: 70vh;
+    /* Prevent modal getting too tall */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+.img-container {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    /* Limit image height */
+    display: block;
+}
+
+/* Cropper JS Overrides force image max-width */
+.img-container img {
+    max-width: 100%;
+    display: block;
+}
+
+.alezux-crop-footer {
+    padding: 15px 20px;
+    background: #252525;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #333;
+}
+
+.alezux-btn-cancel,
+.alezux-btn-crop {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.alezux-btn-cancel {
+    background: #333;
+    color: #fff;
+}
+
+.alezux-btn-cancel:hover {
+    background: #444;
+}
+
+.alezux-btn-crop {
+    background: #6c5ce7;
+    color: #fff;
+}
+
+.alezux-btn-crop:hover {
+    background: #5649c0;
+}
+
+/* Spinner adjustment in button */
+.btn-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Asegurar que la imagen del cropper no se desborde */
+.cropper-container {
+    width: 100%;
+}

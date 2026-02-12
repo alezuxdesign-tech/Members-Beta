@@ -218,6 +218,10 @@ class Config extends Module_Base {
 		// Profile Assets
 		wp_enqueue_style( 'alezux-profile-css', $this->get_asset_url( 'assets/css/profile-widget.css' ), [], file_exists( __DIR__ . '/assets/css/profile-widget.css' ) ? filemtime( __DIR__ . '/assets/css/profile-widget.css' ) : ALEZUX_MEMBERS_VERSION );
 		wp_enqueue_script( 'alezux-profile-js', $this->get_asset_url( 'assets/js/profile-widget.js' ), [ 'jquery' ], file_exists( __DIR__ . '/assets/js/profile-widget.js' ) ? filemtime( __DIR__ . '/assets/js/profile-widget.js' ) : ALEZUX_MEMBERS_VERSION, true );
+        
+        // Cropper JS (CDN)
+        wp_enqueue_style( 'cropper-css', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css', [], '1.5.13' );
+        wp_enqueue_script( 'cropper-js', 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js', [], '1.5.13', true );
 
 		// Password Assets
 		wp_enqueue_style( 'alezux-password-css', $this->get_asset_url( 'assets/css/password-widget.css' ), [], file_exists( __DIR__ . '/assets/css/password-widget.css' ) ? filemtime( __DIR__ . '/assets/css/password-widget.css' ) : ALEZUX_MEMBERS_VERSION );

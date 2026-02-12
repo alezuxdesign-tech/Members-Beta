@@ -408,10 +408,25 @@ class Profile_Widget extends Widget_Base {
 				<div class="button-wrapper">
 					<button type="submit" class="alezux-submit-btn">
 						<span class="btn-text"><?php esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?></span>
-						<span class="btn-loader" style="display: none;"><i class="eicon-spinner eicon-animation-spin"></i></span>
+						<span class="btn-loader" style="display: none;"><i class="eicon-spinner eicon-animation-spin"></i> <?php esc_html_e( 'Guardando...', 'alezux-members' ); ?></span>
 					</button>
 				</div>
 			</form>
+
+            <!-- Modal de Recorte (Oculto por defecto) -->
+            <div id="alezux-crop-modal" class="alezux-crop-modal" style="display: none;">
+                <div class="alezux-crop-container">
+                    <div class="alezux-crop-body">
+                        <div class="img-container">
+                            <img id="alezux-crop-image" src="" alt="Imagen para recortar">
+                        </div>
+                    </div>
+                    <div class="alezux-crop-footer">
+                        <button type="button" class="alezux-btn-cancel" id="alezux-crop-cancel"><?php esc_html_e( 'Cancelar', 'alezux-members' ); ?></button>
+                        <button type="button" class="alezux-btn-crop" id="alezux-crop-confirm"><?php esc_html_e( 'Recortar y Guardar', 'alezux-members' ); ?></button>
+                    </div>
+                </div>
+            </div>
 		</div>
 		<?php
 	}
