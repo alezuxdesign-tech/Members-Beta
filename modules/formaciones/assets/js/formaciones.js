@@ -11,28 +11,42 @@ jQuery(document).ready(function ($) {
             $button = $button.closest('.alezux-btn-complete-topic');
         }
 
+        // --- LOGICA DE SOLO REDIRECCION SI ESTA COMPLETADO ---
+        if ($button.hasClass('is-completed')) {
+            var nextUrl = $button.data('next-url');
+            if (nextUrl) {
+                window.location.href = nextUrl;
+            } else {
+                // Si no hay siguiente URL, no hacemos nada (el usuario pidió no desmarcar)
+                console.log('Topic completado. No hay siguiente paso definido.');
+            }
+            return; // EXIT - No AJAX
+        }
+
         var postId = $button.data('post-id');
         var nonce = $button.data('nonce');
-        var $contentWrapper = $button.find('.alezux-btn-content-wrapper');
         var $loader = $button.find('.alezux-btn-loader');
-
-        var $stateIncomplete = $button.find('.alezux-btn-state.state-incomplete');
-        var $stateCompleted = $button.find('.alezux-btn-state.state-completed');
 
         if ($button.hasClass('is-loading')) {
             return;
         }
 
+        // Validación de seguridad extra
+        if (!nonce) {
+            console.warn('No nonce found for action');
+            return;
+        }
+
         // Add loading state
         $button.addClass('is-loading');
-        $contentWrapper.children().hide();
-        $loader.css('display', 'flex'); // Force flex for centering
+        $loader.css('display', 'flex');
+        // NO OCULTAMOS EL CONTENIDO (.children().hide()) para evitar colapso visual, lo manejamos con CSS opacity
 
         // Ensure alezux_vars is defined
         var ajaxUrl = (typeof alezux_vars !== 'undefined') ? alezux_vars.ajax_url : '/wp-admin/admin-ajax.php';
 
-        // Determine method based on current state
-        var method = $button.hasClass('is-completed') ? 'unmark' : 'mark';
+        // Solo "mark" es posible ahora por la lógica anterior
+        var method = 'mark';
 
         $.ajax({
             url: ajaxUrl,
@@ -46,46 +60,28 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 // Manejo de Redirección Inteligente
                 if (response.success) {
-                    if (method === 'mark') {
-                        // Si completamos, buscamos la URL del siguiente paso
-                        var nextUrl = $button.data('next-url');
-                        if (nextUrl) {
-                            window.location.href = nextUrl;
-                        } else {
-                            // Si no hay siguiente URL definida, recargamos (fallback)
-                            location.reload();
-                        }
+                    var nextUrl = $button.data('next-url');
+                    if (nextUrl) {
+                        window.location.href = nextUrl;
                     } else {
-                        // Si descompletamos, simplemente recargamos para actualizar estado visual
+                        // Fallback reload
                         location.reload();
                     }
                     return;
                 }
 
                 $button.removeClass('is-loading');
-                $loader.hide();
+                $loader.hide(); // Hide loader explicitly
 
                 if (!response.success) {
-                    // Revert on logic error if success is false but didn't throw error
-                    console.warn('Alezux Toggle: ', response);
-                    if ($button.hasClass('is-completed')) {
-                        $stateCompleted.css('display', 'flex');
-                    } else {
-                        $stateIncomplete.css('display', 'flex');
-                    }
+                    console.warn('Alezux Toggle Error: ', response);
+                    // UI bleibt visual (Error handling optional - alert?)
                 }
             },
             error: function (xhr, status, error) {
                 $button.removeClass('is-loading');
                 $loader.hide();
                 console.error('AJAX Error:', error);
-
-                // Revert UI on connection error
-                if ($button.hasClass('is-completed')) {
-                    $stateCompleted.css('display', 'flex');
-                } else {
-                    $stateIncomplete.css('display', 'flex');
-                }
             }
         });
     });

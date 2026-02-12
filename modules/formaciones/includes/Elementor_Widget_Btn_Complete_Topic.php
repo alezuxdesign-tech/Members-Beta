@@ -428,10 +428,14 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
             }
         }
 
-		$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
+    	$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
 		$this->add_render_attribute( 'button', 'role', 'button' );
 		$this->add_render_attribute( 'button', 'data-post-id', $post_id );
-		$this->add_render_attribute( 'button', 'data-nonce', wp_create_nonce( 'alezux_toggle_complete_' . $post_id ) );
+		
+        // Solo generamos nonce si NO está completado, para evitar acciones de desmarcado via AJAX desde este botón
+        if ( ! $is_completed ) {
+		    $this->add_render_attribute( 'button', 'data-nonce', wp_create_nonce( 'alezux_toggle_complete_' . $post_id ) );
+        }
         
         // Añadir URL de redirección
         if ( $next_url ) {
@@ -440,6 +444,8 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 
 		if ( $is_completed ) {
 			$this->add_render_attribute( 'button', 'class', 'is-completed' );
+            // Añadimos clase disabled-action para estilos si se quiere
+            $this->add_render_attribute( 'button', 'class', 'action-next-only' );
 		}
 
 		$icon_html_incomplete = '';
