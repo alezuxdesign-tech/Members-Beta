@@ -647,9 +647,8 @@ class Ajax_Handler {
             "SELECT 
                 s.*, 
                 p.name as plan_name,
-                p.price as plan_price,
-                p.currency as plan_currency,
-                p.billing_cycle as plan_cycle,
+                p.quota_amount as plan_price,
+                p.frequency as plan_cycle,
                 p.total_quotas as plan_quotas
              FROM $table_subs s
              LEFT JOIN $table_plans p ON s.plan_id = p.id
@@ -660,9 +659,15 @@ class Ajax_Handler {
 
         // Procesar suscripciones para el frontend
         foreach ( $subscriptions as $sub ) {
-            // Formateo básico de moneda
-            $currency_symbol = ($sub->plan_currency === 'EUR') ? '€' : '$';
+            // Formateo básico de moneda (Asumimos USD por defecto ya que no se guarda en plan)
+            $currency_symbol = '$'; 
+            // Si en el futuro agregamos currency a planes:
+            if ( isset($sub->plan_currency) && $sub->plan_currency === 'EUR' ) {
+                $currency_symbol = '€';
+            }
+
             $sub->formatted_price = $currency_symbol . \number_format( (float)$sub->plan_price, 2 );
+            $sub->plan_cycle = ($sub->plan_cycle === 'month') ? 'Mensual' : ( ($sub->plan_cycle === 'year') ? 'Anual' : $sub->plan_cycle );
             
             $sub->next_payment_date_formatted = $sub->next_payment_date ? \date_i18n( \get_option( 'date_format' ), \strtotime( $sub->next_payment_date ) ) : '-';
             
