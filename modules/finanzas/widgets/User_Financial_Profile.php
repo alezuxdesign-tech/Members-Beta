@@ -370,42 +370,44 @@ class User_Financial_Profile extends Widget_Base {
                 </div>
             </div>
 
-            <!-- MODAL PERSONALIZADO (Teleportado) -->
-            <div id="alezux-profile-modal-<?php echo $this->get_id(); ?>" x-show="showModal" class="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 999999 !important; display: none;">
-                <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" style="position: fixed; inset: 0; background-color: rgba(0,0,0,0.5);" @click="if(showCancelButton) closeModal()"></div>
-                <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full m-4 relative p-6 z-50">
-                    
-                    <div class="text-center">
-                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
-                             :class="{ 'bg-red-100': modalType === 'error', 'bg-green-100': modalType === 'success', 'bg-blue-100': modalType === 'info' }">
-                            <i class="fas text-xl" :class="{ 
-                                'fa-exclamation-triangle text-red-600': modalType === 'error', 
-                                'fa-check text-green-600': modalType === 'success', 
-                                'fa-info-circle text-blue-600': modalType === 'info' 
-                            }"></i>
+            <!-- MODAL PERSONALIZADO (Teleportado con Alpine) -->
+            <template x-teleport="body">
+                <div x-show="showModal" class="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto" style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 999999 !important; display: none;">
+                    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" style="position: fixed; inset: 0; background-color: rgba(0,0,0,0.5);" @click="if(showCancelButton) closeModal()"></div>
+                    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full m-4 relative p-6 z-50">
+                        
+                        <div class="text-center">
+                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
+                                 :class="{ 'bg-red-100': modalType === 'error', 'bg-green-100': modalType === 'success', 'bg-blue-100': modalType === 'info' }">
+                                <i class="fas text-xl" :class="{ 
+                                    'fa-exclamation-triangle text-red-600': modalType === 'error', 
+                                    'fa-check text-green-600': modalType === 'success', 
+                                    'fa-info-circle text-blue-600': modalType === 'info' 
+                                }"></i>
+                            </div>
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="modalTitle"></h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" x-text="modalMessage"></p>
+                            </div>
                         </div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="modalTitle"></h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500" x-text="modalMessage"></p>
-                        </div>
-                    </div>
 
-                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                        <button type="button" 
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none sm:col-start-2 sm:text-sm"
-                                :class="{ 'bg-red-600 hover:bg-red-700': modalType === 'error', 'bg-green-600 hover:bg-green-700': modalType === 'success', 'bg-blue-600 hover:bg-blue-700': modalType === 'info' }"
-                                @click="handleConfirm()">
-                            <span x-text="modalConfirmText"></span>
-                        </button>
-                        <button type="button" 
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm"
-                                @click="closeModal()"
-                                x-show="showCancelButton">
-                            Cancelar
-                        </button>
+                        <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                            <button type="button" 
+                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none sm:col-start-2 sm:text-sm"
+                                    :class="{ 'bg-red-600 hover:bg-red-700': modalType === 'error', 'bg-green-600 hover:bg-green-700': modalType === 'success', 'bg-blue-600 hover:bg-blue-700': modalType === 'info' }"
+                                    @click="handleConfirm()">
+                                <span x-text="modalConfirmText"></span>
+                            </button>
+                            <button type="button" 
+                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm"
+                                    @click="closeModal()"
+                                    x-show="showCancelButton">
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </template>
 
 		</div>
 
@@ -426,14 +428,6 @@ class User_Financial_Profile extends Widget_Base {
                 onConfirmAction: null,
 
                 initData() {
-                    // Teleport Modal to Body to avoid stacking context issues
-                    // But first check if it's already there to avoid duplicates on re-init
-                    const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
-                    const modalEl = document.getElementById(modalId);
-                    if (modalEl && modalEl.parentElement !== document.body) {
-                        document.body.appendChild(modalEl);
-                    }
-
                     const formData = new FormData();
                     formData.append('action', 'alezux_get_my_financial_data');
                     formData.append('nonce', '<?php echo wp_create_nonce( "alezux_finanzas_nonce" ); ?>');
