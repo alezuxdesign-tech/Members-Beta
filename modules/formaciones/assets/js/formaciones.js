@@ -44,11 +44,22 @@ jQuery(document).ready(function ($) {
                 method: method
             },
             success: function (response) {
-                // Force reload to deal with aggressive caching issues (LiteSpeed)
-                // The user requested explicit page reload to ensure state is correct
+                // Manejo de Redirección Inteligente
                 if (response.success) {
-                    location.reload();
-                    return; // Stop processing UI updates since we are reloading
+                    if (method === 'mark') {
+                        // Si completamos, buscamos la URL del siguiente paso
+                        var nextUrl = $button.data('next-url');
+                        if (nextUrl) {
+                            window.location.href = nextUrl;
+                        } else {
+                            // Si no hay siguiente URL definida, recargamos (fallback)
+                            location.reload();
+                        }
+                    } else {
+                        // Si descompletamos, simplemente recargamos para actualizar estado visual
+                        location.reload();
+                    }
+                    return;
                 }
 
                 $button.removeClass('is-loading');

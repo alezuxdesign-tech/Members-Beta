@@ -353,74 +353,90 @@ class Elementor_Widget_Btn_Complete_Topic extends Elementor_Widget_Base {
 		// Check content and user context safely
 		$user_id = get_current_user_id();
 		$is_completed = false;
-
-		// Verify LearnDash function exists to prevent crash if not active or context is wrong
-		// Verify LearnDash function exists to prevent crash if not active or context is wrong
-		// USE ROBUST FALLBACK CHECK - Matching logic from Formaciones.php AJAX handler
+        
+        // --- 1. Obtener Contexto del Curso ---
+        $course_id = 0;
+        if ( function_exists( 'learndash_get_course_id' ) ) {
+            $course_id = learndash_get_course_id( $post_id );
+        }
+        if ( ! $course_id ) {
+            $course_id = get_post_meta( $post_id, 'course_id', true );
+        }
 		
-		// 1. Determine Status (Read)
-		$is_completed = false;
-
+		// --- 2. Verificar Completado (Lógica Robusta) ---
 		if ( function_exists( 'learndash_is_target_complete' ) ) {
+            // Pasamos null como tercer argumento para forzar chequeo sin caché si es posible, aunque la función no siempre lo soporta
 			$is_completed = learndash_is_target_complete( $post_id, $user_id );
-		} else {
-			// Fallback: Check Post Meta directly from User Activity or Course Progress
-			
-			// Method A: Check '_sfwd_course_progress'
-			$course_id = 0;
-			if(function_exists('learndash_get_course_id')){
-				$course_id = learndash_get_course_id( $post_id );
-			}
-			if ( ! $course_id ) {
-				$course_id = get_post_meta( $post_id, 'course_id', true );
-			}
-
-			if ( $course_id ) {
-				$course_progress = get_user_meta( $user_id, '_sfwd_course_progress', true );
-				if ( ! empty( $course_progress[$course_id] ) ) {
-					// Use !empty instead of isset to avoid false positives with 0/null/false
-					if ( ! empty( $course_progress[$course_id]['topics'][$post_id] ) || ! empty( $course_progress[$course_id]['lessons'][$post_id] ) ) {
-						$is_completed = true;
-					}
-				}
-			}
-			
-			// Method B: Check Activity Table manually if Method A failed or as verification
-			if ( ! $is_completed ) {
-				global $wpdb;
-				$activity_type = 'topic';
-				$pt = get_post_type($post_id);
-				if('sfwd-lessons' === $pt) $activity_type = 'lesson';
-				
-				// CRITICAL FIX: Verificación más robusta.
-				// A veces activity_status no es 1 en versiones viejas, pero si activity_completed > 0, está completado.
-				$row = $wpdb->get_row( $wpdb->prepare(
-					"SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
-					WHERE user_id = %d 
-					AND post_id = %d 
-					AND activity_type = %s 
-					AND (activity_status = 1 OR activity_completed > 0)",
-					$user_id,
-					$post_id,
-					$activity_type
-				) );
-				
-				if ( $row ) {
-					$is_completed = true;
-				}
-			}
 		}
+        
+        // Fallback: Si learndash dice false, validamos contra la DB directamente para evitar falso negativo visual
+        if ( ! $is_completed ) {
+            global $wpdb;
+            $activity_type = 'topic';
+            $pt = get_post_type($post_id);
+            if('sfwd-lessons' === $pt) $activity_type = 'lesson';
+            
+            // Verificación directa en tabla de actividad
+            $row = $wpdb->get_row( $wpdb->prepare(
+                "SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
+                WHERE user_id = %d 
+                AND post_id = %d 
+                AND activity_type = %s 
+                AND (activity_status = 1 OR activity_completed > 0)",
+                $user_id,
+                $post_id,
+                $activity_type
+            ) );
+            
+            if ( $row ) {
+                $is_completed = true;
+            }
+        }
+        
+        // --- 3. Calcular Siguiente Paso (Redirección) ---
+        $next_url = '';
+        
+        if ( $course_id ) {
+            // Por defecto, si es el último, volvemos al curso
+            $next_url = get_permalink( $course_id );
+            
+            // Intentar buscar el siguiente paso lógicamente (Topics de la lección actual o siguiente lección)
+            if ( function_exists( 'learndash_get_next_lesson_redirect' ) ) {
+                // Esta función de LD suele devolver el siguiente paso global
+                $next_step_link = learndash_next_post_link( '', true, $post_id ); 
+                // Nota: learndash_next_post_link devuelve HTML <a>, necesitamos la URL.
+                // Usamos learndash_get_next_step_id mejor
+            }
 
-		// Debug comment for user inspection if needed
-		// echo '<!-- Debug Completed Check: ' . ($is_completed ? 'true' : 'false') . ' CourseID=' . $course_id . ' -->';
+            // Lógica manual confiable para Topics
+            $lesson_id = learndash_get_lesson_id( $post_id );
+            if ( $lesson_id ) { 
+                // Estamos en un Topic o Lección
+                $course_steps = learndash_get_course_steps( $course_id );
+                
+                // Encontrar índice actual
+                $current_step_key = array_search( $post_id, $course_steps );
+                
+                if ( $current_step_key !== false && isset( $course_steps[ $current_step_key + 1 ] ) ) {
+                    // Hay un siguiente paso (Topic o Lección)
+                    $next_step_id = $course_steps[ $current_step_key + 1 ];
+                    $next_url = get_permalink( $next_step_id );
+                } else {
+                    // No hay siguiente paso, es el último del curso -> URL Curso (ya seteado por defecto)
+                    // Opcional: Podríamos redirigir a un "Quiz" si existe.
+                }
+            }
+        }
 
-		// 3. Final Fallback (If all else fails, check logic mismatch)
-		// Si aun asi es falso, pero el Widget detecta "Completado" en el contexto de Elementor (A veces pasa), forzamos? No, confiamos en DB.
-		
 		$this->add_render_attribute( 'button', 'class', [ 'alezux-btn-complete-topic', 'elementor-button' ] );
 		$this->add_render_attribute( 'button', 'role', 'button' );
 		$this->add_render_attribute( 'button', 'data-post-id', $post_id );
 		$this->add_render_attribute( 'button', 'data-nonce', wp_create_nonce( 'alezux_toggle_complete_' . $post_id ) );
+        
+        // Añadir URL de redirección
+        if ( $next_url ) {
+            $this->add_render_attribute( 'button', 'data-next-url', $next_url );
+        }
 
 		if ( $is_completed ) {
 			$this->add_render_attribute( 'button', 'class', 'is-completed' );
