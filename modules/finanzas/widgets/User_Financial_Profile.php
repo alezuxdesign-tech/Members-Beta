@@ -160,60 +160,68 @@ class User_Financial_Profile extends Widget_Base {
                     No tienes suscripciones activas.
                 </div>
 
-                <div x-show="!loading && subscriptions.length > 0" class="grid gap-4">
-                    <template x-for="sub in subscriptions" :key="sub.id">
-                        <div class="alezux-sub-card border rounded-lg p-4 bg-white shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-                            
-                            <!-- Info Plan -->
-                            <div class="flex-1">
-                                <h4 class="font-bold text-lg" x-text="sub.plan_name"></h4>
-                                <div class="text-sm text-gray-600 mt-1">
-                                    <span class="mr-3"><i class="fas fa-tag mr-1"></i> <span x-text="sub.formatted_price"></span> / <span x-text="sub.plan_cycle"></span></span>
-                                    <span><i class="far fa-calendar-alt mr-1"></i> Próx. pago: <span x-text="sub.next_payment_date_formatted"></span></span>
-                                </div>
-                                <div class="mt-2 flex items-center gap-2">
-                                     <span class="px-2 py-1 text-xs rounded-full font-semibold"
-                                           :class="{
-                                               'bg-green-100 text-green-800': sub.status === 'active' || sub.status === 'completed',
-                                               'bg-red-100 text-red-800': sub.status === 'past_due' || sub.status === 'unpaid',
-                                               'bg-gray-100 text-gray-800': sub.status === 'canceled'
-                                           }"
-                                           x-text="translateStatus(sub.status)">
-                                     </span>
-                                </div>
-                            </div>
-
-                            <!-- Progreso Pagos -->
-                            <div class="flex-1 w-full md:w-auto">
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span>Progreso de pagos</span>
-                                    <span class="font-bold" x-text="sub.progress_text"></span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                    <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" :style="'width: ' + sub.progress_percent + '%'"></div>
-                                </div>
-                            </div>
-
-                            <!-- Acciones -->
-                            <div class="w-full md:w-auto flex justify-end">
-                                <template x-if="sub.can_pay_manually">
-                                    <button @click="payInstallment(sub.id)" 
-                                            class="alezux-btn-pay text-white px-4 py-2 rounded hover:opacity-90 transition-opacity flex items-center">
-                                        <i class="fas fa-credit-card mr-2"></i> Pagar Cuota
-                                    </button>
-                                </template>
-                                <template x-if="!sub.can_pay_manually && sub.status === 'completed'">
-                                    <button class="text-green-600 px-4 py-2 cursor-default font-semibold disabled" disabled>
-                                        <i class="fas fa-check-circle mr-2"></i> Finalizado
-                                    </button>
-                                </template>
-                                <template x-if="!sub.can_pay_manually && sub.status !== 'completed'">
-                                    <span class="text-gray-400 text-sm">Al día / Auto</span>
-                                </template>
-                            </div>
-
-                        </div>
-                    </template>
+                <div x-show="!loading && subscriptions.length > 0" class="alezux-table-wrapper">
+                    <table class="alezux-finanzas-table w-full text-sm text-left">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Plan Académico</th>
+                                <th scope="col" class="px-6 py-3">Monto</th>
+                                <th scope="col" class="px-6 py-3">Estado</th>
+                                <th scope="col" class="px-6 py-3">Progreso</th>
+                                <th scope="col" class="px-6 py-3">Vencimiento</th>
+                                <th scope="col" class="px-6 py-3">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="sub in subscriptions" :key="sub.id">
+                                <tr class="bg-white border-b hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-gray-900" x-text="sub.plan_name"></div>
+                                        <div class="text-xs text-gray-500" x-text="sub.plan_quotas + ' CUOTAS'"></div>
+                                    </td>
+                                    <td class="px-6 py-4 font-semibold" x-text="sub.formatted_price"></td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 text-xs rounded-full font-semibold"
+                                              :class="{
+                                                  'bg-green-100 text-green-800': sub.status === 'active' || sub.status === 'completed',
+                                                  'bg-red-100 text-red-800': sub.status === 'past_due' || sub.status === 'unpaid',
+                                                  'bg-gray-100 text-gray-800': sub.status === 'canceled'
+                                              }"
+                                              x-text="translateStatus(sub.status)">
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-1 w-32">
+                                            <span class="text-xs text-gray-600" x-text="sub.progress_text + ' PAGADOS'"></span>
+                                            <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+                                                <div class="bg-green-500 h-1.5 rounded-full" :style="'width: ' + sub.progress_percent + '%'"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div x-text="sub.next_payment_date_formatted"></div>
+                                        <div class="text-xs text-gray-500" x-show="sub.is_active">
+                                           <i class="far fa-calendar-alt mr-1"></i>Cuota #<span x-text="parseInt(sub.quotas_paid) + 1"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <template x-if="sub.can_pay_manually">
+                                            <button @click="payInstallment(sub.id)" 
+                                                    class="alezux-btn-pay text-white px-3 py-1.5 text-xs rounded hover:opacity-90 transition-opacity whitespace-nowrap">
+                                                Pagar Cuota
+                                            </button>
+                                        </template>
+                                        <template x-if="!sub.can_pay_manually && sub.status === 'completed'">
+                                            <span class="text-green-600 font-bold text-xs"><i class="fas fa-check"></i> Pagado</span>
+                                        </template>
+                                        <template x-if="!sub.can_pay_manually && sub.status !== 'completed'">
+                                            <span class="text-gray-400 text-xs">-</span>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
