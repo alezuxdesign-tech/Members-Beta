@@ -748,10 +748,10 @@ class Ajax_Handler {
             "SELECT 
                 s.*, 
                 p.name as plan_name, 
-                p.price as plan_price,
-                p.currency as plan_currency 
+                p.quota_amount as plan_price,
+                p.frequency as plan_cycle
              FROM $table_subs s
-             JOIN $table_plans p ON s.plan_id = p.id
+             LEFT JOIN $table_plans p ON s.plan_id = p.id
              WHERE s.id = %d AND s.user_id = %d",
             $subscription_id,
             $user_id
@@ -778,8 +778,17 @@ class Ajax_Handler {
         $cancel_url  = \home_url( '/perfil/' ); // O URL anterior
 
         // Datos del precio (Ad-hoc)
-        $currency = $subscription->plan_currency ? \strtolower( $subscription->plan_currency ) : 'usd';
-        $amount_cents = \round( (float)$subscription->plan_price * 100 );
+        // Asumimos USD ya que currency no está en la tabla de planes en este momento.
+        $currency = 'usd'; 
+        
+        // Si plan_price es null (plan borrado), intentar usar un fallback o error
+        $price_val = $subscription->plan_price ? (float)$subscription->plan_price : 0;
+        
+        if ( $price_val <= 0 ) {
+             \wp_send_json_error( 'Error: No se puede determinar el monto de la cuota (Plan eliminado o inválido).' );
+        }
+
+        $amount_cents = \round( $price_val * 100 );
         $next_quota = $subscription->quotas_paid + 1;
         
         $line_items = [[

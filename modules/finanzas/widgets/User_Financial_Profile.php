@@ -148,7 +148,7 @@ class User_Financial_Profile extends Widget_Base {
              x-data="alezuxFinancialProfile()" 
              x-init="initData()">
 			
-            <!-- SECCIÓN 1: ESTADO DE CUENTA -->
+            <!-- ACTIVIDAD FINANCIERA UNIFICADA -->
             <div class="alezux-financial-section mb-8">
                 <h3 class="alezux-financial-title text-xl font-bold mb-4"><?php echo esc_html( $settings['title_status'] ); ?></h3>
                 
@@ -156,24 +156,25 @@ class User_Financial_Profile extends Widget_Base {
                     <i class="fas fa-spinner fa-spin mr-2"></i> Cargando información...
                 </div>
 
-                <div x-show="!loading && subscriptions.length === 0" class="p-4 bg-gray-50 rounded text-center text-gray-500">
-                    No tienes suscripciones activas.
+                <div x-show="!loading && subscriptions.length === 0 && transactions.length === 0" class="p-4 bg-gray-50 rounded text-center text-gray-500">
+                    No tienes actividad financiera registrada.
                 </div>
 
-                <div x-show="!loading && subscriptions.length > 0" class="alezux-table-wrapper">
+                <div x-show="!loading && (subscriptions.length > 0 || transactions.length > 0)" class="alezux-table-wrapper">
                     <table class="alezux-finanzas-table w-full text-sm text-left">
                         <thead>
                             <tr>
-                                <th scope="col" class="px-6 py-3">Plan Académico</th>
+                                <th scope="col" class="px-6 py-3">Concepto</th>
                                 <th scope="col" class="px-6 py-3">Monto</th>
                                 <th scope="col" class="px-6 py-3">Estado</th>
-                                <th scope="col" class="px-6 py-3">Progreso</th>
-                                <th scope="col" class="px-6 py-3">Vencimiento</th>
+                                <th scope="col" class="px-6 py-3">Progreso / Detalle</th>
+                                <th scope="col" class="px-6 py-3">Fecha</th>
                                 <th scope="col" class="px-6 py-3">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <template x-for="sub in subscriptions" :key="sub.id">
+                            <!-- Suscripciones Activas (Primero) -->
+                            <template x-for="sub in subscriptions" :key="'sub-'+sub.id">
                                 <tr class="bg-white border-b hover:bg-gray-50">
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-gray-900" x-text="sub.plan_name"></div>
@@ -199,14 +200,12 @@ class User_Financial_Profile extends Widget_Base {
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
+                                        <div class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i> Vencimiento:</div>
                                         <div x-text="sub.next_payment_date_formatted"></div>
-                                        <div class="text-xs text-gray-500" x-show="sub.is_active">
-                                           <i class="far fa-calendar-alt mr-1"></i>Cuota #<span x-text="parseInt(sub.quotas_paid) + 1"></span>
-                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <template x-if="sub.can_pay_manually">
-                                            <button @click="payInstallment(sub.id)" 
+                                            <button @click="confirmPayment(sub.id)" 
                                                     class="alezux-btn-pay text-white px-3 py-1.5 text-xs rounded hover:opacity-90 transition-opacity whitespace-nowrap">
                                                 Pagar Cuota
                                             </button>
@@ -220,36 +219,15 @@ class User_Financial_Profile extends Widget_Base {
                                     </td>
                                 </tr>
                             </template>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- SECCIÓN 2: HISTORIAL -->
-            <div class="alezux-financial-section mt-8 alezux-finanzas-app">
-
-                
-                <div class="alezux-table-wrapper">
-                    <table class="alezux-finanzas-table w-full text-sm text-left">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Fecha</th>
-                                <th scope="col" class="px-6 py-3">Concepto</th>
-                                <th scope="col" class="px-6 py-3">Monto</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-show="transactions.length === 0">
-                                <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center">No hay transacciones recientes.</td>
-                                </tr>
-                            </template>
-                            <template x-for="trans in transactions" :key="trans.id">
-                                <tr class="bg-white border-b hover:bg-gray-50">
-                                    <td class="px-6 py-4" x-text="trans.date_formatted"></td>
-                                    <td class="px-6 py-4">Pago de cuota</td>
-                                    <td class="px-6 py-4 font-bold" x-text="trans.formatted_amount"></td>
+                            <!-- Historial de Transacciones (Después) -->
+                            <template x-for="trans in transactions" :key="'trans-'+trans.id">
+                                <tr class="bg-gray-50 border-b hover:bg-gray-100">
+                                    <td class="px-6 py-4">
+                                        <div class="font-medium text-gray-700">Pago de Cuota</div>
+                                        <div class="text-xs text-gray-500">Transacción ID: <span x-text="trans.id"></span></div>
+                                    </td>
+                                    <td class="px-6 py-4" x-text="trans.formatted_amount"></td>
                                     <td class="px-6 py-4">
                                         <span class="px-2 py-1 rounded text-xs"
                                               :class="{
@@ -260,10 +238,54 @@ class User_Financial_Profile extends Widget_Base {
                                               x-text="trans.status_label">
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4 text-center text-gray-400">-</td>
+                                    <td class="px-6 py-4">
+                                        <div x-text="trans.date_formatted"></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-gray-400">
+                                        <span class="text-xs text-green-600" x-show="trans.status === 'succeeded'"><i class="fas fa-check-double"></i></span>
+                                    </td>
                                 </tr>
                             </template>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- MODAL PERSONALIZADO -->
+            <div x-show="showModal" class="fixed inset-0 z-[99999] flex items-center justify-center overflow-y-auto" style="display: none;">
+                <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="if(showCancelButton) closeModal()"></div>
+                <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full m-4 relative p-6">
+                    
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
+                             :class="{ 'bg-red-100': modalType === 'error', 'bg-green-100': modalType === 'success', 'bg-blue-100': modalType === 'info' }">
+                            <i class="fas text-xl" :class="{ 
+                                'fa-exclamation-triangle text-red-600': modalType === 'error', 
+                                'fa-check text-green-600': modalType === 'success', 
+                                'fa-info-circle text-blue-600': modalType === 'info' 
+                            }"></i>
+                        </div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="modalTitle"></h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500" x-text="modalMessage"></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button type="button" 
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none sm:col-start-2 sm:text-sm"
+                                :class="{ 'bg-red-600 hover:bg-red-700': modalType === 'error', 'bg-green-600 hover:bg-green-700': modalType === 'success', 'bg-blue-600 hover:bg-blue-700': modalType === 'info' }"
+                                @click="handleConfirm()">
+                            <span x-text="modalConfirmText"></span>
+                        </button>
+                        <button type="button" 
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm"
+                                @click="closeModal()"
+                                x-show="showCancelButton">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -276,6 +298,15 @@ class User_Financial_Profile extends Widget_Base {
                 subscriptions: [],
                 transactions: [],
                 
+                // Modal State
+                showModal: false,
+                modalTitle: '',
+                modalMessage: '',
+                modalType: 'info', // info, success, error
+                modalConfirmText: 'Aceptar',
+                showCancelButton: false,
+                onConfirmAction: null,
+
                 initData() {
                     const formData = new FormData();
                     formData.append('action', 'alezux_get_my_financial_data');
@@ -315,10 +346,45 @@ class User_Financial_Profile extends Widget_Base {
                     return statuses[status] || status;
                 },
 
-                payInstallment(subscriptionId) {
-                    if (!confirm('¿Deseas proceder con el pago de la cuota pendiente?')) return;
-                    
+                // Modal Helpers
+                openModal(title, message, type = 'info', confirmText = 'Aceptar', showCancel = false, onConfirm = null) {
+                    this.modalTitle = title;
+                    this.modalMessage = message;
+                    this.modalType = type;
+                    this.modalConfirmText = confirmText;
+                    this.showCancelButton = showCancel;
+                    this.onConfirmAction = onConfirm;
+                    this.showModal = true;
+                },
+
+                closeModal() {
+                    this.showModal = false;
+                    this.onConfirmAction = null;
+                },
+
+                handleConfirm() {
+                    if (this.onConfirmAction) {
+                        this.onConfirmAction();
+                    } else {
+                        this.closeModal();
+                    }
+                },
+
+                confirmPayment(subscriptionId) {
+                    this.openModal(
+                        'Confirmar Pago',
+                        '¿Deseas generar el enlace de pago para la próxima cuota pendiente?',
+                        'info',
+                        'Sí, Pagar',
+                        true,
+                        () => this.processPayment(subscriptionId)
+                    );
+                },
+
+                processPayment(subscriptionId) {
                     this.loading = true;
+                    this.closeModal(); // Close confirmation modal
+                    
                     const formData = new FormData();
                     formData.append('action', 'alezux_create_installment_checkout');
                     formData.append('subscription_id', subscriptionId);
@@ -330,17 +396,18 @@ class User_Financial_Profile extends Widget_Base {
                     })
                     .then(response => response.json())
                     .then(data => {
+                        // this.loading = false; // Don't stop loading if redirecting
                         if (data.success) {
                             window.location.href = data.data.url;
                         } else {
-                            alert('Error: ' + (data.data || 'Desconocido'));
                             this.loading = false;
+                            this.openModal('Error', data.data || 'Ocurrió un error desconocido.', 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Error de conexión.');
                         this.loading = false;
+                        this.openModal('Error de Conexión', 'No se pudo conectar con el servidor.', 'error');
                     });
                 }
             }
