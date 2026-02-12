@@ -370,54 +370,46 @@ class User_Financial_Profile extends Widget_Base {
                 </div>
             </div>
 
-            <!-- MODAL PERSONALIZADO (Teleportado con Alpine + Estilos Inline Forzados) -->
-            <template x-teleport="body">
-                <div x-show="showModal" 
-                     class="alezux-modal-overlay"
-                     style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important;">
+            <!-- MODAL PERSONALIZADO (Vanilla JS - Fuera de Alpine) -->
+            <div id="alezux-profile-modal-<?php echo $this->get_id(); ?>" 
+                 class="alezux-modal-overlay"
+                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; display: none !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important;">
+                
+                <!-- Backdrop Click Handler -->
+                <div id="alezux-modal-backdrop-<?php echo $this->get_id(); ?>" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
+
+                <!-- Modal Content -->
+                <div class="alezux-modal-content"
+                     style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 28rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important;">
                     
-                    <!-- Backdrop Click Handler -->
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;" @click="if(showCancelButton) closeModal()"></div>
-
-                    <!-- Modal Content -->
-                    <div class="alezux-modal-content"
-                         style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 28rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important;">
-                        
-                        <div style="text-align: center !important;">
-                            <div style="margin-left: auto; margin-right: auto; display: flex; align-items: center; justify-content: center; height: 3rem; width: 3rem; border-radius: 9999px; margin-bottom: 1rem;"
-                                 :style="modalType === 'error' ? 'background-color: #fee2e2;' : (modalType === 'success' ? 'background-color: #dcfce7;' : 'background-color: #dbeafe;')">
-                                <i class="fas text-xl" :class="{ 
-                                    'fa-exclamation-triangle': modalType === 'error', 
-                                    'fa-check': modalType === 'success', 
-                                    'fa-info-circle': modalType === 'info' 
-                                }" :style="modalType === 'error' ? 'color: #dc2626;' : (modalType === 'success' ? 'color: #16a34a;' : 'color: #2563eb;')"></i>
-                            </div>
-                            <h3 style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; color: #111827 !important; margin-top: 0;" x-text="modalTitle"></h3>
-                            <div style="margin-top: 0.5rem;">
-                                <p style="font-size: 0.875rem; line-height: 1.25rem; color: #6b7280 !important;" x-text="modalMessage"></p>
-                            </div>
+                    <div style="text-align: center !important;">
+                        <div id="alezux-modal-icon-container-<?php echo $this->get_id(); ?>"
+                             style="margin-left: auto; margin-right: auto; display: flex; align-items: center; justify-content: center; height: 3rem; width: 3rem; border-radius: 9999px; margin-bottom: 1rem;">
+                            <i id="alezux-modal-icon-<?php echo $this->get_id(); ?>" class="fas text-xl"></i>
                         </div>
-
-                        <div style="margin-top: 1.25rem; display: grid; gap: 0.75rem; grid-template-columns: repeat(1, minmax(0, 1fr));">
-                            <!-- Botón Confirmar -->
-                            <button type="button" 
-                                    style="width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid transparent; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;"
-                                    :style="modalType === 'error' ? 'background-color: #dc2626 !important;' : (modalType === 'success' ? 'background-color: #16a34a !important;' : 'background-color: #2563eb !important;')"
-                                    @click="handleConfirm()">
-                                <span x-text="modalConfirmText"></span>
-                            </button>
-                            
-                            <!-- Botón Cancelar -->
-                            <button type="button" 
-                                    style="margin-top: 0.75rem; width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #374151 !important; background-color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;"
-                                    @click="closeModal()"
-                                    x-show="showCancelButton">
-                                Cancelar
-                            </button>
+                        <h3 id="alezux-modal-title-<?php echo $this->get_id(); ?>" style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; color: #111827 !important; margin-top: 0;"></h3>
+                        <div style="margin-top: 0.5rem;">
+                            <p id="alezux-modal-message-<?php echo $this->get_id(); ?>" style="font-size: 0.875rem; line-height: 1.25rem; color: #6b7280 !important;"></p>
                         </div>
                     </div>
+
+                    <div style="margin-top: 1.25rem; display: grid; gap: 0.75rem; grid-template-columns: repeat(1, minmax(0, 1fr));">
+                        <!-- Botón Confirmar -->
+                        <button type="button" 
+                                id="alezux-modal-confirm-btn-<?php echo $this->get_id(); ?>"
+                                style="width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid transparent; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;">
+                            <span id="alezux-modal-confirm-text-<?php echo $this->get_id(); ?>"></span>
+                        </button>
+                        
+                        <!-- Botón Cancelar -->
+                        <button type="button" 
+                                id="alezux-modal-cancel-btn-<?php echo $this->get_id(); ?>"
+                                style="margin-top: 0.75rem; width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #374151 !important; background-color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
-            </template>
+            </div>
 
 		</div>
 
@@ -438,6 +430,13 @@ class User_Financial_Profile extends Widget_Base {
                 onConfirmAction: null,
 
                 initData() {
+                    // Teleport Modal to Body manually (robust fallback)
+                    const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
+                    const modalEl = document.getElementById(modalId);
+                    if (modalEl && modalEl.parentElement !== document.body) {
+                        document.body.appendChild(modalEl);
+                    }
+
                     const formData = new FormData();
                     formData.append('action', 'alezux_get_my_financial_data');
                     formData.append('nonce', '<?php echo wp_create_nonce( "alezux_finanzas_nonce" ); ?>');
@@ -476,28 +475,76 @@ class User_Financial_Profile extends Widget_Base {
                     return statuses[status] || status;
                 },
 
-                // Modal Helpers
+                // Modal Logic - Pure Vanilla JS
                 openModal(title, message, type = 'info', confirmText = 'Aceptar', showCancel = false, onConfirm = null) {
-                    this.modalTitle = title;
-                    this.modalMessage = message;
-                    this.modalType = type;
-                    this.modalConfirmText = confirmText;
-                    this.showCancelButton = showCancel;
-                    this.onConfirmAction = onConfirm;
-                    this.showModal = true;
+                    const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
+                    const modalEl = document.getElementById(modalId);
+                    
+                    if (!modalEl) return;
+
+                    // Update Content
+                    document.getElementById('alezux-modal-title-<?php echo $this->get_id(); ?>').innerText = title;
+                    document.getElementById('alezux-modal-message-<?php echo $this->get_id(); ?>').innerText = message;
+                    document.getElementById('alezux-modal-confirm-text-<?php echo $this->get_id(); ?>').innerText = confirmText;
+
+                    // Update Style based on Type
+                    const iconContainer = document.getElementById('alezux-modal-icon-container-<?php echo $this->get_id(); ?>');
+                    const icon = document.getElementById('alezux-modal-icon-<?php echo $this->get_id(); ?>');
+                    const confirmBtn = document.getElementById('alezux-modal-confirm-btn-<?php echo $this->get_id(); ?>');
+
+                    // Reset classes
+                    icon.className = 'fas text-xl';
+
+                    if (type === 'error') {
+                        iconContainer.style.backgroundColor = '#fee2e2';
+                        icon.classList.add('fa-exclamation-triangle');
+                        icon.style.color = '#dc2626';
+                        confirmBtn.style.backgroundColor = '#dc2626';
+                    } else if (type === 'success') {
+                        iconContainer.style.backgroundColor = '#dcfce7';
+                        icon.classList.add('fa-check');
+                        icon.style.color = '#16a34a';
+                        confirmBtn.style.backgroundColor = '#16a34a';
+                    } else {
+                        iconContainer.style.backgroundColor = '#dbeafe';
+                        icon.classList.add('fa-info-circle');
+                        icon.style.color = '#2563eb';
+                        confirmBtn.style.backgroundColor = '#2563eb';
+                    }
+
+                    // Show/Hide Cancel Button
+                    const cancelBtn = document.getElementById('alezux-modal-cancel-btn-<?php echo $this->get_id(); ?>');
+                    cancelBtn.style.display = showCancel ? 'inline-flex' : 'none';
+
+                    // Assign Click Handlers
+                    this._onConfirm = onConfirm;
+                    
+                    // Simple confirm handler
+                    confirmBtn.onclick = () => {
+                        if (this._onConfirm) {
+                            this._onConfirm();
+                        } else {
+                            this.closeModal();
+                        }
+                    };
+
+                    // Cancel Handlers
+                    cancelBtn.onclick = () => this.closeModal();
+                    document.getElementById('alezux-modal-backdrop-<?php echo $this->get_id(); ?>').onclick = () => {
+                        if (showCancel) this.closeModal();
+                    };
+
+                    // Show Modal
+                    modalEl.style.display = 'flex';
                 },
 
                 closeModal() {
-                    this.showModal = false;
-                    this.onConfirmAction = null;
-                },
-
-                handleConfirm() {
-                    if (this.onConfirmAction) {
-                        this.onConfirmAction();
-                    } else {
-                        this.closeModal();
+                    const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
+                    const modalEl = document.getElementById(modalId);
+                    if (modalEl) {
+                        modalEl.style.display = 'none';
                     }
+                    this._onConfirm = null;
                 },
 
                 confirmPayment(subscriptionId) {
