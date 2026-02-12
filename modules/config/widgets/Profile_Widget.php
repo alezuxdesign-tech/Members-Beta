@@ -359,6 +359,199 @@ class Profile_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- STYLE SECTION: CROP MODAL BUTTONS ---
+		$this->start_controls_section(
+			'section_style_crop_buttons',
+			[
+				'label' => esc_html__( 'Botones de Recorte (Modal)', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        // --- CANCEL BUTTON ---
+        $this->add_control(
+			'heading_cancel_btn',
+			[
+				'label' => esc_html__( 'Botón Cancelar', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+        $this->start_controls_tabs( 'tabs_cancel_btn_style' );
+
+		$this->start_controls_tab(
+			'tab_cancel_btn_normal',
+			[ 'label' => esc_html__( 'Normal', 'alezux-members' ) ]
+		);
+
+        $this->add_control(
+			'cancel_btn_color',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-cancel' => 'color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_control(
+			'cancel_btn_bg',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-cancel' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'cancel_btn_border',
+				'selector' => '{{WRAPPER}} .alezux-btn-cancel',
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+			'tab_cancel_btn_hover',
+			[ 'label' => esc_html__( 'Hover', 'alezux-members' ) ]
+		);
+
+        $this->add_control(
+			'cancel_btn_color_hover',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-cancel:hover' => 'color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_control(
+			'cancel_btn_bg_hover',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-cancel:hover' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'cancel_btn_border_hover',
+				'selector' => '{{WRAPPER}} .alezux-btn-cancel:hover',
+			]
+		);
+
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+
+        // --- CROP BUTTON ---
+        $this->add_control(
+			'heading_crop_btn',
+			[
+				'label' => esc_html__( 'Botón Recortar', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+        $this->start_controls_tabs( 'tabs_crop_btn_style' );
+
+		$this->start_controls_tab(
+			'tab_crop_btn_normal',
+			[ 'label' => esc_html__( 'Normal', 'alezux-members' ) ]
+		);
+
+        $this->add_control(
+			'crop_btn_color',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-crop' => 'color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_control(
+			'crop_btn_bg',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-crop' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'crop_btn_border',
+				'selector' => '{{WRAPPER}} .alezux-btn-crop',
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+			'tab_crop_btn_hover',
+			[ 'label' => esc_html__( 'Hover', 'alezux-members' ) ]
+		);
+
+        $this->add_control(
+			'crop_btn_color_hover',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-crop:hover' => 'color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_control(
+			'crop_btn_bg_hover',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [ '{{WRAPPER}} .alezux-btn-crop:hover' => 'background-color: {{VALUE}};' ],
+			]
+		);
+
+        $this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'     => 'crop_btn_border_hover',
+				'selector' => '{{WRAPPER}} .alezux-btn-crop:hover',
+			]
+		);
+
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+        
+        // Common typography
+        $this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'crop_btns_typography',
+				'label'    => esc_html__( 'Tipografía General', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-btn-cancel, {{WRAPPER}} .alezux-btn-crop',
+                'separator' => 'before',
+			]
+		);
+
+        $this->add_control(
+			'crop_btns_border_radius',
+			[
+				'label' => esc_html__( 'Borde Redondeado', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-cancel, {{WRAPPER}} .alezux-btn-crop' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {

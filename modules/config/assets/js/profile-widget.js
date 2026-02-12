@@ -110,7 +110,7 @@ jQuery(document).ready(function ($) {
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    window.alezuxShowModal('¡Éxito!', response.data.message, 'success');
+                    window.alezuxShowModal('¡Éxito!', response.data.message, 'success', 'reload');
                 } else {
                     window.alezuxShowModal('Error', response.data.message, 'error');
                 }

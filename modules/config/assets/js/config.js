@@ -179,12 +179,13 @@ jQuery(document).ready(function ($) {
     });
 
     // --- CUSTOM MODAL FUNCTIONS ---
-    window.alezuxShowModal = function (title, message, type) {
+    window.alezuxShowModal = function (title, message, type, redirect = null) {
         // Remove existing modal if any
         $('.alezux-modal-overlay').remove();
 
         var icon = type === 'success' ? '✅' : '❌';
         var iconClass = type === 'success' ? 'success' : 'error';
+        var redirectAttr = redirect ? ` data-redirect="${redirect}"` : '';
 
         var modalHtml = `
             <div class="alezux-modal-overlay">
@@ -192,7 +193,7 @@ jQuery(document).ready(function ($) {
                     <div class="alezux-modal-icon ${iconClass}">${icon}</div>
                     <h3 class="alezux-modal-title">${title}</h3>
                     <p class="alezux-modal-message">${message}</p>
-                    <button class="alezux-modal-close">Cerrar</button>
+                    <button class="alezux-modal-close"${redirectAttr}>Cerrar</button>
                 </div>
             </div>
         `;
@@ -208,9 +209,27 @@ jQuery(document).ready(function ($) {
     $(document).on('click', '.alezux-modal-close, .alezux-modal-overlay', function (e) {
         if (e.target !== this && !$(e.target).hasClass('alezux-modal-close')) return;
 
+        // Check for redirect before removing
+        var $btn = $(this).find('.alezux-modal-close');
+        // If clicked directly on button
+        if ($(e.target).hasClass('alezux-modal-close')) {
+            $btn = $(e.target);
+        }
+
+        var redirect = $btn.attr('data-redirect');
+
         $('.alezux-modal-overlay').removeClass('active');
         setTimeout(function () {
             $('.alezux-modal-overlay').remove();
+
+            // Execute redirect/reload after closing animation
+            if (redirect) {
+                if (redirect === 'reload') {
+                    window.location.reload();
+                } else {
+                    window.location.href = redirect;
+                }
+            }
         }, 300);
     });
 
