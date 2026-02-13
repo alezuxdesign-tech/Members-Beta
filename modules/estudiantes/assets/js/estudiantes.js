@@ -94,8 +94,6 @@ jQuery(document).ready(function ($) {
 
     $(document).on('change', '.alezux-row-limit-select', function () {
         var newLimit = $(this).val();
-        console.log('[Alezux] Cambiando límite a:', newLimit);
-
         var $wrapper = $(this).closest('.alezux-estudiantes-wrapper');
         $wrapper.data('limit', newLimit);
 
@@ -103,7 +101,6 @@ jQuery(document).ready(function ($) {
     });
 
     function loadStudents(page, search) {
-        console.log('[Alezux] Buscando:', search, 'Página:', page);
         var $tableBody = $('.alezux-estudiantes-table tbody');
         $tableBody.css('opacity', '0.5');
 
