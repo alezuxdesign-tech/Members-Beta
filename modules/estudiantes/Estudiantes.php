@@ -276,24 +276,15 @@ class Estudiantes extends Module_Base {
         // Obtener precio del plan para la transacción
         global $wpdb;
         $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
-        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT price, currency FROM $table_plans WHERE id = %d", $plan_id ) );
+        // FIX: La columna es 'quota_amount', no 'price'. Currency no existe en tabla, asumimos USD.
+        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT quota_amount FROM $table_plans WHERE id = %d", $plan_id ) );
         
         if ( ! $plan ) {
-			// DEBUG: Dump table contents if plan not found
-			$all_plans = $wpdb->get_results( "SELECT * FROM $table_plans" );
-			$debug_info = [];
-			if ( $all_plans ) {
-				foreach ( $all_plans as $p ) {
-					$debug_info[] = json_encode( $p );
-				}
-			} else {
-				$debug_info[] = "Table is empty or query failed.";
-			}
-			\wp_send_json_error( [ 'message' => 'El plan seleccionado no existe (DB Check). Table: ' . $table_plans . ', ID buscado: ' . $plan_id . '. Contenido Tabla: ' . implode( ', ', $debug_info ) ] );
+            \wp_send_json_error( [ 'message' => 'El plan seleccionado no existe.' ] );
         }
         
-        $amount = floatval( $plan->price );
-        $currency = !empty($plan->currency) ? $plan->currency : 'USD';
+        $amount = floatval( $plan->quota_amount );
+        $currency = 'USD'; // Default currency as it is not in the table
         $full_name = trim( $first_name . ' ' . $last_name );
 
         // Ejecutar Inscripción vía Finanzas
