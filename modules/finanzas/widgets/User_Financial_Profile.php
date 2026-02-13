@@ -676,24 +676,52 @@ class User_Financial_Profile extends Widget_Base {
                         emptyDiv.style.display = 'block';
                     } else {
                         emptyDiv.style.display = 'none';
-                        // Build HTML List
-                        let html = '<table class="w-full text-sm text-left text-gray-500">';
-                            html += '<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-4 py-2">Fecha</th><th class="px-4 py-2">Monto</th><th class="px-4 py-2">Estado</th><th class="px-4 py-2">Ref</th></tr></thead>';
-                            html += '<tbody>';
+                        // Build HTML List (Card Style)
+                        let html = '<div class="space-y-3">';
                         
-                        filteredTrans.forEach(t => {
-                            let statusClass = 'bg-gray-100 text-gray-800';
-                            if(t.status === 'succeeded') statusClass = 'bg-green-100 text-green-800';
-                            if(t.status === 'failed') statusClass = 'bg-red-100 text-red-800';
+                        // Sort by date ASC to determine "Pago #X" accurately if needed, 
+                        // but usually display is DESC. Let's just use the filtered list order.
+                        // Assuming filteredTrans is DESC (newest first).
+                        const total = filteredTrans.length;
+
+                        filteredTrans.forEach((t, index) => {
+                            // index 0 is the newest.
+                            // If we want "Estado pago #X", and we assume 1 payment = 1 quota...
+                            // Let's use reverse index for numbering: (total - index)
+                            const paymentNumber = total - index;
                             
-                            html += `<tr class="bg-white border-b">
-                                        <td class="px-4 py-2">${t.date_formatted}</td>
-                                        <td class="px-4 py-2 font-bold">${t.formatted_amount}</td>
-                                        <td class="px-4 py-2"><span class="px-2 py-1 rounded text-xs ${statusClass}">${t.status_label || t.status}</span></td>
-                                        <td class="px-4 py-2 text-xs font-mono text-gray-400">${t.transaction_ref || '-'}</td>
-                                     </tr>`;
+                            // Status Styles
+                            let statusTextClass = 'text-green-400';
+                            if(t.status === 'failed') statusTextClass = 'text-red-400';
+                            if(t.status === 'pending') statusTextClass = 'text-yellow-400';
+
+                            html += `
+                            <div style="background-color: #0f0f1a; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border: 1px solid #2d2d42;">
+                                <!-- Left Side -->
+                                <div>
+                                    <div style="background-color: #2d1b4e; color: #a5b4fc; display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; margin-bottom: 8px;">
+                                        Estado pago #${paymentNumber}
+                                    </div>
+                                    <h4 style="font-size: 1.5rem; font-weight: bold; margin: 0; line-height: 1.2; color: #fff;">
+                                        ${t.status_label || t.status}
+                                    </h4>
+                                    <div style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">
+                                        Ref: ${t.transaction_ref || 'N/A'}
+                                    </div>
+                                </div>
+
+                                <!-- Right Side -->
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.875rem; color: #e5e7eb; margin-bottom: 4px;">
+                                        ${t.date_formatted}
+                                    </div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">
+                                        ${t.formatted_amount}
+                                    </div>
+                                </div>
+                            </div>`;
                         });
-                            html += '</tbody></table>';
+                        html += '</div>';
                         contentDiv.innerHTML = html;
                     }
 
