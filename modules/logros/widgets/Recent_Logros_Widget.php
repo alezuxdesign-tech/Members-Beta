@@ -329,10 +329,42 @@ class Recent_Logros_Widget extends Widget_Base {
 		$table_name = $wpdb->prefix . 'alezux_achievements';
 
 		// Consulta segura a la base de datos
-		$results = $wpdb->get_results( $wpdb->prepare( 
-			"SELECT * FROM $table_name ORDER BY created_at DESC LIMIT %d", 
-			$limit 
-		) );
+		// Lógica de filtrado por usuario/curso
+		$current_user_id = get_current_user_id();
+		$where_clauses = [];
+		$params = [];
+
+		// 1. Logros asignados directamente al estudiante
+		if ( $current_user_id ) {
+			$where_clauses[] = "student_id = %d";
+			$params[] = $current_user_id;
+		}
+
+		// 2. Logros de cursos donde el estudiante está inscrito
+		if ( $current_user_id && function_exists( 'learndash_user_get_enrolled_courses' ) ) {
+			$enrolled_courses = learndash_user_get_enrolled_courses( $current_user_id );
+			if ( ! empty( $enrolled_courses ) ) {
+				// Sanitize IDs for IN clause
+				$course_ids = array_map( 'intval', $enrolled_courses );
+				$course_ids_str = implode( ',', $course_ids );
+				$where_clauses[] = "course_id IN ($course_ids_str)";
+			}
+		}
+
+		if ( empty( $where_clauses ) ) {
+			// Si no hay condiciones (ej. no logueado o sin cursos), no mostrar nada
+			echo '<div class="alezux-no-logros">' . esc_html__( 'No hay logros recientes.', 'alezux-members' ) . '</div>';
+			return;
+		}
+
+		$where_sql = implode( ' OR ', $where_clauses );
+		
+		// Añadir límite al final de los parámetros
+		$params[] = $limit;
+
+		// Consulta segura a la base de datos
+		$sql = "SELECT * FROM $table_name WHERE ($where_sql) ORDER BY created_at DESC LIMIT %d";
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
 
 		if ( empty( $results ) ) {
 			echo '<div class="alezux-no-logros">' . esc_html__( 'No hay logros recientes.', 'alezux-members' ) . '</div>';
