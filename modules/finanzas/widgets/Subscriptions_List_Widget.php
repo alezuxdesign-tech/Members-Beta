@@ -776,6 +776,30 @@ class Subscriptions_List_Widget extends Widget_Base {
         );
 
         $this->add_control(
+            'popup_box_margin',
+            [
+                'label' => esc_html__('Margen', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'popup_box_padding',
+            [
+                'label' => esc_html__('Relleno', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-modal-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'popup_content_heading',
             [
                 'label' => esc_html__('Textos y Inputs', 'alezux-members'),
@@ -1040,7 +1064,7 @@ class Subscriptions_List_Widget extends Widget_Base {
             </div>
 
             <!-- Modal de Pago Manual -->
-            <div id="alezux-manual-pay-modal" class="alezux-modal" style="<?php echo ( \Elementor\Plugin::$instance->editor->is_edit_mode() && 'yes' === $settings['preview_modal'] ) ? 'display:flex !important;' : 'display:none;'; ?>">
+            <div id="alezux-manual-pay-modal-<?php echo $this->get_id(); ?>" class="alezux-modal" style="<?php echo ( \Elementor\Plugin::$instance->editor->is_edit_mode() && 'yes' === $settings['preview_modal'] ) ? 'display:flex !important;' : 'display:none;'; ?>">
                 <div class="alezux-modal-content">
                     <span class="alezux-close-modal">&times;</span>
                     <h3><?php esc_html_e('Registrar Pago Manual', 'alezux-members'); ?></h3>
