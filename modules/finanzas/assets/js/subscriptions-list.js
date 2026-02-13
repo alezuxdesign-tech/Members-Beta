@@ -223,14 +223,14 @@ jQuery(window).on('elementor/frontend/init', function () {
             // Ensure the modal is in the body for proper overlay behavior
             // Check if parent exists and is not body
             if ($modal.parent().length > 0 && $modal.parent()[0].tagName !== 'BODY') {
-                $modal.appendTo('body');
-
-                // Add the widget's unique Elementor class to the modal
-                // so that {{WRAPPER}} styles continue to apply
                 const widgetId = $scope.data('id');
-                if (widgetId) {
-                    $modal.addClass('elementor-element-' + widgetId);
-                }
+                // Create a wrapper that mimics the Elementor Widget container to preserve {{WRAPPER}} styles
+                const $wrapper = $('<div>', {
+                    class: 'alezux-modal-body-wrapper elementor-element-' + widgetId
+                });
+
+                $wrapper.append($modal);
+                $wrapper.appendTo('body');
             }
 
             $modal.find('#modal-sub-id').text(currentSubId);
