@@ -755,7 +755,8 @@ class Ajax_Handler {
                 s.*, 
                 p.name as plan_name, 
                 p.quota_amount as plan_price,
-                p.frequency as plan_cycle
+                p.frequency as plan_cycle,
+                p.total_quotas
              FROM $table_subs s
              LEFT JOIN $table_plans p ON s.plan_id = p.id
              WHERE s.id = %d AND s.user_id = %d",
