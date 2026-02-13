@@ -279,7 +279,17 @@ class Estudiantes extends Module_Base {
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT price, currency FROM $table_plans WHERE id = %d", $plan_id ) );
         
         if ( ! $plan ) {
-			\wp_send_json_error( [ 'message' => 'El plan seleccionado no existe (DB Check). Table: ' . $table_plans . ', ID: ' . $plan_id ] );
+			// DEBUG: Dump table contents if plan not found
+			$all_plans = $wpdb->get_results( "SELECT * FROM $table_plans" );
+			$debug_info = [];
+			if ( $all_plans ) {
+				foreach ( $all_plans as $p ) {
+					$debug_info[] = "ID: " . $p->id . " Name: " . $p->name;
+				}
+			} else {
+				$debug_info[] = "Table is empty or query failed.";
+			}
+			\wp_send_json_error( [ 'message' => 'El plan seleccionado no existe (DB Check). Table: ' . $table_plans . ', ID buscado: ' . $plan_id . '. Contenido Tabla: ' . implode( ', ', $debug_info ) ] );
         }
         
         $amount = floatval( $plan->price );
