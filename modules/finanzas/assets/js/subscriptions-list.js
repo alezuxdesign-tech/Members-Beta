@@ -223,25 +223,49 @@ jQuery(window).on('elementor/frontend/init', function () {
             // --- FIX START ---
             console.log('Opening Modal for Widget ID:', $scope.data('id'));
 
-            // Check if already moved/wrapped
+            // Check if already moved/wrapped and HAS the correct structure
             const $parent = $modal.parent();
-            const alreadyWrapped = $parent.hasClass('alezux-modal-body-wrapper');
+            // We want the parent to be .alezux-finanzas-app (to inherit table styles)
+            // And THAT parent to be .elementor-widget-container (to inherit Elementor text styles)
+            // And THAT parent to be our wrapper (to provide the Elementor ID scope)
 
-            if (!alreadyWrapped) {
+            const isCorrectlyWrapped = $parent.hasClass('alezux-finanzas-app') &&
+                $parent.parent().hasClass('elementor-widget-container') &&
+                $parent.parent().parent().hasClass('alezux-modal-body-wrapper');
+
+            if (!isCorrectlyWrapped) {
                 const widgetId = $scope.data('id');
                 if (!widgetId) console.warn('Widget ID missing!');
 
-                console.log('Wrapping modal with ID:', widgetId);
+                console.log('Wrapping modal with ID:', widgetId, 'and adding style containers');
 
-                const $wrapper = $('<div>', {
+                // 1. Top Level Wrapper (Elementor ID Scope)
+                const $topWrapper = $('<div>', {
                     class: 'alezux-modal-body-wrapper elementor-element elementor-element-' + widgetId + ' elementor-widget-alezux_subs_list'
                 });
 
-                // Append wrapper to body FIRST
-                $wrapper.appendTo('body');
-                // Move Modal into wrapper
-                $wrapper.append($modal);
-                // Update reference
+                // 2. Elementor Widget Container (Standard Elementor Structure)
+                const $widgetContainer = $('<div>', {
+                    class: 'elementor-widget-container'
+                });
+
+                // 3. App Container (Theme/Module Styles)
+                const $appContainer = $('<div>', {
+                    class: 'alezux-finanzas-app'
+                });
+
+                // Nest them
+                $appContainer.append($modal);
+                $widgetContainer.append($appContainer);
+                $topWrapper.append($widgetContainer);
+
+                // Append to Body
+                $topWrapper.appendTo('body');
+
+                // Update reference visibility
+                $modal.css('display', 'flex');
+            } else {
+                console.log('Modal already correctly wrapped');
                 $modal.css('display', 'flex');
             }
             // --- FIX END ---
