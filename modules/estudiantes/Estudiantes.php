@@ -279,7 +279,7 @@ class Estudiantes extends Module_Base {
         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT price, currency FROM $table_plans WHERE id = %d", $plan_id ) );
         
         if ( ! $plan ) {
-            \wp_send_json_error( [ 'message' => 'El plan seleccionado no existe.' ] );
+			\wp_send_json_error( [ 'message' => 'El plan seleccionado no existe (DB Check). Table: ' . $table_plans . ', ID: ' . $plan_id ] );
         }
         
         $amount = floatval( $plan->price );
