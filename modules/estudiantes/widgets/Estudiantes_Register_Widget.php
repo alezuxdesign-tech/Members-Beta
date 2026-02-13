@@ -473,33 +473,30 @@ class Estudiantes_Register_Widget extends Widget_Base {
 
 				<div class="alezux-form-group">
 					<label class="alezux-form-label"><?php echo esc_html( $settings['label_plan'] ); ?></label>
-					<select name="plan_id" class="alezux-form-control" required>
-						<option value=""><?php esc_html_e( '-- Seleccionar Plan --', 'alezux-members' ); ?></option>
-						<?php 
-                        if ( $plans ) {
-                            foreach ( $plans as $plan ) : ?>
-							    <option value="<?php echo esc_attr( $plan->id ); ?>">
-                                    <?php echo esc_html( $plan->name ); ?> 
-                                    (<?php echo strtoupper( $plan->currency ) . ' ' . $plan->price; ?>)
-                                </option>
-						    <?php endforeach; 
-                        } else {
-                            echo '<option value="">No hay planes configurados</option>';
-                        }
-                        ?>
-					</select>
-				</div>
-
-				<div class="alezux-form-row" style="display: flex; gap: 15px;">
-					<div class="alezux-form-group" style="flex: 1;">
-						<label class="alezux-form-label"><?php echo esc_html( $settings['label_payment_method'] ); ?></label>
-						<select name="payment_method" class="alezux-form-control">
-							<option value="manual_cash"><?php esc_html_e( 'Efectivo', 'alezux-members' ); ?></option>
-							<option value="manual_transfer"><?php esc_html_e( 'Transferencia / Depósito', 'alezux-members' ); ?></option>
-							<option value="manual_card"><?php esc_html_e( 'Tarjeta (POS Físico)', 'alezux-members' ); ?></option>
-							<option value="scholarship"><?php esc_html_e( 'Beca (Gratuito)', 'alezux-members' ); ?></option>
+						<select name="plan_id" class="alezux-form-control" required>
+							<option value=""><?php esc_html_e( '-- Seleccionar Plan --', 'alezux-members' ); ?></option>
+							<?php 
+							if ( $plans ) {
+								foreach ( $plans as $plan ) : ?>
+									<option value="<?php echo esc_attr( $plan->id ); ?>">
+										<?php echo esc_html( $plan->name ); ?>
+									</option>
+								<?php endforeach; 
+							} else {
+								echo '<option value="">No hay planes configurados</option>';
+							}
+							?>
 						</select>
 					</div>
+
+					<div class="alezux-form-row" style="display: flex; gap: 15px;">
+						<div class="alezux-form-group" style="flex: 1;">
+							<label class="alezux-form-label"><?php echo esc_html( $settings['label_payment_method'] ); ?></label>
+							<select name="payment_method" class="alezux-form-control">
+								<option value="manual_cash"><?php esc_html_e( 'Efectivo', 'alezux-members' ); ?></option>
+								<option value="manual_transfer"><?php esc_html_e( 'Transferencia / Depósito', 'alezux-members' ); ?></option>
+							</select>
+						</div>
 
 					<div class="alezux-form-group" style="flex: 1;">
 						<label class="alezux-form-label"><?php echo esc_html( $settings['label_payment_ref'] ); ?></label>
