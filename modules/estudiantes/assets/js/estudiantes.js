@@ -87,6 +87,11 @@ jQuery(document).ready(function ($) {
         $input.val('').trigger('input').focus();
     });
 
+    // Eventos para Filtros
+    $(document).on('change', '.alezux-filter-select', function () {
+        loadStudents(1, currentSearch);
+    });
+
     $(document).on('change', '.alezux-row-limit-select', function () {
         var newLimit = $(this).val();
         console.log('[Alezux] Cambiando límite a:', newLimit);
@@ -102,6 +107,10 @@ jQuery(document).ready(function ($) {
         var $tableBody = $('.alezux-estudiantes-table tbody');
         $tableBody.css('opacity', '0.5');
 
+        // Obtener valores de filtros
+        var courseId = $('#filter-course').val();
+        var status = $('#filter-status').val();
+
         $.ajax({
             url: alezux_estudiantes_vars.ajax_url,
             type: 'POST',
@@ -110,7 +119,9 @@ jQuery(document).ready(function ($) {
                 nonce: alezux_estudiantes_vars.nonce,
                 page: page,
                 search: search,
-                limit: $('.alezux-estudiantes-wrapper').data('limit') || 10
+                limit: $('.alezux-estudiantes-wrapper').data('limit') || 10,
+                course_id: courseId,
+                status: status
             },
             success: function (response) {
                 if (response.success) {

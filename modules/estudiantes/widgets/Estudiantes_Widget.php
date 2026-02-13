@@ -1278,6 +1278,36 @@ class Estudiantes_Widget extends Widget_Base {
 					<p class="alezux-table-desc alezux-estudiantes-desc"><?php echo \esc_html( $settings['header_description'] ); ?></p>
 				</div>
                 <div class="alezux-header-right">
+                    <div class="alezux-filters-wrapper" style="display:flex; gap:10px; align-items:center; margin-right: 15px;">
+                        <!-- Filtro Curso -->
+                        <?php 
+                        $courses = get_posts([
+                             'post_type' => 'sfwd-courses',
+                             'numberposts' => -1,
+                             'post_status' => 'publish',
+                             'orderby' => 'title',
+                             'order' => 'ASC'
+                        ]);
+                        ?>
+                        <div class="alezux-select-wrapper">
+                            <select id="filter-course" class="alezux-filter-select alezux-form-control" style="height:40px; padding: 0 30px 0 10px;">
+                                <option value=""><?php esc_html_e( 'Todos los cursos', 'alezux-members' ); ?></option>
+                                <?php if($courses): foreach($courses as $course): ?>
+                                    <option value="<?php echo esc_attr($course->ID); ?>"><?php echo esc_html($course->post_title); ?></option>
+                                <?php endforeach; endif; ?>
+                            </select>
+                        </div>
+
+                        <!-- Filtro Estado -->
+                        <div class="alezux-select-wrapper">
+                            <select id="filter-status" class="alezux-filter-select alezux-form-control" style="height:40px; padding: 0 30px 0 10px;">
+                                <option value=""><?php esc_html_e( 'Todos los estados', 'alezux-members' ); ?></option>
+                                <option value="active"><?php esc_html_e( 'Activo', 'alezux-members' ); ?></option>
+                                <option value="blocked"><?php esc_html_e( 'Bloqueado', 'alezux-members' ); ?></option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="alezux-search-wrapper">
                        <span class="dashicons dashicons-search search-icon"></span>
                        <input type="text" class="alezux-table-search-input" placeholder="<?php esc_attr_e( 'Buscar por nombre o email...', 'alezux-members' ); ?>">

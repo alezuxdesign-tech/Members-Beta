@@ -118,9 +118,12 @@ class Estudiantes extends Module_Base {
 			\wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
 		}
 
-		$search = isset( $_POST['search'] ) ? \sanitize_text_field( $_POST['search'] ) : '';
-		$page   = isset( $_POST['page'] ) ? \intval( $_POST['page'] ) : 1;
-		$limit  = isset( $_POST['limit'] ) ? \intval( $_POST['limit'] ) : 10;
+		$search    = isset( $_POST['search'] ) ? \sanitize_text_field( $_POST['search'] ) : '';
+		$page      = isset( $_POST['page'] ) ? \intval( $_POST['page'] ) : 1;
+		$limit     = isset( $_POST['limit'] ) ? \intval( $_POST['limit'] ) : 10;
+		$course_id = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
+		$status    = isset( $_POST['status'] ) ? \sanitize_text_field( $_POST['status'] ) : '';
+
 		$offset = ( $page - 1 ) * $limit;
 
 		$args = [
@@ -130,7 +133,52 @@ class Estudiantes extends Module_Base {
 			'search'         => '*' . $search . '*',
 			'search_columns' => [ 'user_login', 'user_email', 'display_name' ],
 			'count_total'    => true, // Asegurar que cuente el total
+            'meta_query'     => [],
 		];
+
+        // Filtro por Curso (LearnDash)
+        if ( $course_id > 0 ) {
+            // Opción A: Usar función nativa si existe (más seguro)
+            // Opción B: Query manual a usermeta '_sfwd_course_progress' o acceso
+            
+            // Vamos a obtener IDs de usuarios con acceso a ese curso
+            // Esto puede ser pesado si hay muchos usuarios, pero es lo más fiable con LD
+            // Una alternativa mejor es query directa a usermeta si sabemos la key
+            // Key habitual: 'course_{id}_access_from' (timestamp) o simplemente enrollment.
+            // Para simplificar y rendimiento, buscaremos usuarios que tengan meta key de progreso o acceso
+            
+            // NOTA: LearnDash guarda el acceso de varias formas. La más directa para query es user_meta
+            // course_X_access_from
+            
+            $args['meta_query'][] = [
+                'key'     => 'course_' . $course_id . '_access_from',
+                'compare' => 'EXISTS'
+            ];
+        }
+
+        // Filtro por Estado (Bloqueado / Activo)
+        if ( ! empty( $status ) ) {
+            if ( $status === 'blocked' ) {
+                $args['meta_query'][] = [
+                    'key'   => 'alezux_is_blocked',
+                    'value' => '1',
+                    'compare' => '='
+                ];
+            } elseif ( $status === 'active' ) {
+                $args['meta_query'][] = [
+                    'relation' => 'OR',
+                    [
+                        'key'     => 'alezux_is_blocked',
+                        'compare' => 'NOT EXISTS'
+                    ],
+                    [
+                        'key'     => 'alezux_is_blocked',
+                        'value'   => '1',
+                        'compare' => '!='
+                    ]
+                ];
+            }
+        }
 
 		// Si string vacío, devuelve lista inicial sin filtro de búsqueda
 		if ( empty( $search ) ) {
