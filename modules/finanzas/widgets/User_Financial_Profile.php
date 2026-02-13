@@ -6,9 +6,8 @@ use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
+use Elementor\Group_Control_Background;
 use Alezux_Members\Core\Core;
-
-// use Elementor\Group_Control_Box_Shadow; // Already imported above
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -58,83 +57,9 @@ class User_Financial_Profile extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'title_history',
-			[
-				'label'   => esc_html__( 'Título Historial', 'alezux-members' ),
-				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Historial de Pagos', 'alezux-members' ),
-			]
-		);
-
 		$this->end_controls_section();
 
 		// -- ESTILOS --
-		$this->start_controls_section(
-			'style_section_container',
-			[
-				'label' => esc_html__( 'Contenedor', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-		$this->add_control(
-			'container_bg_color',
-			[
-				'label'     => esc_html__( 'Color de Fondo', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-financial-widget' => 'background-color: {{VALUE}};',
-				],
-			]
-		);
-		
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
-			[
-				'name'     => 'container_border',
-				'label'    => esc_html__( 'Borde', 'alezux-members' ),
-				'selector' => '{{WRAPPER}} .alezux-financial-widget',
-			]
-		);
-
-        $this->add_control(
-			'container_padding',
-			[
-				'label'      => esc_html__( 'Relleno', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%', 'em' ],
-				'selectors'  => [
-					'{{WRAPPER}} .alezux-financial-widget' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->end_controls_section();
-
-        // Estilos de botones
-        $this->start_controls_section(
-			'style_section_buttons',
-			[
-				'label' => esc_html__( 'Botones', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-        $this->add_control(
-			'pay_button_color',
-			[
-				'label'     => esc_html__( 'Color Botón Pagar', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'default'   => '#28a745',
-				'selectors' => [
-					'{{WRAPPER}} .alezux-btn-pay' => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
-				],
-			]
-		);
-
-        $this->end_controls_section();
-
         // 1. DISEÑO DE LA TABLA (Tabla y Encabezados)
         $this->start_controls_section(
             'style_section_table',
@@ -248,6 +173,241 @@ class User_Financial_Profile extends Widget_Base {
         );
 
         $this->end_controls_section();
+
+        // 2. TEXTOS (Plan, Monto, Fechas)
+        $this->start_controls_section(
+            'style_section_texts',
+            [
+                'label' => esc_html__('Textos (Plan, Monto, Etc)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control('heading_plan_text', ['type' => Controls_Manager::HEADING, 'label' => 'Nombre del Plan']);
+        $this->add_control(
+            'plan_name_color',
+            [
+                'label' => esc_html__('Color', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['{{WRAPPER}} .col-plan-name' => 'color: {{VALUE}};'],
+            ]
+        );
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'plan_name_typo',
+                'selector' => '{{WRAPPER}} .col-plan-name',
+            ]
+        );
+
+        $this->add_control('heading_amount_text', ['type' => Controls_Manager::HEADING, 'label' => 'Monto', 'separator' => 'before']);
+        $this->add_control(
+            'amount_color',
+            [
+                'label' => esc_html__('Color', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['{{WRAPPER}} .col-amount' => 'color: {{VALUE}};'],
+            ]
+        );
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'amount_typo',
+                'selector' => '{{WRAPPER}} .col-amount',
+            ]
+        );
+
+        $this->end_controls_section();
+
+        // 3. ESTADO (Badges)
+        $this->start_controls_section(
+            'style_section_badges',
+            [
+                'label' => esc_html__('Estado (Badges)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+        
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'badge_typography',
+                'selector' => '{{WRAPPER}} .alezux-status-badge',
+            ]
+        );
+
+        $this->add_control(
+            'badge_radius',
+             [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-status-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'badge_padding',
+             [
+                'label' => esc_html__('Relleno', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-status-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+        
+        // Colores por estado
+        $this->add_control('heading_badge_active', ['type' => Controls_Manager::HEADING, 'label' => 'Activo', 'separator' => 'before']);
+        $this->add_control('badge_active_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_active_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'background-color: {{VALUE}};']]);
+
+        $this->add_control('heading_badge_completed', ['type' => Controls_Manager::HEADING, 'label' => 'Completado', 'separator' => 'before']);
+        $this->add_control('badge_completed_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_completed_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-completed' => 'background-color: {{VALUE}};']]);
+
+        $this->add_control('heading_badge_past_due', ['type' => Controls_Manager::HEADING, 'label' => 'Vencido', 'separator' => 'before']);
+        $this->add_control('badge_past_due_text', ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'color: {{VALUE}};']]);
+        $this->add_control('badge_past_due_bg', ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-past_due' => 'background-color: {{VALUE}};']]);
+
+        $this->end_controls_section();
+
+        // 4. PROGRESO
+         $this->start_controls_section(
+            'style_section_progress',
+            [
+                'label' => esc_html__('Progreso', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'progress_label_typography',
+                'label' => 'Tipografía Etiquetas',
+                'selector' => '{{WRAPPER}} .progress-Label span',
+            ]
+        );
+        
+        $this->add_control(
+            'progress_label_color',
+            [
+                'label' => esc_html__('Color Etiquetas', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .progress-Label span' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+         $this->add_responsive_control(
+            'progress_height',
+            [
+                'label' => esc_html__('Altura Barra', 'alezux-members'),
+                'type' => Controls_Manager::SLIDER,
+                'range' => [
+                    'px' => [
+                        'min' => 2,
+                        'max' => 50,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'height: {{SIZE}}{{UNIT}};',
+                     '{{WRAPPER}} .alezux-progress-bar-fill' => 'height: 100%;',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'progress_radius',
+            [
+                'label' => esc_html__('Redondeo Barra', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-progress-bar-bg' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-progress-bar-fill' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'progress_bg_heading',
+            [
+                'label' => esc_html__('Fondo de la Barra (Contenedor)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'progress_container_bg',
+                'label' => esc_html__('Fondo Contenedor', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-progress-bar-bg',
+            ]
+        );
+
+        $this->add_control(
+            'progress_fill_heading',
+            [
+                'label' => esc_html__('Relleno de la Barra (Progreso)', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'progress_fill_bg',
+                'label' => esc_html__('Fondo Relleno', 'alezux-members'),
+                'types' => ['classic', 'gradient'],
+                'selector' => '{{WRAPPER}} .alezux-progress-bar-fill',
+            ]
+        );
+
+        $this->end_controls_section();
+
+
+        // 5. ACCIONES (BOTONES)
+        $this->start_controls_section(
+            'style_section_actions',
+            [
+                'label' => esc_html__('Acciones (Botones)', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control('heading_btn_pay', ['type' => Controls_Manager::HEADING, 'label' => 'Botón Pagar']);
+        
+        $this->add_control(
+            'btn_pay_bg_color',
+            ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .alezux-btn-pay' => 'background-color: {{VALUE}};']]
+        );
+        $this->add_control(
+            'btn_pay_text_color',
+            ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .alezux-btn-pay' => 'color: {{VALUE}};']]
+        );
+
+        $this->add_control('heading_btn_report', ['type' => Controls_Manager::HEADING, 'label' => 'Botón Ver Pagos', 'separator' => 'before']);
+        
+        $this->add_control(
+            'btn_report_bg_color',
+            ['label' => 'Fondo', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .alezux-btn-report' => 'background-color: {{VALUE}};']]
+        );
+        $this->add_control(
+            'btn_report_text_color',
+            ['label' => 'Texto', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .alezux-btn-report' => 'color: {{VALUE}};']]
+        );
+
+        $this->end_controls_section();
 	}
 
 	protected function render() {
@@ -273,94 +433,81 @@ class User_Financial_Profile extends Widget_Base {
                         <i class="fas fa-spinner fa-spin mr-2"></i> Cargando información...
                     </div>
 
-                    <div x-show="!loading && subscriptions.length === 0 && transactions.length === 0" class="p-4 bg-gray-50 rounded text-center text-gray-500">
-                        No tienes actividad financiera registrada.
+                    <div x-show="!loading && subscriptions.length === 0" class="p-4 bg-gray-50 rounded text-center text-gray-500">
+                        No tienes suscripciones activas.
                     </div>
 
-                    <div x-show="!loading && (subscriptions.length > 0 || transactions.length > 0)" class="alezux-table-wrapper">
+                    <div x-show="!loading && subscriptions.length > 0" class="alezux-table-wrapper">
                         <table class="alezux-finanzas-table w-full text-sm text-left">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">Concepto</th>
-                                    <th scope="col" class="px-6 py-3">Monto</th>
-                                    <th scope="col" class="px-6 py-3">Estado</th>
-                                    <th scope="col" class="px-6 py-3">Progreso / Detalle</th>
-                                    <th scope="col" class="px-6 py-3">Fecha</th>
-                                    <th scope="col" class="px-6 py-3">Acciones</th>
+                                    <th scope="col" class="col-plan-name">Plan Académico</th>
+                                    <th scope="col" class="col-amount">Monto</th>
+                                    <th scope="col" class="col-status">Estado</th>
+                                    <th scope="col" class="col-progress">Progreso</th>
+                                    <th scope="col" class="col-due">Vencimiento</th>
+                                    <th scope="col" class="col-actions">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Suscripciones Activas (Primero) -->
                                 <template x-for="sub in subscriptions" :key="'sub-'+sub.id">
                                     <tr class="bg-white border-b hover:bg-gray-50">
-                                        <td class="px-6 py-4">
-                                            <div class="font-bold text-gray-900" x-text="sub.plan_name"></div>
-                                            <div class="text-xs text-gray-500" x-text="sub.plan_quotas + ' CUOTAS'"></div>
+                                        <!-- PLAN NAME -->
+                                        <td class="col-plan-name">
+                                            <div class="font-bold plan-title" x-text="sub.plan_name"></div>
+                                            <div class="text-xs text-gray-500 plan-meta" x-text="sub.plan_quotas + ' CUOTAS'"></div>
                                         </td>
-                                        <td class="px-6 py-4 font-semibold" x-text="sub.formatted_price"></td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-1 text-xs rounded-full font-semibold"
-                                                  :class="{
-                                                      'bg-green-100 text-green-800': sub.status === 'active' || sub.status === 'completed',
-                                                      'bg-red-100 text-red-800': sub.status === 'past_due' || sub.status === 'unpaid',
-                                                      'bg-gray-100 text-gray-800': sub.status === 'canceled'
-                                                  }"
+                                        
+                                        <!-- AMOUNT -->
+                                        <td class="col-amount font-semibold" x-text="sub.formatted_price"></td>
+                                        
+                                        <!-- STATUS (BADGE) -->
+                                        <td class="col-status">
+                                            <span class="alezux-status-badge"
+                                                  :class="'status-' + sub.status"
                                                   x-text="translateStatus(sub.status)">
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col gap-1 w-32">
-                                                <span class="text-xs text-gray-600" x-text="sub.progress_text + ' PAGADOS'"></span>
-                                                <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-                                                    <div class="bg-green-500 h-1.5 rounded-full" :style="'width: ' + sub.progress_percent + '%'"></div>
-                                                </div>
+                                        
+                                        <!-- PROGRESS BAR -->
+                                        <td class="col-progress">
+                                            <div class="progress-Label flex justify-between text-xs mb-1">
+                                                <span x-text="sub.progress_text + ' PAGADOS'"></span>
+                                                <span x-text="sub.progress_percent + '%'"></span>
+                                            </div>
+                                            <div class="alezux-progress-bar-bg w-full bg-gray-200 rounded-full h-2">
+                                                <div class="alezux-progress-bar-fill bg-green-500 h-2 rounded-full" :style="'width: ' + sub.progress_percent + '%'"></div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i> Vencimiento:</div>
-                                            <div x-text="sub.next_payment_date_formatted"></div>
+                                        
+                                        <!-- DUE DATE -->
+                                        <td class="col-due">
+                                            <div x-show="sub.status === 'active' || sub.status === 'past_due'">
+                                                <div class="text-xs text-gray-500">Próxima Cuota:</div>
+                                                <div class="font-medium" x-text="sub.next_payment_date_formatted"></div>
+                                            </div>
+                                            <div x-show="sub.status === 'completed'">
+                                                <span class="text-green-600 font-bold text-xs"><i class="fas fa-check"></i> Finalizado</span>
+                                            </div>
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <template x-if="sub.can_pay_manually">
-                                                <button @click="confirmPayment(sub.id)" 
-                                                        class="alezux-btn-pay text-white px-3 py-1.5 text-xs rounded hover:opacity-90 transition-opacity whitespace-nowrap">
-                                                    Pagar Cuota
-                                                </button>
-                                            </template>
-                                            <template x-if="!sub.can_pay_manually && sub.status === 'completed'">
-                                                <span class="text-green-600 font-bold text-xs"><i class="fas fa-check"></i> Pagado</span>
-                                            </template>
-                                            <template x-if="!sub.can_pay_manually && sub.status !== 'completed'">
-                                                <span class="text-gray-400 text-xs">-</span>
-                                            </template>
-                                        </td>
-                                    </tr>
-                                </template>
+                                        
+                                        <!-- ACTIONS -->
+                                        <td class="col-actions">
+                                            <div class="flex flex-col gap-2">
+                                                <!-- Pay Button -->
+                                                <template x-if="sub.can_pay_manually">
+                                                    <button @click="confirmPayment(sub.id)" 
+                                                            class="alezux-btn-pay text-white px-3 py-1.5 text-xs rounded hover:opacity-90 transition-opacity whitespace-nowrap w-full">
+                                                        <i class="fas fa-dollar-sign mr-1"></i> Pagar Cuota
+                                                    </button>
+                                                </template>
 
-                                <!-- Historial de Transacciones (Después) -->
-                                <template x-for="trans in transactions" :key="'trans-'+trans.id">
-                                    <tr class="bg-gray-50 border-b hover:bg-gray-100">
-                                        <td class="px-6 py-4">
-                                            <div class="font-medium text-gray-700">Pago de Cuota</div>
-                                            <div class="text-xs text-gray-500">Transacción ID: <span x-text="trans.id"></span></div>
-                                        </td>
-                                        <td class="px-6 py-4" x-text="trans.formatted_amount"></td>
-                                        <td class="px-6 py-4">
-                                            <span class="px-2 py-1 rounded text-xs"
-                                                  :class="{
-                                                      'bg-green-100 text-green-800': trans.status === 'succeeded',
-                                                      'bg-yellow-100 text-yellow-800': trans.status === 'pending',
-                                                      'bg-red-100 text-red-800': trans.status === 'failed'
-                                                  }"
-                                                  x-text="trans.status_label">
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-center text-gray-400">-</td>
-                                        <td class="px-6 py-4">
-                                            <div x-text="trans.date_formatted"></div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center text-gray-400">
-                                            <span class="text-xs text-green-600" x-show="trans.status === 'succeeded'"><i class="fas fa-check-double"></i></span>
+                                                <!-- Report Button -->
+                                                <button @click="openReportModal(sub.id, sub.plan_name)" 
+                                                        class="alezux-btn-report text-gray-700 bg-gray-200 px-3 py-1.5 text-xs rounded hover:opacity-90 transition-opacity whitespace-nowrap w-full">
+                                                    <i class="fas fa-list-alt mr-1"></i> Ver Pagos
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </template>
@@ -370,15 +517,13 @@ class User_Financial_Profile extends Widget_Base {
                 </div>
             </div>
 
-            <!-- MODAL PERSONALIZADO (Vanilla JS - Fuera de Alpine) -->
+            <!-- MODAL DE PAGO / CONFIRMACIÓN -->
             <div id="alezux-profile-modal-<?php echo $this->get_id(); ?>" 
                  class="alezux-modal-overlay"
                  style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 2147483647 !important; display: none; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important; opacity: 1 !important; visibility: visible !important;">
                 
-                <!-- Backdrop Click Handler -->
                 <div id="alezux-modal-backdrop-<?php echo $this->get_id(); ?>" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
 
-                <!-- Modal Content -->
                 <div class="alezux-modal-content"
                      style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 28rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important;">
                     
@@ -394,20 +539,44 @@ class User_Financial_Profile extends Widget_Base {
                     </div>
 
                     <div style="margin-top: 1.25rem; display: grid; gap: 0.75rem; grid-template-columns: repeat(1, minmax(0, 1fr));">
-                        <!-- Botón Confirmar -->
                         <button type="button" 
                                 id="alezux-modal-confirm-btn-<?php echo $this->get_id(); ?>"
                                 style="width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid transparent; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;">
                             <span id="alezux-modal-confirm-text-<?php echo $this->get_id(); ?>"></span>
                         </button>
                         
-                        <!-- Botón Cancelar -->
                         <button type="button" 
                                 id="alezux-modal-cancel-btn-<?php echo $this->get_id(); ?>"
                                 style="margin-top: 0.75rem; width: 100%; display: inline-flex; justify-content: center; border-radius: 0.375rem; border: 1px solid #d1d5db; padding: 0.5rem 1rem; font-size: 1rem; line-height: 1.5rem; font-weight: 500; color: #374151 !important; background-color: #ffffff !important; cursor: pointer; transition: background-color 0.15s ease-in-out;">
                             Cancelar
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- MODAL DE REPORTE DE PAGOS -->
+            <div id="alezux-report-modal-<?php echo $this->get_id(); ?>" 
+                 class="alezux-modal-overlay"
+                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 2147483647 !important; display: none; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important; opacity: 1 !important; visibility: visible !important;">
+                
+                <div id="alezux-report-backdrop-<?php echo $this->get_id(); ?>" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
+
+                <div class="alezux-modal-content"
+                     style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 40rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important; max-height: 80vh; overflow-y: auto;">
+                    
+                    <div class="flex justify-between items-center mb-4 border-b pb-2">
+                        <h3 class="text-lg font-bold">Historial de Pagos: <span id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="text-blue-600"></span></h3>
+                        <button id="alezux-report-close-btn-<?php echo $this->get_id(); ?>" class="text-gray-500 hover:text-gray-700 font-bold text-xl">&times;</button>
+                    </div>
+
+                    <div id="alezux-report-content-<?php echo $this->get_id(); ?>" class="space-y-4">
+                        <!-- Content injected via JS -->
+                    </div>
+                    
+                    <div id="alezux-report-empty-<?php echo $this->get_id(); ?>" style="display:none;" class="text-center text-gray-500 py-4">
+                        No hay pagos registrados para este plan.
+                    </div>
+
                 </div>
             </div>
 
@@ -430,16 +599,20 @@ class User_Financial_Profile extends Widget_Base {
                 onConfirmAction: null,
 
                 initData() {
-                    // Teleport Modal to Body manually (robust fallback)
+                    // Move Modals to Body
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
-                    const modalEl = document.getElementById(modalId);
-                    if (modalEl && modalEl.parentElement !== document.body) {
-                        try {
-                            document.body.appendChild(modalEl);
-                        } catch(e) {
-                            // Silent fail
+                    const reportModalId = 'alezux-report-modal-<?php echo $this->get_id(); ?>';
+                    
+                    [modalId, reportModalId].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && el.parentElement !== document.body) {
+                            try { document.body.appendChild(el); } catch(e) {}
                         }
-                    }
+                    });
+
+                    // Setup Report Modal Listeners
+                    document.getElementById('alezux-report-close-btn-<?php echo $this->get_id(); ?>').onclick = () => this.closeReportModal();
+                    document.getElementById('alezux-report-backdrop-<?php echo $this->get_id(); ?>').onclick = () => this.closeReportModal();
 
                     const formData = new FormData();
                     formData.append('action', 'alezux_get_my_financial_data');
@@ -477,6 +650,71 @@ class User_Financial_Profile extends Widget_Base {
                         'completed': 'Completado'
                     };
                     return statuses[status] || status;
+                },
+                
+                openReportModal(subscriptionId, planName) {
+                    const reportModal = document.getElementById('alezux-report-modal-<?php echo $this->get_id(); ?>');
+                    const contentDiv = document.getElementById('alezux-report-content-<?php echo $this->get_id(); ?>');
+                    const emptyDiv = document.getElementById('alezux-report-empty-<?php echo $this->get_id(); ?>');
+                    const subtitle = document.getElementById('alezux-report-subtitle-<?php echo $this->get_id(); ?>');
+                    
+                    subtitle.innerText = planName;
+                    contentDiv.innerHTML = ''; // Clear previous
+
+                    // Filter transactions for this subscription logic
+                    // Note: The backend 'alezux_finanzas_transactions' table usually has subscription_id or plan_id
+                    // We need to filter based on what we have. Let's assume 'subscription_id' is available in transaction object.
+                    // If not (e.g. older transactions), we might need to rely on plan matching or similar.
+                    // For now, let's filter by subscription_id if present, or plan_id fallback.
+                    
+                    const filteredTrans = this.transactions.filter(t => 
+                        parseInt(t.subscription_id) === parseInt(subscriptionId) || 
+                        ( !t.subscription_id && parseInt(t.plan_id) === parseInt(this.subscriptions.find(s=>s.id==subscriptionId).plan_id) )
+                    );
+
+                    if (filteredTrans.length === 0) {
+                        emptyDiv.style.display = 'block';
+                    } else {
+                        emptyDiv.style.display = 'none';
+                        // Build HTML List
+                        let html = '<table class="w-full text-sm text-left text-gray-500">';
+                            html += '<thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-4 py-2">Fecha</th><th class="px-4 py-2">Monto</th><th class="px-4 py-2">Estado</th><th class="px-4 py-2">Ref</th></tr></thead>';
+                            html += '<tbody>';
+                        
+                        filteredTrans.forEach(t => {
+                            let statusClass = 'bg-gray-100 text-gray-800';
+                            if(t.status === 'succeeded') statusClass = 'bg-green-100 text-green-800';
+                            if(t.status === 'failed') statusClass = 'bg-red-100 text-red-800';
+                            
+                            html += `<tr class="bg-white border-b">
+                                        <td class="px-4 py-2">${t.date_formatted}</td>
+                                        <td class="px-4 py-2 font-bold">${t.formatted_amount}</td>
+                                        <td class="px-4 py-2"><span class="px-2 py-1 rounded text-xs ${statusClass}">${t.status_label || t.status}</span></td>
+                                        <td class="px-4 py-2 text-xs font-mono text-gray-400">${t.transaction_ref || '-'}</td>
+                                     </tr>`;
+                        });
+                            html += '</tbody></table>';
+                        contentDiv.innerHTML = html;
+                    }
+
+                    // Show Modal
+                    reportModal.style.display = 'flex';
+                    // Force refresh
+                    reportModal.offsetHeight;
+                    
+                    // Fallback Visibility
+                    setTimeout(() => {
+                        if(getComputedStyle(reportModal).display === 'none') {
+                             reportModal.style.setProperty('display', 'flex', 'important');
+                        }
+                    }, 50);
+                },
+
+                closeReportModal() {
+                    const reportModal = document.getElementById('alezux-report-modal-<?php echo $this->get_id(); ?>');
+                    if (reportModal) {
+                        reportModal.style.setProperty('display', 'none', 'important');
+                    }
                 },
 
                 // Modal Logic - Pure Vanilla JS
