@@ -353,7 +353,7 @@ class Finanzas extends Module_Base {
 	}
 
     public function enqueue_widget_styles() {
-        $version = '1.1.96'; // Cache busting safe
+        $version = '1.1.97'; // Cache busting safe
 
         // Unified Table Styles
         // Register Flatpickr (Remote CDN)

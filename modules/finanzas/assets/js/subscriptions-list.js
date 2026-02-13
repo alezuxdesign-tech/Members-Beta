@@ -220,19 +220,31 @@ jQuery(window).on('elementor/frontend/init', function () {
                 return;
             }
 
-            // Ensure the modal is in the body for proper overlay behavior
-            // Check if parent exists and is not body
-            if ($modal.parent().length > 0 && $modal.parent()[0].tagName !== 'BODY') {
+            // --- FIX START ---
+            console.log('Opening Modal for Widget ID:', $scope.data('id'));
+
+            // Check if already moved/wrapped
+            const $parent = $modal.parent();
+            const alreadyWrapped = $parent.hasClass('alezux-modal-body-wrapper');
+
+            if (!alreadyWrapped) {
                 const widgetId = $scope.data('id');
-                // Create a wrapper that mimics the Elementor Widget container to preserve {{WRAPPER}} styles
-                // Add 'elementor-element' and widget specific class to match selectors like .elementor-element-ID .alezux-modal
+                if (!widgetId) console.warn('Widget ID missing!');
+
+                console.log('Wrapping modal with ID:', widgetId);
+
                 const $wrapper = $('<div>', {
                     class: 'alezux-modal-body-wrapper elementor-element elementor-element-' + widgetId + ' elementor-widget-alezux_subs_list'
                 });
 
-                $wrapper.append($modal);
+                // Append wrapper to body FIRST
                 $wrapper.appendTo('body');
+                // Move Modal into wrapper
+                $wrapper.append($modal);
+                // Update reference
+                $modal.css('display', 'flex');
             }
+            // --- FIX END ---
 
             $modal.find('#modal-sub-id').text(currentSubId);
             $modal.find('#manual-pay-amount').val(amount).prop('readonly', true).css('background-color', '#eee');
