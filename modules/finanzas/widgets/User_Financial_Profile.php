@@ -373,7 +373,7 @@ class User_Financial_Profile extends Widget_Base {
             <!-- MODAL PERSONALIZADO (Vanilla JS - Fuera de Alpine) -->
             <div id="alezux-profile-modal-<?php echo $this->get_id(); ?>" 
                  class="alezux-modal-overlay"
-                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; display: none !important; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important;">
+                 style="position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 2147483647 !important; display: none; align-items: center !important; justify-content: center !important; background-color: rgba(0,0,0,0.5) !important; opacity: 1 !important; visibility: visible !important;">
                 
                 <!-- Backdrop Click Handler -->
                 <div id="alezux-modal-backdrop-<?php echo $this->get_id(); ?>" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
@@ -430,11 +430,21 @@ class User_Financial_Profile extends Widget_Base {
                 onConfirmAction: null,
 
                 initData() {
+                    console.log('Init Data called');
                     // Teleport Modal to Body manually (robust fallback)
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     if (modalEl && modalEl.parentElement !== document.body) {
-                        document.body.appendChild(modalEl);
+                        try {
+                            document.body.appendChild(modalEl);
+                            console.log('MOVED modal to body:', modalId);
+                        } catch(e) {
+                            console.error('Failed to move modal:', e);
+                        }
+                    } else if (!modalEl) {
+                        console.error('initData: Modal element NOT found:', modalId);
+                    } else {
+                        console.log('Modal already in body or parent is body');
                     }
 
                     const formData = new FormData();
@@ -540,8 +550,19 @@ class User_Financial_Profile extends Widget_Base {
                     };
 
                     // Show Modal
-                    console.log('Setting display to flex'); // DEBUG
-                    modalEl.style.setProperty('display', 'flex', 'important');
+                    console.log('Setting display to flex for:', modalEl); // DEBUG
+                    modalEl.style.display = 'flex';
+                    // Force repaint just in case
+                    modalEl.offsetHeight; 
+                    
+                    // Double check
+                    setTimeout(() => {
+                        console.log('Modal display style check:', modalEl.style.display);
+                        if(getComputedStyle(modalEl).display === 'none') {
+                             console.warn('Modal hidden by computed style! Forcing !important');
+                             modalEl.style.setProperty('display', 'flex', 'important');
+                        }
+                    }, 50);
                 },
 
                 closeModal() {
