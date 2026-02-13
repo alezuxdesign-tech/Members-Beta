@@ -269,6 +269,11 @@ $shortcodes[] = [
     'module'      => 'FORMACIONES',
     'description' => 'Muestra el enlace del tema donde quedó el estudiante.'
 ];
+$shortcodes[] = [
+    'tag'         => 'alezux_course_count',
+    'module'      => 'FORMACIONES',
+    'description' => 'Muestra el número total de cursos publicados.'
+];
 
 // 4. CONFIG / AUTH
 $shortcodes[] = [

@@ -34,6 +34,10 @@ class Shortcodes {
 				'callback'    => [ $this, 'render_resume_topic_link' ],
 				'description' => \__( 'Muestra el enlace del tema donde quedó el estudiante.', 'alezux-members' ),
 			],
+			'alezux_course_count' => [
+				'callback'    => [ $this, 'render_course_count' ],
+				'description' => \__( 'Muestra el número total de cursos publicados.', 'alezux-members' ),
+			],
 		];
 	}
 
@@ -201,7 +205,18 @@ class Shortcodes {
 
 		if ( ! $step_id ) {
 			return '';
+			/**
+	 * Shortcode: [alezux_course_count]
+	 * Retorna el número total de cursos publicados.
+	 */
+	public function render_course_count( $atts ) {
+		$count_posts = \wp_count_posts( 'sfwd-courses' );
+		if ( isset( $count_posts->publish ) ) {
+			return $count_posts->publish;
 		}
+		return '0';
+	}
+}
 
 		return \get_permalink( $step_id );
 	}
