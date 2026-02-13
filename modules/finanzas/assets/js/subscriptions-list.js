@@ -133,33 +133,40 @@ jQuery(document).ready(function ($) {
         const $pagination = $('.alezux-pagination');
         $pagination.empty();
 
-        if (data.total_pages <= 1) return;
+        const totalPages = data.total_pages;
+        const current = data.current_page;
+
+        if (totalPages <= 1) return;
 
         let html = '';
 
-        // Prev
-        if (data.current_page > 1) {
-            html += `<button class="p-btn p-prev" data-page="${data.current_page - 1}"><span class="dashicons dashicons-arrow-left-alt2"></span></button>`;
-        } else {
-            html += `<button class="p-btn p-prev disabled" disabled><span class="dashicons dashicons-arrow-left-alt2"></span></button>`;
+        // Previous
+        if (current > 1) {
+            html += `<button class="page-btn" data-page="${current - 1}">&laquo;</button>`;
         }
 
-        // Info
-        html += `<span class="p-info">Página ${data.current_page} - ${data.total_pages}</span>`;
+        // Pages
+        for (let i = 1; i <= totalPages; i++) {
+            // Show first, last, current, and surrounding pages
+            if (i === 1 || i === totalPages || (i >= current - 2 && i <= current + 2)) {
+                const activeClass = i === current ? 'active' : '';
+                html += `<button class="page-btn ${activeClass}" data-page="${i}">${i}</button>`;
+            } else if (i === current - 3 || i === current + 3) {
+                html += `<span class="page-dots">...</span>`;
+            }
+        }
 
         // Next
-        if (data.current_page < data.total_pages) {
-            html += `<button class="p-btn p-next" data-page="${data.current_page + 1}"><span class="dashicons dashicons-arrow-right-alt2"></span></button>`;
-        } else {
-            html += `<button class="p-btn p-next disabled" disabled><span class="dashicons dashicons-arrow-right-alt2"></span></button>`;
+        if (current < totalPages) {
+            html += `<button class="page-btn" data-page="${current + 1}">&raquo;</button>`;
         }
 
         $pagination.html(html);
     }
 
     // Pagination Click
-    $(document).on('click', '.alezux-pagination .p-btn', function () {
-        if ($(this).attr('disabled')) return;
+    $(document).on('click', '.alezux-pagination .page-btn', function () {
+        if ($(this).hasClass('active') || $(this).attr('disabled')) return;
         const page = $(this).data('page');
         currentState.paged = page;
         fetchSubscriptions();
