@@ -241,7 +241,7 @@ jQuery(window).on('elementor/frontend/init', function () {
 
                 // 1. Top Level Wrapper (Elementor ID Scope)
                 const $topWrapper = $('<div>', {
-                    class: 'alezux-modal-body-wrapper elementor-element elementor-element-' + widgetId + ' elementor-widget-alezux_subs_list'
+                    class: 'alezux-modal-body-wrapper elementor elementor-element elementor-element-' + widgetId + ' elementor-widget-alezux_subs_list'
                 });
 
                 // 2. Elementor Widget Container (Standard Elementor Structure)
