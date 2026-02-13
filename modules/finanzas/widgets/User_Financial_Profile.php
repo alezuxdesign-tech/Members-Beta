@@ -59,6 +59,29 @@ class User_Financial_Profile extends Widget_Base {
 
 		$this->end_controls_section();
 
+		$this->start_controls_section(
+			'content_section_advanced',
+			[
+				'label' => esc_html__( 'Opciones Avanzadas', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'preview_modal_editor',
+			[
+				'label' => esc_html__( 'Previsualizar Modal (Editor)', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => esc_html__( 'Activa esto para ver el modal de historial de pagos con datos de ejemplo mientras editas.', 'alezux-members' ),
+			]
+		);
+
+		$this->end_controls_section();
+
 		// -- ESTILOS --
         // 1. DISEÑO DE LA TABLA (Tabla y Encabezados)
         $this->start_controls_section(
@@ -408,6 +431,134 @@ class User_Financial_Profile extends Widget_Base {
         );
 
         $this->end_controls_section();
+
+        // 6. ESTILOS DEL MODAL DE REPORTE
+        $this->start_controls_section(
+            'style_section_modal',
+            [
+                'label' => esc_html__('Estilos Modal Reporte', 'alezux-members'),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'modal_overlay_bg',
+            [
+                'label' => esc_html__('Fondo Overlay', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}}' => 'background-color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'modal_content_heading',
+            [
+                'label' => esc_html__('Contenedor Modal', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'modal_bg_color',
+            [
+                'label' => esc_html__('Color Fondo', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-content' => 'background-color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'modal_title_color',
+            [
+                'label' => esc_html__('Color Título', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} h3' => 'color: {{VALUE}};'],
+            ]
+        );
+
+         $this->add_control(
+            'modal_close_color',
+            [
+                'label' => esc_html__('Color Botón Cerrar', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} button.text-gray-500' => 'color: {{VALUE}};'],
+            ]
+        );
+
+        $this->add_control(
+            'modal_card_heading',
+            [
+                'label' => esc_html__('Tarjetas de Pago', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
+            'card_bg_color',
+            [
+                'label' => esc_html__('Fondo Tarjeta', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-card' => 'background-color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'card_border_color',
+            [
+                'label' => esc_html__('Borde Tarjeta', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-card' => 'border-color: {{VALUE}} !important;'],
+            ]
+        );
+        
+        $this->add_control(
+            'card_badge_bg',
+            [
+                'label' => esc_html__('Fondo Badge (Pago #)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-card-badge' => 'background-color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'card_badge_text',
+            [
+                'label' => esc_html__('Texto Badge (Pago #)', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-card-badge' => 'color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'card_amount_color',
+            [
+                'label' => esc_html__('Color Monto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-amount' => 'color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'card_date_color',
+            [
+                'label' => esc_html__('Color Fecha', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-date' => 'color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->add_control(
+            'card_ref_color',
+            [
+                'label' => esc_html__('Color Referencia', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .payment-ref' => 'color: {{VALUE}} !important;'],
+            ]
+        );
+
+        $this->end_controls_section();
 	}
 
 	protected function render() {
@@ -598,7 +749,27 @@ class User_Financial_Profile extends Widget_Base {
                 showCancelButton: false,
                 onConfirmAction: null,
 
+                onConfirmAction: null,
+                isPreview: false,
+
                 initData() {
+                    // Check for Preview Mode
+                    this.isPreview = <?php echo ( \Elementor\Plugin::$instance->editor->is_edit_mode() && 'yes' === $settings['preview_modal_editor'] ) ? 'true' : 'false'; ?>;
+
+                    if (this.isPreview) {
+                        this.loading = false;
+                        // Fake Data for Preview
+                        this.subscriptions = [
+                            { id: 1, plan_name: 'Plan Demo 1', formatted_price: '$100.00', status: 'active', progress_text: '1/3', progress_percent: 33, next_payment_date_formatted: '15 Feb, 2026' }
+                        ];
+                        this.transactions = [
+                             { subscription_id: 1, status: 'succeeded', status_label: 'Exitoso', formatted_amount: '$100.00', date_formatted: 'Feb 01, 2026 10:00am', transaction_ref: 'pi_demo_123', date: '2026-02-01 10:00:00' },
+                             { subscription_id: 1, status: 'succeeded', status_label: 'Exitoso', formatted_amount: '$100.00', date_formatted: 'Jan 01, 2026 10:00am', transaction_ref: 'pi_demo_456', date: '2026-01-01 10:00:00' }
+                        ];
+                        // Auto-open modal in preview
+                        setTimeout(() => this.openReportModal(1, 'Plan Demo 1 (Previsualización)'), 500);
+                        return;
+                    }
                     // Move Modals to Body
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const reportModalId = 'alezux-report-modal-<?php echo $this->get_id(); ?>';
@@ -679,16 +850,12 @@ class User_Financial_Profile extends Widget_Base {
                         // Build HTML List (Card Style)
                         let html = '<div class="space-y-3">';
                         
-                        // Sort by date ASC to determine "Pago #X" accurately if needed, 
-                        // but usually display is DESC. Let's just use the filtered list order.
-                        // Assuming filteredTrans is DESC (newest first).
-                        const total = filteredTrans.length;
+                        // Sort by date ASCENDING (Oldest First)
+                        filteredTrans.sort((a,b) => new Date(a.date) - new Date(b.date));
 
                         filteredTrans.forEach((t, index) => {
-                            // index 0 is the newest.
-                            // If we want "Estado pago #X", and we assume 1 payment = 1 quota...
-                            // Let's use reverse index for numbering: (total - index)
-                            const paymentNumber = total - index;
+                            // index 0 is the oldest now.
+                            const paymentNumber = index + 1;
                             
                             // Status Styles
                             let statusTextClass = 'text-green-400';
@@ -696,26 +863,26 @@ class User_Financial_Profile extends Widget_Base {
                             if(t.status === 'pending') statusTextClass = 'text-yellow-400';
 
                             html += `
-                            <div style="background-color: #0f0f1a; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border: 1px solid #2d2d42;">
+                            <div class="payment-card" style="background-color: #0f0f1a; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border: 1px solid #2d2d42;">
                                 <!-- Left Side -->
                                 <div>
-                                    <div style="background-color: #2d1b4e; color: #a5b4fc; display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; margin-bottom: 8px;">
+                                    <div class="payment-card-badge" style="background-color: #2d1b4e; color: #a5b4fc; display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; margin-bottom: 8px;">
                                         Estado pago #${paymentNumber}
                                     </div>
-                                    <h4 style="font-size: 1.5rem; font-weight: bold; margin: 0; line-height: 1.2; color: #fff;">
+                                    <h4 style="font-size: 1.5rem; font-weight: bold; margin: 0; line-height: 1.2; color: #fff;" class="${statusTextClass}">
                                         ${t.status_label || t.status}
                                     </h4>
-                                    <div style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">
+                                    <div class="payment-ref" style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">
                                         Ref: ${t.transaction_ref || 'N/A'}
                                     </div>
                                 </div>
 
                                 <!-- Right Side -->
                                 <div style="text-align: right;">
-                                    <div style="font-size: 0.875rem; color: #e5e7eb; margin-bottom: 4px;">
+                                    <div class="payment-date" style="font-size: 0.875rem; color: #e5e7eb; margin-bottom: 4px;">
                                         ${t.date_formatted}
                                     </div>
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff;">
+                                    <div class="payment-amount" style="font-size: 1.5rem; font-weight: bold; color: #fff;">
                                         ${t.formatted_amount}
                                     </div>
                                 </div>
