@@ -535,7 +535,7 @@ class User_Financial_Profile extends Widget_Base {
             [
                 'label' => esc_html__('Color Icono', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
-                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-close' => 'color: {{VALUE}};'],
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-report-close-action' => 'color: {{VALUE}};'],
             ]
         );
 
@@ -544,7 +544,7 @@ class User_Financial_Profile extends Widget_Base {
             [
                 'label' => esc_html__('Color Fondo', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
-                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-close' => 'background-color: {{VALUE}};'],
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-report-close-action' => 'background-color: {{VALUE}};'],
             ]
         );
 
@@ -555,7 +555,7 @@ class User_Financial_Profile extends Widget_Base {
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
                 'selectors' => [
-                    '#alezux-report-modal-{{ID}} .alezux-modal-close' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '#alezux-report-modal-{{ID}} .alezux-report-close-action' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -790,16 +790,17 @@ class User_Financial_Profile extends Widget_Base {
                      style="background-color: #ffffff; color: #1f2937; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 40rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 2rem !important; z-index: 1000000 !important; max-height: 80vh; overflow-y: auto;">
                     
                     <button id="alezux-report-close-btn-<?php echo $this->get_id(); ?>" 
-                            class="alezux-modal-close" 
-                            style="position: absolute; top: 1.5rem; right: 1.5rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.25rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem;">
+                            type="button"
+                            class="alezux-report-close-action" 
+                            style="position: absolute; top: 1.5rem; right: 1.5rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.25rem; z-index: 50; color: inherit;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width: 1.25rem; height: 1.25rem;">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
 
-                    <div class="mb-10">
-                        <h3 class="font-bold pb-0" style="margin-bottom: 4px !important; line-height: 1.1;">Historial de pago</h3>
-                        <div id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="alezux-modal-subtitle"></div>
+                    <div class="mb-8">
+                        <h3 class="font-bold" style="margin-bottom: 2px !important; line-height: 1.2;">Historial de pago</h3>
+                        <div id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="alezux-modal-subtitle" style="line-height: 1.4;"></div>
                     </div>
 
                     <div id="alezux-report-content-<?php echo $this->get_id(); ?>" class="space-y-4">
@@ -864,8 +865,21 @@ class User_Financial_Profile extends Widget_Base {
                     });
 
                     // Setup Report Modal Listeners
-                    document.getElementById('alezux-report-close-btn-<?php echo $this->get_id(); ?>').onclick = () => this.closeReportModal();
-                    document.getElementById('alezux-report-backdrop-<?php echo $this->get_id(); ?>').onclick = () => this.closeReportModal();
+                    const closeBtn = document.getElementById('alezux-report-close-btn-<?php echo $this->get_id(); ?>');
+                    if (closeBtn) {
+                        closeBtn.onclick = (e) => {
+                            if(e) { e.preventDefault(); e.stopPropagation(); }
+                            this.closeReportModal();
+                        };
+                    }
+                    
+                    const backdrop = document.getElementById('alezux-report-backdrop-<?php echo $this->get_id(); ?>');
+                    if (backdrop) {
+                        backdrop.onclick = (e) => {
+                             if(e) { e.preventDefault(); e.stopPropagation(); }
+                             this.closeReportModal();
+                        };
+                    }
 
                     const formData = new FormData();
                     formData.append('action', 'alezux_get_my_financial_data');
@@ -907,6 +921,10 @@ class User_Financial_Profile extends Widget_Base {
                 
                 openReportModal(subscriptionId, planName) {
                     const reportModal = document.getElementById('alezux-report-modal-<?php echo $this->get_id(); ?>');
+                    if (!reportModal) {
+                        console.error('Modal element not found');
+                        return;
+                    }
                     // Use querySelector for safer scoping if IDs are duplicated or lost
                     const contentDiv = reportModal.querySelector('.space-y-4'); // Targets the content div
                     const emptyDiv = document.getElementById('alezux-report-empty-<?php echo $this->get_id(); ?>');
