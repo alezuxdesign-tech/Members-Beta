@@ -1,4 +1,5 @@
 jQuery(document).ready(function ($) {
+    console.log('Alezux Register Widget JS v1.1.5 Loaded');
     var ajax_url = alezux_estudiantes_vars.ajax_url;
     var nonce = alezux_estudiantes_vars.nonce;
 
