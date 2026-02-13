@@ -636,7 +636,13 @@ class Ajax_Handler {
             \wp_send_json_error( 'Debes iniciar sesión.' );
         }
 
+        \nocache_headers(); // Prevenir caché
         $user_id = \get_current_user_id();
+        
+        if ( ! $user_id ) {
+             \wp_send_json_error( 'Usuario no identificado.' );
+        }
+        
         global $wpdb;
 
         // 1. Obtener Suscripciones (Estado de Cuenta)
@@ -762,8 +768,14 @@ class Ajax_Handler {
         }
 
         // Validar si es pagable (no completada)
-        if ( $subscription->status === 'completed' || $subscription->quotas_paid >= $subscription->total_quotas ) {
-            \wp_send_json_error( 'Esta suscripción ya está completada.' );
+        if ( $subscription->status === 'completed' ) {
+            \wp_send_json_error( 'Esta suscripción ya está completada (Estado: Completed).' );
+        }
+        
+        if ( $subscription->quotas_paid >= $subscription->total_quotas ) {
+             // Debug info
+             $debug_info = " (Pagadas: {$subscription->quotas_paid}, Total: {$subscription->total_quotas})";
+            \wp_send_json_error( 'Ya has pagado todas las cuotas de esta suscripción.' . $debug_info );
         }
 
         // Crear sesión de Stripe

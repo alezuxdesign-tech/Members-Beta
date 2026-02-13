@@ -430,21 +430,15 @@ class User_Financial_Profile extends Widget_Base {
                 onConfirmAction: null,
 
                 initData() {
-                    console.log('Init Data called');
                     // Teleport Modal to Body manually (robust fallback)
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     if (modalEl && modalEl.parentElement !== document.body) {
                         try {
                             document.body.appendChild(modalEl);
-                            console.log('MOVED modal to body:', modalId);
                         } catch(e) {
-                            console.error('Failed to move modal:', e);
+                            // Silent fail
                         }
-                    } else if (!modalEl) {
-                        console.error('initData: Modal element NOT found:', modalId);
-                    } else {
-                        console.log('Modal already in body or parent is body');
                     }
 
                     const formData = new FormData();
@@ -487,14 +481,10 @@ class User_Financial_Profile extends Widget_Base {
 
                 // Modal Logic - Pure Vanilla JS
                 openModal(title, message, type = 'info', confirmText = 'Aceptar', showCancel = false, onConfirm = null) {
-                    console.log('Opening Modal:', title); // DEBUG
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     
-                    if (!modalEl) {
-                        console.error('Modal element not found:', modalId); // DEBUG
-                        return;
-                    }
+                    if (!modalEl) return;
 
                     // Update Content
                     document.getElementById('alezux-modal-title-<?php echo $this->get_id(); ?>').innerText = title;
@@ -535,7 +525,6 @@ class User_Financial_Profile extends Widget_Base {
                     
                     // Simple confirm handler
                     confirmBtn.onclick = () => {
-                        console.log('Confirm clicked'); // DEBUG
                         if (this._onConfirm) {
                             this._onConfirm();
                         } else {
@@ -550,23 +539,19 @@ class User_Financial_Profile extends Widget_Base {
                     };
 
                     // Show Modal
-                    console.log('Setting display to flex for:', modalEl); // DEBUG
                     modalEl.style.display = 'flex';
                     // Force repaint just in case
                     modalEl.offsetHeight; 
                     
                     // Double check
                     setTimeout(() => {
-                        console.log('Modal display style check:', modalEl.style.display);
                         if(getComputedStyle(modalEl).display === 'none') {
-                             console.warn('Modal hidden by computed style! Forcing !important');
                              modalEl.style.setProperty('display', 'flex', 'important');
                         }
                     }, 50);
                 },
 
                 closeModal() {
-                    console.log('Closing Modal'); // DEBUG
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     if (modalEl) {
@@ -576,7 +561,6 @@ class User_Financial_Profile extends Widget_Base {
                 },
 
                 confirmPayment(subscriptionId) {
-                    console.log('Confirm payment called for:', subscriptionId); // DEBUG
                     this.openModal(
                         'Confirmar Pago',
                         '¿Deseas generar el enlace de pago para la próxima cuota pendiente?',
@@ -588,7 +572,6 @@ class User_Financial_Profile extends Widget_Base {
                 },
 
                 processPayment(subscriptionId) {
-                    console.log('Processing payment for:', subscriptionId); // DEBUG
                     this.loading = true;
                     this.closeModal(); // Close confirmation modal
                     
