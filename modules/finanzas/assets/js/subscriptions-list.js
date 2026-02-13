@@ -225,8 +225,9 @@ jQuery(window).on('elementor/frontend/init', function () {
             if ($modal.parent().length > 0 && $modal.parent()[0].tagName !== 'BODY') {
                 const widgetId = $scope.data('id');
                 // Create a wrapper that mimics the Elementor Widget container to preserve {{WRAPPER}} styles
+                // Add 'elementor-element' and widget specific class to match selectors like .elementor-element-ID .alezux-modal
                 const $wrapper = $('<div>', {
-                    class: 'alezux-modal-body-wrapper elementor-element-' + widgetId
+                    class: 'alezux-modal-body-wrapper elementor-element elementor-element-' + widgetId + ' elementor-widget-alezux_subs_list'
                 });
 
                 $wrapper.append($modal);
