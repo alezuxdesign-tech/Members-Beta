@@ -97,6 +97,7 @@ class Admin_Dashboard {
         // Obtener todas las páginas para el selector de permisos
         $all_pages = get_pages();
         $restricted_pages = get_option( 'alezux_restricted_pages', [] );
+        $admin_only_css_classes = get_option( 'alezux_admin_only_css_classes', '' );
 
 		include ALEZUX_MEMBERS_PATH . 'views/admin/dashboard.php';
 	}
@@ -161,6 +162,13 @@ class Admin_Dashboard {
             if ( isset( $_POST['alezux_saving_tab'] ) && 'permissions' === $_POST['alezux_saving_tab'] ) {
                  update_option( 'alezux_restricted_pages', [] );
             }
+        }
+
+        // Admin Only CSS Classes
+        if ( isset( $_POST['alezux_admin_only_css_classes'] ) ) {
+            // Sanitize textarea but keep commas/spaces
+            $css_classes = sanitize_textarea_field( $_POST['alezux_admin_only_css_classes'] );
+            update_option( 'alezux_admin_only_css_classes', $css_classes );
         }
 
 		wp_redirect( admin_url( 'admin.php?page=alezux-members&status=success' ) );

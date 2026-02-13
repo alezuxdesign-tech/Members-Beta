@@ -455,6 +455,20 @@ $shortcodes[] = [
 
 				<div style="border-top: 1px solid #333; margin: 25px 0;"></div>
 
+                <!-- ADMIN ONLY CSS -->
+                <div class="alezux-form-group">
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #a29bfe;">👁️ Visibilidad por CSS (Admin Only)</h3>
+					<label class="alezux-form-label">Clases CSS Ocultas para No-Admins</label>
+					<textarea name="alezux_admin_only_css_classes" rows="4" 
+							  style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;"
+							  placeholder="admin-only, staff-secret, my-custom-class"><?php echo esc_textarea( $admin_only_css_classes ); ?></textarea>
+					<p style="font-size: 12px; color: #777; margin-top: 5px;">
+                        Escribe las clases CSS separadas por comas. A cualquier usuario que <strong>NO</strong> sea administrador se le aplicará <code>display: none !important;</code> a estos elementos.
+                    </p>
+				</div>
+
+				<div style="border-top: 1px solid #333; margin: 25px 0;"></div>
+
                 <!-- PÁGINAS RESTRINGIDAS -->
                 <div class="alezux-form-group">
 					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #e55039;">🚫 Páginas Restringidas (Solo Admin)</h3>

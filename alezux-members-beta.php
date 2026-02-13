@@ -116,6 +116,41 @@ add_action( 'admin_enqueue_scripts', function() {
 });
 
 /**
+ * Inyectar CSS de "Solo Admin" en el Frontend
+ */
+add_action( 'wp_head', function() {
+    if ( current_user_can( 'administrator' ) ) {
+        return;
+    }
+
+    $css_classes = get_option( 'alezux_admin_only_css_classes', '' );
+    
+    if ( ! empty( $css_classes ) ) {
+        $classes_array = explode( ',', $css_classes );
+        $selector_parts = [];
+
+        foreach ( $classes_array as $class ) {
+            $class = trim( $class );
+            if ( ! empty( $class ) ) {
+                // Soportar puntos si el usuario los puso, si no, agregarlos
+                if ( strpos( $class, '.' ) === 0 ) {
+                    $selector_parts[] = $class;
+                } else {
+                    $selector_parts[] = '.' . $class;
+                }
+            }
+        }
+
+        if ( ! empty( $selector_parts ) ) {
+            $final_selector = implode( ', ', $selector_parts );
+            echo '<style id="alezux-admin-only-css">';
+            echo $final_selector . ' { display: none !important; }';
+            echo '</style>';
+        }
+    }
+} );
+
+/**
  * Registrar categorías personalizadas en Elementor
  */
 add_action( 'elementor/elements/categories_registered', function( $elements_manager ) {
