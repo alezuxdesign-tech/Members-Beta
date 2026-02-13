@@ -205,7 +205,12 @@ class Shortcodes {
 
 		if ( ! $step_id ) {
 			return '';
-			/**
+		}
+
+		return \get_permalink( $step_id );
+	}
+
+	/**
 	 * Shortcode: [alezux_course_count]
 	 * Retorna el número total de cursos publicados.
 	 */
@@ -215,9 +220,5 @@ class Shortcodes {
 			return $count_posts->publish;
 		}
 		return '0';
-	}
-}
-
-		return \get_permalink( $step_id );
 	}
 }
