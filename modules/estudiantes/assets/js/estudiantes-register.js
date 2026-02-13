@@ -30,6 +30,12 @@ jQuery(document).ready(function ($) {
             payment_reference: $form.find('input[name="payment_reference"]').val()
         };
 
+        console.log('--------------------------------------------------');
+        console.log('Alezux Debug: Data being sent to server:');
+        console.log(formData);
+        console.log('Plan ID raw value:', $form.find('select[name="plan_id"]').val());
+        console.log('--------------------------------------------------');
+
         if (typeof alezuxShowToast === 'undefined') {
             // Define global helper if not exists (local scope wrapper)
             window.alezuxShowToast = function (message, type) {

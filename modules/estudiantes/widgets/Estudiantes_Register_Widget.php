@@ -473,7 +473,7 @@ class Estudiantes_Register_Widget extends Widget_Base {
 
 				<div class="alezux-form-group">
 					<label class="alezux-form-label"><?php echo esc_html( $settings['label_plan'] ); ?></label>
-						<select name="plan_id" class="alezux-form-control" required>
+						<select name="plan_id" id="alezux-student-plan" class="alezux-form-control" required>
 							<option value=""><?php esc_html_e( '-- Seleccionar Plan --', 'alezux-members' ); ?></option>
 							<?php 
 							if ( $plans ) {
