@@ -792,11 +792,13 @@ class User_Financial_Profile extends Widget_Base {
                     <button id="alezux-report-close-btn-<?php echo $this->get_id(); ?>" 
                             class="alezux-modal-close" 
                             style="position: absolute; top: 1.5rem; right: 1.5rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.25rem;">
-                        <i class="fas fa-times"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem;">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
 
-                    <div class="mb-6">
-                        <h3 class="font-bold mb-1">Historial de pago</h3>
+                    <div class="mb-10">
+                        <h3 class="font-bold pb-0" style="margin-bottom: 4px !important; line-height: 1.1;">Historial de pago</h3>
                         <div id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="alezux-modal-subtitle"></div>
                     </div>
 
@@ -905,12 +907,19 @@ class User_Financial_Profile extends Widget_Base {
                 
                 openReportModal(subscriptionId, planName) {
                     const reportModal = document.getElementById('alezux-report-modal-<?php echo $this->get_id(); ?>');
-                    const contentDiv = document.getElementById('alezux-report-content-<?php echo $this->get_id(); ?>');
+                    // Use querySelector for safer scoping if IDs are duplicated or lost
+                    const contentDiv = reportModal.querySelector('.space-y-4'); // Targets the content div
                     const emptyDiv = document.getElementById('alezux-report-empty-<?php echo $this->get_id(); ?>');
-                    const subtitle = document.getElementById('alezux-report-subtitle-<?php echo $this->get_id(); ?>');
                     
-                    subtitle.innerText = planName;
-                    contentDiv.innerHTML = ''; // Clear previous
+                    // Specific fix for Subtitle Element
+                    let subtitle = document.getElementById('alezux-report-subtitle-<?php echo $this->get_id(); ?>');
+                    if (!subtitle) {
+                         // Fallback using class inside specific modal
+                         subtitle = reportModal.querySelector('.alezux-modal-subtitle');
+                    }
+                    
+                    if(subtitle) subtitle.innerText = planName;
+                    if(contentDiv) contentDiv.innerHTML = ''; // Clear previous
 
                     // Filter transactions for this subscription logic
                     // Note: The backend 'alezux_finanzas_transactions' table usually has subscription_id or plan_id
