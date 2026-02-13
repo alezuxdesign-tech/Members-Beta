@@ -24,7 +24,9 @@ jQuery(document).ready(function ($) {
             first_name: $form.find('input[name="first_name"]').val(),
             last_name: $form.find('input[name="last_name"]').val(),
             email: $form.find('input[name="email"]').val(),
-            course_id: $form.find('select[name="course_id"]').val()
+            plan_id: $form.find('select[name="plan_id"]').val(),
+            payment_method: $form.find('select[name="payment_method"]').val(),
+            payment_reference: $form.find('input[name="payment_reference"]').val()
         };
 
         if (typeof alezuxShowToast === 'undefined') {
