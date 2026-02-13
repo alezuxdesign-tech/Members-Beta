@@ -196,12 +196,18 @@ jQuery(window).on('elementor/frontend/init', function () {
         });
 
         // Modal Logic (Scoped triggering)
-        // Similar to plans manager, find modal by ID.
-        let $modal = $scope.find('#alezux-manual-pay-modal');
-        if ($modal.length === 0) $modal = $('#alezux-manual-pay-modal');
+        // Find by class within this widget instance (since ID is now dynamic)
+        let $modal = $scope.find('.alezux-modal');
 
-        // The close modal button and confirm button are likely global if the modal is global.
-        // We will use global selectors for them, but manage the confirm button's click handler dynamically.
+        // Safety check if modal is not found (shouldn't happen on fresh render)
+        if ($modal.length === 0) {
+            // Try to find by ID if class fails (fallback in case of weird scoping)
+            const widgetId = $scope.data('id');
+            if (widgetId) {
+                $modal = $('#alezux-manual-pay-modal-' + widgetId);
+            }
+        }
+
         let currentSubId = 0;
 
         // Abrir Modal
@@ -209,9 +215,22 @@ jQuery(window).on('elementor/frontend/init', function () {
             currentSubId = $(this).data('id');
             const amount = $(this).data('amount');
 
+            if ($modal.length === 0) {
+                console.error("Manual Pay Modal Not Found");
+                return;
+            }
+
             // Ensure the modal is in the body for proper overlay behavior
-            if ($modal.parent()[0].tagName !== 'BODY') {
+            // Check if parent exists and is not body
+            if ($modal.parent().length > 0 && $modal.parent()[0].tagName !== 'BODY') {
                 $modal.appendTo('body');
+
+                // Add the widget's unique Elementor class to the modal
+                // so that {{WRAPPER}} styles continue to apply
+                const widgetId = $scope.data('id');
+                if (widgetId) {
+                    $modal.addClass('elementor-element-' + widgetId);
+                }
             }
 
             $modal.find('#modal-sub-id').text(currentSubId);
@@ -220,16 +239,23 @@ jQuery(window).on('elementor/frontend/init', function () {
             $modal.css('display', 'flex'); // Force flex for centering
 
             // Bind the confirm button's click event, ensuring it's unique per modal open
-            const $btnConfirm = $('#btn-confirm-manual-pay');
-            $btnConfirm.off('click.manualpay'); // Remove previous handlers to prevent multiple firings
-            $btnConfirm.on('click.manualpay', function () {
+            const $btnConfirm = $modal.find('#btn-confirm-manual-pay');
+            $btnConfirm.off('click'); // Remove previous handlers
+            $btnConfirm.on('click', function () {
                 handleManualPayment($(this));
             });
         });
 
-        // Cerrar Modal (Global event listener for the close button)
-        $(document).on('click', '.alezux-close-modal', function () {
-            $('.alezux-modal-overlay').hide();
+        // Cerrar Modal (Scoped to this modal instance)
+        $modal.on('click', '.alezux-close-modal', function () {
+            $modal.hide();
+        });
+
+        // Close on overlay click
+        $modal.on('click', function (e) {
+            if ($(e.target).is($modal)) {
+                $modal.hide();
+            }
         });
 
         function handleManualPayment($btn) {
