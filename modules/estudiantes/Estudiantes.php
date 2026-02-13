@@ -284,7 +284,7 @@ class Estudiantes extends Module_Base {
 			$debug_info = [];
 			if ( $all_plans ) {
 				foreach ( $all_plans as $p ) {
-					$debug_info[] = "ID: " . $p->id . " Name: " . $p->name;
+					$debug_info[] = json_encode( $p );
 				}
 			} else {
 				$debug_info[] = "Table is empty or query failed.";
