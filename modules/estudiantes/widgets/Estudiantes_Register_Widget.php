@@ -40,7 +40,7 @@ class Estudiantes_Register_Widget extends Widget_Base {
 
 	protected function register_controls() {
 
-		// --- CONTENIDO: ETIQUETAS ---
+// --- CONTENIDO: ETIQUETAS ---
 		$this->start_controls_section(
 			'section_content_labels',
 			[
@@ -86,11 +86,29 @@ class Estudiantes_Register_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'label_course',
+			'label_plan',
 			[
-				'label' => esc_html__( 'Label Curso', 'alezux-members' ),
+				'label' => esc_html__( 'Label Plan/Curso', 'alezux-members' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Asignar Curso', 'alezux-members' ),
+				'default' => esc_html__( 'Plan / Curso a Asignar', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_payment_method',
+			[
+				'label' => esc_html__( 'Label Método Pago', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Método de Pago', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'label_payment_ref',
+			[
+				'label' => esc_html__( 'Label Referencia', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Referencia / Comprobante', 'alezux-members' ),
 			]
 		);
 
@@ -406,13 +424,15 @@ class Estudiantes_Register_Widget extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		// Obtener Cursos disponibles
-		$courses = get_posts( [
-			'post_type' => 'sfwd-courses',
-			'numberposts' => -1,
-			'orderby' => 'title',
-			'order' => 'ASC',
-		] );
+		// Obtener PLANES disponibles de Finanzas
+        global $wpdb;
+        $plans = [];
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        
+        // Verificar tabla existe antes de query (por si modulo finanzas desactivado)
+        if (  $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
+            $plans = $wpdb->get_results( "SELECT * FROM $table_plans ORDER BY name ASC" );
+        }
 
 		// Prepare Alert Config for JS
 		$alert_config = [
@@ -452,13 +472,39 @@ class Estudiantes_Register_Widget extends Widget_Base {
 				</div>
 
 				<div class="alezux-form-group">
-					<label class="alezux-form-label"><?php echo esc_html( $settings['label_course'] ); ?></label>
-					<select name="course_id" class="alezux-form-control">
-						<option value=""><?php esc_html_e( '-- Seleccionar Curso --', 'alezux-members' ); ?></option>
-						<?php foreach ( $courses as $course ) : ?>
-							<option value="<?php echo esc_attr( $course->ID ); ?>"><?php echo esc_html( $course->post_title ); ?></option>
-						<?php endforeach; ?>
+					<label class="alezux-form-label"><?php echo esc_html( $settings['label_plan'] ); ?></label>
+					<select name="plan_id" class="alezux-form-control" required>
+						<option value=""><?php esc_html_e( '-- Seleccionar Plan --', 'alezux-members' ); ?></option>
+						<?php 
+                        if ( $plans ) {
+                            foreach ( $plans as $plan ) : ?>
+							    <option value="<?php echo esc_attr( $plan->id ); ?>">
+                                    <?php echo esc_html( $plan->name ); ?> 
+                                    (<?php echo strtoupper( $plan->currency ) . ' ' . $plan->price; ?>)
+                                </option>
+						    <?php endforeach; 
+                        } else {
+                            echo '<option value="">No hay planes configurados</option>';
+                        }
+                        ?>
 					</select>
+				</div>
+
+				<div class="alezux-form-row" style="display: flex; gap: 15px;">
+					<div class="alezux-form-group" style="flex: 1;">
+						<label class="alezux-form-label"><?php echo esc_html( $settings['label_payment_method'] ); ?></label>
+						<select name="payment_method" class="alezux-form-control">
+							<option value="manual_cash"><?php esc_html_e( 'Efectivo', 'alezux-members' ); ?></option>
+							<option value="manual_transfer"><?php esc_html_e( 'Transferencia / Depósito', 'alezux-members' ); ?></option>
+							<option value="manual_card"><?php esc_html_e( 'Tarjeta (POS Físico)', 'alezux-members' ); ?></option>
+							<option value="scholarship"><?php esc_html_e( 'Beca (Gratuito)', 'alezux-members' ); ?></option>
+						</select>
+					</div>
+
+					<div class="alezux-form-group" style="flex: 1;">
+						<label class="alezux-form-label"><?php echo esc_html( $settings['label_payment_ref'] ); ?></label>
+						<input type="text" name="payment_reference" class="alezux-form-control" placeholder="<?php esc_attr_e( 'Ej: OP-123456', 'alezux-members' ); ?>">
+					</div>
 				</div>
 
 				<div class="alezux-form-actions">

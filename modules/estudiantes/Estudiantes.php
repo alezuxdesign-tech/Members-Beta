@@ -234,6 +234,9 @@ class Estudiantes extends Module_Base {
 	/**
 	 * AJAX Handler: Registro Manual de 1 Estudiante
 	 */
+	/**
+	 * AJAX Handler: Registro Manual de 1 Estudiante (Integrado con Finanzas)
+	 */
 	public function ajax_register_student() {
 		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
 
@@ -244,29 +247,64 @@ class Estudiantes extends Module_Base {
 		$first_name = isset( $_POST['first_name'] ) ? \sanitize_text_field( $_POST['first_name'] ) : '';
 		$last_name  = isset( $_POST['last_name'] ) ? \sanitize_text_field( $_POST['last_name'] ) : '';
 		$email      = isset( $_POST['email'] ) ? \sanitize_email( $_POST['email'] ) : '';
-		$course_id  = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
+		
+        // Nuevos campos
+        $plan_id           = isset( $_POST['plan_id'] ) ? \intval( $_POST['plan_id'] ) : 0;
+        $payment_method    = isset( $_POST['payment_method'] ) ? \sanitize_text_field( $_POST['payment_method'] ) : 'manual';
+        $payment_reference = isset( $_POST['payment_reference'] ) ? \sanitize_text_field( $_POST['payment_reference'] ) : 'Manual-' . time();
+        
+        // Si viene course_id legacy, lo ignoramos o tratamos de mapear (pero el widget nuevo manda plan_id)
 
 		if ( empty( $email ) || ! \is_email( $email ) ) {
 			\wp_send_json_error( [ 'message' => 'Email inválido.' ] );
 		}
+        
+        if ( empty( $plan_id ) ) {
+            \wp_send_json_error( [ 'message' => 'Debes seleccionar un Plan.' ] );
+        }
 
 		// Verificamos si email o usuario ya existen ANTES de intentar registrar
-		if ( \email_exists( $email ) || \username_exists( $email ) ) {
-			\wp_send_json_error( [ 'message' => 'El correo electrónico ya está registrado.' ] );
+        // NOTA: Enrollment_Manager maneja usuarios existentes, pero para registro manual nuevo
+        // a veces queremos avisar si ya existe. Enrollment Manager lo matricula igual.
+        // Vamos a permitir registrar/matricular usuarios existentes.
+
+        // Validar si Finanzas está activo y cargar Enrollment Manager
+        if ( ! class_exists( 'Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager' ) ) {
+             \wp_send_json_error( [ 'message' => 'Error Interno: Módulo de Finanzas no cargado. No se puede procesar el registro.' ] );
+        }
+
+        // Obtener precio del plan para la transacción
+        global $wpdb;
+        $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
+        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT price, currency FROM $table_plans WHERE id = %d", $plan_id ) );
+        
+        if ( ! $plan ) {
+            \wp_send_json_error( [ 'message' => 'El plan seleccionado no existe.' ] );
+        }
+        
+        $amount = floatval( $plan->price );
+        $currency = !empty($plan->currency) ? $plan->currency : 'USD';
+        $full_name = trim( $first_name . ' ' . $last_name );
+
+        // Ejecutar Inscripción vía Finanzas
+        // Esto crea usuario (si no existe), inscribe en curso (si plan tiene curso), 
+        // crea suscripción y registra transacción.
+        $user_id = \Alezux_Members\Modules\Finanzas\Includes\Enrollment_Manager::enroll_user(
+            $email,
+            $plan_id,
+            null, // No Stripe Sub ID
+            $amount,
+            $payment_reference, // Ref transacción
+            $currency,
+            $full_name,
+            $payment_method // Nuevo param: manual_cash, manual_transfer, etc
+        );
+
+		if ( ! $user_id ) {
+			\wp_send_json_error( [ 'message' => 'Error al procesar la inscripción.' ] );
 		}
 
-		$result = $this->register_single_student( [
-			'first_name' => $first_name,
-			'last_name'  => $last_name,
-			'email'      => $email,
-			'course_id'  => $course_id,
-		] );
-
-		if ( \is_wp_error( $result ) ) {
-			\wp_send_json_error( [ 'message' => $result->get_error_message() ] );
-		}
-
-		\wp_send_json_success( [ 'message' => 'Estudiante registrado correctamente.' ] );
+		\wp_send_json_success( [ 'message' => 'Estudiante registrado y plan asignado correctamente.' ] );
 	}
 
 	/**

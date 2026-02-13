@@ -17,10 +17,10 @@ class Enrollment_Manager {
      * @param string $transaction_ref ID de referencia (PaymentIntent o Session ID)
      * @return int|false ID del usuario o false si falla
      */
-    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD', $full_name = '' ) {
+    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD', $full_name = '', $payment_method = 'stripe' ) {
         global $wpdb;
         
-        error_log( "Alezux Enrollment: Iniciando para $email - Plan $plan_id - Ref $transaction_ref" );
+        error_log( "Alezux Enrollment: Iniciando para $email - Plan $plan_id - Ref $transaction_ref - Method $payment_method" );
 
         // 1. Gestionar Usuario (Buscar o Crear)
         $user = get_user_by( 'email', $email );
@@ -96,7 +96,7 @@ class Enrollment_Manager {
 
         $user_id = $user->ID;
 
-        // ACTUALIZACIÓN: Actualizar nombre siempre si viene de Stripe, incluso para usuarios existentes
+        // ACTUALIZACIÓN: Actualizar nombre siempre si viene de Stripe/Input, incluso para usuarios existentes
         // Esto corrige el caso donde un usuario existente con datos antiguos/erroneos compra de nuevo con nombre correcto
         if ( ! empty( $full_name ) ) {
             $parts = explode( ' ', trim( $full_name ), 2 );
@@ -155,6 +155,10 @@ class Enrollment_Manager {
             $status = $is_one_time ? 'completed' : 'active';
             $quotas_paid = $is_one_time ? ( $plan->total_quotas ?? 1 ) : 1; 
 
+            // Si es manual y no one_time, igual lo marcamos activo.
+            // Ojo: Si es manual recurrente, la lógica de next_payment_date manual es compleja.
+            // Por ahora asumimos manual = pagó esta cuota.
+
             $wpdb->insert( $subs_table, [
                 'user_id' => $user_id,
                 'plan_id' => $plan_id,
@@ -182,7 +186,7 @@ class Enrollment_Manager {
                 'user_id' => $user_id,
                 'amount' => $amount,
                 'currency' => $currency,
-                'method' => 'stripe',
+                'method' => $payment_method, // USAR PARAMETRO
                 'transaction_ref' => $transaction_ref,
                 'status' => 'succeeded',
                 'created_at' => current_time( 'mysql' )
