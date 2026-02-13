@@ -468,6 +468,23 @@ class User_Financial_Profile extends Widget_Base {
             ]
         );
 
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'modal_border',
+                'selector' => '#alezux-report-modal-{{ID}} .alezux-modal-content',
+            ]
+        );
+
+        $this->add_control(
+            'modal_title_heading',
+            [
+                'label' => esc_html__('Título & Subtítulo', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
         $this->add_control(
             'modal_title_color',
             [
@@ -477,12 +494,69 @@ class User_Financial_Profile extends Widget_Base {
             ]
         );
 
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'modal_title_typography',
+                'label' => 'Tipografía Título',
+                'selector' => '#alezux-report-modal-{{ID}} h3',
+            ]
+        );
+
+        $this->add_control(
+            'modal_subtitle_color',
+            [
+                'label' => esc_html__('Color Subtítulo', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-subtitle' => 'color: {{VALUE}};'],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'modal_subtitle_typography',
+                'label' => 'Tipografía Subtítulo',
+                'selector' => '#alezux-report-modal-{{ID}} .alezux-modal-subtitle',
+            ]
+        );
+
+        $this->add_control(
+            'modal_close_heading',
+            [
+                'label' => esc_html__('Botón Cerrar', 'alezux-members'),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+
          $this->add_control(
             'modal_close_color',
             [
-                'label' => esc_html__('Color Botón Cerrar', 'alezux-members'),
+                'label' => esc_html__('Color Icono', 'alezux-members'),
                 'type' => Controls_Manager::COLOR,
-                'selectors' => ['#alezux-report-modal-{{ID}} button.text-gray-500' => 'color: {{VALUE}};'],
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-close' => 'color: {{VALUE}};'],
+            ]
+        );
+
+        $this->add_control(
+            'modal_close_bg_color',
+            [
+                'label' => esc_html__('Color Fondo', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => ['#alezux-report-modal-{{ID}} .alezux-modal-close' => 'background-color: {{VALUE}};'],
+            ]
+        );
+
+        $this->add_control(
+            'modal_close_radius',
+            [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '#alezux-report-modal-{{ID}} .alezux-modal-close' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
             ]
         );
 
@@ -713,11 +787,17 @@ class User_Financial_Profile extends Widget_Base {
                 <div id="alezux-report-backdrop-<?php echo $this->get_id(); ?>" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
 
                 <div class="alezux-modal-content"
-                     style="background-color: #ffffff !important; color: #1f2937 !important; border-radius: 0.5rem !important; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; max-width: 40rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 1.5rem !important; z-index: 1000000 !important; max-height: 80vh; overflow-y: auto;">
+                     style="background-color: #ffffff; color: #1f2937; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 40rem !important; width: 100% !important; margin: 1rem !important; position: relative !important; padding: 2rem !important; z-index: 1000000 !important; max-height: 80vh; overflow-y: auto;">
                     
-                    <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h3 class="text-lg font-bold">Historial de Pagos: <span id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="text-blue-600"></span></h3>
-                        <button id="alezux-report-close-btn-<?php echo $this->get_id(); ?>" class="text-gray-500 hover:text-gray-700 font-bold text-xl">&times;</button>
+                    <button id="alezux-report-close-btn-<?php echo $this->get_id(); ?>" 
+                            class="alezux-modal-close" 
+                            style="position: absolute; top: 1.5rem; right: 1.5rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.25rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-1">Historial de pago</h3>
+                        <div id="alezux-report-subtitle-<?php echo $this->get_id(); ?>" class="alezux-modal-subtitle"></div>
                     </div>
 
                     <div id="alezux-report-content-<?php echo $this->get_id(); ?>" class="space-y-4">
