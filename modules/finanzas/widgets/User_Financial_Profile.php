@@ -477,10 +477,14 @@ class User_Financial_Profile extends Widget_Base {
 
                 // Modal Logic - Pure Vanilla JS
                 openModal(title, message, type = 'info', confirmText = 'Aceptar', showCancel = false, onConfirm = null) {
+                    console.log('Opening Modal:', title); // DEBUG
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     
-                    if (!modalEl) return;
+                    if (!modalEl) {
+                        console.error('Modal element not found:', modalId); // DEBUG
+                        return;
+                    }
 
                     // Update Content
                     document.getElementById('alezux-modal-title-<?php echo $this->get_id(); ?>').innerText = title;
@@ -514,13 +518,14 @@ class User_Financial_Profile extends Widget_Base {
 
                     // Show/Hide Cancel Button
                     const cancelBtn = document.getElementById('alezux-modal-cancel-btn-<?php echo $this->get_id(); ?>');
-                    cancelBtn.style.display = showCancel ? 'inline-flex' : 'none';
+                    cancelBtn.style.setProperty('display', showCancel ? 'inline-flex' : 'none', 'important');
 
                     // Assign Click Handlers
                     this._onConfirm = onConfirm;
                     
                     // Simple confirm handler
                     confirmBtn.onclick = () => {
+                        console.log('Confirm clicked'); // DEBUG
                         if (this._onConfirm) {
                             this._onConfirm();
                         } else {
@@ -535,19 +540,22 @@ class User_Financial_Profile extends Widget_Base {
                     };
 
                     // Show Modal
-                    modalEl.style.display = 'flex';
+                    console.log('Setting display to flex'); // DEBUG
+                    modalEl.style.setProperty('display', 'flex', 'important');
                 },
 
                 closeModal() {
+                    console.log('Closing Modal'); // DEBUG
                     const modalId = 'alezux-profile-modal-<?php echo $this->get_id(); ?>';
                     const modalEl = document.getElementById(modalId);
                     if (modalEl) {
-                        modalEl.style.display = 'none';
+                        modalEl.style.setProperty('display', 'none', 'important');
                     }
                     this._onConfirm = null;
                 },
 
                 confirmPayment(subscriptionId) {
+                    console.log('Confirm payment called for:', subscriptionId); // DEBUG
                     this.openModal(
                         'Confirmar Pago',
                         '¿Deseas generar el enlace de pago para la próxima cuota pendiente?',
@@ -559,6 +567,7 @@ class User_Financial_Profile extends Widget_Base {
                 },
 
                 processPayment(subscriptionId) {
+                    console.log('Processing payment for:', subscriptionId); // DEBUG
                     this.loading = true;
                     this.closeModal(); // Close confirmation modal
                     
