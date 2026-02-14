@@ -141,21 +141,25 @@ class Admin_Dashboard_Stats {
 	 * Obtiene ingresos de los últimos 30 días (simulado si no hay módulo Finanzas, o real si existe tabla)
 	 */
 	public static function get_recent_revenue() {
-		global $wpdb;
+		return self::get_revenue_log(30);
+	}
+
+    /**
+     * Obtiene log de ingresos diarios para los últimos X días
+     * @param int $days días hacia atrás desde hoy (default 365 para cubrir todo el año)
+     * @return array Array de objetos {date: 'Y-m-d', total: 123.45}
+     */
+    public static function get_revenue_log($days = 365) {
+        global $wpdb;
 		$table_name = $wpdb->prefix . 'alezux_finanzas_transactions'; 
 		
-		// Verificar si tabla existe (usando cache de WP si posible, pero query directo es seguro)
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
 			return []; 
 		}
 
-		// Fecha límite (últimos 30 días) respetando Timezone de WP
-		$date_limit = date('Y-m-d H:i:s', strtotime('-30 days', current_time('timestamp')));
+		// Fecha límite respetando Timezone de WP
+		$date_limit = date('Y-m-d H:i:s', strtotime("-$days days", current_time('timestamp')));
 
-		// Obtener ingresos agrupados por fecha (fecha local de WP vs fecha guardada)
-		// NOTA: Si created_at se guarda en UTC (como suele ser con current_time('mysql') si no se ajusta), 
-		// deberíamos convertir. Pero en Ajax_Handler asumimos que se guardan o comparan igual.
-		// En este caso, comparamos strings directos.
 		$query = "
 			SELECT DATE(created_at) as date, SUM(amount) as total
 			FROM $table_name
@@ -166,5 +170,5 @@ class Admin_Dashboard_Stats {
 		";
 		
 		return $wpdb->get_results( $query, ARRAY_A );
-	}
+    }
 }

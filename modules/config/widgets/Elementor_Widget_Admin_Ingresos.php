@@ -50,6 +50,9 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 			]
 		);
         
+			]
+		);
+        
         $this->add_control(
 			'simulate_data',
 			[
@@ -59,6 +62,59 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 				'default' => 'no',
 			]
 		);
+
+        // Labels for Tabs
+        $this->add_control(
+			'tab_daily_label',
+			[
+				'label' => __( 'Etiqueta Semanal', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Semanal', 'alezux-members' ),
+			]
+		);
+        $this->add_control(
+			'tab_weekly_label',
+			[
+				'label' => __( 'Etiqueta Mensual', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Mensual', 'alezux-members' ),
+			]
+		);
+        $this->add_control(
+			'tab_monthly_label',
+			[
+				'label' => __( 'Etiqueta Anual', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Anual', 'alezux-members' ),
+			]
+		);
+
+        // Labels for Tabs
+        $this->add_control(
+			'tab_daily_label',
+			[
+				'label' => __( 'Etiqueta Semanal', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Semanal', 'alezux-members' ),
+			]
+		);
+        $this->add_control(
+			'tab_weekly_label',
+			[
+				'label' => __( 'Etiqueta Mensual', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Mensual', 'alezux-members' ),
+			]
+		);
+        $this->add_control(
+			'tab_monthly_label',
+			[
+				'label' => __( 'Etiqueta Anual', 'alezux-members' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => __( 'Anual', 'alezux-members' ),
+			]
+		);
+
 
 		$this->end_controls_section();
 
@@ -174,6 +230,74 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 
         $this->end_controls_section();
 
+        // --- SECCIÓN: ESTILO - TABS ---
+        $this->start_controls_section(
+			'section_style_tabs',
+			[
+				'label' => __( 'Pestañas (Tabs)', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_control(
+			'tabs_bg_color',
+			[
+				'label' => __( 'Fondo Contenedor Tabs', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#f5f5f5',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-rendimiento-tabs' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'tab_item_color',
+			[
+				'label' => __( 'Color Texto Inactivo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#666666',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-tab-item' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'tab_item_active_color',
+			[
+				'label' => __( 'Color Texto Activo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#000000',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-tab-item.active' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'tab_item_active_bg',
+			[
+				'label' => __( 'Fondo Activo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-tab-item.active' => 'background-color: {{VALUE}}; box-shadow: 0 2px 5px rgba(0,0,0,0.05);',
+				],
+			]
+		);
+
+        $this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'tabs_typography',
+				'label' => __( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-tab-item',
+			]
+		);
+
+        $this->end_controls_section();
+
         // --- SECCIÓN: ESTILO - GRÁFICO (CHART) ---
         $this->start_controls_section(
 			'section_style_chart',
@@ -227,17 +351,15 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
         
-        // Obtener datos de ingresos (desde Admin_Dashboard_Stats o lógica directa)
-        // Admin_Dashboard_Stats::get_recent_revenue() retorna un array de objetos con date y total
-        // Necesitamos procesarlo para el estilo de Financial_Performance_Widget (últimos 7 días)
-
-        $db_data = Admin_Dashboard_Stats::get_recent_revenue(); // Asume que retorna ultimos 30 dias o similar
-        
-        // Convertir a mapa date => total
+        // --- DATA FETCHING ---
         $log = [];
+        
+        // Fetch 1 year of data directly
+        $db_data = Admin_Dashboard_Stats::get_revenue_log(366); // 1 year + extra margin
+        
         if ( ! empty($db_data) ) {
             foreach($db_data as $row) {
-                // $row puede ser objeto o array según implementación de get_recent_revenue
+                // $row is object {date: 'Y-m-d', total: 123.45}
                 $date = is_object($row) ? $row->date : $row['date'];
                 $total = is_object($row) ? $row->total : $row['total'];
                 $log[$date] = (float)$total;
@@ -247,49 +369,126 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
         // Demo Data
         if ( 'yes' === $settings['simulate_data'] || (empty($log) && \Elementor\Plugin::$instance->editor->is_edit_mode()) ) {
             $today_ts = current_time('timestamp');
-             for ($i = 6; $i >= 0; $i--) {
+             for ($i = 365; $i >= 0; $i--) {
                 $d = date('Y-m-d', strtotime("-$i days", $today_ts));
-                if (!isset($log[$d])) $log[$d] = rand(50, 200) + (rand(0,99)/100);
+                if (!isset($log[$d])) {
+                    // Random sales pattern: some zeros, some values
+                    if (rand(0,10) > 3) $log[$d] = rand(50, 500) + (rand(0,99)/100);
+                }
              }
         }
         
-        // Generar Array de 7 Días
-        $chart_data = [];
-        $max_val = 0;
-        $total_period = 0;
-        $wp_local_timestamp = current_time('timestamp');
+        $wp_local_timestamp = current_time('timestamp'); 
+        $currency_symbol = '$'; // TODO: Get from settings if needed
+
+        // --- DATA PROCESSING ---
+
+        // 1. Weekly Data (Calendar Week: Mon-Sun)
+        $weekly_data = [];
+        $max_weekly = 0;
+        $total_weekly = 0;
         
-        // Generar últimos 7 días explícitos, terminando en Hoy
-        // Financial Widget original mostraba semana lun-dom, aqui haremos "Últimos 7 días" rodantes para Dashboard
-        // O si quieres igual a Finanzas (semana calendario), copiamos su lógica.
-        // El usuario dijo "igual al widget solo que ... ultimos 7 días". Interpretacion: Rolling 7 days.
-        
-        for ($i = 6; $i >= 0; $i--) {
-            $day_ts = strtotime("-$i days", $wp_local_timestamp);
+        // Find Monday of the current week (based on WP Local Time)
+        $current_w = date('w', $wp_local_timestamp);
+        $offset_to_monday = ($current_w == 0) ? 6 : $current_w - 1;
+        $monday_timestamp = strtotime("-$offset_to_monday days", $wp_local_timestamp);
+
+        for ($i = 0; $i < 7; $i++) {
+            $day_ts = strtotime("+$i days", $monday_timestamp);
             $d = date('Y-m-d', $day_ts);
             
             $val = isset($log[$d]) ? $log[$d] : 0;
-            if ($val > $max_val) $max_val = $val;
-            $total_period += $val;
+            if ($val > $max_weekly) $max_weekly = $val;
+            $total_weekly += $val;
             
             $is_today = ($d === date('Y-m-d', $wp_local_timestamp));
             
-            $chart_data[] = [
+            $weekly_data[] = [
                 'val' => $val,
-                'label' => date_i18n('D', $day_ts), // Mon, Tue...
+                'label' => date_i18n('l', $day_ts), // Full day name
                 'full_date' => date_i18n(get_option('date_format'), $day_ts),
                 'is_today' => $is_today
             ];
         }
+        if ($max_weekly == 0) $max_weekly = 100;
+        // Scale nice numbers
+        $magnitude = pow(10, floor(log10($max_weekly)));
+        $max_weekly = ceil($max_weekly / ($magnitude/2)) * ($magnitude/2);
 
-        // Calcular Escala Eje Y
-        if ($max_val == 0) $max_val = 100;
-        $magnitude = pow(10, floor(log10($max_val)));
-        $max_val = ceil($max_val / ($magnitude/2)) * ($magnitude/2);
 
-        $currency_symbol = '$'; // TODO: Get from settings
+        // 2. Monthly Data (Calendar Month: 1st to End of Month)
+        $monthly_data = [];
+        $max_monthly = 0;
+        $total_monthly = 0;
+        
+        $current_month_start_ts = strtotime(date('Y-m-01', $wp_local_timestamp));
+        $days_in_month = (int)date('t', $wp_local_timestamp); 
+        
+        for ($i = 0; $i < $days_in_month; $i++) {
+            $day_ts = strtotime("+$i days", $current_month_start_ts);
+            $d = date('Y-m-d', $day_ts);
+            
+            $val = isset($log[$d]) ? $log[$d] : 0;
+            if ($val > $max_monthly) $max_monthly = $val;
+            $total_monthly += $val;
+            
+            $day_number = (int)date('j', $day_ts);
+            $is_today = ($d === date('Y-m-d', $wp_local_timestamp));
+            
+            $label = '';
+            if ($day_number === 1 || $day_number % 5 === 0 || $day_number === $days_in_month) {
+                $label = $day_number;
+            }
 
-        // Render Func Helpers
+            $monthly_data[] = [
+                'val' => $val,
+                'label' => $label,
+                'full_date' => date_i18n(get_option('date_format'), $day_ts),
+                'is_today' => $is_today
+            ];
+        }
+        if ($max_monthly == 0) $max_monthly = 100;
+        $magnitude = pow(10, floor(log10($max_monthly)));
+        $max_monthly = ceil($max_monthly / ($magnitude/2)) * ($magnitude/2);
+
+
+        // 3. Yearly Data (Calendar Year: Jan-Dec)
+        $yearly_data = [];
+        $max_yearly = 0;
+        $total_yearly = 0;
+        $current_year = date('Y', $wp_local_timestamp);
+
+        for ($m = 1; $m <= 12; $m++) {
+            $month_start = "$current_year-" . sprintf('%02d', $m) . "-01";
+            $month_end = date('Y-m-t', strtotime($month_start));
+            $month_val = 0;
+            
+            $current_day = $month_start;
+            while (strtotime($current_day) <= strtotime($month_end)) {
+                 if (isset($log[$current_day])) {
+                     $month_val += $log[$current_day];
+                 }
+                 $current_day = date('Y-m-d', strtotime($current_day . ' +1 day'));
+            }
+
+            if ($month_val > $max_yearly) $max_yearly = $month_val;
+            $total_yearly += $month_val;
+            
+            $is_current_month = ($m === (int)date('n', $wp_local_timestamp));
+
+            $yearly_data[] = [
+                'val' => $month_val,
+                'label' => date_i18n('F', strtotime($month_start)), // Full month name
+                'full_date' => date_i18n('F Y', strtotime($month_start)),
+                'is_today' => $is_current_month
+            ];
+        }
+        if ($max_yearly == 0) $max_yearly = 100;
+        $magnitude = pow(10, floor(log10($max_yearly)));
+        $max_yearly = ceil($max_yearly / ($magnitude/2)) * ($magnitude/2);
+
+
+        // Render Helpers
         $format_axis = function($amount) use ($currency_symbol) {
              if ($amount >= 1000) return $currency_symbol . number_format($amount/1000, 1) . 'k';
              return $currency_symbol . number_format($amount, 0);
@@ -297,21 +496,12 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
         $format_money = function($amount) use ($currency_symbol) {
              return $currency_symbol . number_format($amount, 2);
         };
-
-		?>
-		<div class="alezux-rendimiento-wrapper">
-            <div class="alezux-rendimiento-header">
-                <div class="alezux-rendimiento-title">
-                    <?php echo esc_html( $settings['title_text'] ); ?>
-                </div>
-                <!-- Total pill aligned to right -->
-                 <div class="alezux-revenue-pill">
-                     <?php echo $format_money($total_period); ?>
-                 </div>
-            </div>
-
-            <!-- Chart Area -->
-             <div class="alezux-rendimiento-chart-area">
+        
+        // Chart Render Function
+        $render_chart = function($id, $data_set, $max_val, $is_active = false) use ($format_axis, $format_money) {
+             $style = $is_active ? '' : 'display:none;';
+             ?>
+             <div class="alezux-rendimiento-chart-area" id="<?php echo esc_attr($id); ?>" style="<?php echo $style; ?>">
                 <!-- Y Axis -->
                 <div class="alezux-axis-y">
                     <?php 
@@ -333,15 +523,14 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
                     ?>
                     
                     <div class="alezux-bars-container">
-                        <?php foreach($chart_data as $data): 
+                        <?php foreach($data_set as $data): 
                             $height_pct = ($max_val > 0) ? ($data['val'] / $max_val) * 100 : 0;
-                            $formatted_value = $format_money($data['val']);
                         ?>
                             <div class="alezux-bar-column">
-                                <div class="alezux-bar-item <?php echo $data['is_today'] ? 'is-today' : ''; ?>" style="height: <?php echo $height_pct; ?>%;">
+                                <div class="alezux-bar-item <?php echo isset($data['is_today']) && $data['is_today'] ? 'is-today' : ''; ?>" style="height: <?php echo $height_pct; ?>%;">
                                     <div class="alezux-bar-fill"></div>
                                     <div class="alezux-bar-tooltip">
-                                        <div class="tooltip-time"><?php echo $formatted_value; ?></div>
+                                        <div class="tooltip-time"><?php echo $format_money($data['val']); ?></div>
                                         <div class="tooltip-meta"><?php echo $data['full_date']; ?></div>
                                     </div>
                                 </div>
@@ -351,6 +540,71 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
                     </div>
                 </div>
             </div>
+             <?php
+        };
+
+		?>
+		<div class="alezux-rendimiento-wrapper">
+            <div class="alezux-rendimiento-header">
+                <div class="alezux-rendimiento-title">
+                    <?php echo esc_html( $settings['title_text'] ); ?>
+                </div>
+                <!-- Dynamic Pill - Updated by JS ideally, but here static for active tab? 
+                     Basically we need JS to update this total if we want it perfect.
+                     For now, let's just show Weekly total as default, or maybe hide it?
+                     The requested widget doesn't strictly have a total pill in the screenshot context, 
+                     but the original had one. The Rendimiento one has an icon.
+                     Let's match Rendimiento: Icon instead of Pill? 
+                     User said: "igual al widget de rendimiento con la unica diferencia es que aqui muestra son datos de ventas"
+                     So I'll swap the icon for the pill, but maybe make the pill dynamic via JS?
+                     Or just 3 pills hidden/shown?
+                -->
+                 <div class="alezux-revenue-pill" id="pill-weekly">
+                     <?php echo $format_money($total_weekly); ?>
+                 </div>
+                 <div class="alezux-revenue-pill" id="pill-monthly" style="display:none;">
+                     <?php echo $format_money($total_monthly); ?>
+                 </div>
+                 <div class="alezux-revenue-pill" id="pill-yearly" style="display:none;">
+                     <?php echo $format_money($total_yearly); ?>
+                 </div>
+            </div>
+
+            <div class="alezux-rendimiento-tabs">
+                <div class="alezux-tab-item active" data-tab="weekly"><?php echo esc_html( $settings['tab_daily_label'] ); ?></div>
+                <div class="alezux-tab-item" data-tab="monthly"><?php echo esc_html( $settings['tab_weekly_label'] ); ?></div>
+                <div class="alezux-tab-item" data-tab="yearly"><?php echo esc_html( $settings['tab_monthly_label'] ); ?></div>
+            </div>
+
+            <?php 
+                $render_chart('chart-weekly', $weekly_data, $max_weekly, true);
+                $render_chart('chart-monthly', $monthly_data, $max_monthly, false);
+                $render_chart('chart-yearly', $yearly_data, $max_yearly, false);
+            ?>
+
+            <script>
+            jQuery(document).ready(function($) {
+                // Unique IDs might be needed if multiple widgets?
+                // Scope to wrapper
+                $('.alezux-rendimiento-wrapper').each(function() {
+                    var $wrapper = $(this);
+                    
+                    $wrapper.find('.alezux-tab-item').on('click', function() {
+                        var tab = $(this).data('tab');
+                        
+                        $wrapper.find('.alezux-tab-item').removeClass('active');
+                        $(this).addClass('active');
+                        
+                        $wrapper.find('.alezux-rendimiento-chart-area').hide();
+                        $wrapper.find('#chart-' + tab).fadeIn(200);
+                        
+                        // Also toggle pills
+                        $wrapper.find('.alezux-revenue-pill').hide();
+                        $wrapper.find('#pill-' + tab).fadeIn(200);
+                    });
+                });
+            });
+            </script>
 		</div>
 
         <style>
@@ -377,6 +631,23 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
                 border-radius: 20px;
                 font-weight: 700;
                 font-size: 14px;
+            }
+            
+            .alezux-rendimiento-tabs {
+                display: flex;
+                border-radius: 8px;
+                padding: 4px;
+                margin-bottom: 30px;
+            }
+            .alezux-tab-item {
+                flex: 1;
+                text-align: center;
+                padding: 8px 12px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                border-radius: 6px;
+                transition: all 0.3s;
             }
 
             /* Chart Layout */
@@ -466,6 +737,9 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
                 color: #999;
                 text-align: center;
                 white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
             
             /* Tooltip */
