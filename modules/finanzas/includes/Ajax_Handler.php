@@ -883,22 +883,25 @@ class Ajax_Handler {
         $response = [];
 
         if ($stat_type === 'month_revenue' || $stat_type === 'all') {
-            // If global filter is active, use that. If not, default to THIS MONTH.
+            // Default to THIS MONTH relative to WP Timezone
+            $month_start = \current_time('Y-m-01 00:00:00');
+            $month_end   = \current_time('Y-m-t 23:59:59');
+
             if (empty($date_from)) {
-                 $month_start = \date('Y-m-01 00:00:00');
-                 $month_end   = \date('Y-m-t 23:59:59');
                  $sql_month = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$month_start' AND '$month_end'";
                  $response['month_revenue'] = $wpdb->get_var($sql_month) ?: 0;
             } else {
-                 // If filtered, return revenue for period and label it accordingly in JS
-                 $sql_filtered = "SELECT SUM(amount) FROM $table_name WHERE $where_sql";
+                 // If filtered by user, use the filtered period
+                 $sql_filtered = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND $where_sql";
                  $response['month_revenue'] = $wpdb->get_var($sql_filtered) ?: 0;
             }
         }
 
         if ($stat_type === 'today_revenue' || $stat_type === 'all') {
-             $today_start = \date('Y-m-d 00:00:00');
-             $today_end   = \date('Y-m-d 23:59:59');
+             // Default to TODAY relative to WP Timezone
+             $today_start = \current_time('Y-m-d 00:00:00');
+             $today_end   = \current_time('Y-m-d 23:59:59');
+             
              $sql_today = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$today_start' AND '$today_end'";
              $response['today_revenue'] = $wpdb->get_var($sql_today) ?: 0;
         }
