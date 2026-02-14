@@ -142,20 +142,25 @@ class Admin_Dashboard_Stats {
 	 */
 	public static function get_recent_revenue() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'alezux_finanzas_enrollments'; // Tabla hipotética de pagos/enrollments
+		$table_name = $wpdb->prefix . 'alezux_finanzas_transactions'; 
 		
-		// Verificar si tabla existe
+		// Verificar si tabla existe (usando cache de WP si posible, pero query directo es seguro)
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
-			return []; // Retornar vacío si no hay módulo finanzas
+			return []; 
 		}
 
-		// Obtener ingresos agrupados por fecha (últimos 30 días)
-		// Asumiendo columnas: amount, created_at
+		// Fecha límite (últimos 30 días) respetando Timezone de WP
+		$date_limit = date('Y-m-d H:i:s', strtotime('-30 days', current_time('timestamp')));
+
+		// Obtener ingresos agrupados por fecha (fecha local de WP vs fecha guardada)
+		// NOTA: Si created_at se guarda en UTC (como suele ser con current_time('mysql') si no se ajusta), 
+		// deberíamos convertir. Pero en Ajax_Handler asumimos que se guardan o comparan igual.
+		// En este caso, comparamos strings directos.
 		$query = "
 			SELECT DATE(created_at) as date, SUM(amount) as total
 			FROM $table_name
-			WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-			AND status = 'active'
+			WHERE created_at >= '$date_limit'
+			AND status = 'succeeded'
 			GROUP BY DATE(created_at)
 			ORDER BY date ASC
 		";
