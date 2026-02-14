@@ -10,8 +10,7 @@ class Shortcodes {
 	public static function init() {
         // --- Nuevos Shortcodes Dashboard (AJAX Powered) ---
         add_shortcode( 'alezux_sales_stats', [ __CLASS__, 'render_sales_stats' ] );
-        add_shortcode( 'alezux_sales_chart', [ __CLASS__, 'render_sales_chart' ] );
-        add_shortcode( 'alezux_date_range_filter', [ __CLASS__, 'render_date_filter' ] );
+
 	}
 
 
@@ -63,42 +62,5 @@ class Shortcodes {
         return ob_get_clean();
     }
 
-    public static function render_sales_chart( $atts ) {
-        $a = shortcode_atts( [
-            'type' => 'doughnut',
-            'title' => 'Ingresos por Método'
-        ], $atts );
-        
-        $chart_id = 'chart-' . uniqid();
 
-        ob_start();
-        ?>
-        <div class="alezux-chart-container" style="padding: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; margin: 10px;">
-            <?php if($a['title']): ?>
-                <h3 class="alezux-chart-title" style="margin: 0 0 20px 0; font-size: 18px; color: #fff; font-weight: 600;"><?php echo esc_html($a['title']); ?></h3>
-            <?php endif; ?>
-            
-            <div class="alezux-chart-wrapper" style="position: relative; height:300px; width:100%;">
-                <!-- Data attributes for colors (default) -->
-                <canvas id="<?php echo esc_attr($chart_id); ?>" class="alezux-chart-card" data-chart-type="<?php echo esc_attr($a['type']); ?>" data-color-stripe="#6772e5" data-color-manual="#2ecc71" data-color-paypal="#003087"></canvas>
-                 <div class="alezux-chart-loading" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); color:white; justify-content:center; align-items:center;">Cargando...</div>
-            </div>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-
-    public static function render_date_filter( $atts ) {
-        ob_start();
-        ?>
-        <div class="alezux-date-filter-wrapper" style="display: inline-block; width: 100%; max-width: 300px; margin: 10px;">
-             <div class="alezux-input-icon-wrapper" style="position: relative; display: flex; align-items: center;">
-                <span class="dashicons dashicons-calendar-alt" style="position: absolute; left: 10px; color: #888; pointer-events: none;"></span>
-                <input type="text" class="alezux-date-global-input" placeholder="Filtrar por Fecha..." style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #444; border-radius: 6px; background: #1a1a1a; color: #fff; cursor: pointer;" readonly>
-                <span class="dashicons dashicons-dismiss alezux-clear-global-date" title="Limpiar" style="display:none; cursor:pointer; position: absolute; right: 10px; color: #888;"></span>
-             </div>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
 }

@@ -20,6 +20,7 @@ class Ajax_Handler {
         \add_action( 'wp_ajax_alezux_update_plan', [ __CLASS__, 'update_plan' ] ); // NUEVO
         \add_action( 'wp_ajax_alezux_get_my_financial_data', [ __CLASS__, 'get_my_financial_data' ] );
         \add_action( 'wp_ajax_alezux_create_installment_checkout', [ __CLASS__, 'create_installment_checkout' ] );
+        \add_action( 'wp_ajax_alezux_get_sales_stats', [ __CLASS__, 'get_sales_stats' ] ); // Migrated from Finanzas.php
 	}
 
 	public static function get_course_modules() {
@@ -797,7 +798,9 @@ class Ajax_Handler {
         // Si plan_price es null (plan borrado), intentar usar un fallback o error
         $price_val = $subscription->plan_price ? (float)$subscription->plan_price : 0;
         
+        
         if ( $price_val <= 0 ) {
+
              \wp_send_json_error( 'Error: No se puede determinar el monto de la cuota (Plan eliminado o inválido).' );
         }
 
@@ -841,6 +844,92 @@ class Ajax_Handler {
         } else {
             \wp_send_json_error( 'No se pudo generar el link de pago.' );
         }
+    }
+
+    /**
+     * AJAX: Get Sales Stats for Dashboard (KPIs + Chart)
+     * Migrated from Finanzas.php and fixed to use correct table
+     */
+    public static function get_sales_stats() {
+        \check_ajax_referer('alezux_finanzas_nonce', 'nonce');
+        
+        if (!\is_user_logged_in()) {
+            \wp_send_json_error(['message' => 'Unauthorized']);
+        }
+
+        global $wpdb;
+        // CORRECTED TABLE NAME
+        $table_name = $wpdb->prefix . 'alezux_finanzas_transactions'; 
+
+        // Get Filters
+        $date_from = isset($_POST['date_from']) ? \sanitize_text_field($_POST['date_from']) : '';
+        $date_to   = isset($_POST['date_to']) ? \sanitize_text_field($_POST['date_to']) : '';
+        
+        // Base Query Condition
+        // In transactions table, status is typically 'succeeded' or 'completed' depending on logic.
+        // sales-history.js uses 'succeeded' for badges.
+        $where_clauses = ["status = 'succeeded'"]; 
+        
+        if (!empty($date_from) && !empty($date_to)) {
+            $where_clauses[] = "created_at BETWEEN '$date_from 00:00:00' AND '$date_to 23:59:59'";
+        } elseif (!empty($date_from)) {
+             $where_clauses[] = "DATE(created_at) = '$date_from'";
+        }
+
+        $where_sql = implode(' AND ', $where_clauses);
+
+        // 1. Calculate Stats
+        $stat_type = isset($_POST['stat_type']) ? \sanitize_text_field($_POST['stat_type']) : 'all';
+        $response = [];
+
+        if ($stat_type === 'month_revenue' || $stat_type === 'all') {
+            // If global filter is active, use that. If not, default to THIS MONTH.
+            if (empty($date_from)) {
+                 $month_start = \date('Y-m-01 00:00:00');
+                 $month_end   = \date('Y-m-t 23:59:59');
+                 $sql_month = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$month_start' AND '$month_end'";
+                 $response['month_revenue'] = $wpdb->get_var($sql_month) ?: 0;
+            } else {
+                 // If filtered, return revenue for period and label it accordingly in JS
+                 $sql_filtered = "SELECT SUM(amount) FROM $table_name WHERE $where_sql";
+                 $response['month_revenue'] = $wpdb->get_var($sql_filtered) ?: 0;
+            }
+        }
+
+        if ($stat_type === 'today_revenue' || $stat_type === 'all') {
+             $today_start = \date('Y-m-d 00:00:00');
+             $today_end   = \date('Y-m-d 23:59:59');
+             $sql_today = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$today_start' AND '$today_end'";
+             $response['today_revenue'] = $wpdb->get_var($sql_today) ?: 0;
+        }
+
+        // 2. Chart Data (Breakdown by Method)
+        if ($stat_type === 'chart_data' || $stat_type === 'all') {
+            // Check if column is 'payment_method' or 'method'
+            // Database_Installer says: method VARCHAR(50)
+            $col_method = 'method'; 
+            
+            $sql_chart = "SELECT $col_method, SUM(amount) as total FROM $table_name WHERE $where_sql GROUP BY $col_method";
+            $results = $wpdb->get_results($sql_chart);
+            
+            $chart_data = [
+                'stripe' => 0,
+                'manual' => 0,
+                'paypal' => 0, 
+                'other' => 0
+            ];
+
+            foreach($results as $row) {
+                $method = \strtolower($row->$col_method);
+                if(\strpos($method, 'stripe') !== false) $chart_data['stripe'] += $row->total;
+                elseif(\strpos($method, 'manual') !== false) $chart_data['manual'] += $row->total;
+                elseif(\strpos($method, 'paypal') !== false) $chart_data['paypal'] += $row->total;
+                else $chart_data['other'] += $row->total;
+            }
+            $response['chart_data'] = $chart_data;
+        }
+
+        \wp_send_json_success($response);
     }
 }
 

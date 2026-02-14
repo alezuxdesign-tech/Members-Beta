@@ -218,16 +218,7 @@ $shortcodes[] = [
     'module' => 'FINANZAS',
     'description' => 'KPI: Ingresos Hoy (Dashboard).'
 ];
-$shortcodes[] = [
-    'tag' => 'alezux_sales_chart',
-    'module' => 'FINANZAS',
-    'description' => 'Gráfico de Ingresos por Método (Stripe/Manual).'
-];
-$shortcodes[] = [
-    'tag' => 'alezux_date_range_filter',
-    'module' => 'FINANZAS',
-    'description' => 'Filtro Global de Fechas para Dashboard.'
-];
+
 
 // 2. ESTUDIANTES
 $shortcodes[] = [
