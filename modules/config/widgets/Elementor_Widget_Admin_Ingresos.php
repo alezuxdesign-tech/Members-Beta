@@ -50,8 +50,7 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 			]
 		);
         
-			]
-		);
+
         
         $this->add_control(
 			'simulate_data',
@@ -88,33 +87,6 @@ class Elementor_Widget_Admin_Ingresos extends Widget_Base {
 				'default' => __( 'Anual', 'alezux-members' ),
 			]
 		);
-
-        // Labels for Tabs
-        $this->add_control(
-			'tab_daily_label',
-			[
-				'label' => __( 'Etiqueta Semanal', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Semanal', 'alezux-members' ),
-			]
-		);
-        $this->add_control(
-			'tab_weekly_label',
-			[
-				'label' => __( 'Etiqueta Mensual', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Mensual', 'alezux-members' ),
-			]
-		);
-        $this->add_control(
-			'tab_monthly_label',
-			[
-				'label' => __( 'Etiqueta Anual', 'alezux-members' ),
-				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Anual', 'alezux-members' ),
-			]
-		);
-
 
 		$this->end_controls_section();
 

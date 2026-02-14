@@ -169,6 +169,6 @@ class Admin_Dashboard_Stats {
 			ORDER BY date ASC
 		";
 		
-		return $wpdb->get_results( $query, ARRAY_A );
+		return $wpdb->get_results( $query, 'ARRAY_A' );
     }
 }
