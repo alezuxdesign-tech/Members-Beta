@@ -445,13 +445,22 @@ class Finanzas extends Module_Base {
         wp_register_script( 'chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.0', true );
 
         // 4. NEW Sales Dashboard Universal Logic
+        // Load on Admin Dashboard OR if widgets are present (Frontend)
+        $screen = get_current_screen();
+        $is_dashboard = $screen ? $screen->id === 'dashboard' || $screen->id === 'toplevel_page_alezux-dashboard' : false;
+
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-dashboard.js' ) ) {
             wp_register_script( 'alezux-sales-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-dashboard.js', ['jquery', 'flatpickr-js', 'chart-js'], $version, true );
              wp_localize_script( 'alezux-sales-dashboard-js', 'alezux_dashboard_vars', [
                  'ajax_url'     => admin_url( 'admin-ajax.php' ),
                  'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
+                 'is_logged_in' => is_user_logged_in(),
              ] );
-             wp_enqueue_script('alezux-sales-dashboard-js');
+             
+             // Enqueue if we are on Admin Dashboard OR if Elementor Editor
+             if ( is_admin() || \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+                   wp_enqueue_script('alezux-sales-dashboard-js');
+             }
         }
     }
 

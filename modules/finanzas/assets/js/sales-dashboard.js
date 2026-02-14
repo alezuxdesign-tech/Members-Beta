@@ -34,13 +34,30 @@ jQuery(document).ready(function ($) {
 
     // 2. Stats (KPIs) Logic
     function updateStats(dateFrom, dateTo) {
-        $('.alezux-kpi-card').each(function () {
-            const $card = $(this);
-            const statType = $card.data('stat-type');
-            const $value = $card.find('.alezux-kpi-number');
-            const $loading = $card.find('.alezux-kpi-loading');
+        // Find all elements that need updating: Cards AND Raw Spans
+        const $elements = $('.alezux-kpi-card, .alezux-dynamic-stat-raw');
 
-            $loading.show();
+        if ($elements.length === 0) return;
+
+        $elements.each(function () {
+            const $el = $(this);
+            const statType = $el.data('stat-type');
+
+            // UI State
+            let $valueTarget;
+            let $loadingTarget;
+
+            if ($el.hasClass('alezux-kpi-card')) {
+                $valueTarget = $el.find('.alezux-kpi-number');
+                $loadingTarget = $el.find('.alezux-kpi-loading');
+            } else {
+                // Raw span
+                $valueTarget = $el;
+                $loadingTarget = null;
+                $el.css('opacity', '0.5'); // Visual feedback for raw elements
+            }
+
+            if ($loadingTarget) $loadingTarget.show();
 
             $.ajax({
                 url: ajaxUrl,
@@ -61,13 +78,23 @@ jQuery(document).ready(function ($) {
 
                         // Format Currency
                         const formatted = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
-                        $value.text(formatted);
+
+                        if ($valueTarget.is('input')) {
+                            $valueTarget.val(formatted);
+                        } else {
+                            $valueTarget.text(formatted);
+                        }
                     } else {
-                        $value.text('Error');
+                        if (!$loadingTarget) $el.text('Err');
+                        console.error('Alezux Stats Error:', response);
                     }
                 },
+                error: function (err) {
+                    console.error('Alezux Stats AJAX Error:', err);
+                },
                 complete: function () {
-                    $loading.hide();
+                    if ($loadingTarget) $loadingTarget.hide();
+                    if (!$loadingTarget) $el.css('opacity', '1');
                 }
             });
         });
@@ -77,11 +104,16 @@ jQuery(document).ready(function ($) {
     const charts = {}; // Store chart instances by ID
 
     function updateCharts(dateFrom, dateTo) {
-        $('.alezux-chart-card').each(function () {
+        const $charts = $('.alezux-chart-card');
+        if ($charts.length === 0) return;
+
+        $charts.each(function () {
             const canvas = $(this)[0];
             const chartId = canvas.id;
-            const chartType = $(this).data('chart-type');
-            const $container = $(this).closest('.alezux-chart-container');
+            const chartType = $(this).data('chart-type') || 'doughnut';
+
+            // Check if inside a container or standalone
+            const $container = $(this).closest('.alezux-chart-wrapper, .alezux-chart-container');
             const $loading = $container.find('.alezux-chart-loading');
 
             // Colors
@@ -89,7 +121,7 @@ jQuery(document).ready(function ($) {
             const colorManual = $(this).data('color-manual') || '#2ecc71';
             const colorPaypal = $(this).data('color-paypal') || '#003087';
 
-            $loading.show(); // Need to ensure CSS positions this correctly over container
+            if ($loading.length) $loading.show();
 
             $.ajax({
                 url: ajaxUrl,
@@ -119,25 +151,30 @@ jQuery(document).ready(function ($) {
                             charts[chartId].update();
                         } else {
                             // Init Chart
-                            charts[chartId] = new Chart(canvas, {
-                                type: chartType,
-                                data: chartData,
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                            labels: { color: '#fff' }
+                            if (typeof Chart !== 'undefined') {
+                                charts[chartId] = new Chart(canvas, {
+                                    type: chartType,
+                                    data: chartData,
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom',
+                                                labels: {
+                                                    color: '#888',
+                                                    font: { family: 'Inter, sans-serif' }
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
                 },
                 complete: function () {
-                    $loading.hide();
+                    if ($loading.length) $loading.hide();
                 }
             });
         });

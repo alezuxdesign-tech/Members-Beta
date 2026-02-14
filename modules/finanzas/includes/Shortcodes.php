@@ -180,9 +180,22 @@ class Shortcodes {
     public static function render_sales_stats( $atts ) {
         $a = shortcode_atts( [
             'type' => 'month_revenue', // month_revenue, today_revenue
+            'format' => 'raw', // raw (number only) or card (full widget)
             'label' => ''
         ], $atts );
 
+        $stat_type = esc_attr($a['type']);
+
+        // RAW OUTPUT (For custom designs)
+        if ( $a['format'] === 'raw' ) {
+            // Output a span that JS will target to update
+            return sprintf(
+                '<span class="alezux-dynamic-stat-raw" data-stat-type="%s">--</span>',
+                $stat_type
+            );
+        }
+
+        // ... (Legacy Card Output if needed, but user asked for raw)
         $label = $a['label'];
         if(!$label) {
             $label = ($a['type'] === 'today_revenue') ? 'Ingresos Hoy' : 'Ingresos Mes';
@@ -190,7 +203,7 @@ class Shortcodes {
 
         ob_start();
         ?>
-        <div class="alezux-kpi-card" data-stat-type="<?php echo esc_attr($a['type']); ?>" style="padding: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; position: relative; overflow: hidden; min-width: 200px; display: inline-block; margin: 10px;">
+        <div class="alezux-kpi-card" data-stat-type="<?php echo $stat_type; ?>" style="padding: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; position: relative; overflow: hidden; min-width: 200px; display: inline-block; margin: 10px;">
             <div class="alezux-kpi-content" style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
                 <div class="alezux-kpi-info" style="display: flex; flex-direction: column; gap: 5px;">
                     <span class="alezux-kpi-label" style="font-size: 14px; color: #888; font-weight: 500;"><?php echo esc_html($label); ?></span>
