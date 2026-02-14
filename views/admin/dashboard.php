@@ -205,26 +205,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $shortcodes = [];
 
 // 1. FINANZAS
-$shortcodes[] = [
-    'tag'         => 'ax_fin_revenue_period',
-    'module'      => 'FINANZAS',
-    'description' => 'Muestra los ingresos del periodo seleccionado (o mes actual).'
-];
-$shortcodes[] = [
-    'tag'         => 'ax_fin_pending_total',
-    'module'      => 'FINANZAS',
-    'description' => 'Muestra la deuda total por cobrar (Global).'
-];
-$shortcodes[] = [
-    'tag'         => 'ax_fin_projected_period',
-    'module'      => 'FINANZAS',
-    'description' => 'Muestra la proyección de cobro para el periodo seleccionado.'
-];
-$shortcodes[] = [
-    'tag'         => 'ax_fin_revenue_today',
-    'module'      => 'FINANZAS',
-    'description' => 'Muestra lo facturado el día de hoy (Ticker Diario).'
-];
+// (Legacy shortcodes removed)
 
 // 1.1 FINANZAS - DASHBOARD
 $shortcodes[] = [

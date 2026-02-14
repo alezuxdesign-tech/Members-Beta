@@ -354,6 +354,8 @@ class Finanzas extends Module_Base {
             $widgets_manager->register( new Widgets\User_Financial_Profile() );
         }
 
+        /* 
+        // Deshabilitado por solicitud del cliente (Imagen 2 - Eliminar)
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Sales_Stats_Widget' ) ) {
             $widgets_manager->register( new Widgets\Sales_Stats_Widget() );
         }
@@ -365,6 +367,7 @@ class Finanzas extends Module_Base {
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Date_Range_Filter_Widget' ) ) {
             $widgets_manager->register( new Widgets\Date_Range_Filter_Widget() );
         }
+        */
 	}
 
     public function enqueue_widget_styles() {
