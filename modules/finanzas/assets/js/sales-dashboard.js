@@ -1,5 +1,6 @@
 jQuery(document).ready(function ($) {
-    console.log('Alezux Sales Dashboard JS Loaded', alezux_dashboard_vars);
+    // Alezux Sales Dashboard JS Loaded
+
 
     const ajaxUrl = alezux_dashboard_vars.ajax_url;
     const nonce = alezux_dashboard_vars.nonce;
@@ -23,7 +24,7 @@ jQuery(document).ready(function ($) {
                     const dateTo = instance.formatDate(selectedDates[1], "Y-m-d");
 
                     // Trigger Global Event
-                    console.log('Triggering Date Filter Change:', { dateFrom, dateTo });
+                    // Trigger Global Event
                     $(document).trigger('alezux_date_filter_change', { dateFrom: dateFrom, dateTo: dateTo });
                 }
             }
@@ -39,7 +40,7 @@ jQuery(document).ready(function ($) {
 
     // 2. Stats (KPIs) Logic
     function updateStats(dateFrom, dateTo) {
-        console.log('updateStats called', { dateFrom, dateTo });
+        // console.log('updateStats called', { dateFrom, dateTo });
 
         // Find all elements that need updating: Cards AND Raw Spans
         const $elements = $('.alezux-kpi-card, .alezux-dynamic-stat-raw');
@@ -80,7 +81,7 @@ jQuery(document).ready(function ($) {
                     date_to: dateTo
                 },
                 success: function (response) {
-                    console.log(`Stats Response [${statType}]:`, response);
+                    // console.log(`Stats Response [${statType}]:`, response);
                     if (response.success) {
                         const data = response.data;
                         let val = 0;
@@ -115,7 +116,7 @@ jQuery(document).ready(function ($) {
     const charts = {}; // Store chart instances by ID
 
     function updateCharts(dateFrom, dateTo) {
-        console.log('updateCharts called', { dateFrom, dateTo });
+        // console.log('updateCharts called', { dateFrom, dateTo });
         const $charts = $('.alezux-chart-card');
 
         if ($charts.length === 0) {
@@ -150,7 +151,7 @@ jQuery(document).ready(function ($) {
                     date_to: dateTo
                 },
                 success: function (response) {
-                    console.log('Chart Response:', response);
+                    // console.log('Chart Response:', response);
                     if (response.success) {
                         const data = response.data.chart_data;
                         const chartData = {
@@ -205,7 +206,7 @@ jQuery(document).ready(function ($) {
 
     // Listen to Global Event
     $(document).on('alezux_date_filter_change', function (e, data) {
-        console.log('Event alezux_date_filter_change caught', data);
+        // console.log('Event alezux_date_filter_change caught', data);
         updateStats(data.dateFrom, data.dateTo);
         updateCharts(data.dateFrom, data.dateTo);
     });
