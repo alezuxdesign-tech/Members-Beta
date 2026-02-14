@@ -161,6 +161,13 @@ class Date_Range_Filter_Widget extends Widget_Base {
             .flatpickr-calendar {
                 z-index: 9999 !important; /* Ensure it floats above everything */
             }
+            
+            /* Allow popup to overflow widget container */
+            .elementor-widget-alezux_date_range_filter,
+            .elementor-widget-alezux_date_range_filter .elementor-widget-container {
+                overflow: visible !important;
+                z-index: 100; /* Ensure the widget itself is above neighbors if needed */
+            }
         </style>
         <?php
 	}
