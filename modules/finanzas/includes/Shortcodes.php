@@ -26,6 +26,10 @@ class Shortcodes {
         ], $atts );
 
         $stat_type = esc_attr($a['type']);
+        
+        // Normalize shorthand types
+        if ($stat_type === 'month') $stat_type = 'month_revenue';
+        if ($stat_type === 'today') $stat_type = 'today_revenue';
 
         // RAW OUTPUT (For custom designs)
         if ( $a['format'] === 'raw' ) {
