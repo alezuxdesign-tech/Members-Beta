@@ -156,6 +156,11 @@ class Date_Range_Filter_Widget extends Widget_Base {
                 color: #fff;
                 cursor: pointer;
             }
+            
+            /* Flatpickr Customization for this widget */
+            .flatpickr-calendar {
+                z-index: 9999 !important; /* Ensure it floats above everything */
+            }
         </style>
         <?php
 	}
