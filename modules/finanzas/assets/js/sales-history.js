@@ -19,7 +19,7 @@ jQuery(window).on('elementor/frontend/init', function () {
         let globalEndDate = '';
 
         function fetchSales() {
-            if (!alezux_sales_vars || !alezux_sales_vars.is_logged_in) {
+            if (typeof alezux_finanzas_vars === 'undefined' || !alezux_finanzas_vars.is_logged_in) {
                 return;
             }
 
@@ -27,7 +27,7 @@ jQuery(window).on('elementor/frontend/init', function () {
 
             const data = {
                 action: 'alezux_get_sales_history',
-                nonce: alezux_sales_vars.nonce,
+                nonce: alezux_finanzas_vars.nonce,
                 page: currentPage,
                 limit: $limitSelect.val(),
                 search: $searchInput.val(),
@@ -37,7 +37,7 @@ jQuery(window).on('elementor/frontend/init', function () {
                 end_date: globalEndDate
             };
 
-            $.post(alezux_sales_vars.ajax_url, data, function (response) {
+            $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
                 if (response.success) {
                     renderTable(response.data.rows);
                     renderPagination(response.data);
