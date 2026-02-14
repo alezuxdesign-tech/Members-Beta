@@ -159,20 +159,13 @@ class Date_Range_Filter_Widget extends Widget_Base {
             
             /* Flatpickr Customization for this widget */
             .flatpickr-calendar {
-                z-index: 9999 !important; /* Ensure it floats above everything */
+                z-index: 99999 !important; /* Ensure it floats above everything */
                 font-size: 13px; /* Compact font */
                 width: 280px !important; /* Force smaller width */
             }
             .flatpickr-day {
                 height: 32px;
                 line-height: 32px;
-            }
-            
-            /* Allow popup to overflow widget container */
-            .elementor-widget-alezux_date_range_filter,
-            .elementor-widget-alezux_date_range_filter .elementor-widget-container {
-                overflow: visible !important;
-                z-index: 100; /* Ensure the widget itself is above neighbors if needed */
             }
         </style>
         <?php

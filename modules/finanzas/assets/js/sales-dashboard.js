@@ -13,6 +13,8 @@ jQuery(document).ready(function ($) {
             mode: "range",
             dateFormat: "Y-m-d",
             maxDate: "today",
+            static: false,
+            appendTo: document.body,
             locale: (typeof flatpickr !== 'undefined' && flatpickr.l10ns.es) ? "es" : "default",
             onChange: function (selectedDates, dateStr, instance) {
                 if (selectedDates.length === 2) {
