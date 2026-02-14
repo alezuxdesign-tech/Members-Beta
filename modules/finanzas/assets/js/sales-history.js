@@ -12,55 +12,32 @@ jQuery(window).on('elementor/frontend/init', function () {
         const $searchInput = $wrapper.find('#alezux-sales-search');
         const $courseFilter = $wrapper.find('#alezux-filter-course');
         const $statusFilter = $wrapper.find('#alezux-filter-status');
-        const $dateFilter = $wrapper.find('#alezux-filter-date');
         const $limitSelect = $wrapper.find('#alezux-limit-select');
-        const $clearDateBtn = $wrapper.find('#alezux-clear-date');
 
         let currentPage = 1;
+        let globalStartDate = '';
+        let globalEndDate = '';
 
         function fetchSales() {
-            if (!alezux_finanzas_vars || !alezux_finanzas_vars.is_logged_in) {
+            if (!alezux_sales_vars || !alezux_sales_vars.is_logged_in) {
                 return;
             }
 
             $spinner.show();
-            let startDate = '';
-            let endDate = '';
-
-            // Get dates from Flatpickr instance if valid
-            if ($dateFilter.length && $dateFilter[0]._flatpickr) {
-                const fp = $dateFilter[0]._flatpickr;
-                const selected = fp.selectedDates;
-                if (selected.length > 0) {
-                    const formatDate = (d) => {
-                        let month = '' + (d.getMonth() + 1),
-                            day = '' + d.getDate(),
-                            year = d.getFullYear();
-                        if (month.length < 2) month = '0' + month;
-                        if (day.length < 2) day = '0' + day;
-                        return [year, month, day].join('-');
-                    };
-
-                    startDate = formatDate(selected[0]);
-                    if (selected.length > 1) {
-                        endDate = formatDate(selected[selected.length - 1]);
-                    }
-                }
-            }
 
             const data = {
                 action: 'alezux_get_sales_history',
-                nonce: alezux_finanzas_vars.nonce,
+                nonce: alezux_sales_vars.nonce,
                 page: currentPage,
                 limit: $limitSelect.val(),
                 search: $searchInput.val(),
                 filter_course: $courseFilter.val(),
                 filter_status: $statusFilter.val(),
-                start_date: startDate,
-                end_date: endDate
+                start_date: globalStartDate,
+                end_date: globalEndDate
             };
 
-            $.post(alezux_finanzas_vars.ajax_url, data, function (response) {
+            $.post(alezux_sales_vars.ajax_url, data, function (response) {
                 if (response.success) {
                     renderTable(response.data.rows);
                     renderPagination(response.data);
@@ -172,44 +149,13 @@ jQuery(window).on('elementor/frontend/init', function () {
             fetchSales();
         });
 
-        // Event listener for clear date button
-        $clearDateBtn.on('click', function () {
-            if ($dateFilter.length && $dateFilter[0]._flatpickr) {
-                const fp = $dateFilter[0]._flatpickr;
-                fp.clear();
-            }
-            $dateFilter.val('');
-            $(this).hide();
+        // Listen to Global Event from sales-dashboard.js
+        $(document).on('alezux_date_filter_change', function (e, data) {
+            globalStartDate = data.dateFrom;
+            globalEndDate = data.dateTo;
             currentPage = 1;
             fetchSales();
         });
-
-        // Initialize Flatpickr if available
-        if ($dateFilter.length > 0) {
-            if (typeof flatpickr !== 'undefined') {
-                flatpickr($dateFilter[0], {
-                    mode: "range",
-                    dateFormat: "Y-m-d",
-                    locale: "es",
-                    onChange: function (selectedDates) {
-                        if (selectedDates.length > 0) {
-                            $clearDateBtn.show();
-                        } else {
-                            $clearDateBtn.hide();
-                        }
-                    },
-                    onClose: function (selectedDates) {
-                        if (selectedDates.length > 0) {
-                            $clearDateBtn.show();
-                        } else {
-                            $clearDateBtn.hide();
-                        }
-                        currentPage = 1;
-                        fetchSales();
-                    }
-                });
-            }
-        }
 
         // Init
         fetchSales();

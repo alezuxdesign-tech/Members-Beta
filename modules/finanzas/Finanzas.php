@@ -67,7 +67,7 @@ class Finanzas extends Module_Base {
         \add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_widget_styles' ] );
         \add_action( 'template_redirect', [ $this, 'handle_checkout_redirect' ] );
         \add_action( 'template_redirect', [ $this, 'handle_payment_return' ] ); // Nuevo hook
-        
+        \add_action( 'wp_ajax_alezux_get_sales_stats', [ $this, 'get_sales_stats' ] ); // KPI Dashboard
 	}
 
     /**
@@ -313,6 +313,9 @@ class Finanzas extends Module_Base {
         require_once ALEZUX_FINANZAS_PATH . 'widgets/Filter_Date_Widget.php'; // NUEVO
         require_once ALEZUX_FINANZAS_PATH . 'widgets/User_Financial_Profile.php';
         require_once ALEZUX_FINANZAS_PATH . 'widgets/User_Financial_Profile.php'; // NUEVO: Perfil Usuario
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_Stats_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Sales_Chart_Widget.php';
+        require_once ALEZUX_FINANZAS_PATH . 'widgets/Date_Range_Filter_Widget.php';
 
         // Registrar Widgets
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Create_Plan_Widget' ) ) {
@@ -349,6 +352,18 @@ class Finanzas extends Module_Base {
 
         if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\User_Financial_Profile' ) ) {
             $widgets_manager->register( new Widgets\User_Financial_Profile() );
+        }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Sales_Stats_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Sales_Stats_Widget() );
+        }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Sales_Chart_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Sales_Chart_Widget() );
+        }
+
+        if ( class_exists( 'Alezux_Members\Modules\Finanzas\Widgets\Date_Range_Filter_Widget' ) ) {
+            $widgets_manager->register( new Widgets\Date_Range_Filter_Widget() );
         }
 	}
 
@@ -425,5 +440,96 @@ class Finanzas extends Module_Base {
              wp_enqueue_style('flatpickr-css');
              wp_enqueue_style('alezux-finanzas-tables-css');
         }
+
+        // Register Chart.js (Remote CDN)
+        wp_register_script( 'chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.0', true );
+
+        // 4. NEW Sales Dashboard Universal Logic
+        if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-dashboard.js' ) ) {
+            wp_register_script( 'alezux-sales-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-dashboard.js', ['jquery', 'flatpickr-js', 'chart-js'], $version, true );
+             wp_localize_script( 'alezux-sales-dashboard-js', 'alezux_dashboard_vars', [
+                 'ajax_url'     => admin_url( 'admin-ajax.php' ),
+                 'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
+             ] );
+             wp_enqueue_script('alezux-sales-dashboard-js');
+        }
+    }
+
+    /**
+     * AJAX: Get Sales Stats for Dashboard (KPIs + Chart)
+     */
+    public function get_sales_stats() {
+        check_ajax_referer('alezux_finanzas_nonce', 'nonce');
+        
+        if (!is_user_logged_in()) {
+            wp_send_json_error(['message' => 'Unauthorized']);
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'alezux_finanzas_payments'; 
+
+        // Get Filters
+        $date_from = isset($_POST['date_from']) ? sanitize_text_field($_POST['date_from']) : '';
+        $date_to   = isset($_POST['date_to']) ? sanitize_text_field($_POST['date_to']) : '';
+        
+        // Base Query Condition
+        $where_clauses = ["status = 'succeeded'"]; // Only count succeeded for revenue
+        
+        if (!empty($date_from) && !empty($date_to)) {
+            $where_clauses[] = "created_at BETWEEN '$date_from 00:00:00' AND '$date_to 23:59:59'";
+        } elseif (!empty($date_from)) {
+             $where_clauses[] = "DATE(created_at) = '$date_from'";
+        }
+
+        $where_sql = implode(' AND ', $where_clauses);
+
+        // 1. Calculate Stats
+        $stat_type = isset($_POST['stat_type']) ? sanitize_text_field($_POST['stat_type']) : 'all';
+        $response = [];
+
+        if ($stat_type === 'month_revenue' || $stat_type === 'all') {
+            // If global filter is active, use that. If not, default to THIS MONTH.
+            if (empty($date_from)) {
+                 $month_start = date('Y-m-01 00:00:00');
+                 $month_end   = date('Y-m-t 23:59:59');
+                 $sql_month = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$month_start' AND '$month_end'";
+                 $response['month_revenue'] = $wpdb->get_var($sql_month) ?: 0;
+            } else {
+                 // If filtered, return revenue for period and label it accordingly in JS
+                 $sql_filtered = "SELECT SUM(amount) FROM $table_name WHERE $where_sql";
+                 $response['month_revenue'] = $wpdb->get_var($sql_filtered) ?: 0;
+            }
+        }
+
+        if ($stat_type === 'today_revenue' || $stat_type === 'all') {
+             $today_start = date('Y-m-d 00:00:00');
+             $today_end   = date('Y-m-d 23:59:59');
+             $sql_today = "SELECT SUM(amount) FROM $table_name WHERE status = 'succeeded' AND created_at BETWEEN '$today_start' AND '$today_end'";
+             $response['today_revenue'] = $wpdb->get_var($sql_today) ?: 0;
+        }
+
+        // 2. Chart Data (Breakdown by Method)
+        if ($stat_type === 'chart_data' || $stat_type === 'all') {
+            $sql_chart = "SELECT payment_method, SUM(amount) as total FROM $table_name WHERE $where_sql GROUP BY payment_method";
+            $results = $wpdb->get_results($sql_chart);
+            
+            $chart_data = [
+                'stripe' => 0,
+                'manual' => 0,
+                'paypal' => 0, 
+                'other' => 0
+            ];
+
+            foreach($results as $row) {
+                $method = strtolower($row->payment_method);
+                if(strpos($method, 'stripe') !== false) $chart_data['stripe'] += $row->total;
+                elseif(strpos($method, 'manual') !== false) $chart_data['manual'] += $row->total;
+                elseif(strpos($method, 'paypal') !== false) $chart_data['paypal'] += $row->total;
+                else $chart_data['other'] += $row->total;
+            }
+            $response['chart_data'] = $chart_data;
+        }
+
+        wp_send_json_success($response);
     }
 }

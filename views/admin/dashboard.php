@@ -226,6 +226,28 @@ $shortcodes[] = [
     'description' => 'Muestra lo facturado el día de hoy (Ticker Diario).'
 ];
 
+// 1.1 FINANZAS - DASHBOARD
+$shortcodes[] = [
+    'tag' => 'alezux_sales_stats type="month"',
+    'module' => 'FINANZAS',
+    'description' => 'KPI: Ingresos Mes Actual (Dashboard).'
+];
+$shortcodes[] = [
+    'tag' => 'alezux_sales_stats type="today"',
+    'module' => 'FINANZAS',
+    'description' => 'KPI: Ingresos Hoy (Dashboard).'
+];
+$shortcodes[] = [
+    'tag' => 'alezux_sales_chart',
+    'module' => 'FINANZAS',
+    'description' => 'Gráfico de Ingresos por Método (Stripe/Manual).'
+];
+$shortcodes[] = [
+    'tag' => 'alezux_date_range_filter',
+    'module' => 'FINANZAS',
+    'description' => 'Filtro Global de Fechas para Dashboard.'
+];
+
 // 2. ESTUDIANTES
 $shortcodes[] = [
     'tag'         => 'alezux_estudiantes_total',

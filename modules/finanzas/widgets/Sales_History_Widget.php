@@ -441,64 +441,6 @@ class Sales_History_Widget extends Widget_Base {
             ]
         );
 
-         $this->add_control(
-            'datepicker_heading',
-            [
-                'label' => esc_html__('Calendario (Datepicker)', 'alezux-members'),
-                'type' => Controls_Manager::HEADING,
-                'separator' => 'before',
-                'description' => esc_html__('Estilos específicos para el calendario emergente.', 'alezux-members'),
-            ]
-        );
-
-        // NOTICE: Flatpickr is appended to body, so we need global selectors or targeted CSS injection.
-        // Elementor supports selectors but "wrapper" won't work well if flatpickr is outside.
-        // However, we can use a trick: flatpickr themes usually just need overriding variables or classes.
-        // For simplicity and effectiveness in this scoped widget context, we will try to style the TRIGGER INPUT specifically if needed,
-        // and provides some basic overrides that might apply globally or if we passed a specific container (which we default don't).
-        // BUT, user asked to edit datepicker. Assuming he means the INPUT appearance first.
-        // If he means the POPUP, it's global. We'll add a warning or try to scope it via class if possible (flatpickr supports 'static' wrapper but that breaks positioning sometimes).
-        
-        $this->add_control(
-            'datepicker_accent_color',
-            [
-                'label' => esc_html__('Color Acento (Selección)', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    // Global override trick (might affect others if multiple widgets, but usually acceptable for theme consistency)
-                    'body .flatpickr-day.selected, body .flatpickr-day.startRange, body .flatpickr-day.endRange' => 'background: {{VALUE}} !important; border-color: {{VALUE}} !important;',
-                    'body .flatpickr-day.inRange' => 'box-shadow: -5px 0 0 {{VALUE}}33, 5px 0 0 {{VALUE}}33 !important; background: {{VALUE}}33 !important; border-color: transparent !important;', // 33 is approx 20% opacity hex
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'datepicker_bg_color',
-            [
-                'label' => esc_html__('Fondo Calendario', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    'body .flatpickr-calendar' => 'background: {{VALUE}} !important; border-color: {{VALUE}} !important;',
-                    'body .flatpickr-months .flatpickr-month' => 'background: {{VALUE}} !important;',
-                    'body .flatpickr-weekdays' => 'background: {{VALUE}} !important;',
-                ],
-            ]
-        );
-         
-         $this->add_control(
-            'datepicker_text_color',
-            [
-                'label' => esc_html__('Color Texto Calendario', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    'body .flatpickr-calendar' => 'color: {{VALUE}} !important;',
-                    'body .flatpickr-day' => 'color: {{VALUE}} !important;',
-                    'body .flatpickr-current-month .flatpickr-monthDropdown-months' => 'color: {{VALUE}} !important;',
-                    'body span.flatpickr-weekday' => 'color: {{VALUE}} !important;',
-                ],
-            ]
-        );
-
         $this->end_controls_section();
 
 	}
@@ -559,14 +501,7 @@ class Sales_History_Widget extends Widget_Base {
                         </select>
                     </div>
 
-                    <!-- Date Filter -->
-                    <div class="alezux-filter-item">
-                         <div class="alezux-search-wrapper date-wrapper">
-                            <span class="dashicons dashicons-calendar-alt"></span>
-                            <input type="text" id="alezux-filter-date" class="alezux-table-search-input alezux-date-picker" placeholder="Fecha">
-                            <span id="alezux-clear-date" class="dashicons dashicons-dismiss alezux-clear-icon" title="Limpiar fecha"></span>
-                         </div>
-                    </div>
+
 
                     <!-- Status Filter -->
                     <div class="alezux-filter-item">
