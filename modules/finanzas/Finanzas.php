@@ -450,7 +450,7 @@ class Finanzas extends Module_Base {
         $is_dashboard = $screen ? $screen->id === 'dashboard' || $screen->id === 'toplevel_page_alezux-dashboard' : false;
 
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-dashboard.js' ) ) {
-            wp_register_script( 'alezux-sales-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-dashboard.js', ['jquery', 'flatpickr-js', 'chart-js'], $version, true );
+            wp_register_script( 'alezux-sales-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-dashboard.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js', 'chart-js'], $version, true );
              wp_localize_script( 'alezux-sales-dashboard-js', 'alezux_dashboard_vars', [
                  'ajax_url'     => admin_url( 'admin-ajax.php' ),
                  'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
