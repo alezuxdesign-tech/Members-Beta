@@ -12,7 +12,8 @@ jQuery(document).ready(function ($) {
         $dateInput.flatpickr({
             mode: "range",
             dateFormat: "Y-m-d",
-            maxDate: "today",
+            maxDate: new Date(), // Strict JS Date object
+            disableMobile: true, // Force Flatpickr UI on mobile to respect styles/restrictions
             static: false,
             appendTo: document.body,
             locale: (typeof flatpickr !== 'undefined' && flatpickr.l10ns.es) ? "es" : "default",

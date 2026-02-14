@@ -160,12 +160,8 @@ class Date_Range_Filter_Widget extends Widget_Base {
             /* Flatpickr Customization for this widget */
             .flatpickr-calendar {
                 z-index: 99999 !important; /* Ensure it floats above everything */
-                font-size: 13px; /* Compact font */
-                width: 280px !important; /* Force smaller width */
-            }
-            .flatpickr-day {
-                height: 32px;
-                line-height: 32px;
+                font-size: 13px !important; /* Compact font */
+                /* Width and height removed to let Flatpickr calculate natural size */
             }
         </style>
         <?php
