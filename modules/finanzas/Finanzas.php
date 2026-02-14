@@ -372,7 +372,7 @@ class Finanzas extends Module_Base {
 	}
 
     public function enqueue_widget_styles() {
-        $version = '1.2.01'; // Cache busting safe
+        $version = '1.2.05'; // Bump version to force cache clear
 
         // Unified Table Styles
         // Register Flatpickr (Remote CDN)
@@ -459,6 +459,7 @@ class Finanzas extends Module_Base {
                  'ajax_url'     => admin_url( 'admin-ajax.php' ),
                  'nonce'        => wp_create_nonce( 'alezux_finanzas_nonce' ),
                  'is_logged_in' => is_user_logged_in(),
+                 'server_date'  => current_time( 'Y-m-d' ), // Pass server date for strict validation
              ] );
              
              // Enqueue if we are on Admin Dashboard OR if Elementor Editor

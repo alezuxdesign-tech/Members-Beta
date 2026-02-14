@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
         $dateInput.flatpickr({
             mode: "range",
             dateFormat: "Y-m-d",
-            maxDate: new Date(), // Strict JS Date object
+            maxDate: alezux_dashboard_vars.server_date || "today", // Use Server Date (Primary) or "today" (Fallback)
             disableMobile: true, // Force Flatpickr UI on mobile to respect styles/restrictions
             static: false,
             appendTo: document.body,
