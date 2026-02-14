@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
         $dateInput.flatpickr({
             mode: "range",
             dateFormat: "Y-m-d",
-            locale: "es",
+            locale: (typeof flatpickr !== 'undefined' && flatpickr.l10ns.es) ? "es" : "default",
             onChange: function (selectedDates, dateStr, instance) {
                 if (selectedDates.length === 2) {
                     const dateFrom = instance.formatDate(selectedDates[0], "Y-m-d");

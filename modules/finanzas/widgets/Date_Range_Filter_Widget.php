@@ -31,7 +31,7 @@ class Date_Range_Filter_Widget extends Widget_Base {
 	}
 
     public function get_script_depends() {
-		return [ 'flatpickr', 'alezux-sales-dashboard-js' ]; 
+		return [ 'flatpickr-js', 'flatpickr-es-js', 'alezux-sales-dashboard-js' ]; 
 	}
     
     public function get_style_depends() {
