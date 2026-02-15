@@ -212,17 +212,29 @@ class Marketing extends Module_Base {
 			// Reorganizar key por type (ya hecho con OBJECT_K)
 			$saved_by_type = $saved_templates;
 
+			// Require Default Templates for fallbacks
+			require_once __DIR__ . '/includes/Default_Templates.php';
+
 			$data = [];
 			foreach ( $registered_types as $key => $info ) {
 				$s = isset( $saved_by_type[$key] ) ? $saved_by_type[$key] : null;
 				$sent_count = isset( $log_counts[$key] ) ? $log_counts[$key]->count : 0;
 				
+				$subject_display = '(Sin Asunto)';
+				if ( $s ) {
+					$subject_display = $s->subject;
+				} else {
+					// Fetch default
+					$def = \Alezux_Members\Modules\Marketing\Includes\Default_Templates::get( $key );
+					$subject_display = isset( $def['subject'] ) ? $def['subject'] : '(Por defecto)'; 
+				}
+
 				$data[] = [
 					'type'        => $key,
 					'title'       => $info['title'],
 					'description' => $info['description'],
 					'variables'   => $info['variables'],
-					'subject'     => $s ? $s->subject : '(Por defecto)',
+					'subject'     => $subject_display,
 					'is_active'   => $s ? (bool)$s->is_active : true, // Default active
 					'has_custom'  => (bool)$s,
 					'sent_count'  => $sent_count
