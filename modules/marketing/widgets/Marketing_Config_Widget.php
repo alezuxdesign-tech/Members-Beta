@@ -357,21 +357,252 @@ class Marketing_Config_Widget extends Widget_Base {
 
         $this->end_controls_section();
 
-        // 5. BOTONES (Marketing)
-                'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
+        // 5. BOTONES (General)
+		$this->start_controls_section(
+			'style_section_buttons_general',
+			[
+				'label' => esc_html__( 'Botones (General)', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_buttons_general' );
+
+		$this->start_controls_tab(
+			'tab_buttons_general_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'buttons_typography',
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+			]
+		);
+
+		$this->add_control(
+			'buttons_text_color',
+			[
+				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'buttons_background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_buttons_general_hover',
+			[
+				'label' => esc_html__( 'Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'buttons_text_color_hover',
+			[
+				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn:hover' => 'color: {{VALUE}}',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'buttons_background_hover',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+		
+		$this->add_control(
+			'buttons_border_radius',
+			[
+				'label'      => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-marketing-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'separator' => 'before',
+			]
+		);
+        
+        $this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'buttons_box_shadow',
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+			]
+		);
+
+        $this->add_responsive_control(
+			'buttons_padding',
+			[
+				'label'      => esc_html__( 'Relleno', 'alezux-members' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors'  => [
+					'{{WRAPPER}} .alezux-marketing-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+        // 6. BOTÓN EDITAR
+        $this->start_controls_section(
+			'style_section_btn_edit',
+			[
+				'label' => esc_html__( 'Botón Editar', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+        
+        $this->add_control(
+            'btn_edit_override',
+            [
+                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+                'label_off' => esc_html__( 'No', 'alezux-members' ),
+                'return_value' => 'yes',
+                'default' => 'no',
             ]
         );
 
         $this->add_group_control(
-            Group_Control_Box_Shadow::get_type(),
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'btn_edit_background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn.edit-template-btn',
+                'condition' => [ 'btn_edit_override' => 'yes' ]
+			]
+		);
+        
+        $this->add_control(
+			'btn_edit_color',
+			[
+				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn.edit-template-btn' => 'color: {{VALUE}}',
+				],
+                'condition' => [ 'btn_edit_override' => 'yes' ]
+			]
+		);
+
+        $this->end_controls_section();
+
+        // 7. BOTÓN HISTORIAL
+        $this->start_controls_section(
+			'style_section_btn_history',
+			[
+				'label' => esc_html__( 'Botón Historial', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+         $this->add_control(
+            'btn_history_override',
             [
-                'name' => 'button_hover_shadow',
-                'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
+                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+                'label_off' => esc_html__( 'No', 'alezux-members' ),
+                'return_value' => 'yes',
+                'default' => 'no',
             ]
         );
 
-        $this->end_controls_tab();
-        $this->end_controls_tabs();
+        $this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'btn_history_background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn.history-btn',
+                'condition' => [ 'btn_history_override' => 'yes' ]
+			]
+		);
+
+         $this->add_control(
+			'btn_history_color',
+			[
+				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn.history-btn' => 'color: {{VALUE}}',
+				],
+                'condition' => [ 'btn_history_override' => 'yes' ]
+			]
+		);
+
+        $this->end_controls_section();
+
+        // 8. BOTÓN PRUEBA
+        $this->start_controls_section(
+			'style_section_btn_test',
+			[
+				'label' => esc_html__( 'Botón Prueba', 'alezux-members' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+         $this->add_control(
+            'btn_test_override',
+            [
+                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+                'label_off' => esc_html__( 'No', 'alezux-members' ),
+                'return_value' => 'yes',
+                'default' => 'no',
+            ]
+        );
+
+        $this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'     => 'btn_test_background',
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn.send-test-email-btn',
+                'condition' => [ 'btn_test_override' => 'yes' ]
+			]
+		);
+
+         $this->add_control(
+			'btn_test_color',
+			[
+				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn.send-test-email-btn' => 'color: {{VALUE}}',
+				],
+                 'condition' => [ 'btn_test_override' => 'yes' ]
+			]
+		);
 
         $this->end_controls_section();
 	}
