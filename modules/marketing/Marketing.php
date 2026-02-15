@@ -47,8 +47,9 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_save_template', [ $this, 'ajax_save_template' ] );
 		add_action( 'wp_ajax_alezux_marketing_save_settings', [ $this, 'ajax_save_settings' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_settings', [ $this, 'ajax_get_settings' ] );
-		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); // New Handler
+		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); 
 		add_action( 'wp_ajax_alezux_marketing_send_test_email', [ $this, 'ajax_send_test_email' ] );
+		add_action( 'wp_ajax_alezux_marketing_get_logs', [ $this, 'ajax_get_email_logs' ] );
 	}
 
 	public function get_engine() {
@@ -116,7 +117,8 @@ class Marketing extends Module_Base {
 		if ( $installed_ver !== $version ) {
 			$charset_collate = $wpdb->get_charset_collate();
 
-			$sql = "CREATE TABLE $table_name (
+			// Table: Templates
+			$sql_templates = "CREATE TABLE $table_name (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				type varchar(50) NOT NULL UNIQUE,
 				subject text NOT NULL,
@@ -126,8 +128,23 @@ class Marketing extends Module_Base {
 				PRIMARY KEY  (id)
 			) $charset_collate;";
 
+			// Table: Logs
+			$table_logs = $wpdb->prefix . 'alezux_marketing_logs';
+			$sql_logs = "CREATE TABLE $table_logs (
+				id bigint(20) NOT NULL AUTO_INCREMENT,
+				type varchar(50) NOT NULL,
+				recipient_email varchar(100) NOT NULL,
+				user_id bigint(20) DEFAULT 0,
+				status varchar(20) DEFAULT 'sent',
+				sent_at datetime DEFAULT CURRENT_TIMESTAMP,
+				PRIMARY KEY  (id),
+				KEY type (type),
+				KEY user_id (user_id)
+			) $charset_collate;";
+
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-			dbDelta( $sql );
+			dbDelta( $sql_templates );
+			dbDelta( $sql_logs );
 
 			update_option( 'alezux_marketing_db_version', $version );
 		}
@@ -155,32 +172,35 @@ class Marketing extends Module_Base {
 			// 2. Obtener configuraciones guardadas
 			$saved_templates = $wpdb->get_results( "SELECT * FROM $table", OBJECT_K ); 
 			
+			// 3. Obtener contadores de logs (KPIs)
+			$table_logs = $wpdb->prefix . 'alezux_marketing_logs';
+			// Check if logs table exists to avoid errors on fresh update before DB delta runs? 
+			// maybe_create_table runs on init, so it should be there.
+			$log_counts = $wpdb->get_results( "SELECT type, COUNT(*) as count FROM $table_logs GROUP BY type", OBJECT_K );
+
 			// Safety check if table missing or error
 			if ( ! is_array( $saved_templates ) ) {
 				$saved_templates = [];
-				// If error was strictly DB related (e.g. table not found despite checks), log it
-				if ( $wpdb->last_error ) {
-					error_log( 'Alezux Marketing DB Error: ' . $wpdb->last_error );
-				}
+				if ( $wpdb->last_error ) error_log( 'Alezux Marketing DB Error: ' . $wpdb->last_error );
 			}
 			
-			// Reorganizar key por type
-			$saved_by_type = [];
-			foreach($saved_templates as $tpl) {
-				if ( isset( $tpl->type ) ) {
-					$saved_by_type[$tpl->type] = $tpl;
-				}
-			}
+			// Reorganizar key por type (ya hecho con OBJECT_K)
+			$saved_by_type = $saved_templates;
 
 			$data = [];
-			foreach ( $registered_types as $key => $label ) {
+			foreach ( $registered_types as $key => $info ) {
 				$s = isset( $saved_by_type[$key] ) ? $saved_by_type[$key] : null;
+				$sent_count = isset( $log_counts[$key] ) ? $log_counts[$key]->count : 0;
+				
 				$data[] = [
-					'type'      => $key,
-					'label'     => $label,
-					'subject'   => $s ? $s->subject : '(Por defecto)',
-					'is_active' => $s ? (bool)$s->is_active : true, // Default active
-					'has_custom'=> (bool)$s
+					'type'        => $key,
+					'title'       => $info['title'],
+					'description' => $info['description'],
+					'variables'   => $info['variables'],
+					'subject'     => $s ? $s->subject : '(Por defecto)',
+					'is_active'   => $s ? (bool)$s->is_active : true, // Default active
+					'has_custom'  => (bool)$s,
+					'sent_count'  => $sent_count
 				];
 			}
 
@@ -206,6 +226,13 @@ class Marketing extends Module_Base {
 			$table = $wpdb->prefix . 'alezux_marketing_templates';
 			$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE type = %s", $type ) );
 
+			if ( ! $this->email_engine ) {
+				require_once __DIR__ . '/includes/Email_Engine.php';
+				$this->email_engine = new Email_Engine();
+			}
+			$definitions = $this->email_engine->get_registered_types();
+			$vars_list   = isset( $definitions[$type]['variables'] ) ? $definitions[$type]['variables'] : [];
+
 			if ( ! $row ) {
 				// Return default content if not saved yet
 				require_once __DIR__ . '/includes/Default_Templates.php';
@@ -215,9 +242,11 @@ class Marketing extends Module_Base {
 					'type'    => $type,
 					'subject' => $defaults['subject'],
 					'content' => $defaults['content'],
-					'is_active' => 1
+					'is_active' => 1,
+					'variables' => $vars_list
 				] );
 			} else {
+				$row->variables = $vars_list;
 				wp_send_json_success( $row );
 			}
 		} catch ( \Exception $e ) {
@@ -341,16 +370,65 @@ class Marketing extends Module_Base {
 				'user' => $test_user,
 				'plan_name' => 'Plan de Prueba',
 				'price' => '$99.00',
-				'course_name' => 'Curso Demo'
+				'date' => date('d/m/Y'),
+				'amount' => '$99.00',
+				'course_name' => 'Curso Demo',
+				'reset_link' => site_url('/wp-login.php?action=rp'),
+				'new_password' => '****',
+				'retry_url' => site_url('/checkout?retry=1'),
+				'renewal_date' => date('d/m/Y', strtotime('+1 year')),
+				'end_date' => date('d/m/Y'),
+				'achievement_name' => 'Primeros Pasos',
+				'achievement_desc' => 'Has completado tu primera lección.',
+				'course_url' => site_url('/cursos/demo'),
+				'days_inactive' => '5'
 			];
 
-			$sent = $this->email_engine->send_email( $type, $email, $dummy_data );
+			// Pass is_test = true to avoid logging test emails to DB
+			$sent = $this->email_engine->send_email( $type, $email, $dummy_data, true );
 
 			if ( $sent ) {
 				wp_send_json_success( [ 'message' => 'Correo de prueba enviado a ' . $email ] );
 			} else {
 				throw new \Exception( 'wp_mail devolvió false. Revisa logs del servidor.' );
 			}
+
+		} catch ( \Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
+		}
+	}
+
+	public function ajax_get_email_logs() {
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
+
+			$type = sanitize_text_field( $_POST['type'] );
+			global $wpdb;
+			$table_logs = $wpdb->prefix . 'alezux_marketing_logs';
+			
+			// Get last 50 logs for this type
+			$logs = $wpdb->get_results( $wpdb->prepare( 
+				"SELECT * FROM $table_logs WHERE type = %s ORDER BY sent_at DESC LIMIT 50", 
+				$type 
+			) );
+
+			if ( empty($logs) ) {
+				wp_send_json_success( [] );
+				return;
+			}
+			
+			// Format for display
+			$formatted = [];
+			foreach($logs as $log) {
+				$formatted[] = [
+					'recipient' => $log->recipient_email,
+					'date' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $log->sent_at ) ),
+					'status' => $log->status
+				];
+			}
+
+			wp_send_json_success( $formatted );
 
 		} catch ( \Exception $e ) {
 			wp_send_json_error( $e->getMessage() );

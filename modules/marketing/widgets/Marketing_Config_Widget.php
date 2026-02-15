@@ -506,10 +506,11 @@ class Marketing_Config_Widget extends Widget_Base {
 				<table class="alezux-finanzas-table marketing-templates-table" id="marketing-templates-table">
 					<thead>
 						<tr>
-							<th>Tipo de Correo</th>
-							<th>Asunto Actual</th>
-							<th>Estado</th>
-							<th>Acciones</th>
+							<th style="width: 35%;">Detalles del Correo</th>
+							<th style="width: 25%;">Asunto</th>
+							<th style="width: 10%;">Enviados</th>
+							<th style="width: 10%;">Estado</th>
+							<th style="width: 20%;">Acciones</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -559,7 +560,9 @@ class Marketing_Config_Widget extends Widget_Base {
 						<div class="form-group">
 							<label>Asunto:</label>
 							<input type="text" id="tpl-subject" name="subject" class="alezux-input" value="Asunto de Ejemplo" required>
-							<small>Variables disponibles: {{user.name}}, {{site_name}}...</small>
+							<div id="tpl-variables-hint" style="margin-top: 5px; font-size: 11px; color: #666; background: #f0f0f1; padding: 5px; border-radius: 4px;">
+                                <strong>Variables disponibles:</strong> <span id="vars-list">Cargando...</span>
+                            </div>
 						</div>
 
 						<div class="form-group">
@@ -600,7 +603,6 @@ class Marketing_Config_Widget extends Widget_Base {
 				</div>
 			</div>
 
-			<!-- MODAL SETTINGS -->
 			<div id="marketing-settings-modal" class="alezux-modal" style="<?php echo $show_settings_modal ? 'display:flex !important;' : 'display:none;'; ?>">
 				<div class="alezux-modal-content">
 					<span class="alezux-close-modal">&times;</span>
@@ -645,6 +647,28 @@ class Marketing_Config_Widget extends Widget_Base {
 					</form>
 				</div>
 			</div>
+
+            <!-- MODAL HISTORY -->
+            <div id="marketing-history-modal" class="alezux-modal" style="display:none;">
+                <div class="alezux-modal-content" style="max-width: 600px;">
+                    <span class="alezux-close-modal">&times;</span>
+                    <h3 id="history-modal-title">Historial de Envíos</h3>
+                    <div class="alezux-table-wrapper" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+                        <table class="alezux-finanzas-table" id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Destinatario</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
 		<!-- GENERIC MESSAGE MODAL -->
 		<div id="alezux-message-modal" class="alezux-modal" style="display:none; z-index: 99999;">

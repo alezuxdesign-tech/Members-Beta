@@ -17,16 +17,56 @@ class Email_Engine {
 
 	public function get_registered_types() {
 		return [
-			'student_welcome' => 'Registro - Bienvenida',
-			'user_recover_password' => 'Seguridad - Recuperar Contraseña',
-			'admin_reset_password' => 'Seguridad - Reset por Admin',
-			'payment_success' => 'Finanzas - Pago Exitoso',
-			'payment_failed' => 'Finanzas - Pago Fallido',
-			'payment_reminder' => 'Finanzas - Recordatorio Renovación',
-			'subscription_cancelled' => 'Finanzas - Suscripción Cancelada',
-			'achievement_assigned' => 'Logros - Nuevo Logro',
-			'course_available' => 'Cursos - Nuevo Curso',
-			'inactivity_alert' => 'Retención - Inactividad',
+			'student_welcome' => [
+				'title'       => 'Registro - Bienvenida',
+				'description' => 'Se envía automáticamente cuando un estudiante se registra exitosamente en la plataforma.',
+				'variables'   => [ '{{user.name}}', '{{user.username}}', '{{user.email}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'user_recover_password' => [
+				'title'       => 'Seguridad - Recuperar Contraseña',
+				'description' => 'Se envía cuando un usuario solicita restablecer su contraseña desde el formulario de acceso.',
+				'variables'   => [ '{{user.name}}', '{{reset_link}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'admin_reset_password' => [
+				'title'       => 'Seguridad - Reset por Admin',
+				'description' => 'Se envía cuando un administrador restablece manualmente la contraseña de un usuario.',
+				'variables'   => [ '{{user.name}}', '{{new_password}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'payment_success' => [
+				'title'       => 'Finanzas - Pago Exitoso',
+				'description' => 'Se envía al usuario confirmando que su pago se ha procesado correctamente.',
+				'variables'   => [ '{{user.name}}', '{{plan_name}}', '{{price}}', '{{date}}', '{{amount}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'payment_failed' => [
+				'title'       => 'Finanzas - Pago Fallido',
+				'description' => 'Se envía cuando un intento de pago o renovación falla.',
+				'variables'   => [ '{{user.name}}', '{{plan_name}}', '{{attempt_date}}', '{{retry_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'payment_reminder' => [
+				'title'       => 'Finanzas - Recordatorio Renovación',
+				'description' => 'Se envía días antes de que una suscripción se renueve automáticamente.',
+				'variables'   => [ '{{user.name}}', '{{plan_name}}', '{{renewal_date}}', '{{price}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'subscription_cancelled' => [
+				'title'       => 'Finanzas - Suscripción Cancelada',
+				'description' => 'Se envía cuando una suscripción es cancelada (por el usuario o admin).',
+				'variables'   => [ '{{user.name}}', '{{plan_name}}', '{{end_date}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'achievement_assigned' => [
+				'title'       => 'Logros - Nuevo Logro Desbloqueado',
+				'description' => 'Se envía cuando un estudiante desbloquea un nuevo logro o insignia.',
+				'variables'   => [ '{{user.name}}', '{{achievement_name}}', '{{achievement_desc}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'course_available' => [
+				'title'       => 'Cursos - Nuevo Curso Disponible',
+				'description' => 'Notificación a los estudiantes cuando se publica o asigna un nuevo curso.',
+				'variables'   => [ '{{user.name}}', '{{course_name}}', '{{course_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'inactivity_alert' => [
+				'title'       => 'Retención - Alerta de Inactividad',
+				'description' => 'Se envía automáticamente si el estudiante no ingresa por varios días.',
+				'variables'   => [ '{{user.name}}', '{{days_inactive}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
 		];
 	}
 
@@ -56,22 +96,14 @@ class Email_Engine {
 	/**
 	 * Main function to send emails
 	 */
-	public function send_email( $type, $recipient_email, $data = [] ) {
+	public function send_email( $type, $recipient_email, $data = [], $is_test = false ) {
 		if ( ! is_email( $recipient_email ) ) return false;
 
 		// 1. Get Template (DB or Default)
 		$template = $this->get_template( $type );
 
-		// If not active, stop (unless it's a critical system email that MUST be sent? 
-		// Strategy: If user disabled 'welcome', we respect it. But for 'recover password', disabling it breaks functionality.
-		// Alezux Decision: We will send Default if Custom is disabled OR not exists, only stop if explicit "Do Not Send" logic exists.
-		// User requirement "Configurar to enable/disable". So if disabled in DB, we DO NOT send.
-		// Wait, for Critical emails (Password Reset), disabling is dangerous.
-		// Let's assume Active = Use Custom Template. Inactive = Use System Default (WordPress default or Hardcoded fallback).
-		// Re-reading user request: "Opcion de configurar... switch de Activo/Inactivo (para decidir si ese correo se envía o no)".
-		// Okay, explicitly sending NOTHING.
-		
-		if ( $template && isset( $template->is_active ) && '0' == $template->is_active ) {
+		// If disabled by user setting (and NOT a test email), skip.
+		if ( ! $is_test && $template && isset( $template->is_active ) && '0' == $template->is_active ) {
 			return false; // Email disabled by admin
 		}
 
@@ -105,7 +137,35 @@ class Email_Engine {
 		}
 
 		// 5. Send
-		return wp_mail( $recipient_email, $subject, $content, $headers );
+		$sent = wp_mail( $recipient_email, $subject, $content, $headers );
+
+		// 6. Log Transaction (Only if sent and NOT a test)
+		if ( $sent && ! $is_test ) {
+			$this->log_email( $type, $recipient_email, $data );
+		}
+
+		return $sent;
+	}
+
+	private function log_email( $type, $recipient_email, $data ) {
+		global $wpdb;
+		$table = $wpdb->prefix . 'alezux_marketing_logs';
+		
+		$user_id = 0;
+		if ( isset( $data['user'] ) && $data['user'] instanceof \WP_User ) {
+			$user_id = $data['user']->ID;
+		}
+
+		$wpdb->insert( 
+			$table, 
+			[ 
+				'type' => $type, 
+				'recipient_email' => $recipient_email, 
+				'user_id' => $user_id,
+				'status' => 'sent',
+				'sent_at' => current_time( 'mysql' )
+			] 
+		);
 	}
 
 	private function get_template( $type ) {

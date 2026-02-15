@@ -82,16 +82,27 @@ jQuery(document).ready(function ($) {
 
                 var row = `
                     <tr>
-                        <td><strong>${item.label}</strong><br><small style="color:#888">${item.type}</small></td>
+                        <td>
+                            <strong style="font-size:14px; color:#2271b1;">${item.title}</strong>
+                            <div style="font-size:12px; color:#666; margin-top:2px; line-height:1.3;">${item.description}</div>
+                        </td>
                         <td>${item.subject}</td>
+                        <td style="text-align:center;">
+                            <span style="font-weight:bold; background:#e5e5e5; padding:2px 8px; border-radius:10px; font-size:12px;">${item.sent_count}</span>
+                        </td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}">
-                                <i class="fa fa-pencil"></i> Editar
-                            </button>
-                            <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" style="margin-left:5px;" title="Enviar prueba">
-                                <i class="fa fa-play"></i>
-                            </button>
+                            <div style="display:flex; gap:5px;">
+                                <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}" title="Editar Plantilla">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button class="alezux-marketing-btn history-btn" data-type="${item.type}" data-title="${item.title}" title="Ver Historial">
+                                    <i class="fa fa-history"></i>
+                                </button>
+                                <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" title="Enviar prueba">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -104,7 +115,7 @@ jQuery(document).ready(function ($) {
         // 2. Open Edit Modal
         $(document).on('click', '.edit-template-btn', function (e) {
             e.preventDefault();
-            var type = $(this).data('type'); // data-type is on the button
+            var type = $(this).data('type');
 
             // Logic for Dummy/Editor buttons (no data-type)
             if (!type) {
@@ -112,11 +123,9 @@ jQuery(document).ready(function ($) {
                 $('#tpl-subject').val('Asunto de Prueba para Diseño');
                 $('#tpl-content').val('<h1>Hola [Nombre]</h1><p>Este es un cotenido de prueba para visualizar estilos.</p>');
                 $('#tpl-active').prop('checked', true);
+                $('#vars-list').text('{{user.name}}, {{site_name}}');
                 $('#modal-title').text('Editando: Plantilla de Prueba');
                 modalTemplate.css('display', 'flex');
-
-                // Trigger preview logic for dummy
-                // Reset mode to edit
                 $('#toggle-preview-mode').prop('checked', false).trigger('change');
                 return;
             }
@@ -138,12 +147,66 @@ jQuery(document).ready(function ($) {
                         $('#tpl-content').val(tpl.content);
                         $('#tpl-active').prop('checked', tpl.is_active == 1);
 
-                        $('#modal-title').text('Editando: ' + type);
+                        // Populate variables list
+                        var varsHtml = 'Sin variables específicas.';
+                        if (tpl.variables && Array.isArray(tpl.variables) && tpl.variables.length > 0) {
+                            varsHtml = tpl.variables.map(v => `<code style="display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;">${v}</code>`).join(' ');
+                        }
+                        $('#vars-list').html(varsHtml);
+
+                        $('#modal-title').text('Editando: ' + (tpl.title || type)); // Fallback if title not passed (should be passed conceptually but type lookup is ok)
+                        // Actually row doesn't have title, but we can pass it if we want. For now, type is fine or we trust the user knows what they clicked. 
+                        // To be perfect, we could store title in data attribute of button.
+
                         modalTemplate.css('display', 'flex');
 
                         // Reset mode to edit
                         $('#toggle-preview-mode').prop('checked', false).trigger('change');
                     }
+                }
+            });
+        });
+
+        // History Handler
+        $(document).on('click', '.history-btn', function (e) {
+            e.preventDefault();
+            var type = $(this).data('type');
+            var title = $(this).data('title');
+            var historyModal = $('#marketing-history-modal');
+            var tbody = historyModal.find('#history-table tbody');
+
+            if (!type) return;
+
+            historyModal.find('#history-modal-title').text('Historial: ' + title);
+            tbody.html('<tr><td colspan="3" style="text-align:center;">Cargando historial...</td></tr>');
+            historyModal.css('display', 'flex');
+
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                method: 'POST',
+                data: {
+                    action: 'alezux_marketing_get_logs',
+                    type: type,
+                    nonce: alezux_marketing_vars.nonce
+                },
+                success: function (res) {
+                    tbody.empty();
+                    if (res.success && res.data.length > 0) {
+                        res.data.forEach(function (log) {
+                            tbody.append(`
+                                <tr>
+                                    <td>${log.date}</td>
+                                    <td>${log.recipient}</td>
+                                    <td>${log.status === 'sent' ? '<span style="color:green;">Enviado</span>' : log.status}</td>
+                                </tr>
+                            `);
+                        });
+                    } else {
+                        tbody.html('<tr><td colspan="3" style="text-align:center;">No hay envíos registrados aún.</td></tr>');
+                    }
+                },
+                error: function () {
+                    tbody.html('<tr><td colspan="3" style="text-align:center;">Error al cargar historial.</td></tr>');
                 }
             });
         });
