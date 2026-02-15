@@ -94,13 +94,13 @@ jQuery(document).ready(function ($) {
                         <td>
                             <div style="display:flex; gap:5px;">
                                 <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}" title="Editar Plantilla">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa fa-pencil"></i> <span>Editar</span>
                                 </button>
                                 <button class="alezux-marketing-btn history-btn" data-type="${item.type}" data-title="${item.title}" title="Ver Historial">
-                                    <i class="fa fa-history"></i>
+                                    <i class="fa fa-history"></i> <span>Historial</span>
                                 </button>
                                 <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" title="Enviar prueba">
-                                    <i class="fa fa-paper-plane"></i>
+                                    <i class="fa fa-paper-plane"></i> <span>Prueba</span>
                                 </button>
                             </div>
                         </td>
@@ -193,11 +193,20 @@ jQuery(document).ready(function ($) {
                     tbody.empty();
                     if (res.success && res.data.length > 0) {
                         res.data.forEach(function (log) {
+                            var statusBadged = log.status;
+                            var s = log.status.toLowerCase();
+
+                            if (s === 'sent' || s === 'enviado') {
+                                statusBadged = '<span style="color:green;">Enviado</span>';
+                            } else if (s === 'leído' || s === 'leido') {
+                                statusBadged = '<span style="color:#2271b1; font-weight:bold;">Leído</span>';
+                            }
+
                             tbody.append(`
                                 <tr>
                                     <td>${log.date}</td>
                                     <td>${log.recipient}</td>
-                                    <td>${log.status === 'sent' ? '<span style="color:green;">Enviado</span>' : log.status}</td>
+                                    <td>${statusBadged}</td>
                                 </tr>
                             `);
                         });

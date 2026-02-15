@@ -50,6 +50,9 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); 
 		add_action( 'wp_ajax_alezux_marketing_send_test_email', [ $this, 'ajax_send_test_email' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_logs', [ $this, 'ajax_get_email_logs' ] );
+		
+		// Tracking Pixel Listener
+		add_action( 'init', [ $this, 'handle_tracking_pixel' ] );
 	}
 
 	public function get_engine() {
@@ -137,6 +140,7 @@ class Marketing extends Module_Base {
 				user_id bigint(20) DEFAULT 0,
 				status varchar(20) DEFAULT 'sent',
 				sent_at datetime DEFAULT CURRENT_TIMESTAMP,
+				opened_at datetime DEFAULT NULL,
 				PRIMARY KEY  (id),
 				KEY type (type),
 				KEY user_id (user_id)
@@ -147,6 +151,27 @@ class Marketing extends Module_Base {
 			dbDelta( $sql_logs );
 
 			update_option( 'alezux_marketing_db_version', $version );
+		}
+	}
+
+	public function handle_tracking_pixel() {
+		if ( isset( $_GET['alezux_track_email'] ) ) {
+			$log_id = intval( $_GET['alezux_track_email'] );
+			if ( $log_id > 0 ) {
+				global $wpdb;
+				$table = $wpdb->prefix . 'alezux_marketing_logs';
+				$wpdb->query( $wpdb->prepare( 
+					"UPDATE $table SET opened_at = %s WHERE id = %d AND opened_at IS NULL", 
+					current_time( 'mysql' ), 
+					$log_id 
+				) );
+			}
+
+			// Return transparent 1x1 GIF
+			header( 'Content-Type: image/gif' );
+			header( 'Cache-Control: no-cache, no-store, must-revalidate' );
+			echo base64_decode( 'R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==' );
+			exit;
 		}
 	}
 
@@ -421,10 +446,15 @@ class Marketing extends Module_Base {
 			// Format for display
 			$formatted = [];
 			foreach($logs as $log) {
+				$status_display = ucfirst( $log->status );
+				if ( ! empty( $log->opened_at ) ) {
+					$status_display = 'Leído';
+				}
+
 				$formatted[] = [
 					'recipient' => $log->recipient_email,
 					'date' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $log->sent_at ) ),
-					'status' => $log->status
+					'status' => $status_display
 				];
 			}
 

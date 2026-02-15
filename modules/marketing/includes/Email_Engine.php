@@ -125,7 +125,20 @@ class Email_Engine {
 		$subject = $this->replace_vars( $subject, $vars );
 		$content = $this->replace_vars( $content, $vars );
 
-		// 4. Inject Logic (Header/Logo)
+		// 4. Tracking Logic (Create log BEFORE sending to get ID)
+		$log_id = 0;
+		if ( ! $is_test ) {
+			$log_id = $this->create_log_entry( $type, $recipient_email, $data );
+			
+			// Append Tracking Pixel
+			if ( $log_id > 0 ) {
+				$tracking_url = home_url( '/?alezux_track_email=' . $log_id );
+				$pixel = '<img src="' . esc_url( $tracking_url ) . '" alt="" width="1" height="1" style="display:none !important;" />';
+				$content .= "\n" . $pixel;
+			}
+		}
+
+		// 5. Inject Logic (Header/Logo)
 		// Headers: Add Reply-To if configured
 		$headers = [];
 		$from_email = get_option( 'alezux_marketing_from_email' );
@@ -136,18 +149,19 @@ class Email_Engine {
 			$headers[] = "Reply-To: $name_part <$from_email>";
 		}
 
-		// 5. Send
+		// 6. Send
 		$sent = wp_mail( $recipient_email, $subject, $content, $headers );
 
-		// 6. Log Transaction (Only if sent and NOT a test)
-		if ( $sent && ! $is_test ) {
-			$this->log_email( $type, $recipient_email, $data );
+		// 7. Update Log Status
+		if ( ! $is_test && $log_id > 0 ) {
+			$status = $sent ? 'sent' : 'failed';
+			$this->update_log_status( $log_id, $status );
 		}
 
 		return $sent;
 	}
 
-	private function log_email( $type, $recipient_email, $data ) {
+	private function create_log_entry( $type, $recipient_email, $data ) {
 		global $wpdb;
 		$table = $wpdb->prefix . 'alezux_marketing_logs';
 		
@@ -156,15 +170,27 @@ class Email_Engine {
 			$user_id = $data['user']->ID;
 		}
 
-		$wpdb->insert( 
+		$inserted = $wpdb->insert( 
 			$table, 
 			[ 
 				'type' => $type, 
 				'recipient_email' => $recipient_email, 
 				'user_id' => $user_id,
-				'status' => 'sent',
+				'status' => 'sending', // Initial status
 				'sent_at' => current_time( 'mysql' )
 			] 
+		);
+
+		return $inserted ? $wpdb->insert_id : 0;
+	}
+
+	private function update_log_status( $log_id, $status ) {
+		global $wpdb;
+		$table = $wpdb->prefix . 'alezux_marketing_logs';
+		$wpdb->update( 
+			$table, 
+			[ 'status' => $status ], 
+			[ 'id' => $log_id ] 
 		);
 	}
 

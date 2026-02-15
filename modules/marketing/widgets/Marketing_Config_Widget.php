@@ -639,6 +639,9 @@ class Marketing_Config_Widget extends Widget_Base {
                                 <button type="button" class="alezux-upload-btn-styled">Subir imagen</button>
                             </div>
                         </div>
+                        <p style="font-size:12px; color:#888; margin-top:8px; line-height:1.4;">
+                            <strong>Nota:</strong> Este logo se usará en el cuerpo del correo. La foto de perfil del remitente que aparece en Gmail/Outlook se gestiona a través de <a href="https://gravatar.com" target="_blank" style="color:#2271b1; text-decoration:underline;">Gravatar</a> o configuraciones de BIMI en tu dominio.
+                        </p>
 					</div>
 
 					<div class="form-actions" style="margin-top: 20px; text-align: right;">
