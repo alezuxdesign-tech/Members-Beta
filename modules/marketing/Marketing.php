@@ -54,19 +54,6 @@ class Marketing extends Module_Base {
 		// Tracking Pixel Listener
 		add_action( 'init', [ $this, 'handle_tracking_pixel' ] );
 
-		// Custom Sender Filters
-		add_filter( 'wp_mail_from', [ $this, 'filter_mail_from' ] );
-		add_filter( 'wp_mail_from_name', [ $this, 'filter_mail_from_name' ] );
-	}
-
-	public function filter_mail_from( $email ) {
-		$custom = get_option( 'alezux_marketing_from_email' );
-		return ! empty( $custom ) ? $custom : $email;
-	}
-
-	public function filter_mail_from_name( $name ) {
-		$custom = get_option( 'alezux_marketing_from_name' );
-		return ! empty( $custom ) ? $custom : $name;
 	}
 
 	public function get_engine() {
