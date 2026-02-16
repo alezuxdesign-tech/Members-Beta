@@ -50,6 +50,7 @@ class Proyectos_Agencia {
 		// Cliente AJAX
 		add_action( 'wp_ajax_alezux_submit_briefing', [ $this, 'ajax_submit_briefing' ] );
 		add_action( 'wp_ajax_alezux_approve_design', [ $this, 'ajax_approve_design' ] );
+		add_action( 'wp_ajax_alezux_submit_rejection', [ $this, 'ajax_submit_rejection' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
@@ -166,6 +167,42 @@ class Proyectos_Agencia {
 		$manager->update_status( $project_id, 'in_progress', 'in_progress' );
 
 		wp_send_json_success( 'Diseño aprobado. ¡Comenzamos el desarrollo!' );
+	}
+
+	public function ajax_submit_rejection() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		$project_id = absint( $_POST['project_id'] );
+		$feedback   = sanitize_textarea_field( $_POST['feedback'] );
+
+		if ( empty( $feedback ) ) {
+			wp_send_json_error( 'El mensaje no puede estar vacío.' );
+		}
+		
+		$manager = new Project_Manager();
+		$project = $manager->get_project( $project_id );
+
+		if ( ! $project || $project->customer_id != get_current_user_id() ) {
+			wp_send_json_error( 'No tienes permiso.' );
+		}
+
+		// Guardar Feedback en Meta
+		$rejection_data = [
+			'submitted_at' => current_time( 'mysql' ),
+			'feedback'     => $feedback,
+			'ip_address'   => $_SERVER['REMOTE_ADDR']
+		];
+
+		// Podríamos guardar un historial de feedbacks, pero por ahora sobrescribimos o añadimos uno nuevo
+		// Para MVP guardamos el último feedback
+		$manager->update_project_meta( $project_id, 'last_design_feedback', json_encode( $rejection_data ) );
+		
+		// Opcional: Cambiar estado a "revisión con cambios" si existiera, o dejarlo en design_review
+		// Decisión: Mantener en design_review pero notificar admin
+
+		do_action( 'alezux_project_design_feedback', $project_id, $feedback );
+
+		wp_send_json_success( 'Tus comentarios han sido enviados al equipo.' );
 	}
 
 	public function check_install() {

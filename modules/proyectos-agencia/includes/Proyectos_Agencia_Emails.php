@@ -18,7 +18,8 @@ class Proyectos_Agencia_Emails {
 
 		// 3. Escuchar eventos del proyecto
 		add_action( 'alezux_project_created', [ $this, 'send_project_created_email' ] );
-		add_action( 'alezux_project_status_updated', [ $this, 'handle_status_update' ], 10, 3 );
+		add_action( 'alezux_project_status_updated', [ $this, 'handle_status_update' ], 10, 5 );
+		add_action( 'alezux_project_design_feedback', [ $this, 'send_design_feedback_email' ], 10, 2 );
 	}
 
 	public function provide_default_templates( $defaults, $type ) {
@@ -70,6 +71,35 @@ class Proyectos_Agencia_Emails {
 					' . $footer
 				];
 
+			case 'design_approved':
+				return [
+					'subject' => '[Admin] Diseño Aprobado: {{project_name}}',
+					'content' => $header . '
+						<h2>¡Diseño Aprobado!</h2>
+						<p>El cliente <strong>{{customer_name}}</strong> ha aprobado el diseño del proyecto <strong>{{project_name}}</strong>.</p>
+						<p>La fase de desarrollo puede comenzar.</p>
+						<p style="text-align: center; margin: 30px 0;">
+							<a href="{{admin_url}}" style="' . $btn_css . '">Gestionar Proyecto</a>
+						</p>
+					' . $footer
+				];
+
+			case 'design_feedback':
+				return [
+					'subject' => '[Admin] Cambios Solicitados: {{project_name}}',
+					'content' => $header . '
+						<h2>Feedback de Diseño</h2>
+						<p>El cliente <strong>{{customer_name}}</strong> ha solicitado cambios en el diseño del proyecto <strong>{{project_name}}</strong>.</p>
+						<div style="background:#fff3cd; padding:15px; border-left:4px solid #ffc107; margin:20px 0;">
+							<strong>Comentarios:</strong><br>
+							{{feedback}}
+						</div>
+						<p style="text-align: center; margin: 30px 0;">
+							<a href="{{admin_url}}" style="' . $btn_css . '">Ver Solicitud</a>
+						</p>
+					' . $footer
+				];
+
 			case 'project_completed':
 				return [
 					'subject' => '🚀 ¡Proyecto Completado!: {{project_name}}',
@@ -109,6 +139,11 @@ class Proyectos_Agencia_Emails {
 				'description' => 'Notificación al administrador cuando el cliente aprueba el diseño.',
 				'variables'   => [ '{{project_name}}', '{{customer_name}}', '{{admin_url}}', '{{site_name}}', '{{logo_url}}' ]
 			],
+			'design_feedback' => [
+				'title'       => 'Proyectos - Cambios Solicitados',
+				'description' => 'Notificación al administrador cuando el cliente solicita cambios en el diseño.',
+				'variables'   => [ '{{project_name}}', '{{customer_name}}', '{{feedback}}', '{{admin_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
 			'project_completed' => [
 				'title'       => 'Proyectos - Proyecto Finalizado',
 				'description' => 'Informar al cliente que su proyecto ha sido completado y entregado.',
@@ -122,6 +157,32 @@ class Proyectos_Agencia_Emails {
 	public function send_project_created_email( $project_id ) {
 		error_log( "Proyectos Email Debug: Project Created ID: $project_id" );
 		$this->send_email_to_customer( $project_id, 'project_created' );
+	}
+
+	// Nuevo método para feedback
+	public function send_design_feedback_email( $project_id, $feedback ) {
+		error_log( "Proyectos Email Debug: Feedback Received ID: $project_id" );
+		
+		$manager = new Project_Manager();
+		$project = $manager->get_project( $project_id );
+		if ( ! $project ) return;
+
+		$customer = get_userdata( $project->customer_id );
+		$admin_email = get_option( 'admin_email' );
+
+		// Preparar datos
+		$data = [
+			'project_name'  => $project->name,
+			'customer_name' => $customer ? $customer->display_name : 'Cliente #' . $project->customer_id,
+			'feedback'      => wp_kses_post( $feedback ),
+			'admin_url'     => admin_url( 'admin.php?page=alezux_projects' )
+		];
+
+		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
+			$engine = Marketing::get_instance()->get_engine();
+			$sent = $engine->send_email( 'design_feedback', $admin_email, $data );
+			error_log( "Proyectos Email Debug: Sending design_feedback to admin $admin_email | Result: " . ( $sent ? 'Success' : 'Failed' ) );
+		}
 	}
 
 	public function handle_status_update( $project_id, $new_status, $old_status, $new_step = null, $old_step = null ) {

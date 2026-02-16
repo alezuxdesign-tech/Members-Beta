@@ -148,10 +148,28 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        // Aquí iría la lógica AJAX para guardar el feedback (MVP: Solo alert)
-        alert('Gracias. Hemos registrado tus comentarios y el equipo se pondrá en contacto.');
-        $('#reject-modal').slideUp();
-        $('#reject-feedback').val('');
+        var $btn = $(this);
+        var originalText = $btn.text();
+        $btn.prop('disabled', true).text('Enviando...');
+
+        $.post(AlezuxProjects.ajaxurl, {
+            action: 'alezux_submit_rejection',
+            nonce: AlezuxProjects.nonce,
+            project_id: $btn.data('id'),
+            feedback: feedback
+        }, function (response) {
+            if (response.success) {
+                alert(response.data);
+                $('#reject-modal').slideUp();
+                $('#reject-feedback').val('');
+            } else {
+                alert('Error: ' + response.data);
+            }
+        }).fail(function () {
+            alert('Error de conexión.');
+        }).always(function () {
+            $btn.prop('disabled', false).text(originalText);
+        });
     });
 
 });
