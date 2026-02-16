@@ -328,11 +328,11 @@ class Projects_List_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// --- STYLE: SIDE PANEL (OFF-CANVAS) ---
+		// --- STYLE: SIDE PANEL (general) ---
 		$this->start_controls_section(
 			'style_side_panel',
 			[
-				'label' => esc_html__( 'Panel Lateral', 'alezux-members' ),
+				'label' => esc_html__( 'Panel Lateral (General)', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -401,16 +401,422 @@ class Projects_List_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'panel_text_color',
+		$this->end_controls_section();
+
+		// --- STYLE: SIDE PANEL TABS ---
+		$this->start_controls_section(
+			'style_panel_tabs',
 			[
-				'label' => esc_html__( 'Color Texto General Panel', 'alezux-members' ),
+				'label' => esc_html__( 'Panel: Pestañas (Tabs)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'tabs_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Contenedor Tabs', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
-				'separator' => 'before',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-offcanvas-panel' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-offcanvas-panel p' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-tabs-header' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_style_tabs' );
+
+		// Tab Normal
+		$this->start_controls_tab(
+			'tab_style_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'tab_text_color',
+			[
+				'label' => esc_html__( 'Color Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .tab-btn' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'tab_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Tab', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .tab-btn' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Tab Active
+		$this->start_controls_tab(
+			'tab_style_active',
+			[
+				'label' => esc_html__( 'Activo / Hover', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'tab_text_color_active',
+			[
+				'label' => esc_html__( 'Color Texto Activo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .tab-btn.active, {{WRAPPER}} .tab-btn:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'tab_bg_color_active',
+			[
+				'label' => esc_html__( 'Fondo Tab Activo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .tab-btn.active, {{WRAPPER}} .tab-btn:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'tab_border_color_active',
+			[
+				'label' => esc_html__( 'Color Borde Inferior', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .tab-btn.active' => 'border-bottom-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+		$this->end_controls_tabs();
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'tab_typography',
+				'selector' => '{{WRAPPER}} .tab-btn',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: PANEL CLIENT INFO ---
+		$this->start_controls_section(
+			'style_panel_client',
+			[
+				'label' => esc_html__( 'Panel: Info Cliente', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_client_section',
+			[
+				'label' => esc_html__( 'Sección Títulos', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'panel_section_title_color',
+			[
+				'label' => esc_html__( 'Color Títulos Sección', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .panel-section-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'panel_section_title_typography',
+				'selector' => '{{WRAPPER}} .panel-section-title',
+			]
+		);
+
+		$this->add_control(
+			'heading_client_data',
+			[
+				'label' => esc_html__( 'Datos Cliente', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'panel_client_name_color',
+			[
+				'label' => esc_html__( 'Color Nombre', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .client-mini-profile span.d-block' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'panel_client_name_typo',
+				'selector' => '{{WRAPPER}} .client-mini-profile span.d-block',
+			]
+		);
+
+		$this->add_control(
+			'panel_client_email_color',
+			[
+				'label' => esc_html__( 'Color Email', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .client-mini-profile small' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'panel_avatar_size',
+			[
+				'label' => esc_html__( 'Tamaño Avatar', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 20,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .client-mini-profile img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'panel_avatar_radius',
+			[
+				'label' => esc_html__( 'Radio Avatar', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .client-mini-profile img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_date_info',
+			[
+				'label' => esc_html__( 'Fecha Inicio', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'panel_date_color',
+			[
+				'label' => esc_html__( 'Color Texto Fecha', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .detail-item p' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .detail-item i' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: PANEL FORMS & BRIEFING ---
+		$this->start_controls_section(
+			'style_panel_forms',
+			[
+				'label' => esc_html__( 'Panel: Formularios y Datos', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_forms',
+			[
+				'label' => esc_html__( 'Inputs y Selects', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'form_label_color',
+			[
+				'label' => esc_html__( 'Color Etiquetas (Labels)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
 					'{{WRAPPER}} .alezux-offcanvas-panel label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'input_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Input', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'input_text_color',
+			[
+				'label' => esc_html__( 'Color Texto Input', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'input_border_color',
+			[
+				'label' => esc_html__( 'Color Borde Input', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'border-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_briefing_box',
+			[
+				'label' => esc_html__( 'Caja de Datos (Briefing/Credenciales)', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'info_box_bg',
+			[
+				'label' => esc_html__( 'Fondo Caja Info', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-info-box' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'info_box_text_color',
+			[
+				'label' => esc_html__( 'Color Texto Info', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-info-box p' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-info-box h5' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'info_box_radius',
+			[
+				'label' => esc_html__( 'Radio Borde Caja', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-info-box' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: PANEL CHAT ---
+		$this->start_controls_section(
+			'style_panel_chat',
+			[
+				'label' => esc_html__( 'Panel: Chat', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'chat_area_bg',
+			[
+				'label' => esc_html__( 'Fondo Área Mensajes', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .chat-messages-list' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'chat_input_container_bg',
+			[
+				'label' => esc_html__( 'Fondo Área Input', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .chat-input-area' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'chat_textarea_bg',
+			[
+				'label' => esc_html__( 'Fondo Campo Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #chat-message-input' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'chat_textarea_color',
+			[
+				'label' => esc_html__( 'Color Texto Campo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #chat-message-input' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'chat_send_btn_bg',
+			[
+				'label' => esc_html__( 'Fondo Botón Enviar', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #btn-send-chat' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'chat_send_btn_color',
+			[
+				'label' => esc_html__( 'Icono Botón Enviar', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #btn-send-chat' => 'color: {{VALUE}};',
 				],
 			]
 		);
