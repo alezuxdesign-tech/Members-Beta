@@ -132,11 +132,35 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 					<hr>
 
 					<h4>Datos del Briefing</h4>
-					<?php if ( ! empty( $briefing ) ) : ?>
+					<h4>Datos del Briefing</h4>
+					<?php if ( ! empty( $briefing ) ) : 
+						$labels_map = [
+							'brand_name'          => 'Marca Comercial',
+							'legal_name'          => 'Razón Social',
+							'tax_id'              => 'CIF / NIT',
+							'fiscal_address'      => 'Dirección Fiscal',
+							'commercial_registry' => 'Registro Mercantil',
+							'jurisdiction'        => 'Jurisdicción',
+							'phone'               => 'Teléfono',
+							'whatsapp'            => 'WhatsApp',
+							'contact_email'       => 'Email Contacto',
+							'privacy_email'       => 'Email Privacidad',
+							'dpo_email'           => 'Email DPO',
+							'website_url'         => 'Sitio Web',
+							'business_activity'   => 'Actividad',
+							'business_sectors'    => 'Sectores',
+							'slogan'              => 'Slogan',
+							'colors'              => 'Colores',
+							'business_desc'       => 'Descripción',
+							'submitted_at'        => 'Enviado el'
+						];
+					?>
 						<ul class="alezux-data-list">
-							<?php foreach ( $briefing as $key => $val ) : ?>
+							<?php foreach ( $briefing as $key => $val ) : 
+								$label = isset($labels_map[$key]) ? $labels_map[$key] : ucfirst( str_replace( '_', ' ', $key ) );
+							?>
 								<li>
-									<strong><?php echo esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ); ?>:</strong>
+									<strong><?php echo esc_html( $label ); ?>:</strong>
 									<span><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
 								</li>
 							<?php endforeach; ?>

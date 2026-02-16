@@ -388,11 +388,25 @@ class Proyectos_Agencia {
 
 		// Recolectar datos
 		$briefing_data = [
-			'brand_name'    => sanitize_text_field( $_POST['brand_name'] ),
-			'slogan'        => sanitize_text_field( $_POST['slogan'] ),
-			'colors'        => sanitize_text_field( $_POST['colors'] ),
-			'business_desc' => sanitize_textarea_field( $_POST['business_desc'] ),
-			'submitted_at'  => current_time( 'mysql' )
+			'brand_name'          => sanitize_text_field( $_POST['brand_name'] ),
+			'legal_name'          => sanitize_text_field( $_POST['legal_name'] ),
+			'tax_id'              => sanitize_text_field( $_POST['tax_id'] ),
+			'fiscal_address'      => sanitize_textarea_field( $_POST['fiscal_address'] ),
+			'commercial_registry' => sanitize_text_field( $_POST['commercial_registry'] ),
+			'jurisdiction'        => sanitize_text_field( $_POST['jurisdiction'] ),
+			'phone'               => sanitize_text_field( $_POST['phone'] ),
+			'whatsapp'            => sanitize_text_field( $_POST['whatsapp'] ),
+			'contact_email'       => sanitize_email( $_POST['contact_email'] ),
+			'privacy_email'       => sanitize_email( $_POST['privacy_email'] ),
+			'dpo_email'           => sanitize_email( $_POST['dpo_email'] ),
+			'website_url'         => esc_url_raw( $_POST['website_url'] ),
+			'business_activity'   => sanitize_textarea_field( $_POST['business_activity'] ),
+			'business_sectors'    => sanitize_text_field( $_POST['business_sectors'] ),
+			// Legacy/Optional
+			'slogan'              => sanitize_text_field( $_POST['slogan'] ),
+			'colors'              => sanitize_text_field( $_POST['colors'] ),
+			'business_desc'       => sanitize_textarea_field( $_POST['business_desc'] ), // Kept as fallback or additional info
+			'submitted_at'        => current_time( 'mysql' )
 		];
 
 		// Guardar Meta
