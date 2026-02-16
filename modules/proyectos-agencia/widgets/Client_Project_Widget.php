@@ -357,7 +357,7 @@ class Client_Project_Widget extends Widget_Base {
 		$user_id = get_current_user_id();
 		$manager = new Project_Manager();
 		
-		// Obtener el proyecto más reciente del usuario
+		// Obtener proyectos del usuario
 		$projects = $manager->get_projects_by_user( $user_id );
 		
 		if ( empty( $projects ) ) {
@@ -368,38 +368,120 @@ class Client_Project_Widget extends Widget_Base {
 			return;
 		}
 
-		// Tomamos el primer proyecto activo
-		$project = $projects[0];
-		
-		// Renderizar contenedor principal
-		echo '<div class="alezux-client-project-dashboard">';
-		
-		// Header del Proyecto
-		$this->render_header( $project );
-
-		// Cuerpo Variable según el Estado
-		echo '<div class="alezux-project-body">';
-		
-		switch ( $project->current_step ) {
-			case 'briefing':
-				$this->render_briefing_step( $project, $manager );
-				break;
-			case 'design_review':
-				$this->render_design_review_step( $project, $manager );
-				break;
-			case 'in_progress':
-				$this->render_progress_step( $project );
-				break;
-			case 'completed':
-				$this->render_completed_step( $project );
-				break;
-			default:
-				echo '<p>Estado del proyecto desconocido.</p>';
+		// Lógica de Selección de Proyecto
+		$project = $projects[0]; // Por defecto el más reciente
+		if ( isset( $_GET['alezux_pid'] ) ) {
+			$requested_pid = absint( $_GET['alezux_pid'] );
+			foreach ( $projects as $p ) {
+				if ( $p->id == $requested_pid ) {
+					$project = $p;
+					break;
+				}
+			}
 		}
 		
-		echo '</div>'; // .alezux-project-body
-		echo '</div>'; // .alezux-client-project-dashboard
+		// Renderizar contenedor principal
+		echo '<div class="alezux-client-project-dashboard" data-project-id="' . esc_attr($project->id) . '">';
+		
+		// Header del Proyecto (con selector si hay varios)
+		$this->render_header( $project, count($projects) > 1 ? $projects : null );
+
+		// Navigation Tabs
+		?>
+		<div class="alezux-client-tabs-nav">
+			<button class="client-tab-btn active" onclick="openClientTab('tab-overview')">
+				<i class="eicon-info-circle-o"></i> Mi Proyecto
+			</button>
+			<button class="client-tab-btn" onclick="openClientTab('tab-chat')">
+				<i class="eicon-comment-o"></i> Mensajes <span class="message-counter" style="display:none;">0</span>
+			</button>
+		</div>
+
+		<div id="tab-overview" class="client-tab-content active">
+			<div class="alezux-project-body">
+				<?php
+				switch ( $project->current_step ) {
+					case 'briefing':
+						$this->render_briefing_step( $project, $manager );
+						break;
+					case 'design_review':
+						$this->render_design_review_step( $project, $manager );
+						break;
+					case 'in_progress':
+						$this->render_progress_step( $project );
+						break;
+					case 'completed':
+						$this->render_completed_step( $project );
+						break;
+					default:
+						echo '<p>Estado del proyecto desconocido.</p>';
+				}
+				?>
+			</div>
+		</div>
+
+		<div id="tab-chat" class="client-tab-content">
+			<div class="alezux-project-body" style="min-height: 400px; display: flex; flex-direction: column;">
+				<div id="project-chat-container" class="project-chat-container" style="flex-grow: 1;">
+					<div id="chat-messages-list" class="chat-messages-list">
+						<div class="chat-loading"><i class="eicon-loading eicon-animation-spin"></i> Cargando mensajes...</div>
+					</div>
+					<div class="chat-input-area">
+						<textarea id="chat-message-input" placeholder="Escribe un mensaje al equipo..."></textarea>
+						<button id="btn-send-chat" class="alezux-marketing-btn"><i class="eicon-send"></i></button>
+					</div>
+				</div>
+                <script>
+                    // Simple Tab Logic for Client Widget
+                    function openClientTab(tabName) {
+                        var i;
+                        var x = document.getElementsByClassName("client-tab-content");
+                        for (i = 0; i < x.length; i++) {
+                            x[i].style.display = "none";
+                            x[i].classList.remove('active');
+                        }
+                        
+                        var tabs = document.getElementsByClassName("client-tab-btn");
+                        for (i = 0; i < tabs.length; i++) {
+                             tabs[i].classList.remove('active');
+                        }
+
+                        document.getElementById(tabName).style.display = "block";
+                        document.getElementById(tabName).classList.add('active');
+                        event.currentTarget.classList.add('active');
+
+                        // Init chat if opened
+                        if(tabName === 'tab-chat' && typeof AlezuxProjects !== 'undefined') {
+                             // Use existing loader from projects.js but target this container
+                             // We need to ensure projects.js knows looking at client side
+                             // Actually projects.js targets IDs #chat-messages-list which are unique per page usually.
+                             // But if user places admin widget and client widget on same page (unlikely) IDs conflict.
+                             // For now assuming distinct pages.
+                             var pid = <?php echo $project->id; ?>;
+                             AlezuxProjects.currProjectId = pid;
+                             // Trigger global load function if exposed, or trigger a click?
+                             // Best is to call the function directly if accessible, or trigger an event.
+                             // We'll rely on a small init script below.
+                        }
+                    }
+
+                    jQuery(document).ready(function($){
+                        // Auto-load chat to check for new messages?
+                        // For now just init on click or load if active.
+                        var pid = <?php echo $project->id; ?>;
+                        if(typeof AlezuxProjects !== 'undefined') {
+                            AlezuxProjects.currProjectId = pid;
+                            // Expose load function in projects.js to be globally accessible or trigger it here
+                            // We will modify projects.js to expose 'loadChatMessages' globally
+                        }
+                    });
+                </script>
+			</div>
+		</div>
+
+		</div> <!-- .alezux-client-project-dashboard -->
 	}
+
 
 	private function render_preview( $step ) {
 		// Dummy Project Data for Preview
@@ -442,12 +524,25 @@ class Client_Project_Widget extends Widget_Base {
 		echo '</div></div>';
 	}
 
-	private function render_header( $project ) {
+	private function render_header( $project, $all_projects = null ) {
 		?>
 		<div class="alezux-cp-header">
 			<div class="cp-title">
-				<small>PROYECTO ACTIVO</small>
-				<h2><?php echo esc_html( $project->name ); ?></h2>
+				<div style="display:flex; align-items:center;">
+					<h2 style="margin-right: 15px;"><?php echo esc_html( $project->name ); ?></h2>
+					<?php if ( $all_projects && count($all_projects) > 1 ) : ?>
+						<div class="project-selector-wrapper">
+							<select class="project-selector" onchange="window.location.search = '?alezux_pid=' + this.value">
+								<?php foreach ($all_projects as $p) : ?>
+									<option value="<?php echo esc_attr($p->id); ?>" <?php selected($p->id, $project->id); ?>>
+										<?php echo esc_html($p->name); ?> (<?php echo esc_html($this->get_status_label($p->status)); ?>)
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					<?php endif; ?>
+				</div>
+				<small>PROYECTO ACTIVO: #<?php echo esc_html($project->id); ?></small>
 			</div>
 			<div class="cp-status">
 				<span class="alezux-status-pill status-<?php echo esc_attr( $project->status ); ?>">

@@ -69,7 +69,10 @@ jQuery(document).ready(function ($) {
             project_id: $form.find('input[name="project_id"]').val(),
             status: $form.find('select[name="status"]').val(),
             current_step: $form.find('select[name="current_step"]').val(),
-            design_url: $form.find('input[name="design_url"]').val()
+            design_url: $form.find('input[name="design_url"]').val(),
+            site_url: $form.find('input[name="site_url"]').val(),
+            access_user: $form.find('input[name="access_user"]').val(),
+            access_pass: $form.find('input[name="access_pass"]').val()
         };
 
         $.post(AlezuxProjects.ajaxurl, data, function (response) {
@@ -205,7 +208,7 @@ jQuery(document).ready(function ($) {
 
                 // Init Chat
                 AlezuxProjects.currProjectId = projectId;
-                loadChatMessages(projectId);
+                AlezuxProjects.loadChatMessages(projectId);
             } else {
                 $title.text('Error');
                 $content.html('<div class="alezux-alert error">' + response.data + '</div>').fadeIn();
@@ -248,7 +251,8 @@ jQuery(document).ready(function ($) {
 
     // --- CHAT LOGIC ---
 
-    function loadChatMessages(projectId) {
+    // Expose globally for Widget use
+    AlezuxProjects.loadChatMessages = function (projectId) {
         var $container = $('#chat-messages-list');
 
         $.post(AlezuxProjects.ajaxurl, {
@@ -323,7 +327,7 @@ jQuery(document).ready(function ($) {
             if (response.success) {
                 $input.val('');
                 // Reload messages to get the correct server time/format
-                loadChatMessages(projectId);
+                AlezuxProjects.loadChatMessages(projectId);
             } else {
                 alert('Error: ' + response.data);
             }

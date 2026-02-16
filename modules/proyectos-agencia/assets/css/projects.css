@@ -798,10 +798,109 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
+
+.tab-btn:hover {
+    color: #e2e8f0;
+}
+
+.tab-btn.active {
+    color: #e11d48;
+    border-bottom-color: #e11d48;
+}
+
+.tab-btn i {
+    margin-right: 5px;
+}
+
+.tab-content {
+    display: none;
+    height: 100%;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* =========================================
+   CLIENT WIDGET TABS & SELECTOR
+   ========================================= */
+
+.alezux-client-tabs-nav {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0;
+}
+
+.client-tab-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px 0;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.client-tab-btn:hover,
+.client-tab-btn.active {
+    color: #fff;
+}
+
+.client-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 3px 3px 0 0;
+}
+
+.client-tab-content {
+    display: none;
+    padding-top: 20px;
+}
+
+.client-tab-content.active {
+    display: block;
+}
+
+.project-selector-wrapper {
+    margin-right: 20px;
+}
+
+.project-selector {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.project-selector option {
+    background: #1a202c;
+    color: #fff;
+}
+
+.message-counter {
+    background: #e11d48;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+
 
 .tab-btn:hover {
     color: #e2e8f0;
