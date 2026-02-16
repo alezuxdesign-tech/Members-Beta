@@ -115,7 +115,7 @@ class Marketing extends Module_Base {
 		$table_name = $wpdb->prefix . 'alezux_marketing_templates';
 		
 		$installed_ver = get_option( 'alezux_marketing_db_version' );
-		$version = '1.0.0';
+		$version = '1.0.1'; // Bump to force update
 
 		if ( $installed_ver !== $version ) {
 			$charset_collate = $wpdb->get_charset_collate();

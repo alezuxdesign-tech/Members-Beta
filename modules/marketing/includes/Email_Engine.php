@@ -181,7 +181,12 @@ class Email_Engine {
 			] 
 		);
 
-		return $inserted ? $wpdb->insert_id : 0;
+		if ( ! $inserted ) {
+			error_log( 'Alezux Marketing DB Error (create_log_entry): ' . $wpdb->last_error );
+			return 0;
+		}
+
+		return $wpdb->insert_id;
 	}
 
 	private function update_log_status( $log_id, $status ) {
