@@ -6,18 +6,18 @@ jQuery(document).ready(function ($) {
     // Abrir Modal (Delegación de eventos)
     $(document).on('click', '#open-new-project-modal', function (e) {
         e.preventDefault();
-        $('#new-project-modal').css('display', 'flex').hide().fadeIn(200);
+        $('#new-project-modal').css('display', 'flex');
     });
 
     // Cerrar Modal
-    $(document).on('click', '.close-modal, .close-modal-btn', function () {
-        $('#new-project-modal').fadeOut(200);
+    $(document).on('click', '.close-modal, .close-modal-btn, .alezux-close-modal', function () {
+        $(this).closest('.alezux-modal').hide();
     });
 
     // Cerrar al hacer clic fuera
     $(window).on('click', function (e) {
-        if ($(e.target).is('#new-project-modal')) {
-            $('#new-project-modal').fadeOut(200);
+        if ($(e.target).hasClass('alezux-modal')) {
+            $('.alezux-modal').hide();
         }
     });
 

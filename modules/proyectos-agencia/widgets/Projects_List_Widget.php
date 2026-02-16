@@ -62,56 +62,90 @@ class Projects_List_Widget extends Widget_Base {
 		$projects = $manager->get_all_projects();
 		
 		// Obtener usuarios para el select del modal
-		$users = get_users( [ 'role__in' => [ 'subscriber', 'customer', 'administrator' ], 'number' => 100 ] ); // Ajustar roles según necesidad
-
+		$users = get_users( [ 'role__in' => [ 'subscriber', 'customer', 'administrator' ], 'number' => 100 ] );
 		?>
-		<div class="alezux-projects-dashboard">
-			<div class="alezux-projects-header">
-				<h2>Gestión de Proyectos</h2>
-				<button id="open-new-project-modal" class="alezux-btn alezux-btn-primary">
-					<i class="eicon-plus"></i> Nuevo Proyecto
-				</button>
+		
+		<!-- Usamos las clases globales de Finanzas/App para consistencia visual -->
+		<div class="alezux-finanzas-app alezux-projects-app">
+			
+			<!-- Cabecera Estándar -->
+			<div class="alezux-table-header">
+				<div class="alezux-header-left">
+					<h3 class="alezux-table-title">Gestión de Proyectos</h3>
+					<p class="alezux-table-desc">Administra los proyectos de desarrollo web de tus clientes.</p>
+				</div>
+
+				<div class="alezux-header-right alezux-filters-inline">
+					<div class="alezux-filter-item">
+						<button id="open-new-project-modal" class="alezux-marketing-btn primary">
+							<i class="eicon-plus"></i> Nuevo Proyecto
+						</button>
+					</div>
+				</div>
 			</div>
 
-			<div class="alezux-projects-table-wrapper">
-				<table class="alezux-projects-table">
+			<!-- Tabla Container -->
+			<div class="alezux-table-wrapper">
+				<table class="alezux-finanzas-table alezux-projects-table">
 					<thead>
 						<tr>
-							<th>ID</th>
-							<th>Proyecto</th>
-							<th>Cliente</th>
-							<th>Estado</th>
-							<th>Fase Actual</th>
-							<th>Fecha</th>
-							<th>Acciones</th>
+							<th style="width: 5%;">ID</th>
+							<th style="width: 25%;">Proyecto</th>
+							<th style="width: 25%;">Cliente</th>
+							<th style="width: 15%;">Estado</th>
+							<th style="width: 15%;">Fase Actual</th>
+							<th style="width: 15%;">Acciones</th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php if ( empty( $projects ) ) : ?>
 							<tr>
-								<td colspan="7" style="text-align:center;">No hay proyectos creados.</td>
+								<td colspan="6" style="text-align:center; padding: 30px;">
+									<div style="color: #a0aec0;">
+										<i class="eicon-folder-o" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+										No hay proyectos creados aún.
+									</div>
+								</td>
 							</tr>
 						<?php else : ?>
 							<?php foreach ( $projects as $project ) : ?>
 								<?php 
 								$user_info = get_userdata( $project->customer_id );
 								$user_name = $user_info ? $user_info->display_name : 'Usuario Desconocido';
+								$user_email = $user_info ? $user_info->user_email : '';
 								$project_url = add_query_arg( 'project_id', $project->id, $detail_url );
 								?>
 								<tr>
-									<td>#<?php echo esc_html( $project->id ); ?></td>
-									<td><strong><?php echo esc_html( $project->name ); ?></strong></td>
+									<td><span style="color: #718096; font-family: monospace;">#<?php echo esc_html( $project->id ); ?></span></td>
 									<td>
-										<div class="alezux-user-badge">
-											<?php echo get_avatar( $project->customer_id, 24 ); ?>
-											<span><?php echo esc_html( $user_name ); ?></span>
+										<strong style="color: #fff; font-size: 14px;"><?php echo esc_html( $project->name ); ?></strong>
+										<small style="display:block; color: #718096; font-size: 11px; margin-top: 4px;">
+											Creado: <?php echo date_i18n( get_option( 'date_format' ), strtotime( $project->created_at ) ); ?>
+										</small>
+									</td>
+									<td>
+										<div class="alezux-user-badge" style="display:flex; align-items:center; gap:10px;">
+											<?php echo get_avatar( $project->customer_id, 32, '', '', ['class' => 'rounded-circle'] ); ?>
+											<div style="line-height: 1.2;">
+												<span style="display:block; color: #e2e8f0; font-weight: 500; font-size: 13px;"><?php echo esc_html( $user_name ); ?></span>
+												<span style="display:block; color: #718096; font-size: 11px;"><?php echo esc_html( $user_email ); ?></span>
+											</div>
 										</div>
 									</td>
-									<td><span class="alezux-status-badge status-<?php echo esc_attr( $project->status ); ?>"><?php echo esc_html( ucfirst( $project->status ) ); ?></span></td>
-									<td><?php echo esc_html( ucfirst( $project->current_step ) ); ?></td>
-									<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $project->created_at ) ); ?></td>
 									<td>
-										<a href="<?php echo esc_url( $project_url ); ?>" class="alezux-btn alezux-btn-sm alezux-btn-secondary">Gestionar</a>
+										<span class="alezux-status-badge status-<?php echo esc_attr( $project->status ); ?>">
+											<?php echo esc_html( ucfirst( $project->status ) ); ?>
+										</span>
+									</td>
+									<td>
+										<span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #cbd5e0;">
+											<?php echo esc_html( ucfirst( $project->current_step ) ); ?>
+										</span>
+									</td>
+									<td>
+										<a href="<?php echo esc_url( $project_url ); ?>" class="alezux-marketing-btn" style="background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); padding: 6px 12px; font-size: 11px;">
+											<i class="eicon-edit"></i> Gestionar
+										</a>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -120,36 +154,37 @@ class Projects_List_Widget extends Widget_Base {
 				</table>
 			</div>
 
-			<!-- MODAL NUEVO PROYECTO -->
-			<div id="new-project-modal" class="alezux-modal-overlay" style="display:none;">
-				<div class="alezux-modal-content">
-					<div class="alezux-modal-header">
-						<h3>Crear Nuevo Proyecto</h3>
-						<span class="close-modal">&times;</span>
-					</div>
-					<div class="alezux-modal-body">
-						<form id="create-project-form">
-							<div class="alezux-form-group">
-								<label>Nombre del Proyecto</label>
-								<input type="text" name="project_name" required placeholder="Ej: Rediseño Web Corporativo">
-							</div>
-							<div class="alezux-form-group">
-								<label>Cliente Asignado</label>
-								<select name="customer_id" required class="alezux-select-search">
-									<option value="">Seleccionar Cliente...</option>
-									<?php foreach ( $users as $user ) : ?>
-										<option value="<?php echo esc_attr( $user->ID ); ?>">
-											<?php echo esc_html( $user->display_name . ' (' . $user->user_email . ')' ); ?>
-										</option>
-									<?php endforeach; ?>
-								</select>
-							</div>
-							<div class="alezux-modal-actions">
-								<button type="button" class="alezux-btn alezux-btn-ghost close-modal-btn">Cancelar</button>
-								<button type="submit" class="alezux-btn alezux-btn-primary">Crear Proyecto</button>
-							</div>
-						</form>
-					</div>
+			<!-- MODAL NUEVO PROYECTO (Estilo Marketing) -->
+			<div id="new-project-modal" class="alezux-modal">
+				<div class="alezux-modal-content" style="max-width: 500px;">
+					<span class="alezux-close-modal close-modal">&times;</span>
+					<h3 style="margin-top:0; margin-bottom: 20px; color: #2d3748;">Crear Nuevo Proyecto</h3>
+					
+					<form id="create-project-form">
+						<div class="form-group">
+							<label>Nombre del Proyecto</label>
+							<input type="text" name="project_name" class="alezux-input" required placeholder="Ej: E-commerce de Zapatos">
+						</div>
+						
+						<div class="form-group">
+							<label>Cliente Asignado</label>
+							<select name="customer_id" required class="alezux-input">
+								<option value="">Seleccionar Cliente...</option>
+								<?php foreach ( $users as $user ) : ?>
+									<option value="<?php echo esc_attr( $user->ID ); ?>">
+										<?php echo esc_html( $user->display_name . ' (' . $user->user_email . ')' ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+
+						<div class="form-actions" style="margin-top: 25px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+							<button type="button" class="alezux-marketing-btn close-modal-btn" style="background: #e2e8f0; color: #4a5568; box-shadow: none;">Cancelar</button>
+							<button type="submit" class="alezux-marketing-btn primary">
+								<i class="eicon-plus"></i> Crear Proyecto
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
 
