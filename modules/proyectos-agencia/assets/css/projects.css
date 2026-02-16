@@ -1,52 +1,72 @@
 /**
- * Estilos para el módulo de Proyectos de Agencia
- */
+ /* =========================================
+   Projects Admin Dashboard (Dark Theme)
+   ========================================= */
 
-/* Contenedor General */
 .alezux-projects-dashboard {
-    font-family: 'Inter', sans-serif;
-    color: var(--alezux-text-primary, #333);
+    background: transparent;
+    font-family: 'Roboto', sans-serif;
+    /* Asumiendo fuente global */
 }
 
+/* Header */
 .alezux-projects-header {
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
     align_items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .alezux-projects-header h2 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 24px;
+    color: #fff;
     font-weight: 700;
 }
 
-/* Tabla */
+/* Table Wrapper */
 .alezux-projects-table-wrapper {
-    background: var(--alezux-bg-card, #fff);
-    border-radius: var(--alezux-border-radius, 12px);
-    box-shadow: var(--alezux-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.05));
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    padding: 1rem;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Table Styles */
 .alezux-projects-table {
     width: 100%;
     border-collapse: collapse;
-}
-
-.alezux-projects-table th,
-.alezux-projects-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--alezux-border-color, #eee);
+    color: #e0e0e0;
 }
 
 .alezux-projects-table th {
-    font-weight: 600;
-    font-size: 0.85rem;
+    background: #0f0f10;
+    /* Darker header */
+    color: #a0a0a0;
     text-transform: uppercase;
-    color: #888;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.alezux-projects-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.alezux-projects-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .alezux-projects-table tr:last-child td {
@@ -56,124 +76,143 @@
 /* User Badge */
 .alezux-user-badge {
     display: flex;
-    align_items: center;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 10px;
 }
 
 .alezux-user-badge img {
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Status Badges */
-.alezux-status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-briefing {
-    background: #d1ecf1;
-    color: #0c5460;
-}
-
-.status-design_review {
-    background: #e2e3e5;
-    color: #383d41;
-}
-
-.status-approved {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-in_progress {
-    background: #cce5ff;
-    color: #004085;
-}
-
-.status-completed {
-    background: #d4edda;
-    color: #155724;
-}
-
-/* Botones */
+/* Buttons */
 .alezux-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    padding: 10px 20px;
+    border-radius: 5px;
     border: none;
     cursor: pointer;
+    font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s ease;
     text-decoration: none;
     display: inline-flex;
-    align_items: center;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
 }
 
 .alezux-btn-primary {
-    background: var(--alezux-primary, #6c5ce7);
+    background: #e11d48;
+    /* Red/Pink branding color often seen */
     color: #fff;
 }
 
 .alezux-btn-primary:hover {
-    background: var(--alezux-primary-hover, #5649c0);
+    background: #be123c;
 }
 
 .alezux-btn-secondary {
-    background: #f1f2f6;
-    color: #333;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }
 
 .alezux-btn-secondary:hover {
-    background: #e1e2e6;
-}
-
-.alezux-btn-sm {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .alezux-btn-ghost {
     background: transparent;
-    color: #666;
+    color: #aaa;
 }
 
-/* Modal */
+.alezux-btn-ghost:hover {
+    color: #fff;
+}
+
+.alezux-btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Status Badges */
+.alezux-status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-briefing_completed {
+    background: rgba(33, 150, 243, 0.15);
+    color: #2196f3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.status-design_review {
+    background: rgba(156, 39, 176, 0.15);
+    color: #9c27b0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.status-approved {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-in_progress {
+    background: rgba(0, 188, 212, 0.15);
+    color: #00bcd4;
+    border: 1px solid rgba(0, 188, 212, 0.3);
+}
+
+.status-completed {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+/* Modal Styles */
 .alezux-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    /* Hidden by JS/CSS initially */
-    justify_content: center;
-    align_items: center;
-    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    /* High z-index */
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
 }
 
 .alezux-modal-content {
-    background: var(--alezux-bg-card, #fff);
-    width: 90%;
-    max_width: 500px;
+    background: #1e1e1e;
+    width: 500px;
+    max-width: 90%;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.3s ease;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    animation: alezuxSlideUp 0.3s ease-out;
 }
 
-@keyframes slideDown {
+@keyframes alezuxSlideUp {
     from {
-        transform: translateY(-20px);
+        transform: translateY(20px);
         opacity: 0;
     }
 
@@ -184,67 +223,87 @@
 }
 
 .alezux-modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--alezux-border-color, #eee);
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
-    justify_content: space-between;
-    align_items: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .alezux-modal-header h3 {
     margin: 0;
-    font-size: 1.25rem;
+    color: #fff;
+    font-size: 18px;
 }
 
 .close-modal {
+    color: #aaa;
+    font-size: 24px;
     cursor: pointer;
-    font-size: 1.5rem;
-    color: #999;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #fff;
 }
 
 .alezux-modal-body {
-    padding: 1.5rem;
+    padding: 24px;
 }
 
+/* Forms */
 .alezux-form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
 }
 
 .alezux-form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
+    margin-bottom: 8px;
+    color: #ccc;
+    font-size: 14px;
 }
 
 .alezux-form-group input,
-.alezux-form-group select {
+.alezux-form-group select,
+.alezux-form-group textarea {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--alezux-border-color, #ddd);
+    padding: 10px 15px;
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-    background: var(--alezux-bg-base, #fff);
+    color: #fff;
+    font-size: 14px;
+}
+
+.alezux-form-group input:focus,
+.alezux-form-group select:focus,
+.alezux-form-group textarea:focus {
+    outline: none;
+    border-color: #e11d48;
+    background: #2f2f2f;
 }
 
 .alezux-modal-actions {
     display: flex;
-    justify_content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
 }
 
 /* Panel Detalle Proyecto */
 .alezux-detail-header {
     display: flex;
-    justify_content: space-between;
-    align_items: center;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--alezux-border-color, #eee);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .alezux-detail-header h2 {
     margin: 0;
     font-size: 1.75rem;
+    color: #fff;
 }
 
 .alezux-detail-grid {
@@ -260,29 +319,36 @@
 }
 
 .alezux-detail-card {
-    background: var(--alezux-bg-card, #fff);
-    border-radius: var(--alezux-border-radius, 12px);
-    box-shadow: var(--alezux-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.05));
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .alezux-detail-card h3 {
     margin-top: 0;
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
-    border-left: 4px solid var(--alezux-primary, #6c5ce7);
+    border-left: 4px solid #e11d48;
     padding-left: 0.75rem;
+    color: #fff;
 }
 
 .alezux-user-info-display {
     display: flex;
-    align_items: center;
+    align-items: center;
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
 .alezux-user-info-display img {
     border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.alezux-user-info-display span {
+    color: #e0e0e0;
 }
 
 .alezux-data-list {
@@ -293,8 +359,11 @@
 
 .alezux-data-list li {
     padding: 0.5rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 0.9rem;
+    color: #ccc;
+    display: flex;
+    justify-content: space-between;
 }
 
 .alezux-data-list li:last-child {
@@ -302,12 +371,12 @@
 }
 
 .alezux-feedback-box {
-    background: #f9f9f9;
+    background: #2a2a2a;
     padding: 1rem;
     border-radius: 6px;
     font-size: 0.9rem;
-    color: #555;
-    border: 1px dashed #ccc;
+    color: #ccc;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
     max-height: 200px;
     overflow-y: auto;
 }
@@ -315,30 +384,33 @@
 .alezux-select {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--alezux-border-color, #ddd);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-    background: var(--alezux-bg-base, #fff);
+    background: #2a2a2a;
+    color: #fff;
 }
 
-/* Vista Cliente: Proyecto */
+/* Vista Cliente: Proyecto (Light/Clean Theme for Clients often preferred, but let's make it consistent) */
 .alezux-client-project-dashboard {
     max-width: 900px;
     margin: 0 auto;
     background: #fff;
+    /* Mantener light para cliente por ahora, o cambiar a dark si se solicita */
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Roboto', sans-serif;
     padding-bottom: 2rem;
 }
 
 .alezux-cp-header {
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    background: linear-gradient(135deg, #e11d48, #be123c);
+    /* Match branding */
     padding: 2rem;
     color: #fff;
     display: flex;
-    justify_content: space-between;
-    align_items: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .alezux-cp-header h2 {
@@ -398,7 +470,7 @@
 /* Timeline */
 .project-timeline {
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
     position: relative;
     margin: 4rem 0;
     padding: 0 1rem;
@@ -409,7 +481,6 @@
     content: '';
     position: absolute;
     top: 15px;
-    /* Alinear con el centro del punto */
     left: 10%;
     width: 80%;
     height: 4px;
@@ -434,18 +505,18 @@
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    justify_content: center;
+    justify-content: center;
 }
 
 .timeline-item.completed .point,
 .timeline-item.active .point {
-    border-color: #6c5ce7;
+    border-color: #e11d48;
     background: #fff;
 }
 
 .timeline-item.active .point {
-    background: #6c5ce7;
-    box-shadow: 0 0 0 6px rgba(108, 92, 231, 0.2);
+    background: #e11d48;
+    box-shadow: 0 0 0 6px rgba(225, 29, 72, 0.2);
 }
 
 .timeline-item .content strong {
@@ -463,7 +534,7 @@
 }
 
 .timeline-item.active .content strong {
-    color: #6c5ce7;
+    color: #e11d48;
 }
 
 /* Forms */
@@ -518,18 +589,18 @@
     display: block;
     width: 100%;
     text-align: center;
-    justify_content: center;
+    justify-content: center;
     padding: 1rem;
     font-size: 1.1rem;
 }
 
 .alezux-btn-success {
-    background-color: #00b894;
+    background-color: #10b981;
     color: white;
 }
 
 .alezux-btn-success:hover {
-    background-color: #00a884;
+    background-color: #059669;
 }
 
 /* Pulse Animation for Active Step */
@@ -539,11 +610,11 @@
 
 @keyframes pulse-animation {
     0% {
-        box-shadow: 0 0 0 0px rgba(108, 92, 231, 0.4);
+        box-shadow: 0 0 0 0px rgba(225, 29, 72, 0.4);
     }
 
     100% {
-        box-shadow: 0 0 0 15px rgba(108, 92, 231, 0);
+        box-shadow: 0 0 0 15px rgba(225, 29, 72, 0);
     }
 }
 
@@ -574,11 +645,5 @@
     .timeline-item .point {
         margin: 0;
         min-width: 30px;
-    }
-
-    .logo-upload-preview {
-        max-width: 150px;
-        border-radius: 8px;
-        margin-top: 10px;
     }
 }

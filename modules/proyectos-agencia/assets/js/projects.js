@@ -3,14 +3,14 @@
  */
 jQuery(document).ready(function ($) {
 
-    // Abrir Modal
-    $('#open-new-project-modal').on('click', function (e) {
+    // Abrir Modal (Delegación de eventos)
+    $(document).on('click', '#open-new-project-modal', function (e) {
         e.preventDefault();
-        $('#new-project-modal').fadeIn(200);
+        $('#new-project-modal').css('display', 'flex').hide().fadeIn(200);
     });
 
     // Cerrar Modal
-    $('.close-modal, .close-modal-btn').on('click', function () {
+    $(document).on('click', '.close-modal, .close-modal-btn', function () {
         $('#new-project-modal').fadeOut(200);
     });
 
