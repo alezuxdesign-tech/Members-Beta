@@ -94,22 +94,114 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         var $form = $(this);
         var $btn = $form.find('button[type="submit"]');
-        var originalText = $btn.html();
 
+        // Validar campos requeridos básicos (si los hay)
+        // ...
+
+        var originalText = $btn.html();
         $btn.prop('disabled', true).html('<i class="eicon-loading eicon-animation-spin"></i> Enviando...');
 
-        var data = $form.serialize() + '&action=alezux_submit_briefing&nonce=' + AlezuxProjects.nonce;
+        // Prepare FormData for file upload
+        var formData = new FormData(this);
+        formData.append('action', 'alezux_submit_briefing');
+        formData.append('nonce', AlezuxProjects.nonce);
 
-        $.post(AlezuxProjects.ajaxurl, data, function (response) {
-            if (response.success) {
-                alert('¡Gracias! Hemos recibido tu información.');
-                window.location.reload();
-            } else {
-                alert('Error: ' + response.data);
+        $.ajax({
+            url: AlezuxProjects.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    alert('¡Gracias! Hemos recibido tu información.');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + response.data);
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            },
+            error: function () {
+                alert('Error de conexión. Inténtalo de nuevo.');
                 $btn.prop('disabled', false).html(originalText);
             }
         });
     });
+
+    // COLOR PICKER LOGIC
+    if ($('#alezux-color-palette-container').length) {
+        var $paletteContainer = $('#alezux-color-picker-wrapper, #alezux-color-palette-container'); // Support both IDs just in case
+        var $colorInput = $('#brand_colors_input');
+
+        // Re-use or create hidden color picker
+        var $tempPicker = $('#temp-system-color-picker');
+        if (!$tempPicker.length) {
+            $tempPicker = $('<input type="color" id="temp-system-color-picker" style="display:none;">').appendTo('body');
+        }
+
+        // Add Color Button Click
+        $(document).on('click', '.add-new-color', function () {
+            $tempPicker.click();
+        });
+
+        // Handle Color Selection
+        $tempPicker.on('change', function () {
+            var color = $(this).val();
+            addColorToPalette(color);
+        });
+
+        // Add Color Function
+        function addColorToPalette(color) {
+            var $item = $('<div class="color-item" style="background-color: ' + color + ';">' +
+                '<span class="color-code">' + color + '</span>' +
+                '<div class="color-remove"><i class="eicon-close"></i></div>' +
+                </div > ');
+
+            // Insert before the add button
+            $item.insertBefore($('#btn-add-color'));
+            updateColorInput();
+        }
+
+        // Remove Color
+        $(document).on('click', '.color-remove', function (e) {
+            e.stopPropagation();
+            $(this).closest('.color-item').remove();
+            updateColorInput();
+        });
+
+        // Update Hidden Input with JSON
+        function updateColorInput() {
+            var colors = [];
+            $('#alezux-color-palette-container .color-item:not(.add-new-color)').each(function () {
+                // Get color from style or hex span, usually style is rgb, let's use the text in span
+                var hex = $(this).find('.color-code').text();
+                colors.push(hex);
+            });
+            $colorInput.val(JSON.stringify(colors));
+        }
+
+        // Initialize from existing values if any (edit mode or repopulation)
+        var existingColors = $colorInput.val();
+        if (existingColors) {
+            try {
+                // If it's a JSON array
+                var colors = JSON.parse(existingColors);
+                if (Array.isArray(colors)) {
+                    colors.forEach(function (c) {
+                        // Avoid executing addColorToPalette full logic or just carefully append
+                        // Manually append to avoid duplicate input updates or loops
+                        var $item = $('<div class="color-item" style="background-color: ' + c + ';">' +
+                            '<span class="color-code">' + c + '</span>' +
+                            '<div class="color-remove"><i class="eicon-close"></i></div>' +
+                            '</div>');
+                        $item.insertBefore($('#btn-add-color'));
+                    });
+                }
+            } catch (e) {
+                // Legacy string format or empty
+            }
+        }
+    }
 
     // Cliente: Aprobar Diseño
     $('#btn-approve-design').on('click', function (e) {

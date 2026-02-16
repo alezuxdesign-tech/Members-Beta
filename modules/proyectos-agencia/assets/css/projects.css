@@ -262,7 +262,118 @@
     padding: 12px;
     border-radius: 6px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 16px;
+}
+
+/* =========================================
+   BRIEFING FORM ENHANCEMENTS
+   ========================================= */
+.high-contrast-label {
+    color: #1f2937 !important;
+    /* Dark grey/black for contrast */
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.logo-upload-wrapper {
+    background: #fff;
+    border: 2px dashed #cbd5e0;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+}
+
+.logo-upload-wrapper:hover {
+    border-color: #a0aec0;
+    background: #f7fafc;
+}
+
+.alezux-color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.color-item {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.color-item span.color-code {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+.color-item:hover span.color-code {
+    opacity: 1;
+}
+
+.color-item.add-new-color {
+    background: #2d3748;
+    color: #fff;
+    border: 2px dashed #4a5568;
+}
+
+.color-item.add-new-color:hover {
+    background: #4a5568;
+    border-color: #718096;
+}
+
+.color-item.add-new-color i {
+    font-size: 24px;
+}
+
+.color-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e53e3e;
+    color: #fff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.color-item:hover .color-remove {
+    opacity: 1;
 }
 
 .alezux-input:focus,

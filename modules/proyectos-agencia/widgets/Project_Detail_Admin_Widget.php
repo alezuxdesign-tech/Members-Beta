@@ -157,11 +157,25 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 					?>
 						<ul class="alezux-data-list">
 							<?php foreach ( $briefing as $key => $val ) : 
+								if ( empty($val) ) continue; // Skip empty fields
+
 								$label = isset($labels_map[$key]) ? $labels_map[$key] : ucfirst( str_replace( '_', ' ', $key ) );
 							?>
 								<li>
 									<strong><?php echo esc_html( $label ); ?>:</strong>
-									<span><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
+									
+									<?php if ( 'brand_colors' === $key && is_array( $val ) ) : ?>
+										<div style="display:flex; gap:5px; margin-top:5px;">
+											<?php foreach ( $val as $color ) : ?>
+												<span style="background:<?php echo esc_attr($color); ?>; width:20px; height:20px; display:inline-block; border:1px solid #ccc; border-radius:4px;" title="<?php echo esc_attr($color); ?>"></span>
+												<span style="font-size:12px; color:#aaa;"><?php echo esc_html($color); ?></span>
+											<?php endforeach; ?>
+										</div>
+									<?php elseif ( 'logo_url' === $key ) : ?>
+										<br><a href="<?php echo esc_url( $val ); ?>" target="_blank" style="color:#e11d48; text-decoration:underline;">Ver Logo Subido <i class="eicon-external-link-square"></i></a>
+									<?php else : ?>
+										<span><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
+									<?php endif; ?>
 								</li>
 							<?php endforeach; ?>
 						</ul>

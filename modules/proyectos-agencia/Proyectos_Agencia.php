@@ -402,12 +402,35 @@ class Proyectos_Agencia {
 			'website_url'         => esc_url_raw( $_POST['website_url'] ),
 			'business_activity'   => sanitize_textarea_field( $_POST['business_activity'] ),
 			'business_sectors'    => sanitize_text_field( $_POST['business_sectors'] ),
+			'logo_details'        => sanitize_textarea_field( $_POST['logo_details'] ),
 			// Legacy/Optional
 			'slogan'              => sanitize_text_field( $_POST['slogan'] ),
-			'colors'              => sanitize_text_field( $_POST['colors'] ),
-			'business_desc'       => sanitize_textarea_field( $_POST['business_desc'] ), // Kept as fallback or additional info
+			'business_desc'       => sanitize_textarea_field( $_POST['business_desc'] ), 
 			'submitted_at'        => current_time( 'mysql' )
 		];
+
+		// Handle Logo Upload
+		if ( ! empty( $_FILES['logo_file']['name'] ) ) {
+			if ( ! function_exists( 'wp_handle_upload' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/file.php' );
+			}
+			$uploadedfile = $_FILES['logo_file'];
+			$upload_overrides = array( 'test_form' => false );
+			$movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
+			
+			if ( $movefile && ! isset( $movefile['error'] ) ) {
+				$briefing_data['logo_url'] = $movefile['url'];
+			}
+		}
+
+		// Handle Colors (JSON Array)
+		if ( ! empty( $_POST['brand_colors'] ) ) {
+			$colors_json = stripslashes( $_POST['brand_colors'] );
+			$decoded = json_decode( $colors_json );
+			if ( is_array( $decoded ) ) {
+				$briefing_data['brand_colors'] = array_map( 'sanitize_hex_color', $decoded );
+			}
+		}
 
 		// Guardar Meta
 		$manager->update_project_meta( $project_id, 'briefing_data', json_encode( $briefing_data ) );

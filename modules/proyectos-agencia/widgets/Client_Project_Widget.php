@@ -632,29 +632,29 @@ class Client_Project_Widget extends Widget_Base {
 				<p>Para empezar, necesitamos conocer los detalles de tu marca. Por favor completa este formulario.</p>
 			</div>
 			
-			<form id="client-briefing-form" class="alezux-briefing-form">
+			<form id="client-briefing-form" class="alezux-briefing-form" enctype="multipart/form-data">
 				<input type="hidden" name="project_id" value="<?php echo esc_attr( $project->id ); ?>">
 				
 				<div class="form-section">
 					<h4>Datos Fiscales y Legales</h4>
 					<div class="alezux-form-group">
-						<label>1. Nombre completo o Razón Social</label>
+						<label class="high-contrast-label">Nombre completo o Razón Social</label>
 						<input type="text" name="legal_name" placeholder="Ej: TechSolutions S.L.">
 					</div>
 					<div class="alezux-form-group">
-						<label>2. CIF / NIF / NIT</label>
+						<label class="high-contrast-label">CIF / NIF / NIT</label>
 						<input type="text" name="tax_id" placeholder="Ej: B-12345678">
 					</div>
 					<div class="alezux-form-group">
-						<label>3. Dirección Fiscal Completa</label>
+						<label class="high-contrast-label">Dirección Fiscal Completa</label>
 						<input type="text" name="fiscal_address" placeholder="Calle, Número, CP, Ciudad...">
 					</div>
 					<div class="alezux-form-group">
-						<label>10. Registro Mercantil (Opcional)</label>
+						<label class="high-contrast-label">Registro Mercantil (Opcional)</label>
 						<input type="text" name="commercial_registry" placeholder="Tomo, Libro, Folio...">
 					</div>
 					<div class="alezux-form-group">
-						<label>13. Ciudad o País (Jurisdicción Legal)</label>
+						<label class="high-contrast-label">Ciudad o País (Jurisdicción Legal)</label>
 						<input type="text" name="jurisdiction" placeholder="Ej: Madrid, España">
 					</div>
 				</div>
@@ -662,43 +662,66 @@ class Client_Project_Widget extends Widget_Base {
 				<div class="form-section">
 					<h4>Información de Contacto</h4>
 					<div class="alezux-form-group">
-						<label>4. Teléfono de Contacto</label>
+						<label class="high-contrast-label">Teléfono de Contacto</label>
 						<input type="text" name="phone" placeholder="+34 600 000 000">
 					</div>
 					<div class="alezux-form-group">
-						<label>14. WhatsApp (Atención al Cliente)</label>
+						<label class="high-contrast-label">WhatsApp (Atención al Cliente)</label>
 						<input type="text" name="whatsapp" placeholder="Para botón de contacto en la web">
 					</div>
 					<div class="alezux-form-group">
-						<label>5. Correo Electrónico de Contacto</label>
+						<label class="high-contrast-label">Correo Electrónico de Contacto</label>
 						<input type="email" name="contact_email" placeholder="hola@miempresa.com">
 					</div>
 					<div class="alezux-form-group">
-						<label>6. Correo para Privacidad / Baja (Si es diferente)</label>
+						<label class="high-contrast-label">Correo para Privacidad / Baja (Si es diferente)</label>
 						<input type="email" name="privacy_email" placeholder="privacidad@miempresa.com">
 					</div>
 					<div class="alezux-form-group">
-						<label>11. Correo del DPO / Responsable de Datos (Si aplica)</label>
+						<label class="high-contrast-label">Correo del DPO / Responsable de Datos (Si aplica)</label>
 						<input type="email" name="dpo_email" placeholder="dpo@miempresa.com">
 					</div>
 				</div>
 
 				<div class="form-section">
-					<h4>Detalles del Negocio</h4>
+					<h4>Detalles del Negocio y Marca</h4>
 					<div class="alezux-form-group">
-						<label>8. Nombre Comercial o de Marca</label>
+						<label class="high-contrast-label">Nombre Comercial o de Marca</label>
 						<input type="text" name="brand_name" placeholder="Ej: TechSolutions">
 					</div>
+					
+					<!-- Logo Section -->
 					<div class="alezux-form-group">
-						<label>7. URL del Sitio Web (Si ya tienes dominio)</label>
+						<label class="high-contrast-label">Logotipo</label>
+						<div class="logo-upload-wrapper">
+							<input type="file" name="logo_file" id="logo_file" accept="image/*,.pdf,.svg,.eps,.ai">
+							<p class="description"><small>Sube tu logo (PNG, SVG, PDF, AI). Si no lo tienes, descríbelo abajo.</small></p>
+						</div>
+						<textarea name="logo_details" rows="2" placeholder="O indícanos aquí cómo deseas tu logo o enlace a referencias..."></textarea>
+					</div>
+
+					<!-- Color Picker Section -->
+					<div class="alezux-form-group">
+						<label class="high-contrast-label">Colores Corporativos</label>
+						<div id="alezux-color-palette-container" class="alezux-color-palette">
+							<!-- Dynamic items will be added here by JS -->
+							<div class="color-item add-new-color" id="btn-add-color">
+								<i class="eicon-plus"></i>
+							</div>
+						</div>
+						<input type="hidden" name="brand_colors" id="brand_colors_input">
+					</div>
+
+					<div class="alezux-form-group">
+						<label class="high-contrast-label">URL del Sitio Web (Si ya tienes dominio)</label>
 						<input type="text" name="website_url" placeholder="https://www.miempresa.com">
 					</div>
 					<div class="alezux-form-group">
-						<label>9. Actividad del Negocio (Productos/Servicios)</label>
+						<label class="high-contrast-label">Actividad del Negocio (Productos/Servicios)</label>
 						<textarea name="business_activity" rows="3" placeholder="Descríbenos qué vendes o qué servicios ofreces..."></textarea>
 					</div>
 					<div class="alezux-form-group">
-						<label>12. Sectores de Actividad (Para promociones)</label>
+						<label class="high-contrast-label">Sectores de Actividad (Para promociones)</label>
 						<input type="text" name="business_sectors" placeholder="Ej: Educación, Salud, Marketing...">
 					</div>
 				</div>
