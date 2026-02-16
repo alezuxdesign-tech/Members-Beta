@@ -116,6 +116,7 @@ class Project_Manager {
 		// Obtener estado anterior para hook
 		$old_project = $this->get_project( $project_id );
 		$old_status  = $old_project ? $old_project->status : '';
+		$old_step    = $old_project ? $old_project->current_step : '';
 
 		$data = [ 'status' => $status ];
 		$format = [ '%s' ];
@@ -137,7 +138,7 @@ class Project_Manager {
 		);
 
 		if ( $result !== false ) {
-			do_action( 'alezux_project_status_updated', $project_id, $status, $old_status );
+			do_action( 'alezux_project_status_updated', $project_id, $status, $old_status, $step, $old_step );
 		}
 
 		return $result;

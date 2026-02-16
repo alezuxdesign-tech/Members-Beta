@@ -104,6 +104,11 @@ class Proyectos_Agencia_Emails {
 				'description' => 'Invita al cliente a revisar la propuesta de diseño.',
 				'variables'   => [ '{{user.name}}', '{{project_name}}', '{{design_url}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
 			],
+			'design_approved' => [
+				'title'       => 'Proyectos - Diseño Aprobado',
+				'description' => 'Notificación al administrador cuando el cliente aprueba el diseño.',
+				'variables'   => [ '{{project_name}}', '{{customer_name}}', '{{admin_url}}', '{{site_name}}', '{{logo_url}}' ]
+			],
 			'project_completed' => [
 				'title'       => 'Proyectos - Proyecto Finalizado',
 				'description' => 'Informar al cliente que su proyecto ha sido completado y entregado.',
@@ -115,25 +120,51 @@ class Proyectos_Agencia_Emails {
 	}
 
 	public function send_project_created_email( $project_id ) {
+		error_log( "Proyectos Email Debug: Project Created ID: $project_id" );
 		$this->send_email_to_customer( $project_id, 'project_created' );
 	}
 
-	public function handle_status_update( $project_id, $new_status, $old_status ) {
-		if ( $new_status === $old_status ) return;
+	public function handle_status_update( $project_id, $new_status, $old_status, $new_step = null, $old_step = null ) {
+		error_log( "Proyectos Email Debug: Status Update ID: $project_id | Status: $old_status -> $new_status | Step: $old_step -> $new_step" );
+		
+		if ( $new_status === $old_status && $new_step === $old_step ) return;
 
-		switch ( $new_status ) {
-			case 'briefing_completed':
-				// Enviar al Admin (o al email configurado como "From")
-				$this->send_email_to_admin( $project_id, 'briefing_received' );
-				break;
-			
-			case 'design_review':
-				$this->send_email_to_customer( $project_id, 'design_ready' );
-				break;
+		// Detectar cambios de estado lógicos (ya sea por status o por step)
+		
+		// 1. Briefing Completado
+		if ( $new_status === 'briefing_completed' && $old_status !== 'briefing_completed' ) {
+			$this->send_email_to_admin( $project_id, 'briefing_received' );
+		}
 
-			case 'completed':
-				$this->send_email_to_customer( $project_id, 'project_completed' );
-				break;
+		// 2. Diseño Listo para Revisión
+		// Si entra en design_review por status O por step
+		$entered_design_review = ( $new_status === 'design_review' && $old_status !== 'design_review' ) || 
+								 ( $new_step === 'design_review' && $old_step !== 'design_review' );
+		
+		if ( $entered_design_review ) {
+			$this->send_email_to_customer( $project_id, 'design_ready' );
+		}
+
+		// 3. Diseño Aprobado (En Progreso)
+		// Si entra en in_progress (o approved) desde design_review
+		$target_statuses = [ 'in_progress', 'approved' ];
+		$entered_progress = ( in_array( $new_status, $target_statuses ) && ! in_array( $old_status, $target_statuses ) ) || 
+							( $new_step === 'in_progress' && $old_step !== 'in_progress' );
+
+		if ( $entered_progress ) {
+			// Verificar si veníamos de revisión (para no enviar en otros casos raros)
+			// Aunque si pasa directo a progreso también es válido notificar al admin que "se aprobó" implícitamente?
+			// El usuario dijo "cuando el cliente aprueba". 
+			// Asumimos que si avanza a progreso, notificamos al admin.
+			$this->send_email_to_admin( $project_id, 'design_approved' );
+		}
+
+		// 4. Proyecto Completado
+		$entered_completed = ( $new_status === 'completed' && $old_status !== 'completed' ) || 
+							 ( $new_step === 'completed' && $old_step !== 'completed' );
+
+		if ( $entered_completed ) {
+			$this->send_email_to_customer( $project_id, 'project_completed' );
 		}
 	}
 
@@ -143,7 +174,10 @@ class Proyectos_Agencia_Emails {
 		if ( ! $project ) return;
 
 		$user = get_userdata( $project->customer_id );
-		if ( ! $user ) return;
+		if ( ! $user ) {
+			error_log( "Proyectos Email Debug: Error - Customer not found for project $project_id" );
+			return;
+		}
 
 		// Preparar datos
 		$data = [
@@ -155,7 +189,8 @@ class Proyectos_Agencia_Emails {
 		// Usar el Engine de Marketing
 		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
 			$engine = Marketing::get_instance()->get_engine();
-			$engine->send_email( $type, $user->user_email, $data );
+			$sent = $engine->send_email( $type, $user->user_email, $data );
+			error_log( "Proyectos Email Debug: Sending $type to customer " . $user->user_email . " | Result: " . ( $sent ? 'Success' : 'Failed' ) );
 		}
 	}
 
@@ -176,7 +211,8 @@ class Proyectos_Agencia_Emails {
 
 		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
 			$engine = Marketing::get_instance()->get_engine();
-			$engine->send_email( $type, $admin_email, $data );
+			$sent = $engine->send_email( $type, $admin_email, $data );
+			error_log( "Proyectos Email Debug: Sending $type to admin $admin_email | Result: " . ( $sent ? 'Success' : 'Failed' ) );
 		}
 	}
 }
