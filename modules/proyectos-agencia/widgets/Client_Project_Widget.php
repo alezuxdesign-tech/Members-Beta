@@ -442,18 +442,10 @@ class Client_Project_Widget extends Widget_Base {
                         document.getElementById(tabName).classList.add('active');
                         event.currentTarget.classList.add('active');
 
-                        // Init chat if opened
                         if(tabName === 'tab-chat' && typeof AlezuxProjects !== 'undefined') {
-                             // Use existing loader from projects.js but target this container
-                             // We need to ensure projects.js knows looking at client side
-                             // Actually projects.js targets IDs #chat-messages-list which are unique per page usually.
-                             // But if user places admin widget and client widget on same page (unlikely) IDs conflict.
-                             // For now assuming distinct pages.
                              var pid = <?php echo $project->id; ?>;
                              AlezuxProjects.currProjectId = pid;
-                             // Trigger global load function if exposed, or trigger a click?
-                             // Best is to call the function directly if accessible, or trigger an event.
-                             // We'll rely on a small init script below.
+                             AlezuxProjects.loadChatMessages(pid);
                         }
                     }
 
