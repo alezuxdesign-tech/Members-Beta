@@ -84,74 +84,69 @@ class Projects_List_Widget extends Widget_Base {
 				</div>
 			</div>
 
-			<!-- Tabla Container -->
-			<div class="alezux-table-wrapper">
-				<table class="alezux-finanzas-table alezux-projects-table">
-					<thead>
-						<tr>
-							<th style="width: 5%;">ID</th>
-							<th style="width: 25%;">Proyecto</th>
-							<th style="width: 25%;">Cliente</th>
-							<th style="width: 15%;">Estado</th>
-							<th style="width: 15%;">Fase Actual</th>
-							<th style="width: 15%;">Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php if ( empty( $projects ) ) : ?>
-							<tr>
-								<td colspan="6" style="text-align:center; padding: 30px;">
-									<div style="color: #a0aec0;">
-										<i class="eicon-folder-o" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-										No hay proyectos creados aún.
+			<!-- Grid Container -->
+			<div class="alezux-projects-grid">
+				<?php if ( empty( $projects ) ) : ?>
+					<div class="alezux-empty-state">
+						<i class="eicon-folder-o"></i>
+						<h3>No hay proyectos aún</h3>
+						<p>Comienza creando el primero para gestionar tus desarrollos.</p>
+					</div>
+				<?php else : ?>
+					<?php foreach ( $projects as $project ) : ?>
+						<?php 
+						$user_info = get_userdata( $project->customer_id );
+						$user_name = $user_info ? $user_info->display_name : 'Usuario Desconocido';
+						$user_email = $user_info ? $user_info->user_email : '';
+						
+						// Calcular progreso basado en la fase (Simplificado)
+						$progress = 0;
+						switch($project->current_step) {
+							case 'briefing': $progress = 10; break;
+							case 'design_review': $progress = 40; break;
+							case 'in_progress': $progress = 70; break;
+							case 'completed': $progress = 100; break;
+						}
+						?>
+						
+						<div class="alezux-project-card" onclick="AlezuxProjects.openPanel(<?php echo esc_attr($project->id); ?>)">
+							<div class="card-header">
+								<span class="alezux-status-badge status-<?php echo esc_attr( $project->status ); ?>">
+									<?php echo esc_html( ucfirst( $project->status ) ); ?>
+								</span>
+								<button class="card-action-btn" title="Opciones"><i class="eicon-ellipsis-h"></i></button>
+							</div>
+							
+							<div class="card-body">
+								<h4 class="project-name"><?php echo esc_html( $project->name ); ?></h4>
+								
+								<div class="client-info">
+									<?php echo get_avatar( $project->customer_id, 32, '', '', ['class' => 'client-avatar'] ); ?>
+									<div class="client-details">
+										<span class="client-name"><?php echo esc_html( $user_name ); ?></span>
+										<span class="client-role">Cliente</span>
 									</div>
-								</td>
-							</tr>
-						<?php else : ?>
-							<?php foreach ( $projects as $project ) : ?>
-								<?php 
-								$user_info = get_userdata( $project->customer_id );
-								$user_name = $user_info ? $user_info->display_name : 'Usuario Desconocido';
-								$user_email = $user_info ? $user_info->user_email : '';
-								$project_url = add_query_arg( 'project_id', $project->id, $detail_url );
-								?>
-								<tr>
-									<td><span style="color: #718096; font-family: monospace;">#<?php echo esc_html( $project->id ); ?></span></td>
-									<td>
-										<strong style="color: #fff; font-size: 14px;"><?php echo esc_html( $project->name ); ?></strong>
-										<small style="display:block; color: #718096; font-size: 11px; margin-top: 4px;">
-											Creado: <?php echo date_i18n( get_option( 'date_format' ), strtotime( $project->created_at ) ); ?>
-										</small>
-									</td>
-									<td>
-										<div class="alezux-user-badge" style="display:flex; align-items:center; gap:10px;">
-											<?php echo get_avatar( $project->customer_id, 32, '', '', ['class' => 'rounded-circle'] ); ?>
-											<div style="line-height: 1.2;">
-												<span style="display:block; color: #e2e8f0; font-weight: 500; font-size: 13px;"><?php echo esc_html( $user_name ); ?></span>
-												<span style="display:block; color: #718096; font-size: 11px;"><?php echo esc_html( $user_email ); ?></span>
-											</div>
-										</div>
-									</td>
-									<td>
-										<span class="alezux-status-badge status-<?php echo esc_attr( $project->status ); ?>">
-											<?php echo esc_html( ucfirst( $project->status ) ); ?>
-										</span>
-									</td>
-									<td>
-										<span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #cbd5e0;">
-											<?php echo esc_html( ucfirst( $project->current_step ) ); ?>
-										</span>
-									</td>
-									<td>
-										<a href="<?php echo esc_url( $project_url ); ?>" class="alezux-marketing-btn" style="background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); padding: 6px 12px; font-size: 11px;">
-											<i class="eicon-edit"></i> Gestionar
-										</a>
-									</td>
-								</tr>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</tbody>
-				</table>
+								</div>
+							</div>
+
+							<div class="card-footer">
+								<div class="progress-section">
+									<div class="progress-labels">
+										<span>Progreso</span>
+										<span><?php echo $progress; ?>%</span>
+									</div>
+									<div class="progress-bar">
+										<div class="progress-fill" style="width: <?php echo $progress; ?>%;"></div>
+									</div>
+								</div>
+								
+								<div class="card-dates">
+									<i class="eicon-calendar"></i> <?php echo date_i18n( 'M j, Y', strtotime( $project->created_at ) ); ?>
+								</div>
+							</div>
+						</div>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</div>
 
 			<!-- MODAL NUEVO PROYECTO (Estilo Marketing) -->
@@ -185,6 +180,26 @@ class Projects_List_Widget extends Widget_Base {
 							</button>
 						</div>
 					</form>
+				</div>
+			</div>
+
+			</div>
+
+			<!-- PANEL LATERAL (Off-Canvas) -->
+			<div id="project-offcanvas-overlay" class="alezux-offcanvas-overlay"></div>
+			<div id="project-offcanvas" class="alezux-offcanvas-panel">
+				<div class="offcanvas-header">
+					<h3 id="offcanvas-title">Cargando...</h3>
+					<button class="close-offcanvas-btn"><i class="eicon-close"></i></button>
+				</div>
+				
+				<div id="offcanvas-loading" style="text-align: center; padding: 50px; color: #a0aec0;">
+					<i class="eicon-loading eicon-animation-spin" style="font-size: 30px;"></i>
+					<p style="margin-top: 10px;">Cargando proyecto...</p>
+				</div>
+
+				<div id="offcanvas-content" style="display: none;">
+					<!-- Contenido cargado vía AJAX -->
 				</div>
 			</div>
 

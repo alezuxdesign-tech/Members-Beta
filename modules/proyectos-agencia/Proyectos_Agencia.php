@@ -51,9 +51,17 @@ class Proyectos_Agencia {
 		add_action( 'wp_ajax_alezux_submit_briefing', [ $this, 'ajax_submit_briefing' ] );
 		add_action( 'wp_ajax_alezux_approve_design', [ $this, 'ajax_approve_design' ] );
 		add_action( 'wp_ajax_alezux_submit_rejection', [ $this, 'ajax_submit_rejection' ] );
+		
+		// Panel Lateral
+		add_action( 'wp_ajax_alezux_get_project_details', [ $this, 'ajax_get_project_details' ] );
+		
+		// Chat Interno
+		add_action( 'wp_ajax_alezux_get_project_messages', [ $this, 'ajax_get_project_messages' ] );
+		add_action( 'wp_ajax_alezux_send_project_message', [ $this, 'ajax_send_project_message' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
+		// ... (código existente) ...
 		// Cargar archivos de widgets aquí para asegurar que Elementor ya está cargado
 		require_once __DIR__ . '/widgets/Projects_List_Widget.php';
 		require_once __DIR__ . '/widgets/Project_Detail_Admin_Widget.php';
@@ -63,6 +71,164 @@ class Proyectos_Agencia {
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Detail_Admin_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Client_Project_Widget() );
 	}
+
+	public function ajax_get_project_details() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'No tienes permisos.' );
+		}
+
+		$project_id = absint( $_POST['project_id'] );
+		$manager = new Project_Manager();
+		$project = $manager->get_project( $project_id );
+
+		if ( ! $project ) {
+			wp_send_json_error( 'Proyecto no encontrado.' );
+		}
+
+		$customer = get_userdata( $project->customer_id );
+		$meta = $manager->get_all_project_meta( $project_id );
+		$design_url = isset($meta['design_proposal_url']) ? $meta['design_proposal_url'] : '';
+
+		ob_start();
+		?>
+		<div class="panel-details-container" data-project-id="<?php echo esc_attr($project->id); ?>">
+			<!-- Info General -->
+			<div class="panel-section">
+				<h4 class="panel-section-title">Información General</h4>
+				<div class="detail-grid">
+					<div class="detail-item">
+						<label>Cliente</label>
+						<p>
+							<?php echo $customer ? esc_html( $customer->display_name ) . ' <small>(' . esc_html($customer->user_email) . ')</small>' : 'Desconocido'; ?>
+						</p>
+					</div>
+					<div class="detail-item">
+						<label>Fecha Inicio</label>
+						<p><?php echo date_i18n( get_option('date_format'), strtotime($project->created_at) ); ?></p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Formulario Edición Rápida -->
+			<div class="panel-section">
+				<h4 class="panel-section-title">Gestión del Proyecto</h4>
+				<form id="update-project-status-form" class="alezux-form-group">
+					<input type="hidden" name="project_id" value="<?php echo esc_attr($project->id); ?>">
+					
+					<div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+						<div style="flex:1;">
+							<label>Estado del Sistema</label>
+							<select name="status" class="alezux-input">
+								<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
+								<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
+								<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Completado</option>
+								<option value="cancelled" <?php selected( $project->status, 'cancelled' ); ?>>Cancelado</option>
+							</select>
+						</div>
+						<div style="flex:1;">
+							<label>Fase Actual (Visible Cliente)</label>
+							<select name="current_step" class="alezux-input">
+								<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
+								<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
+								<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
+								<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>4. Completado</option>
+							</select>
+						</div>
+					</div>
+
+					<div style="margin-bottom:15px;">
+						<label>URL Propuesta de Diseño (Imagen/PDF)</label>
+						<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url($design_url); ?>" placeholder="https://...">
+					</div>
+
+					<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">
+						<i class="eicon-save"></i> Guardar Cambios
+					</button>
+				</form>
+			</div>
+			
+			<!-- Mensajes / Chat -->
+			<div class="panel-section chat-section">
+				<h4 class="panel-section-title">Chat del Proyecto</h4>
+				<div id="project-chat-container" class="project-chat-container">
+					<div id="chat-messages-list" class="chat-messages-list">
+						<!-- Mensajes cargados vía JS -->
+						<div class="chat-loading"><i class="eicon-loading eicon-animation-spin"></i> Cargando historial...</div>
+					</div>
+					<div class="chat-input-area">
+						<textarea id="chat-message-input" placeholder="Escribe un mensaje al cliente..."></textarea>
+						<button id="btn-send-chat" class="alezux-marketing-btn"><i class="eicon-send"></i></button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<?php
+		$html = ob_get_clean();
+
+		wp_send_json_success( [
+			'project' => $project,
+			'html'    => $html
+		] );
+	}
+	
+	public function ajax_get_project_messages() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+		
+		if ( ! current_user_can( 'manage_options' ) && ! is_user_logged_in() ) {
+			wp_send_json_error( 'No autorizado.' );
+		}
+
+		$project_id = absint( $_POST['project_id'] );
+		$manager = new Project_Manager();
+		
+		// Verificar if user can access (Admin or Customer)
+		// ... (Simplificado por ahora asumimos Admin o Cliente dueño)
+
+		$messages = $manager->get_project_messages( $project_id );
+		$formatted_messages = [];
+
+		foreach ( $messages as $msg ) {
+			$sender = get_userdata( $msg->sender_id );
+			$is_me = ( $msg->sender_id == get_current_user_id() );
+			
+			$formatted_messages[] = [
+				'id'         => $msg->id,
+				'content'    => wpautop( make_clickable( $msg->content ) ),
+				'sender_name'=> $sender ? $sender->display_name : 'Usuario',
+				'sender_avatar' => get_avatar_url( $msg->sender_id ),
+				'is_me'      => $is_me,
+				'time'       => date_i18n( 'H:i', strtotime( $msg->created_at ) ),
+				'date'       => date_i18n( 'd M', strtotime( $msg->created_at ) ),
+			];
+		}
+
+		wp_send_json_success( $formatted_messages );
+	}
+
+	public function ajax_send_project_message() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		$project_id = absint( $_POST['project_id'] );
+		$content    = wp_kses_post( $_POST['content'] );
+		$sender_id  = get_current_user_id();
+
+		if ( empty( $content ) ) {
+			wp_send_json_error( 'Mensaje vacío.' );
+		}
+
+		$manager = new Project_Manager();
+		$msg_id = $manager->add_project_message( $project_id, $sender_id, $content );
+
+		if ( $msg_id ) {
+			wp_send_json_success( 'Mensaje enviado.' );
+		} else {
+			wp_send_json_error( 'Error al guardar mensaje.' );
+		}
+	}
+
 
 	public function ajax_create_project() {
 		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
@@ -207,7 +373,7 @@ class Proyectos_Agencia {
 
 	public function check_install() {
 		$installed_ver = get_option( 'alezux_projects_version' );
-		$current_ver   = '1.0.0';
+		$current_ver   = '1.0.1';
 
 		if ( $installed_ver !== $current_ver ) {
 			$manager = new Project_Manager();

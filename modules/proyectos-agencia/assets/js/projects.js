@@ -172,4 +172,159 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // --- PANEL LATERAL (OFF-CANVAS) ---
+
+    // Función global para abrir el panel
+    AlezuxProjects.openPanel = function (projectId) {
+        var $panel = $('#project-offcanvas');
+        var $overlay = $('#project-offcanvas-overlay');
+        var $content = $('#offcanvas-content');
+        var $loading = $('#offcanvas-loading');
+        var $title = $('#offcanvas-title');
+
+        // Reset UI
+        $title.text('Cargando...');
+        $content.hide().html('');
+        $loading.show();
+
+        // Show Panel
+        $overlay.fadeIn(200);
+        $panel.addClass('open');
+
+        // AJAX Load
+        $.post(AlezuxProjects.ajaxurl, {
+            action: 'alezux_get_project_details',
+            nonce: AlezuxProjects.nonce,
+            project_id: projectId
+        }, function (response) {
+            if (response.success) {
+                var data = response.data;
+                $title.text(data.project.name);
+                $content.html(data.html).fadeIn();
+                $loading.hide();
+
+                // Init Chat
+                AlezuxProjects.currProjectId = projectId;
+                loadChatMessages(projectId);
+            } else {
+                $title.text('Error');
+                $content.html('<div class="alezux-alert error">' + response.data + '</div>').fadeIn();
+                $loading.hide();
+            }
+        }).fail(function () {
+            $title.text('Error de Conexión');
+            $loading.hide();
+        });
+    };
+
+    // Cerrar Panel
+    function closeOffcanvas() {
+        $('#project-offcanvas').removeClass('open');
+        $('#project-offcanvas-overlay').fadeOut(200);
+        AlezuxProjects.currProjectId = null;
+    }
+
+    $(document).on('click', '.close-offcanvas-btn', closeOffcanvas);
+    $(document).on('click', '#project-offcanvas-overlay', closeOffcanvas);
+
+    // ESC key to close
+    $(document).keyup(function (e) {
+        if (e.key === "Escape") closeOffcanvas();
+    });
+
+    // --- CHAT LOGIC ---
+
+    function loadChatMessages(projectId) {
+        var $container = $('#chat-messages-list');
+
+        $.post(AlezuxProjects.ajaxurl, {
+            action: 'alezux_get_project_messages',
+            nonce: AlezuxProjects.nonce,
+            project_id: projectId
+        }, function (response) {
+            if (response.success) {
+                var messages = response.data;
+                $container.html('');
+
+                if (messages.length === 0) {
+                    $container.html('<div class="chat-loading">No hay mensajes aún.</div>');
+                } else {
+                    messages.forEach(function (msg) {
+                        appendMessageToChat(msg);
+                    });
+                    scrollToBottom();
+                }
+            } else {
+                $container.html('<div class="chat-loading error">Error al cargar mensajes.</div>');
+            }
+        });
+    }
+
+    function appendMessageToChat(msg) {
+        var $container = $('#chat-messages-list');
+        var isMeClass = msg.is_me ? 'is-me' : '';
+
+        var html = `
+            <div class="chat-message ${isMeClass}">
+                <div class="chat-avatar">
+                    <img src="${msg.sender_avatar}" alt="${msg.sender_name}">
+                </div>
+                <div class="chat-content-wrapper">
+                    <div class="chat-bubble">
+                        ${msg.content}
+                    </div>
+                    <div class="chat-meta">
+                        ${msg.sender_name} • ${msg.time}
+                    </div>
+                </div>
+            </div>
+        `;
+        $container.append(html);
+    }
+
+    function scrollToBottom() {
+        var $wrapper = $('#chat-messages-list');
+        $wrapper.scrollTop($wrapper[0].scrollHeight);
+    }
+
+    // Send Message
+    $(document).on('click', '#btn-send-chat', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var $input = $('#chat-message-input');
+        var content = $input.val().trim();
+        var projectId = AlezuxProjects.currProjectId;
+
+        if (!content || !projectId) return;
+
+        $btn.prop('disabled', true);
+        $input.prop('disabled', true);
+
+        $.post(AlezuxProjects.ajaxurl, {
+            action: 'alezux_send_project_message',
+            nonce: AlezuxProjects.nonce,
+            project_id: projectId,
+            content: content
+        }, function (response) {
+            if (response.success) {
+                $input.val('');
+                // Reload messages to get the correct server time/format
+                loadChatMessages(projectId);
+            } else {
+                alert('Error: ' + response.data);
+            }
+        }).always(function () {
+            $btn.prop('disabled', false);
+            $input.prop('disabled', false).focus();
+        });
+    });
+
+    // Enter to send
+    $(document).on('keypress', '#chat-message-input', function (e) {
+        if (e.which == 13 && !e.shiftKey) {
+            e.preventDefault();
+            $('#btn-send-chat').click();
+        }
+    });
+
 });

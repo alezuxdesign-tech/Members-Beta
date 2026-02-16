@@ -9,11 +9,13 @@ class Project_Manager {
 
 	private $table_projects;
 	private $table_meta;
+	private $table_messages;
 
 	public function __construct() {
 		global $wpdb;
 		$this->table_projects = $wpdb->prefix . 'alezux_projects';
 		$this->table_meta     = $wpdb->prefix . 'alezux_project_meta';
+		$this->table_messages = $wpdb->prefix . 'alezux_project_messages';
 	}
 
 	/**
@@ -46,9 +48,91 @@ class Project_Manager {
 			KEY meta_key (meta_key)
 		) $charset_collate;";
 
+		$sql_messages = "CREATE TABLE {$this->table_messages} (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			project_id bigint(20) NOT NULL,
+			sender_id bigint(20) NOT NULL,
+			content longtext NOT NULL,
+			type varchar(50) DEFAULT 'text' NOT NULL,
+			is_read tinyint(1) DEFAULT 0 NOT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			PRIMARY KEY  (id),
+			KEY project_id (project_id),
+			KEY sender_id (sender_id)
+		) $charset_collate;";
+
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		dbDelta( $sql_projects . $sql_meta );
+		dbDelta( $sql_projects . $sql_meta . $sql_messages );
 	}
+
+	// ... (rest of the file until get_project_meta)
+
+	/**
+	 * Obtiene metadatos de un proyecto.
+	 */
+	public function get_project_meta( $project_id, $key ) {
+		global $wpdb;
+		$val = $wpdb->get_var( $wpdb->prepare(
+			"SELECT meta_value FROM {$this->table_meta} WHERE project_id = %d AND meta_key = %s",
+			$project_id, $key
+		));
+		return $val;
+	}
+
+	/**
+	 * Obtiene TODOS los metadatos de un proyecto.
+	 */
+	public function get_all_project_meta( $project_id ) {
+		global $wpdb;
+		$results = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_key, meta_value FROM {$this->table_meta} WHERE project_id = %d",
+			$project_id
+		));
+
+		$meta = [];
+		if ( $results ) {
+			foreach ( $results as $row ) {
+				$meta[ $row->meta_key ] = $row->meta_value;
+			}
+		}
+		return $meta;
+	}
+
+	/**
+	 * Obtiene los mensajes de un proyecto.
+	 */
+	public function get_project_messages( $project_id ) {
+		global $wpdb;
+		$project_id = absint( $project_id );
+		
+		$query = $wpdb->prepare( 
+			"SELECT * FROM {$this->table_messages} WHERE project_id = %d ORDER BY created_at ASC", 
+			$project_id 
+		);
+		
+		return $wpdb->get_results( $query );
+	}
+
+	/**
+	 * Añade un mensaje al proyecto.
+	 */
+	public function add_project_message( $project_id, $sender_id, $content, $type = 'text' ) {
+		global $wpdb;
+
+		$result = $wpdb->insert(
+			$this->table_messages,
+			[
+				'project_id' => absint( $project_id ),
+				'sender_id'  => absint( $sender_id ),
+				'content'    => wp_kses_post( $content ), // Permitir HTML básico
+				'type'       => sanitize_text_field( $type ) // 'text', 'file', 'system'
+			],
+			[ '%d', '%d', '%s', '%s' ]
+		);
+
+		return $result ? $wpdb->insert_id : false;
+	}
+
 
 	/**
 	 * Crea un nuevo proyecto.
@@ -179,15 +263,5 @@ class Project_Manager {
 		}
 	}
 
-	/**
-	 * Obtiene metadatos de un proyecto.
-	 */
-	public function get_project_meta( $project_id, $key ) {
-		global $wpdb;
-		$val = $wpdb->get_var( $wpdb->prepare(
-			"SELECT meta_value FROM {$this->table_meta} WHERE project_id = %d AND meta_key = %s",
-			$project_id, $key
-		));
-		return $val;
-	}
+
 }
