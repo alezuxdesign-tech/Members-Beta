@@ -194,12 +194,12 @@ jQuery(document).ready(function ($) {
                             }
 
                             tbody.append(`
-                < tr >
+                                <tr>
                                     <td>${log.date}</td>
                                     <td>${log.recipient}</td>
                                     <td>${statusBadged}</td>
-                                </tr >
-                `);
+                                </tr>
+                            `);
                         });
                     } else {
                         tbody.html('<tr><td colspan="3" style="text-align:center;">No hay envíos registrados aún.</td></tr>');
