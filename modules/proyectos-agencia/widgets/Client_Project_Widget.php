@@ -480,7 +480,9 @@ class Client_Project_Widget extends Widget_Base {
 		</div>
 
 		</div> <!-- .alezux-client-project-dashboard -->
+		<?php
 	}
+
 
 
 	private function render_preview( $step ) {
