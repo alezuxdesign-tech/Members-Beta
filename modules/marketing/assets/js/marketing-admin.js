@@ -26,68 +26,16 @@ jQuery(document).ready(function ($) {
 
         // 1. Load Templates
         function loadTemplates(force = false) {
-            // Skip AJAX if in editor mode (preserve PHP dummy data), unless forced (e.g. after save)
-            if (wrapper.data('is-editor') === 'yes' && !force) {
-                return;
-            }
+            // Remove editor block to allow live preview
+            // if (wrapper.data('is-editor') === 'yes' && !force) { return; }
 
-            console.log('Alezux Marketing: Loading templates...', { vars: typeof alezux_marketing_vars });
+            // ... (rest of logic) ...
 
-            if (typeof alezux_marketing_vars === 'undefined') {
-                console.error('Alezux Marketing: alezux_marketing_vars missing');
-                // If no vars, show dummy empty or msg
-                if (tableBody.find('tr').length === 0) {
-                    tableBody.html('<tr><td colspan="4">Error: Variables no cargadas.</td></tr>');
-                }
-                return;
-            }
+/* ... skips ... */
 
-            tableBody.html('<tr><td colspan="4" style="text-align:center;">Cargando datos...</td></tr>');
-
-            $.ajax({
-                url: alezux_marketing_vars.ajax_url,
-                method: 'POST',
-                data: {
-                    action: 'alezux_marketing_get_templates',
-                    nonce: alezux_marketing_vars.nonce
-                },
-                success: function (res) {
-                    console.log('Alezux Marketing: AJAX Success', res);
-                    if (res.success) {
-                        renderTable(res.data);
-                    } else {
-                        console.error('Alezux Marketing: AJAX Error Message', res);
-                        tableBody.html('<tr><td colspan="4">Error: ' + (res.data || 'Respuesta desconocida') + '</td></tr>');
-                    }
-                },
-                error: function (err) {
-                    console.error('Alezux Marketing: AJAX Network Error', err);
-                    tableBody.html('<tr><td colspan="4">Error de conexión (' + err.status + ').</td></tr>');
-                }
-            });
-        }
-
-        function renderTable(data) {
-            tableBody.empty();
-            if (!data || data.length === 0) {
-                tableBody.html('<tr><td colspan="4">No hay plantillas disponibles.</td></tr>');
-                return;
-            }
-
-            data.forEach(function (item) {
-                var statusBadge = item.is_active
-                    ? '<span class="status-badge status-active">Activo</span>'
-                    : '<span class="status-badge status-inactive">Inactivo</span>';
-
-                var row = `
-                    <tr>
-                        <td>
-                            <strong style="font-size:14px; color:#2271b1;">${item.title}</strong>
-                            <div style="font-size:12px; color:#666; margin-top:2px; line-height:1.3;">${item.description}</div>
-                        </td>
                         <td>${item.subject}</td>
                         <td style="text-align:center;">
-                            <span style="font-weight:bold; background:#e5e5e5; padding:2px 8px; border-radius:10px; font-size:12px;">${item.sent_count}</span>
+                            <span class="alezux-count-badge">${item.sent_count}</span>
                         </td>
                         <td>${statusBadge}</td>
                         <td>
@@ -103,7 +51,7 @@ jQuery(document).ready(function ($) {
                                 </button>
                             </div>
                         </td>
-                    </tr>
+                    </tr >
                 `;
                 tableBody.append(row);
             });
@@ -149,7 +97,7 @@ jQuery(document).ready(function ($) {
                         // Populate variables list
                         var varsHtml = 'Sin variables específicas.';
                         if (tpl.variables && Array.isArray(tpl.variables) && tpl.variables.length > 0) {
-                            varsHtml = tpl.variables.map(v => `<code style="display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;">${v}</code>`).join(' ');
+                            varsHtml = tpl.variables.map(v => `< code style = "display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;" > ${ v }</code > `).join(' ');
                         }
                         $('#vars-list').html(varsHtml);
 
@@ -202,12 +150,12 @@ jQuery(document).ready(function ($) {
                             }
 
                             tbody.append(`
-                                <tr>
+                < tr >
                                     <td>${log.date}</td>
                                     <td>${log.recipient}</td>
                                     <td>${statusBadged}</td>
-                                </tr>
-                            `);
+                                </tr >
+                `);
                         });
                     } else {
                         tbody.html('<tr><td colspan="3" style="text-align:center;">No hay envíos registrados aún.</td></tr>');

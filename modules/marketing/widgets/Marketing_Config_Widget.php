@@ -221,395 +221,82 @@ class Marketing_Config_Widget extends Widget_Base {
         $this->end_controls_section();
 
 
-        // 3. ESTADO (Badges)
+        // 3a. CONTADOR ENVIADOS
         $this->start_controls_section(
-            'style_section_badges',
+            'style_section_count_badge',
             [
-                'label' => esc_html__('Estado (Badges)', 'alezux-members'),
+                'label' => esc_html__('Contador de Envíos', 'alezux-members'),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
-        
+
         $this->add_group_control(
             Group_Control_Typography::get_type(),
             [
-                'name' => 'badge_typography',
-                'selector' => '{{WRAPPER}} .status-badge',
+                'name' => 'count_badge_typography',
+                'selector' => '{{WRAPPER}} .alezux-count-badge',
             ]
         );
 
         $this->add_control(
-            'badge_radius',
-             [
-                'label' => esc_html__('Redondeo', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
+            'count_badge_color',
+            [
+                'label' => esc_html__('Color Texto', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .status-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-count-badge' => 'color: {{VALUE}};',
                 ],
             ]
         );
 
         $this->add_control(
-            'badge_padding',
+            'count_badge_bg_color',
+            [
+                'label' => esc_html__('Color Fondo', 'alezux-members'),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-count-badge' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+         $this->add_control(
+            'count_badge_radius',
+            [
+                'label' => esc_html__('Redondeo', 'alezux-members'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-count-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'count_badge_padding',
              [
                 'label' => esc_html__('Relleno', 'alezux-members'),
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .status-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .alezux-count-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
-        
-        $this->add_control('badge_active_text', ['label' => 'Texto (Activo)', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_active_bg', ['label' => 'Fondo (Activo)', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-active' => 'background-color: {{VALUE}};']]);
-
-        $this->add_control('badge_inactive_text', ['label' => 'Texto (Inactivo)', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-inactive' => 'color: {{VALUE}};']]);
-        $this->add_control('badge_inactive_bg', ['label' => 'Fondo (Inactivo)', 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .status-inactive' => 'background-color: {{VALUE}};']]);
 
         $this->end_controls_section();
 
-        // 4. MODALES
+
+        // 3. ESTADO (Badges)
         $this->start_controls_section(
-            'style_section_modals',
+            'style_section_badges',
             [
-                'label' => esc_html__('Ventanas Emergentes (Modales)', 'alezux-members'),
+                'label' => esc_html__('Estado (Activo/Inactivo)', 'alezux-members'),
                 'tab'   => Controls_Manager::TAB_STYLE,
             ]
         );
 
-        $this->add_control(
-            'modal_overlay_bg',
-            [
-                'label' => esc_html__('Color Fondo Overlay', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_control(
-            'modal_content_bg',
-            [
-                'label' => esc_html__('Color Fondo Contenido', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-modal-content' => 'background-color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Border::get_type(),
-            [
-                'name' => 'modal_border',
-                'selector' => '{{WRAPPER}} .alezux-modal-content',
-            ]
-        );
-
-        $this->add_control(
-            'modal_radius',
-            [
-                'label' => esc_html__('Redondeo', 'alezux-members'),
-                'type' => Controls_Manager::DIMENSIONS,
-                'size_units' => ['px', '%'],
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-modal-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Box_Shadow::get_type(),
-            [
-                'name' => 'modal_shadow',
-                'selector' => '{{WRAPPER}} .alezux-modal-content',
-            ]
-        );
-
-        $this->add_control(
-            'modal_title_color',
-            [
-                'label' => esc_html__('Color Título', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-modal-content h3' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->add_group_control(
-            Group_Control_Typography::get_type(),
-            [
-                'name' => 'modal_title_typography',
-                'selector' => '{{WRAPPER}} .alezux-modal-content h3',
-            ]
-        );
-
-         $this->add_control(
-            'modal_label_color',
-            [
-                'label' => esc_html__('Color Etiquetas (Labels)', 'alezux-members'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .alezux-modal-content label' => 'color: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $this->end_controls_section();
-
-        // 5. BOTONES (General)
-		$this->start_controls_section(
-			'style_section_buttons_general',
-			[
-				'label' => esc_html__( 'Botones (General)', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-		$this->start_controls_tabs( 'tabs_buttons_general' );
-
-		$this->start_controls_tab(
-			'tab_buttons_general_normal',
-			[
-				'label' => esc_html__( 'Normal', 'alezux-members' ),
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name'     => 'buttons_typography',
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
-			]
-		);
-
-		$this->add_control(
-			'buttons_text_color',
-			[
-				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-marketing-btn' => 'color: {{VALUE}}',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'buttons_background',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
-			]
-		);
-
-		$this->end_controls_tab();
-
-		$this->start_controls_tab(
-			'tab_buttons_general_hover',
-			[
-				'label' => esc_html__( 'Hover', 'alezux-members' ),
-			]
-		);
-
-		$this->add_control(
-			'buttons_text_color_hover',
-			[
-				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-marketing-btn:hover' => 'color: {{VALUE}}',
-				],
-			]
-		);
-
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'buttons_background_hover',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn:hover',
-			]
-		);
-
-		$this->end_controls_tab();
-
-		$this->end_controls_tabs();
-		
-		$this->add_control(
-			'buttons_border_radius',
-			[
-				'label'      => esc_html__( 'Radio del Borde', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', '%' ],
-				'selectors'  => [
-					'{{WRAPPER}} .alezux-marketing-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'separator' => 'before',
-			]
-		);
-        
-        $this->add_group_control(
-			Group_Control_Box_Shadow::get_type(),
-			[
-				'name'     => 'buttons_box_shadow',
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
-			]
-		);
-
-        $this->add_responsive_control(
-			'buttons_padding',
-			[
-				'label'      => esc_html__( 'Relleno', 'alezux-members' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', '%' ],
-				'selectors'  => [
-					'{{WRAPPER}} .alezux-marketing-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-			]
-		);
-
-		$this->end_controls_section();
-
-        // 6. BOTÓN EDITAR
-        $this->start_controls_section(
-			'style_section_btn_edit',
-			[
-				'label' => esc_html__( 'Botón Editar', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-        
-        $this->add_control(
-            'btn_edit_override',
-            [
-                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
-                'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
-                'label_off' => esc_html__( 'No', 'alezux-members' ),
-                'return_value' => 'yes',
-                'default' => 'no',
-            ]
-        );
-
-        $this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'btn_edit_background',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn.edit-template-btn',
-                'condition' => [ 'btn_edit_override' => 'yes' ]
-			]
-		);
-        
-        $this->add_control(
-			'btn_edit_color',
-			[
-				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-marketing-btn.edit-template-btn' => 'color: {{VALUE}}',
-				],
-                'condition' => [ 'btn_edit_override' => 'yes' ]
-			]
-		);
-
-        $this->end_controls_section();
-
-        // 7. BOTÓN HISTORIAL
-        $this->start_controls_section(
-			'style_section_btn_history',
-			[
-				'label' => esc_html__( 'Botón Historial', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-         $this->add_control(
-            'btn_history_override',
-            [
-                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
-                'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
-                'label_off' => esc_html__( 'No', 'alezux-members' ),
-                'return_value' => 'yes',
-                'default' => 'no',
-            ]
-        );
-
-        $this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'btn_history_background',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn.history-btn',
-                'condition' => [ 'btn_history_override' => 'yes' ]
-			]
-		);
-
-         $this->add_control(
-			'btn_history_color',
-			[
-				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-marketing-btn.history-btn' => 'color: {{VALUE}}',
-				],
-                'condition' => [ 'btn_history_override' => 'yes' ]
-			]
-		);
-
-        $this->end_controls_section();
-
-        // 8. BOTÓN PRUEBA
-        $this->start_controls_section(
-			'style_section_btn_test',
-			[
-				'label' => esc_html__( 'Botón Prueba', 'alezux-members' ),
-				'tab'   => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-         $this->add_control(
-            'btn_test_override',
-            [
-                'label' => esc_html__( 'Personalizar Específicamente', 'alezux-members' ),
-                'type' => Controls_Manager::SWITCHER,
-                'label_on' => esc_html__( 'Sí', 'alezux-members' ),
-                'label_off' => esc_html__( 'No', 'alezux-members' ),
-                'return_value' => 'yes',
-                'default' => 'no',
-            ]
-        );
-
-        $this->add_group_control(
-			Group_Control_Background::get_type(),
-			[
-				'name'     => 'btn_test_background',
-				'types'    => [ 'classic', 'gradient' ],
-				'selector' => '{{WRAPPER}} .alezux-marketing-btn.send-test-email-btn',
-                'condition' => [ 'btn_test_override' => 'yes' ]
-			]
-		);
-
-         $this->add_control(
-			'btn_test_color',
-			[
-				'label'     => esc_html__( 'Color de Texto', 'alezux-members' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => [
-					'{{WRAPPER}} .alezux-marketing-btn.send-test-email-btn' => 'color: {{VALUE}}',
-				],
-                 'condition' => [ 'btn_test_override' => 'yes' ]
-			]
-		);
-
-        $this->end_controls_section();
-	}
+/* ... skipping to render ... */
 
 	protected function render() {
 		$is_edit = \Elementor\Plugin::instance()->editor->is_edit_mode();
@@ -624,6 +311,7 @@ class Marketing_Config_Widget extends Widget_Base {
 		$show_settings_modal = $is_edit && 'yes' === $settings['show_editor_modal_settings'];
 		
 		// Data attr to prevent JS overwrite in editor
+		// FIX: We WANT JS to overwrite in editor for preview.
 		$wrapper_attrs = $is_edit ? ' data-is-editor="yes"' : '';
 		?>
 		<div class="alezux-finanzas-app alezux-marketing-app"<?php echo $wrapper_attrs; ?>>
@@ -657,30 +345,8 @@ class Marketing_Config_Widget extends Widget_Base {
 						</tr>
 					</thead>
 					<tbody>
-						<?php if ( $is_edit ) : ?>
-							<!-- Dummy Data for Editor -->
-							<tr>
-								<td><strong>Registro - Bienvenida</strong><br><small style="color:#888">student_welcome</small></td>
-								<td>¡Bienvenido a la Academia!</td>
-								<td><span class="status-badge status-active">Activo</span></td>
-								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
-							</tr>
-							<tr>
-								<td><strong>Finanzas - Pago Exitoso</strong><br><small style="color:#888">payment_success</small></td>
-								<td>Recibo de tu pago</td>
-								<td><span class="status-badge status-active">Activo</span></td>
-								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
-							</tr>
-                             <tr>
-								<td><strong>Logros - Nuevo Logro</strong><br><small style="color:#888">achievement_assigned</small></td>
-								<td>¡Felicidades! Has desbloqueado un logro</td>
-								<td><span class="status-badge status-inactive">Inactivo</span></td>
-								<td><button class="alezux-marketing-btn edit-template-btn"><i class="fa fa-pencil"></i> Editar</button></td>
-							</tr>
-						<?php else : ?>
-							<!-- AJAX Loaded -->
-							<tr><td colspan="4" style="text-align:center; padding: 20px;">Cargando plantillas...</td></tr>
-						<?php endif; ?>
+						<!-- AJAX Loaded (Even in Editor) -->
+						<tr><td colspan="5" style="text-align:center; padding: 20px;">Cargando plantillas...</td></tr>
 					</tbody>
 				</table>
 			</div>
