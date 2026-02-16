@@ -90,6 +90,9 @@ jQuery(document).ready(function ($) {
                                      <td>
                                         <strong style="font-size:14px; color:#2271b1;">${item.title}</strong>
                                         <div style="font-size:12px; color:#666; margin-top:2px; line-height:1.3;">${item.description}</div>
+                                        <div style="margin-top:5px;">
+                                            ${item.variables ? item.variables.map(v => `<code style="display:inline-block; background:#f0f0f1; color:#3c434a; padding:2px 5px; margin:2px 2px 0 0; border-radius:3px; font-size:11px; border:1px solid #c3c4c7;">${v}</code>`).join('') : ''}
+                                        </div>
                                      </td>
                                      <td>${item.subject}</td>
                                      <td style="text-align:center;">
@@ -165,7 +168,7 @@ jQuery(document).ready(function ($) {
                         // Populate variables list
                         var varsHtml = 'Sin variables específicas.';
                         if (tpl.variables && Array.isArray(tpl.variables) && tpl.variables.length > 0) {
-                            varsHtml = tpl.variables.map(v => `< code style = "display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;" > ${v}</code > `).join(' ');
+                            varsHtml = tpl.variables.map(v => `<code style="display:inline-block; background:#f0f0f1; color:#3c434a; padding:2px 5px; margin:2px; border-radius:3px; font-size:11px; border:1px solid #c3c4c7;">${v}</code>`).join(' ');
                         }
                         $('#vars-list').html(varsHtml);
 
