@@ -391,6 +391,7 @@ class Client_Project_Widget extends Widget_Base {
 
 		<div id="tab-overview" class="client-tab-content active">
 			<div class="alezux-project-body">
+				<?php $this->render_project_timeline( $project->current_step ); ?>
 				<?php
 				switch ( $project->current_step ) {
 					case 'briefing':
@@ -560,6 +561,51 @@ class Client_Project_Widget extends Widget_Base {
 		<?php
 	}
 
+	private function render_project_timeline( $current_step ) {
+		$steps = [
+			'briefing' => [
+				'label' => 'Briefing', 
+				'desc' => 'Información recopilada'
+			],
+			'design_review' => [
+				'label' => 'Diseño', 
+				'desc' => 'Prototipo y Estilos'
+			],
+			'in_progress' => [
+				'label' => 'Desarrollo', 
+				'desc' => 'Programación & Montaje'
+			],
+			'completed' => [
+				'label' => 'Finalizado', 
+				'desc' => 'Entrega y Capacitación'
+			]
+		];
+
+		$keys = array_keys( $steps );
+		$current_index = array_search( $current_step, $keys );
+		if ( $current_index === false ) $current_index = 0;
+
+		echo '<div class="project-timeline">';
+		foreach ( $steps as $key => $info ) {
+			$index = array_search( $key, $keys );
+			$class = '';
+			$icon = '';
+
+			if ( $index < $current_index ) {
+				$class = 'completed';
+				$icon = '<i class="eicon-check"></i>';
+			} elseif ( $index == $current_index ) {
+				$class = 'active';
+			}
+
+			echo '<div class="timeline-item ' . esc_attr( $class ) . '">';
+			echo '<div class="point ' . ( $class === 'active' ? 'pulse' : '' ) . '">' . $icon . '</div>';
+			echo '<div class="content"><strong>' . esc_html( $info['label'] ) . '</strong><span>' . esc_html( $info['desc'] ) . '</span></div>';
+			echo '</div>';
+		}
+		echo '</div>';
+	}
+
 	private function render_briefing_step( $project, $manager ) {
 		// Verificar si ya envió el briefing
 		$briefing_data = $manager->get_project_meta( $project->id, 'briefing_data' );
@@ -672,37 +718,6 @@ class Client_Project_Widget extends Widget_Base {
 			<div class="step-intro">
 				<h3>🏗️ Construyendo tu Sitio</h3>
 				<p>Tu diseño ha sido aprobado. Nuestro equipo está trabajando en el código.</p>
-			</div>
-
-			<div class="project-timeline">
-				<div class="timeline-item completed">
-					<div class="point"></div>
-					<div class="content">
-						<strong>Briefing Recibido</strong>
-						<span>Información recopilada</span>
-					</div>
-				</div>
-				<div class="timeline-item completed">
-					<div class="point"></div>
-					<div class="content">
-						<strong>Diseño Aprobado</strong>
-						<span>Prototipo validado</span>
-					</div>
-				</div>
-				<div class="timeline-item active">
-					<div class="point pulse"></div>
-					<div class="content">
-						<strong>Desarrollo & Montaje</strong>
-						<span>Estamos programando tu sitio web...</span>
-					</div>
-				</div>
-				<div class="timeline-item">
-					<div class="point"></div>
-					<div class="content">
-						<strong>Revisión Final</strong>
-						<span>Entrega y Capacitación</span>
-					</div>
-				</div>
 			</div>
 			
 			<div class="dev-note">
