@@ -20,7 +20,7 @@ class Email_Engine {
 			'student_welcome' => [
 				'title'       => 'Registro - Bienvenida',
 				'description' => 'Se envía automáticamente cuando un estudiante se registra exitosamente en la plataforma.',
-				'variables'   => [ '{{user.name}}', '{{user.username}}', '{{user.email}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
+				'variables'   => [ '{{user.name}}', '{{user.username}}', '{{user.email}}', '{{password}}', '{{course_title}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
 			],
 			'user_recover_password' => [
 				'title'       => 'Seguridad - Recuperar Contraseña',
