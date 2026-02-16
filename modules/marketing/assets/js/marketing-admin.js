@@ -25,15 +25,39 @@ jQuery(document).ready(function ($) {
         wrapper.find('.alezux-close-modal').off('click');
 
         // 1. Load Templates
-        // 1. Load Templates
         function loadTemplates(force = false) {
             // Skip check for editor to allow preview
             // if (wrapper.data('is-editor') === 'yes' && !force) { return; }
 
             if (typeof alezux_marketing_vars === 'undefined') {
                 console.error('Alezux Marketing: alezux_marketing_vars missing');
+
+                // Fallback for Elementor Editor Preview
+                if ($('body').hasClass('elementor-editor-active') || wrapper.parents('.elementor-editor-active').length) {
+                    console.log('Alezux Marketing: Editor detected, rendering dummy data.');
+                    var dummy = [
+                        { title: 'Bienvenida', description: 'Correo de registro.', subject: '¡Bienvenido!', sent_count: 120, is_active: 1, type: 'welcome' },
+                        { title: 'Pago Exitoso', description: 'Confirmación de compra.', subject: 'Tu pedido #123', sent_count: 85, is_active: 1, type: 'payment' }
+                    ];
+                    // Render dummy data manually to avoid recursion or complexity
+                    tableBody.empty();
+                    dummy.forEach(function (item) {
+                        var statusBadge = '<span class="status-badge status-active">Activo</span>';
+                        var row = `
+                             <tr>
+                                 <td><strong style="font-size:14px; color:#2271b1;">${item.title}</strong><div style="font-size:12px; color:#666;">${item.description}</div></td>
+                                 <td>${item.subject}</td>
+                                 <td style="text-align:center;"><span class="alezux-count-badge">${item.sent_count}</span></td>
+                                 <td>${statusBadge}</td>
+                                 <td><button class="alezux-marketing-btn"><i class="fa fa-pencil"></i> Editar</button></td>
+                             </tr>`;
+                        tableBody.append(row);
+                    });
+                    return;
+                }
+
                 if (tableBody.find('tr').length === 0) {
-                    tableBody.html('<tr><td colspan="4">Error: Variables no cargadas.</td></tr>');
+                    tableBody.html('<tr><td colspan="5">Error: Variables no cargadas.</td></tr>');
                 }
                 return;
             }
