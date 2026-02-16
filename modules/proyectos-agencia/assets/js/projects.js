@@ -128,37 +128,57 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // COLOR PICKER LOGIC
+    // COLOR PICKER LOGIC (NEW)
     if ($('#alezux-color-palette-container').length) {
-        var $paletteContainer = $('#alezux-color-picker-wrapper, #alezux-color-palette-container'); // Support both IDs just in case
-        var $colorInput = $('#brand_colors_input');
+        var $paletteContainer = $('#alezux-color-palette-container');
+        var $colorInput = $('#briefing-color-picker');
+        var $hexInput = $('#briefing-color-hex');
+        var $btnAdd = $('#btn-add-color-manual');
+        var $hiddenInput = $('#brand_colors_input');
 
-        // Re-use or create hidden color picker
-        var $tempPicker = $('#temp-system-color-picker');
-        if (!$tempPicker.length) {
-            $tempPicker = $('<input type="color" id="temp-system-color-picker" style="display:none;">').appendTo('body');
-        }
-
-        // Add Color Button Click
-        $(document).on('click', '.add-new-color', function () {
-            $tempPicker.click();
+        // Sync Color -> Hex
+        $colorInput.on('input change', function () {
+            $hexInput.val($(this).val());
         });
 
-        // Handle Color Selection
-        $tempPicker.on('change', function () {
-            var color = $(this).val();
+        // Sync Hex -> Color
+        $hexInput.on('input', function () {
+            var hex = $(this).val();
+            if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                $colorInput.val(hex);
+            }
+        });
+
+        // Add Button Click
+        $btnAdd.on('click', function () {
+            var color = $hexInput.val();
+            // Validate Hex
+            if (!/^#[0-9A-F]{6}$/i.test(color)) {
+                alert('Por favor, introduce un código hexadecimal válido (ej: #FF0000).');
+                return;
+            }
             addColorToPalette(color);
+            // Reset to a default or keep last
         });
 
         // Add Color Function
         function addColorToPalette(color) {
+            // Check if already exists? Maybe not necessary but good UX
+            var exists = false;
+            $paletteContainer.find('.color-code').each(function () {
+                if ($(this).text().toUpperCase() === color.toUpperCase()) exists = true;
+            });
+            if (exists) {
+                alert('Este color ya está en la lista.');
+                return;
+            }
+
             var $item = $('<div class="color-item" style="background-color: ' + color + ';">' +
                 '<span class="color-code">' + color + '</span>' +
                 '<div class="color-remove"><i class="eicon-close"></i></div>' +
                 '</div>');
 
-            // Insert before the add button
-            $item.insertBefore($('#btn-add-color'));
+            $paletteContainer.append($item);
             updateColorInput();
         }
 
@@ -169,37 +189,30 @@ jQuery(document).ready(function ($) {
             updateColorInput();
         });
 
-        // Update Hidden Input with JSON
+        // Update Hidden Input (JSON)
         function updateColorInput() {
             var colors = [];
-            $('#alezux-color-palette-container .color-item:not(.add-new-color)').each(function () {
-                // Get color from style or hex span, usually style is rgb, let's use the text in span
-                var hex = $(this).find('.color-code').text();
-                colors.push(hex);
+            $paletteContainer.find('.color-code').each(function () {
+                colors.push($(this).text());
             });
-            $colorInput.val(JSON.stringify(colors));
+            $hiddenInput.val(JSON.stringify(colors));
         }
 
-        // Initialize from existing values if any (edit mode or repopulation)
-        var existingColors = $colorInput.val();
-        if (existingColors) {
+        // Initialize from existing data (edit mode fallback)
+        if ($hiddenInput.val()) {
             try {
-                // If it's a JSON array
-                var colors = JSON.parse(existingColors);
-                if (Array.isArray(colors)) {
-                    colors.forEach(function (c) {
-                        // Avoid executing addColorToPalette full logic or just carefully append
-                        // Manually append to avoid duplicate input updates or loops
+                var existing = JSON.parse($hiddenInput.val());
+                if (Array.isArray(existing)) {
+                    $paletteContainer.html(''); // Clear any defaults
+                    existing.forEach(function (c) {
                         var $item = $('<div class="color-item" style="background-color: ' + c + ';">' +
                             '<span class="color-code">' + c + '</span>' +
                             '<div class="color-remove"><i class="eicon-close"></i></div>' +
                             '</div>');
-                        $item.insertBefore($('#btn-add-color'));
+                        $paletteContainer.append($item);
                     });
                 }
-            } catch (e) {
-                // Legacy string format or empty
-            }
+            } catch (e) { console.error('Error parsing brand colors', e); }
         }
     }
 

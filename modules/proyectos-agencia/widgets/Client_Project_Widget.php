@@ -703,11 +703,20 @@ class Client_Project_Widget extends Widget_Base {
 					<!-- Color Picker Section -->
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Colores Corporativos</label>
+						
+						<div class="alezux-color-picker-control">
+							<div class="color-input-group">
+								<input type="color" id="briefing-color-picker" value="#333333">
+								<input type="text" id="briefing-color-hex" value="#333333" placeholder="#333333" maxlength="7">
+								<button type="button" id="btn-add-color-manual" class="alezux-btn alezux-btn-sm alezux-btn-primary">
+									<i class="eicon-plus"></i> Añadir
+								</button>
+							</div>
+							<p class="description"><small>Selecciona un color y pulsa "Añadir".</small></p>
+						</div>
+
 						<div id="alezux-color-palette-container" class="alezux-color-palette">
 							<!-- Dynamic items will be added here by JS -->
-							<div class="color-item add-new-color" id="btn-add-color">
-								<i class="eicon-plus"></i>
-							</div>
 						</div>
 						<input type="hidden" name="brand_colors" id="brand_colors_input">
 					</div>
