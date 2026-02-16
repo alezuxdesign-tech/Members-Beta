@@ -68,11 +68,20 @@ class Enrollment_Manager {
                 if ( isset( $plan_id ) ) {
                     global $wpdb;
                     $p_table = $wpdb->prefix . 'alezux_finanzas_plans';
-                    $p_data = $wpdb->get_row( $wpdb->prepare( "SELECT name, course_name FROM $p_table WHERE id = %d", $plan_id ) );
-                    if ( $p_data && ! empty( $p_data->course_name ) ) {
-                        $course_title = $p_data->course_name;
-                    } elseif ( $p_data ) {
-                        $course_title = $p_data->name;
+                    // Fix: Table does not have course_name column. Fetch course_id instead.
+                    $p_data = $wpdb->get_row( $wpdb->prepare( "SELECT name, course_id FROM $p_table WHERE id = %d", $plan_id ) );
+                    
+                    if ( $p_data ) {
+                         if ( ! empty( $p_data->course_id ) ) {
+                             $c_title = get_the_title( $p_data->course_id );
+                             if ( $c_title ) {
+                                 $course_title = $c_title;
+                             } else {
+                                 $course_title = $p_data->name; // Fallback to Plan Name
+                             }
+                         } else {
+                             $course_title = $p_data->name; // Fallback to Plan Name
+                         }
                     }
                 }
 
