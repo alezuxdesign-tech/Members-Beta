@@ -351,8 +351,14 @@ class Proyectos_Agencia {
 		$access_user  = sanitize_text_field( $_POST['access_user'] );
 		$access_pass  = sanitize_text_field( $_POST['access_pass'] );
 
+		// DEBUG LOGGING
+		error_log( "Alezux Projects Debug: Update Project ID: $project_id" );
+		error_log( "Status: $status, Step: $current_step" );
+		error_log( "Meta: Site=$site_url, User=$access_user" );
+
 		$manager = new Project_Manager();
-		$manager->update_status( $project_id, $status, $current_step );
+		$update_result = $manager->update_status( $project_id, $status, $current_step );
+		error_log( "Update Status Result: " . ($update_result === false ? 'FALSE' : $update_result) );
 
 		// Update Meta
 		if ( isset($_POST['design_url']) ) $manager->update_project_meta( $project_id, 'design_proposal_url', $design_url );

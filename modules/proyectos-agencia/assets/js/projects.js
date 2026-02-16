@@ -53,8 +53,8 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // Actualizar Proyecto AJAX
-    $('#update-project-status-form').on('submit', function (e) {
+    // Actualizar Proyecto AJAX (Delegado porque el form se carga dinámicamente)
+    $(document).on('submit', '#update-project-status-form', function (e) {
         e.preventDefault();
 
         var $form = $(this);
