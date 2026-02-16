@@ -71,7 +71,9 @@ class Project_Manager {
 		);
 
 		if ( $result ) {
-			return $wpdb->insert_id;
+			$project_id = $wpdb->insert_id;
+			do_action( 'alezux_project_created', $project_id );
+			return $project_id;
 		}
 
 		return false;
@@ -111,6 +113,10 @@ class Project_Manager {
 	public function update_status( $project_id, $status, $step = null ) {
 		global $wpdb;
 		
+		// Obtener estado anterior para hook
+		$old_project = $this->get_project( $project_id );
+		$old_status  = $old_project ? $old_project->status : '';
+
 		$data = [ 'status' => $status ];
 		$format = [ '%s' ];
 
@@ -122,13 +128,19 @@ class Project_Manager {
 		$data['updated_at'] = current_time( 'mysql' );
 		$format[] = '%s';
 
-		return $wpdb->update(
+		$result = $wpdb->update(
 			$this->table_projects,
 			$data,
 			[ 'id' => $project_id ],
 			$format,
 			[ '%d' ]
 		);
+
+		if ( $result !== false ) {
+			do_action( 'alezux_project_status_updated', $project_id, $status, $old_status );
+		}
+
+		return $result;
 	}
 
 	/**

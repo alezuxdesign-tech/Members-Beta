@@ -28,9 +28,14 @@ class Proyectos_Agencia {
 
 	public function load_dependencies() {
 		require_once __DIR__ . '/includes/Project_Manager.php';
+		require_once __DIR__ . '/includes/Proyectos_Agencia_Emails.php';
 	}
 
 	private function init_hooks() {
+		// Inicializar Emails
+		$emails = new \Alezux_Members\Modules\Proyectos_Agencia\Includes\Proyectos_Agencia_Emails();
+		$emails->init();
+
 		// Registrar scripts y estilos
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );

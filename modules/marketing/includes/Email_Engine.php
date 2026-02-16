@@ -16,7 +16,7 @@ class Email_Engine {
 	}
 
 	public function get_registered_types() {
-		return [
+		$types = [
 			'student_welcome' => [
 				'title'       => 'Registro - Bienvenida',
 				'description' => 'Se envía automáticamente cuando un estudiante se registra exitosamente en la plataforma.',
@@ -68,6 +68,8 @@ class Email_Engine {
 				'variables'   => [ '{{user.name}}', '{{days_inactive}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
 			],
 		];
+
+		return apply_filters( 'alezux_marketing_email_types', $types );
 	}
 
 	public function custom_mail_from( $original_email ) {
@@ -115,6 +117,10 @@ class Email_Engine {
 		if ( ! $template ) {
 			require_once __DIR__ . '/Default_Templates.php';
 			$defaults = Default_Templates::get( $type );
+			
+			// Allow modules to provide their own defaults
+			$defaults = apply_filters( 'alezux_marketing_default_template', $defaults, $type );
+
 			$subject = $defaults['subject'];
 			$content = $defaults['content'];
 		}
