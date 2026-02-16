@@ -183,7 +183,7 @@ class Projects_List_Widget extends Widget_Base {
 				</div>
 			</div>
 
-			</div>
+
 
 			<!-- PANEL LATERAL (Off-Canvas) -->
 			<div id="project-offcanvas-overlay" class="alezux-offcanvas-overlay"></div>

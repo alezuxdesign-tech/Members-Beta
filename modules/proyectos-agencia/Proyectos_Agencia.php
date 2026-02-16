@@ -394,7 +394,7 @@ class Proyectos_Agencia {
 			'alezux-projects-js', 
 			plugin_dir_url( __FILE__ ) . 'assets/js/projects.js', 
 			[ 'jquery' ], 
-			ALEZUX_MEMBERS_VERSION, 
+			ALEZUX_MEMBERS_VERSION . time(), 
 			true 
 		);
 		
