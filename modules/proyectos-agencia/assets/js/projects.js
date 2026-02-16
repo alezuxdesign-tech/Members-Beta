@@ -224,6 +224,7 @@ jQuery(document).ready(function ($) {
     function closeOffcanvas() {
         $('#project-offcanvas').removeClass('open');
         $('#project-offcanvas-overlay').fadeOut(200);
+        if (AlezuxProjects.stopChatPolling) AlezuxProjects.stopChatPolling();
         AlezuxProjects.currProjectId = null;
     }
 
@@ -236,6 +237,7 @@ jQuery(document).ready(function ($) {
     });
 
     // --- TABS LOGIC ---
+    // Start Polling when Admin switches to Chat Tab
     $(document).on('click', '.tab-btn', function () {
         var tabId = $(this).data('tab');
         var $container = $(this).closest('.panel-details-container');
@@ -247,7 +249,17 @@ jQuery(document).ready(function ($) {
         // Content
         $container.find('.tab-content').removeClass('active');
         $container.find('#' + tabId).addClass('active');
+
+        // Start Polling if Chat is active
+        if (tabId === 'tab-chat') {
+            if (AlezuxProjects.currProjectId && AlezuxProjects.startChatPolling) {
+                AlezuxProjects.startChatPolling(AlezuxProjects.currProjectId);
+            }
+        } else {
+            if (AlezuxProjects.stopChatPolling) AlezuxProjects.stopChatPolling();
+        }
     });
+
 
     // --- CHAT LOGIC (SMART POLLING) ---
     AlezuxProjects.chatTimer = null;
