@@ -130,6 +130,14 @@ class Proyectos_Agencia {
 					<form id="update-project-status-form" class="alezux-form-group">
 						<input type="hidden" name="project_id" value="<?php echo esc_attr($project->id); ?>">
 						
+						<?php 
+						// Fetch Meta Data for Dynamic Sections
+						$briefing_data = isset($meta['briefing_data']) ? json_decode($meta['briefing_data'], true) : null;
+						$site_url      = isset($meta['site_url']) ? $meta['site_url'] : '';
+						$access_user   = isset($meta['access_user']) ? $meta['access_user'] : '';
+						$access_pass   = isset($meta['access_pass']) ? $meta['access_pass'] : '';
+						?>
+
 						<div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
 							<div style="flex:1;">
 								<label>Estado del Sistema</label>
@@ -141,8 +149,8 @@ class Proyectos_Agencia {
 								</select>
 							</div>
 							<div style="flex:1;">
-								<label>Fase (Cliente)</label>
-								<select name="current_step" class="alezux-input">
+								<label>Fase Actual (Visible Cliente)</label>
+								<select name="current_step" id="project-phase-select" class="alezux-input">
 									<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
 									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
 									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
@@ -151,17 +159,62 @@ class Proyectos_Agencia {
 							</div>
 						</div>
 
-						<div style="margin-bottom:15px;">
-							<label>URL Propuesta de Diseño</label>
+						<!-- DYNAMIC SECTION: BRIEFING VIEW -->
+						<div id="section-briefing" class="dynamic-section" style="display:none;">
+							<div class="alezux-info-box">
+								<h5><i class="eicon-info-circle"></i> Datos del Briefing</h5>
+								<?php if ($briefing_data): ?>
+									<p><strong>Marca:</strong> <?php echo esc_html($briefing_data['brand_name'] ?? '-'); ?></p>
+									<p><strong>Eslogan:</strong> <?php echo esc_html($briefing_data['slogan'] ?? '-'); ?></p>
+									<p><strong>Colores:</strong> <?php echo esc_html($briefing_data['colors'] ?? '-'); ?></p>
+									<p><strong>Descripción:</strong><br> <?php echo nl2br(esc_html($briefing_data['business_desc'] ?? '-')); ?></p>
+								<?php else: ?>
+									<p class="text-muted">El cliente aún no ha enviado el briefing.</p>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<!-- DYNAMIC SECTION: DESIGN URL -->
+						<div id="section-design" class="dynamic-section" style="display:none; margin-bottom:15px;">
+							<label>URL Propuesta de Diseño (Figma/PDF)</label>
 							<div class="alezux-input-group">
 								<span class="input-group-text"><i class="eicon-link"></i></span>
 								<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url($design_url); ?>" placeholder="https://figma.com/..." style="padding-left: 35px;">
 							</div>
+							<small class="text-muted">El cliente verá esto en su panel para aprobar/rechazar.</small>
+						</div>
+
+						<!-- DYNAMIC SECTION: DEVELOPMENT / CREDENTIALS -->
+						<div id="section-development" class="dynamic-section" style="display:none; margin-bottom:15px;">
+							<div class="alezux-info-box">
+								<h5><i class="eicon-code"></i> Credenciales de Acceso</h5>
+								<div class="form-group" style="margin-bottom:10px;">
+									<label>URL del Sitio (Staging/Prod)</label>
+									<input type="url" name="site_url" class="alezux-input" value="<?php echo esc_url($site_url); ?>" placeholder="https://cliente.miagencia.com">
+								</div>
+								<div class="form-row" style="display:flex; gap:10px;">
+									<div style="flex:1;">
+										<label>Usuario WP</label>
+										<input type="text" name="access_user" class="alezux-input" value="<?php echo esc_attr($access_user); ?>" placeholder="admin_cliente">
+									</div>
+									<div style="flex:1;">
+										<label>Contraseña</label>
+										<input type="text" name="access_pass" class="alezux-input" value="<?php echo esc_attr($access_pass); ?>" placeholder="********">
+									</div>
+								</div>
+							</div>
 						</div>
 
 						<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">
-							<i class="eicon-save"></i> Guardar Cambios
+							<i class="eicon-save"></i> Guardar Todo
 						</button>
+						
+						<script>
+							// Inline init for dynamic logic
+							if(typeof AlezuxProjects !== 'undefined' && AlezuxProjects.initPhaseLogic) {
+								AlezuxProjects.initPhaseLogic();
+							}
+						</script>
 					</form>
 				</div>
 			</div>
@@ -428,7 +481,7 @@ class Proyectos_Agencia {
 			'alezux-projects-js', 
 			plugin_dir_url( __FILE__ ) . 'assets/js/projects.js', 
 			[ 'jquery' ], 
-			ALEZUX_MEMBERS_VERSION . time(), 
+			ALEZUX_MEMBERS_VERSION . time() . '_v2', 
 			true 
 		);
 		

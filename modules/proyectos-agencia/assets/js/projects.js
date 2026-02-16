@@ -341,4 +341,30 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    // --- PHASE LOGIC (Dynamic Fields) ---
+    AlezuxProjects.initPhaseLogic = function () {
+        var $select = $('#project-phase-select');
+        if ($select.length === 0) return;
+
+        function updateFields() {
+            var phase = $select.val();
+            // Hide all first
+            $('.dynamic-section').hide();
+
+            // Logic
+            if (phase === 'briefing') {
+                $('#section-briefing').fadeIn();
+            } else if (phase === 'design_review') {
+                $('#section-design').fadeIn();
+            } else if (phase === 'in_progress' || phase === 'completed') {
+                $('#section-development').fadeIn();
+                // Optionally show design too?
+                $('#section-design').show();
+            }
+        }
+
+        $select.on('change', updateFields);
+        updateFields(); // Run on init
+    };
+
 });
