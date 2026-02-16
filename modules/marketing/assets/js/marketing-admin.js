@@ -25,10 +25,9 @@ jQuery(document).ready(function ($) {
         wrapper.find('.alezux-close-modal').off('click');
 
         // 1. Load Templates
-        // 1. Load Templates
-        function loadTemplates() {
-            // Skip AJAX if in editor mode (preserve PHP dummy data)
-            if (wrapper.data('is-editor') === 'yes') {
+        function loadTemplates(force = false) {
+            // Skip AJAX if in editor mode (preserve PHP dummy data), unless forced (e.g. after save)
+            if (wrapper.data('is-editor') === 'yes' && !force) {
                 return;
             }
 
@@ -484,7 +483,7 @@ jQuery(document).ready(function ($) {
                 if (res.success) {
                     showModalMessage('Éxito', res.data.message, false);
                     modalTemplate.hide();
-                    loadTemplates();
+                    loadTemplates(true); // Force reload even in editor
                 } else {
                     showModalMessage('Error', 'No se pudo guardar: ' + res.data, true);
                 }

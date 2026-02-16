@@ -34,6 +34,10 @@ class Marketing_Config_Widget extends Widget_Base {
 		return [ 'alezux-marketing-admin-js' ];
 	}
 
+	public function get_style_depends() {
+		return [ 'alezux-marketing-admin-css', 'alezux-tables-css' ];
+	}
+
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
@@ -736,7 +740,7 @@ class Marketing_Config_Widget extends Widget_Base {
 						</div>
 
 						<div class="form-actions" style="margin-top: 20px; text-align: right;">
-							<button type="submit" class="alezux-marketing-btn primary">Guardar (Simulado)</button>
+							<button type="submit" class="alezux-marketing-btn primary">Guardar Plantilla</button>
 						</div>
 					</form>
 				</div>
