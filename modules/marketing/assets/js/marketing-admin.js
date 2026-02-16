@@ -25,35 +25,79 @@ jQuery(document).ready(function ($) {
         wrapper.find('.alezux-close-modal').off('click');
 
         // 1. Load Templates
+        // 1. Load Templates
         function loadTemplates(force = false) {
-            // Remove editor block to allow live preview
+            // Skip check for editor to allow preview
             // if (wrapper.data('is-editor') === 'yes' && !force) { return; }
 
-            // ... (rest of logic) ...
+            if (typeof alezux_marketing_vars === 'undefined') {
+                console.error('Alezux Marketing: alezux_marketing_vars missing');
+                if (tableBody.find('tr').length === 0) {
+                    tableBody.html('<tr><td colspan="4">Error: Variables no cargadas.</td></tr>');
+                }
+                return;
+            }
 
-/* ... skips ... */
+            tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 20px;">Cargando datos...</td></tr>');
 
-                        <td>${item.subject}</td>
-                        <td style="text-align:center;">
-                            <span class="alezux-count-badge">${item.sent_count}</span>
-                        </td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <div style="display:flex; gap:5px;">
-                                <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}" title="Editar Plantilla">
-                                    <i class="fa fa-pencil"></i> <span>Editar</span>
-                                </button>
-                                <button class="alezux-marketing-btn history-btn" data-type="${item.type}" data-title="${item.title}" title="Ver Historial">
-                                    <i class="fa fa-history"></i> <span>Historial</span>
-                                </button>
-                                <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" title="Enviar prueba">
-                                    <i class="fa fa-paper-plane"></i> <span>Prueba</span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr >
-                `;
-                tableBody.append(row);
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                method: 'POST',
+                data: {
+                    action: 'alezux_marketing_get_templates',
+                    nonce: alezux_marketing_vars.nonce
+                },
+                success: function (res) {
+                    if (res.success) {
+                        tableBody.empty();
+                        if (res.data.length === 0) {
+                            tableBody.html('<tr><td colspan="5" style="text-align:center;">No hay plantillas creadas.</td></tr>');
+                            return;
+                        }
+
+                        res.data.forEach(function (item) {
+                            var statusBadge = item.is_active
+                                ? '<span class="status-badge status-active">Activo</span>'
+                                : '<span class="status-badge status-inactive">Inactivo</span>';
+
+                            // Build Row
+                            var row = `
+                                 <tr>
+                                     <td>
+                                        <strong style="font-size:14px; color:#2271b1;">${item.title}</strong>
+                                        <div style="font-size:12px; color:#666; margin-top:2px; line-height:1.3;">${item.description}</div>
+                                     </td>
+                                     <td>${item.subject}</td>
+                                     <td style="text-align:center;">
+                                         <span class="alezux-count-badge">${item.sent_count}</span>
+                                     </td>
+                                     <td>${statusBadge}</td>
+                                     <td>
+                                         <div style="display:flex; gap:5px;">
+                                             <button class="alezux-marketing-btn edit-template-btn" data-type="${item.type}" title="Editar Plantilla">
+                                                 <i class="fa fa-pencil"></i> <span>Editar</span>
+                                             </button>
+                                             <button class="alezux-marketing-btn history-btn" data-type="${item.type}" data-title="${item.title}" title="Ver Historial">
+                                                 <i class="fa fa-history"></i> <span>Historial</span>
+                                             </button>
+                                             <button class="alezux-marketing-btn send-test-email-btn" data-type="${item.type}" title="Enviar prueba">
+                                                 <i class="fa fa-paper-plane"></i> <span>Prueba</span>
+                                             </button>
+                                         </div>
+                                     </td>
+                                 </tr>
+                             `;
+                            tableBody.append(row);
+                        });
+
+                    } else {
+                        tableBody.html('<tr><td colspan="5">Error al cargar: ' + res.data + '</td></tr>');
+                    }
+                },
+                error: function (err) {
+                    console.error(err);
+                    tableBody.html('<tr><td colspan="5">Error de conexión.</td></tr>');
+                }
             });
         }
 
@@ -97,7 +141,7 @@ jQuery(document).ready(function ($) {
                         // Populate variables list
                         var varsHtml = 'Sin variables específicas.';
                         if (tpl.variables && Array.isArray(tpl.variables) && tpl.variables.length > 0) {
-                            varsHtml = tpl.variables.map(v => `< code style = "display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;" > ${ v }</code > `).join(' ');
+                            varsHtml = tpl.variables.map(v => `< code style = "display:inline-block; background:#ddd; padding:2px 4px; margin:2px; border-radius:3px;" > ${v}</code > `).join(' ');
                         }
                         $('#vars-list').html(varsHtml);
 
