@@ -133,6 +133,20 @@ class Project_Manager {
 		return $result ? $wpdb->insert_id : false;
 	}
 
+	/**
+	 * Marca los mensajes como leídos (de otros usuarios).
+	 */
+	public function mark_messages_read( $project_id, $exclude_sender_id ) {
+		global $wpdb;
+		$project_id = absint( $project_id );
+		$exclude_sender_id = absint( $exclude_sender_id );
+
+		return $wpdb->query( $wpdb->prepare(
+			"UPDATE {$this->table_messages} SET is_read = 1 WHERE project_id = %d AND sender_id != %d AND is_read = 0",
+			$project_id, $exclude_sender_id
+		));
+	}
+
 
 	/**
 	 * Crea un nuevo proyecto.

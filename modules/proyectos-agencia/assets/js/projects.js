@@ -317,6 +317,13 @@ jQuery(document).ready(function ($) {
         var $container = $('#chat-messages-list');
         var isMeClass = msg.is_me ? 'is-me' : '';
 
+        var readStatus = '';
+        if (msg.is_me) {
+            var color = msg.is_read ? '#4CAF50' : '#ccc'; // Green for read, Grey for sent
+            var title = msg.is_read ? 'Visto' : 'Enviado';
+            readStatus = `<i class="eicon-check" style="color: ${color}; margin-left: 5px;" title="${title}"></i>`;
+        }
+
         var html = `
             <div class="chat-message ${isMeClass}">
                 <div class="chat-avatar">
@@ -327,7 +334,7 @@ jQuery(document).ready(function ($) {
                         ${msg.content}
                     </div>
                     <div class="chat-meta">
-                        ${msg.sender_name} • ${msg.time}
+                        ${msg.sender_name} • ${msg.time} ${readStatus}
                     </div>
                 </div>
             </div>

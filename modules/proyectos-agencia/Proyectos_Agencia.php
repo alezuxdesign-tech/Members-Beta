@@ -267,6 +267,9 @@ class Proyectos_Agencia {
 		// Verificar if user can access (Admin or Customer)
 		// ... (Simplificado por ahora asumimos Admin o Cliente dueño)
 
+		// Mark messages as read (if I am reading them)
+		$manager->mark_messages_read( $project_id, get_current_user_id() );
+
 		$messages = $manager->get_project_messages( $project_id );
 		$formatted_messages = [];
 
@@ -280,6 +283,7 @@ class Proyectos_Agencia {
 				'sender_name'=> $sender ? $sender->display_name : 'Usuario',
 				'sender_avatar' => get_avatar_url( $msg->sender_id ),
 				'is_me'      => $is_me,
+				'is_read'    => (bool) $msg->is_read,
 				'time'       => date_i18n( 'H:i', strtotime( $msg->created_at ) ),
 				'date'       => date_i18n( 'd M', strtotime( $msg->created_at ) ),
 			];
