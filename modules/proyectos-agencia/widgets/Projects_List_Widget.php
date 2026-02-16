@@ -200,6 +200,223 @@ class Projects_List_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// --- STYLE: CARD INTERNALS ---
+		$this->start_controls_section(
+			'style_card_internals',
+			[
+				'label' => esc_html__( 'Elementos de la Tarjeta', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_status',
+			[
+				'label' => esc_html__( 'Etiqueta de Estado', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'status_typography',
+				'selector' => '{{WRAPPER}} .alezux-status-badge',
+			]
+		);
+
+		$this->add_control(
+			'status_border_radius',
+			[
+				'label' => esc_html__( 'Radio Borde Estado', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-status-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_client',
+			[
+				'label' => esc_html__( 'Información del Cliente', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'client_name_color',
+			[
+				'label' => esc_html__( 'Color Nombre Cliente', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .client-name' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'client_name_typography',
+				'selector' => '{{WRAPPER}} .client-name',
+			]
+		);
+
+		$this->add_control(
+			'client_role_color',
+			[
+				'label' => esc_html__( 'Color Rol Cliente', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .client-role' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'heading_progress',
+			[
+				'label' => esc_html__( 'Barra de Progreso', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'progress_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Barra', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .progress-bar' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_fill_color',
+			[
+				'label' => esc_html__( 'Color Relleno', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .progress-fill' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'progress_height',
+			[
+				'label' => esc_html__( 'Altura Barra', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 2,
+						'max' => 20,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .progress-bar' => 'height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: SIDE PANEL (OFF-CANVAS) ---
+		$this->start_controls_section(
+			'style_side_panel',
+			[
+				'label' => esc_html__( 'Panel Lateral', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'panel_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Panel', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-offcanvas-panel' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'panel_width',
+			[
+				'label' => esc_html__( 'Ancho Panel', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [
+						'min' => 300,
+						'max' => 1000,
+					],
+					'%' => [
+						'min' => 20,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-offcanvas-panel' => 'width: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'panel_header_bg',
+			[
+				'label' => esc_html__( 'Fondo Cabecera Panel', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}} .offcanvas-header' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'panel_title_color',
+			[
+				'label' => esc_html__( 'Color Título Panel', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .offcanvas-header h3' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'panel_title_typography',
+				'selector' => '{{WRAPPER}} .offcanvas-header h3',
+			]
+		);
+
+		$this->add_control(
+			'panel_text_color',
+			[
+				'label' => esc_html__( 'Color Texto General Panel', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-offcanvas-panel' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-offcanvas-panel p' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-offcanvas-panel label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
 		// --- STYLE: BUTTONS ---
 		$this->start_controls_section(
 			'style_buttons',
