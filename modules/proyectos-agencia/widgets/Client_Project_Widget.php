@@ -28,14 +28,46 @@ class Client_Project_Widget extends Widget_Base {
 	}
 
 	protected function register_controls() {
+		// --- CONTENT SECTION ---
 		$this->start_controls_section(
 			'content_section',
 			[
-				'label' => esc_html__( 'Textos Personalizados', 'alezux-members' ),
+				'label' => esc_html__( 'Contenido', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_CONTENT,
 			]
 		);
 		
+		$this->add_control(
+			'is_preview_mode',
+			[
+				'label' => esc_html__( 'Modo Previsualización', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'no',
+				'description' => 'Activa esto para ver un proyecto de ejemplo mientras editas.',
+			]
+		);
+
+		$this->add_control(
+			'preview_step',
+			[
+				'label' => esc_html__( 'Fase a Previsualizar', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'options' => [
+					'briefing' => '1. Briefing',
+					'design_review' => '2. Revisión Diseño',
+					'in_progress' => '3. Desarrollo',
+					'completed' => '4. Completado',
+				],
+				'default' => 'design_review',
+				'condition' => [
+					'is_preview_mode' => 'yes',
+				],
+			]
+		);
+
 		$this->add_control(
 			'no_project_msg',
 			[
@@ -46,9 +78,277 @@ class Client_Project_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- STYLE: CONTAINER ---
+		$this->start_controls_section(
+			'style_container_section',
+			[
+				'label' => esc_html__( 'Contenedor Principal', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'container_bg_color',
+			[
+				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project-dashboard' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'container_border',
+				'selector' => '{{WRAPPER}} .alezux-client-project-dashboard',
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'container_shadow',
+				'selector' => '{{WRAPPER}} .alezux-client-project-dashboard',
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_padding',
+			[
+				'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project-dashboard' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_radius',
+			[
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project-dashboard' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: HEADER ---
+		$this->start_controls_section(
+			'style_header_section',
+			[
+				'label' => esc_html__( 'Cabecera (Header)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'header_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Cabecera', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-cp-header' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label' => esc_html__( 'Color Título', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-cp-header h2' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'title_typography',
+				'selector' => '{{WRAPPER}} .alezux-cp-header h2',
+			]
+		);
+
+		$this->add_control(
+			'subtitle_color',
+			[
+				'label' => esc_html__( 'Color Subtítulo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-cp-header small' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: TEXTS & CONTENT ---
+		$this->start_controls_section(
+			'style_content_texts',
+			[
+				'label' => esc_html__( 'Textos y Contenido', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_color',
+			[
+				'label' => esc_html__( 'Encabezados (H3, H4)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} h3, {{WRAPPER}} h4' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'headings_typography',
+				'selector' => '{{WRAPPER}} h3, {{WRAPPER}} h4',
+			]
+		);
+
+		$this->add_control(
+			'text_color',
+			[
+				'label' => esc_html__( 'Texto General', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} p, {{WRAPPER}} li, {{WRAPPER}} label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'text_typography',
+				'selector' => '{{WRAPPER}} p, {{WRAPPER}} li, {{WRAPPER}} label',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: BUTTONS ---
+		$this->start_controls_section(
+			'style_buttons',
+			[
+				'label' => esc_html__( 'Botones', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-btn',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_buttons' );
+
+		$this->start_controls_tab(
+			'tab_button_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Botón Primario', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-primary, {{WRAPPER}} .alezux-btn-success' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => esc_html__( 'Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_button_hover',
+			[
+				'label' => esc_html__( 'Al Pasar Cursor', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color_hover',
+			[
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-primary:hover, {{WRAPPER}} .alezux-btn-success:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_text_color_hover',
+			[
+				'label' => esc_html__( 'Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_control(
+			'button_border_radius',
+			[
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
+		$settings = $this->get_settings_for_display();
+		
+		// PREVIEW MODE LOGIC
+		if ( $settings['is_preview_mode'] === 'yes' ) {
+			$this->render_preview( $settings['preview_step'] );
+			return;
+		}
+
 		if ( ! is_user_logged_in() ) {
 			echo '<div class="alezux-alert info">Inicia sesión para ver tu proyecto.</div>';
 			return;
@@ -61,7 +361,6 @@ class Client_Project_Widget extends Widget_Base {
 		$projects = $manager->get_projects_by_user( $user_id );
 		
 		if ( empty( $projects ) ) {
-			$settings = $this->get_settings_for_display();
 			echo '<div class="alezux-no-project-box">';
 			echo '<i class="eicon-folder-o"></i>';
 			echo '<p>' . esc_html( $settings['no_project_msg'] ) . '</p>';
@@ -100,6 +399,47 @@ class Client_Project_Widget extends Widget_Base {
 		
 		echo '</div>'; // .alezux-project-body
 		echo '</div>'; // .alezux-client-project-dashboard
+	}
+
+	private function render_preview( $step ) {
+		// Dummy Project Data for Preview
+		$dummy_project = (object) [
+			'id' => 999,
+			'name' => 'Proyecto Demo Cliente',
+			'status' => 'in_progress',
+			'current_step' => $step
+		];
+
+		// Dummy Manager Mock (Partial)
+		$manager_mock = new class {
+			public function get_project_meta($id, $key) {
+				if ($key === 'design_proposal_url') return 'https://via.placeholder.com/800x500.png?text=Propuesta+de+Diseño';
+				if ($key === 'briefing_data') return null; // Simulate fresh briefing for 'briefing' step
+				return '';
+			}
+		};
+
+		echo '<div class="alezux-client-project-dashboard">';
+		$this->render_header( $dummy_project );
+		echo '<div class="alezux-project-body">';
+
+		switch ( $step ) {
+			case 'briefing':
+				// Force briefing form display
+				$this->render_briefing_step( $dummy_project, $manager_mock );
+				break;
+			case 'design_review':
+				$this->render_design_review_step( $dummy_project, $manager_mock );
+				break;
+			case 'in_progress':
+				$this->render_progress_step( $dummy_project );
+				break;
+			case 'completed':
+				$this->render_completed_step( $dummy_project );
+				break;
+		}
+
+		echo '</div></div>';
 	}
 
 	private function render_header( $project ) {
