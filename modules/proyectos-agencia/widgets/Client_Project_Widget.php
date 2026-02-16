@@ -385,17 +385,9 @@ class Client_Project_Widget extends Widget_Base {
 		
 		// Header del Proyecto (con selector si hay varios)
 		$this->render_header( $project, count($projects) > 1 ? $projects : null );
-
-		// Navigation Tabs
 		?>
-		<div class="alezux-client-tabs-nav">
-			<button class="client-tab-btn active" onclick="openClientTab('tab-overview')">
-				<i class="eicon-info-circle-o"></i> Mi Proyecto
-			</button>
-			<button class="client-tab-btn" onclick="openClientTab('tab-chat')">
-				<i class="eicon-comment-o"></i> Mensajes <span class="message-counter" style="display:none;">0</span>
-			</button>
-		</div>
+
+
 
 		<div id="tab-overview" class="client-tab-content active">
 			<div class="alezux-project-body">
@@ -528,28 +520,39 @@ class Client_Project_Widget extends Widget_Base {
 
 	private function render_header( $project, $all_projects = null ) {
 		?>
-		<div class="alezux-cp-header">
-			<div class="cp-title">
-				<div style="display:flex; align-items:center;">
-					<h2 style="margin-right: 15px;"><?php echo esc_html( $project->name ); ?></h2>
-					<?php if ( $all_projects && count($all_projects) > 1 ) : ?>
-						<div class="project-selector-wrapper">
-							<select class="project-selector" onchange="window.location.search = '?alezux_pid=' + this.value">
-								<?php foreach ($all_projects as $p) : ?>
-									<option value="<?php echo esc_attr($p->id); ?>" <?php selected($p->id, $project->id); ?>>
-										<?php echo esc_html($p->name); ?> (<?php echo esc_html($this->get_status_label($p->status)); ?>)
-									</option>
-								<?php endforeach; ?>
-							</select>
-						</div>
-					<?php endif; ?>
+		<div class="alezux-cp-header" style="flex-direction: column; align-items: stretch; gap: 0;">
+			<div class="cp-top-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0;">
+				<div class="cp-title">
+					<div style="display:flex; align-items:center;">
+						<h2 style="margin-right: 15px;"><?php echo esc_html( $project->name ); ?></h2>
+						<?php if ( $all_projects && count($all_projects) > 1 ) : ?>
+							<div class="project-selector-wrapper">
+								<select class="project-selector" onchange="window.location.search = '?alezux_pid=' + this.value">
+									<?php foreach ($all_projects as $p) : ?>
+										<option value="<?php echo esc_attr($p->id); ?>" <?php selected($p->id, $project->id); ?>>
+											<?php echo esc_html($p->name); ?> (<?php echo esc_html($this->get_status_label($p->status)); ?>)
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+						<?php endif; ?>
+					</div>
+					<small>PROYECTO ACTIVO: #<?php echo esc_html($project->id); ?></small>
 				</div>
-				<small>PROYECTO ACTIVO: #<?php echo esc_html($project->id); ?></small>
+				<div class="cp-status">
+					<span class="alezux-status-pill status-<?php echo esc_attr( $project->status ); ?>">
+						<?php echo esc_html( $this->get_status_label( $project->status ) ); ?>
+					</span>
+				</div>
 			</div>
-			<div class="cp-status">
-				<span class="alezux-status-pill status-<?php echo esc_attr( $project->status ); ?>">
-					<?php echo esc_html( $this->get_status_label( $project->status ) ); ?>
-				</span>
+
+			<div class="alezux-client-tabs-nav" style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 20px; padding-top: 0;">
+				<button class="client-tab-btn active" onclick="openClientTab('tab-overview')">
+					<i class="eicon-info-circle-o"></i> Mi Proyecto
+				</button>
+				<button class="client-tab-btn" onclick="openClientTab('tab-chat')">
+					<i class="eicon-comment-o"></i> Mensajes <span class="message-counter" style="display:none;">0</span>
+				</button>
 			</div>
 		</div>
 		<?php
