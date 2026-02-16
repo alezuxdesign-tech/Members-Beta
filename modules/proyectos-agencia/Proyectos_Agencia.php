@@ -93,74 +93,101 @@ class Proyectos_Agencia {
 
 		ob_start();
 		?>
+
 		<div class="panel-details-container" data-project-id="<?php echo esc_attr($project->id); ?>">
-			<!-- Info General -->
-			<div class="panel-section">
-				<h4 class="panel-section-title">Información General</h4>
-				<div class="detail-grid">
-					<div class="detail-item">
-						<label>Cliente</label>
-						<p>
-							<?php echo $customer ? esc_html( $customer->display_name ) . ' <small>(' . esc_html($customer->user_email) . ')</small>' : 'Desconocido'; ?>
-						</p>
+			
+			<!-- Tabs Header -->
+			<div class="alezux-tabs-header">
+				<button class="tab-btn active" data-tab="tab-overview"><i class="eicon-dashboard"></i> Overview</button>
+				<button class="tab-btn" data-tab="tab-chat"><i class="eicon-comment"></i> Chat</button>
+				<button class="tab-btn" data-tab="tab-docs" disabled title="Próximamente"><i class="eicon-file-text"></i> Docs</button>
+			</div>
+
+			<!-- Tab Content: Overview -->
+			<div id="tab-overview" class="tab-content active">
+				<div class="panel-section">
+					<h4 class="panel-section-title">Información General</h4>
+					<div class="detail-grid">
+						<div class="detail-item">
+							<label>Cliente</label>
+							<div class="client-mini-profile">
+								<?php echo get_avatar( $project->customer_id, 32 ); ?>
+								<div>
+									<span class="d-block"><?php echo $customer ? esc_html( $customer->display_name ) : 'Desconocido'; ?></span>
+									<small class="d-block text-muted"><?php echo $customer ? esc_html( $customer->user_email ) : ''; ?></small>
+								</div>
+							</div>
+						</div>
+						<div class="detail-item">
+							<label>Fecha Inicio</label>
+							<p><i class="eicon-calendar"></i> <?php echo date_i18n( get_option('date_format'), strtotime($project->created_at) ); ?></p>
+						</div>
 					</div>
-					<div class="detail-item">
-						<label>Fecha Inicio</label>
-						<p><?php echo date_i18n( get_option('date_format'), strtotime($project->created_at) ); ?></p>
+				</div>
+
+				<div class="panel-section">
+					<h4 class="panel-section-title">Actualizar Estado</h4>
+					<form id="update-project-status-form" class="alezux-form-group">
+						<input type="hidden" name="project_id" value="<?php echo esc_attr($project->id); ?>">
+						
+						<div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
+							<div style="flex:1;">
+								<label>Estado del Sistema</label>
+								<select name="status" class="alezux-input">
+									<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
+									<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
+									<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Completado</option>
+									<option value="cancelled" <?php selected( $project->status, 'cancelled' ); ?>>Cancelado</option>
+								</select>
+							</div>
+							<div style="flex:1;">
+								<label>Fase (Cliente)</label>
+								<select name="current_step" class="alezux-input">
+									<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
+									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
+									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
+									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>4. Completado</option>
+								</select>
+							</div>
+						</div>
+
+						<div style="margin-bottom:15px;">
+							<label>URL Propuesta de Diseño</label>
+							<div class="alezux-input-group">
+								<span class="input-group-text"><i class="eicon-link"></i></span>
+								<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url($design_url); ?>" placeholder="https://figma.com/..." style="padding-left: 35px;">
+							</div>
+						</div>
+
+						<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">
+							<i class="eicon-save"></i> Guardar Cambios
+						</button>
+					</form>
+				</div>
+			</div>
+			
+			<!-- Tab Content: Chat -->
+			<div id="tab-chat" class="tab-content">
+				<div class="panel-section chat-section" style="height: 100%; display: flex; flex-direction: column;">
+					<div id="project-chat-container" class="project-chat-container" style="flex-grow: 1; height: auto;">
+						<div id="chat-messages-list" class="chat-messages-list">
+							<!-- Mensajes cargados vía JS -->
+							<div class="chat-loading"><i class="eicon-loading eicon-animation-spin"></i> Cargando historial...</div>
+						</div>
+						<div class="chat-input-area">
+							<textarea id="chat-message-input" placeholder="Escribe un mensaje al cliente..."></textarea>
+							<button id="btn-send-chat" class="alezux-marketing-btn"><i class="eicon-send"></i></button>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Formulario Edición Rápida -->
-			<div class="panel-section">
-				<h4 class="panel-section-title">Gestión del Proyecto</h4>
-				<form id="update-project-status-form" class="alezux-form-group">
-					<input type="hidden" name="project_id" value="<?php echo esc_attr($project->id); ?>">
-					
-					<div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
-						<div style="flex:1;">
-							<label>Estado del Sistema</label>
-							<select name="status" class="alezux-input">
-								<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
-								<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
-								<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Completado</option>
-								<option value="cancelled" <?php selected( $project->status, 'cancelled' ); ?>>Cancelado</option>
-							</select>
-						</div>
-						<div style="flex:1;">
-							<label>Fase Actual (Visible Cliente)</label>
-							<select name="current_step" class="alezux-input">
-								<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
-								<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
-								<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
-								<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>4. Completado</option>
-							</select>
-						</div>
-					</div>
-
-					<div style="margin-bottom:15px;">
-						<label>URL Propuesta de Diseño (Imagen/PDF)</label>
-						<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url($design_url); ?>" placeholder="https://...">
-					</div>
-
-					<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">
-						<i class="eicon-save"></i> Guardar Cambios
-					</button>
-				</form>
-			</div>
-			
-			<!-- Mensajes / Chat -->
-			<div class="panel-section chat-section">
-				<h4 class="panel-section-title">Chat del Proyecto</h4>
-				<div id="project-chat-container" class="project-chat-container">
-					<div id="chat-messages-list" class="chat-messages-list">
-						<!-- Mensajes cargados vía JS -->
-						<div class="chat-loading"><i class="eicon-loading eicon-animation-spin"></i> Cargando historial...</div>
-					</div>
-					<div class="chat-input-area">
-						<textarea id="chat-message-input" placeholder="Escribe un mensaje al cliente..."></textarea>
-						<button id="btn-send-chat" class="alezux-marketing-btn"><i class="eicon-send"></i></button>
-					</div>
+			<!-- Tab Content: Docs (Placeholder) -->
+			<div id="tab-docs" class="tab-content">
+				<div class="alezux-empty-state">
+					<i class="eicon-file-text"></i>
+					<h3>Documentación</h3>
+					<p>Próximamente podrás gestionar archivos aquí.</p>
 				</div>
 			</div>
 
@@ -388,7 +415,7 @@ class Proyectos_Agencia {
 			'alezux-projects-css', 
 			plugin_dir_url( __FILE__ ) . 'assets/css/projects.css', 
 			[], 
-			ALEZUX_MEMBERS_VERSION 
+			ALEZUX_MEMBERS_VERSION . time() 
 		);
 		wp_enqueue_script( 
 			'alezux-projects-js', 

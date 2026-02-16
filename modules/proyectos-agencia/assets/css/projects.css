@@ -779,6 +779,77 @@
 }
 
 /* =========================================
+   SIDE PANEL TABS
+   ========================================= */
+.alezux-tabs-header {
+    display: flex;
+    border-bottom: 1px solid #2d3748;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #718096;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-btn:hover {
+    color: #e2e8f0;
+}
+
+.tab-btn.active {
+    color: #6366f1;
+    /* Indigo */
+    border-bottom-color: #6366f1;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.client-mini-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.client-mini-profile img {
+    border-radius: 50%;
+}
+
+.alezux-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-group-text {
+    position: absolute;
+    left: 10px;
+    color: #718096;
+    pointer-events: none;
+}
+
+
+/* =========================================
    CHAT INTERNO
    ========================================= */
 .project-chat-container {

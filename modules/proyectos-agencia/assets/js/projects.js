@@ -232,6 +232,20 @@ jQuery(document).ready(function ($) {
         if (e.key === "Escape") closeOffcanvas();
     });
 
+    // --- TABS LOGIC ---
+    $(document).on('click', '.tab-btn', function () {
+        var tabId = $(this).data('tab');
+        var $container = $(this).closest('.panel-details-container');
+
+        // Buttons
+        $container.find('.tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        // Content
+        $container.find('.tab-content').removeClass('active');
+        $container.find('#' + tabId).addClass('active');
+    });
+
     // --- CHAT LOGIC ---
 
     function loadChatMessages(projectId) {
