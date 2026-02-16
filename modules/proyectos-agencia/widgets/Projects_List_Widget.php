@@ -47,6 +47,255 @@ class Projects_List_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// --- STYLE: CONTAINER ---
+		$this->start_controls_section(
+			'style_container_section',
+			[
+				'label' => esc_html__( 'Contenedor Principal', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'container_bg_color',
+			[
+				'label' => esc_html__( 'Color de Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-projects-app' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'container_border',
+				'selector' => '{{WRAPPER}} .alezux-projects-app',
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'container_shadow',
+				'selector' => '{{WRAPPER}} .alezux-projects-app',
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_padding',
+			[
+				'label' => esc_html__( 'Relleno (Padding)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-projects-app' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_radius',
+			[
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-projects-app' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: HEADER ---
+		$this->start_controls_section(
+			'style_header_section',
+			[
+				'label' => esc_html__( 'Cabecera (Header)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label' => esc_html__( 'Color Título', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-table-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'title_typography',
+				'selector' => '{{WRAPPER}} .alezux-table-title',
+			]
+		);
+
+		$this->add_control(
+			'desc_color',
+			[
+				'label' => esc_html__( 'Color Descripción', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-table-desc' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'desc_typography',
+				'selector' => '{{WRAPPER}} .alezux-table-desc',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: CARDS ---
+		$this->start_controls_section(
+			'style_cards_section',
+			[
+				'label' => esc_html__( 'Tarjetas de Proyecto', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'card_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Tarjeta', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-project-card' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'card_border',
+				'selector' => '{{WRAPPER}} .alezux-project-card',
+			]
+		);
+
+		$this->add_control(
+			'card_title_color',
+			[
+				'label' => esc_html__( 'Color Nombre Proyecto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .project-name' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- STYLE: BUTTONS ---
+		$this->start_controls_section(
+			'style_buttons',
+			[
+				'label' => esc_html__( 'Botones', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-marketing-btn',
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_buttons' );
+
+		$this->start_controls_tab(
+			'tab_button_normal',
+			[
+				'label' => esc_html__( 'Normal', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color',
+			[
+				'label' => esc_html__( 'Fondo Botón', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn.primary' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => esc_html__( 'Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_button_hover',
+			[
+				'label' => esc_html__( 'Al Pasar Cursor', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color_hover',
+			[
+				'label' => esc_html__( 'Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn.primary:hover' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_text_color_hover',
+			[
+				'label' => esc_html__( 'Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn:hover' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_control(
+			'button_border_radius',
+			[
+				'label' => esc_html__( 'Radio del Borde', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-marketing-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
