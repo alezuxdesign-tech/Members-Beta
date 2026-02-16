@@ -442,10 +442,20 @@ class Client_Project_Widget extends Widget_Base {
                         document.getElementById(tabName).classList.add('active');
                         event.currentTarget.classList.add('active');
 
-                        if(tabName === 'tab-chat' && typeof AlezuxProjects !== 'undefined') {
-                             var pid = <?php echo $project->id; ?>;
-                             AlezuxProjects.currProjectId = pid;
-                             AlezuxProjects.loadChatMessages(pid);
+                        if(typeof AlezuxProjects !== 'undefined') {
+                            if(tabName === 'tab-chat') {
+                                var pid = <?php echo $project->id; ?>;
+                                AlezuxProjects.currProjectId = pid;
+                                if(AlezuxProjects.startChatPolling) {
+                                    AlezuxProjects.startChatPolling(pid);
+                                } else {
+                                    // Fallback if JS not updated yet
+                                    AlezuxProjects.loadChatMessages(pid); 
+                                }
+                            } else {
+                                // Stop polling if leaving chat
+                                if(AlezuxProjects.stopChatPolling) AlezuxProjects.stopChatPolling();
+                            }
                         }
                     }
 

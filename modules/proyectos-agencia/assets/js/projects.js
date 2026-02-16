@@ -249,11 +249,48 @@ jQuery(document).ready(function ($) {
         $container.find('#' + tabId).addClass('active');
     });
 
-    // --- CHAT LOGIC ---
+    // --- CHAT LOGIC (SMART POLLING) ---
+    AlezuxProjects.chatTimer = null;
+    AlezuxProjects.isPageVisible = true;
+
+    // Visibility Listener
+    document.addEventListener("visibilitychange", function () {
+        AlezuxProjects.isPageVisible = !document.hidden;
+        if (AlezuxProjects.currProjectId) {
+            // Restart polling with new frequency
+            AlezuxProjects.startChatPolling(AlezuxProjects.currProjectId);
+        }
+    });
+
+    AlezuxProjects.startChatPolling = function (projectId) {
+        // Clear existing
+        if (AlezuxProjects.chatTimer) clearInterval(AlezuxProjects.chatTimer);
+
+        // Initial Load
+        AlezuxProjects.loadChatMessages(projectId);
+
+        // Set Interval based on visibility
+        var interval = AlezuxProjects.isPageVisible ? 5000 : 60000; // 5s active, 60s background
+
+        AlezuxProjects.chatTimer = setInterval(function () {
+            if (AlezuxProjects.currProjectId === projectId) {
+                AlezuxProjects.loadChatMessages(projectId);
+            } else {
+                clearInterval(AlezuxProjects.chatTimer);
+            }
+        }, interval);
+    };
+
+    AlezuxProjects.stopChatPolling = function () {
+        if (AlezuxProjects.chatTimer) clearInterval(AlezuxProjects.chatTimer);
+        AlezuxProjects.chatTimer = null;
+    };
 
     // Expose globally for Widget use
     AlezuxProjects.loadChatMessages = function (projectId) {
         var $container = $('#chat-messages-list');
+        // Check if user is scrolling up to read history? If so, maybe don't scroll bottom?
+        // For now simple implementation.
 
         $.post(AlezuxProjects.ajaxurl, {
             action: 'alezux_get_project_messages',
@@ -262,7 +299,7 @@ jQuery(document).ready(function ($) {
         }, function (response) {
             if (response.success) {
                 var messages = response.data;
-                $container.html('');
+                $container.html(''); // Simple redraw for now. Ideal: append only new.
 
                 if (messages.length === 0) {
                     $container.html('<div class="chat-loading">No hay mensajes aún.</div>');
@@ -272,8 +309,6 @@ jQuery(document).ready(function ($) {
                     });
                     scrollToBottom();
                 }
-            } else {
-                $container.html('<div class="chat-loading error">Error al cargar mensajes.</div>');
             }
         });
     }
@@ -326,8 +361,9 @@ jQuery(document).ready(function ($) {
         }, function (response) {
             if (response.success) {
                 $input.val('');
-                // Reload messages to get the correct server time/format
+                // Force immediate reload and reset timer
                 AlezuxProjects.loadChatMessages(projectId);
+                AlezuxProjects.startChatPolling(projectId);
             } else {
                 alert('Error: ' + response.data);
             }
