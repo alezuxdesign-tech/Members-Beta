@@ -83,7 +83,7 @@ class Client_Project_Widget extends Widget_Base {
 		
 		switch ( $project->current_step ) {
 			case 'briefing':
-				$this->render_briefing_step( $project );
+				$this->render_briefing_step( $project, $manager );
 				break;
 			case 'design_review':
 				$this->render_design_review_step( $project, $manager );
@@ -118,7 +118,25 @@ class Client_Project_Widget extends Widget_Base {
 		<?php
 	}
 
-	private function render_briefing_step( $project ) {
+	private function render_briefing_step( $project, $manager ) {
+		// Verificar si ya envió el briefing
+		$briefing_data = $manager->get_project_meta( $project->id, 'briefing_data' );
+		
+		if ( ! empty( $briefing_data ) || $project->status === 'briefing_completed' ) {
+			?>
+			<div class="alezux-step-container center-text">
+				<div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+				<h3>Briefing Recibido</h3>
+				<p>¡Gracias! Hemos recibido la información de tu proyecto.</p>
+				<p>Nuestro equipo está analizando los detalles. Pronto actualizaremos el estado a <strong>Diseño</strong>.</p>
+				
+				<div class="alezux-alert info" style="margin-top: 20px; display: inline-block; text-align: left;">
+					<i class="eicon-info-circle-o"></i> Si necesitas modificar algo urgente, por favor contáctanos directamente.
+				</div>
+			</div>
+			<?php
+			return;
+		}
 		?>
 		<div class="alezux-step-container">
 			<div class="step-intro">
