@@ -28,10 +28,6 @@ class Proyectos_Agencia {
 
 	public function load_dependencies() {
 		require_once __DIR__ . '/includes/Project_Manager.php';
-		// Widgets
-		require_once __DIR__ . '/widgets/Projects_List_Widget.php';
-		require_once __DIR__ . '/widgets/Project_Detail_Admin_Widget.php';
-		require_once __DIR__ . '/widgets/Client_Project_Widget.php';
 	}
 
 	private function init_hooks() {
@@ -52,6 +48,11 @@ class Proyectos_Agencia {
 	}
 
 	public function register_widgets( $widgets_manager ) {
+		// Cargar archivos de widgets aquí para asegurar que Elementor ya está cargado
+		require_once __DIR__ . '/widgets/Projects_List_Widget.php';
+		require_once __DIR__ . '/widgets/Project_Detail_Admin_Widget.php';
+		require_once __DIR__ . '/widgets/Client_Project_Widget.php';
+
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Projects_List_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Detail_Admin_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Client_Project_Widget() );
