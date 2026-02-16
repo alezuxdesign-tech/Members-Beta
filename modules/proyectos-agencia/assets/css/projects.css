@@ -392,7 +392,11 @@
 .timeline-item.completed .point,
 .timeline-item.active .point {
     border-color: #e11d48;
-    background: #fff;
+}
+
+.timeline-item.completed .point {
+    background: #e11d48;
+    color: #fff;
 }
 
 .timeline-item.active .point {
