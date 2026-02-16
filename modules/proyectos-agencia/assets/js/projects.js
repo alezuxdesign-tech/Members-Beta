@@ -155,7 +155,7 @@ jQuery(document).ready(function ($) {
             var $item = $('<div class="color-item" style="background-color: ' + color + ';">' +
                 '<span class="color-code">' + color + '</span>' +
                 '<div class="color-remove"><i class="eicon-close"></i></div>' +
-                </div > ');
+                '</div>');
 
             // Insert before the add button
             $item.insertBefore($('#btn-add-color'));
@@ -391,10 +391,10 @@ jQuery(document).ready(function ($) {
     };
 
     // Expose globally for Widget use
-    AlezuxProjects.loadChatMessages = function (projectId) {
+    // Expose globally for Widget use
+    window.AlezuxProjects = window.AlezuxProjects || {};
+    window.AlezuxProjects.loadChatMessages = function (projectId) {
         var $container = $('#chat-messages-list');
-        // Check if user is scrolling up to read history? If so, maybe don't scroll bottom?
-        // For now simple implementation.
 
         $.post(AlezuxProjects.ajaxurl, {
             action: 'alezux_get_project_messages',
@@ -415,7 +415,7 @@ jQuery(document).ready(function ($) {
                 }
             }
         });
-    }
+    };
 
     function appendMessageToChat(msg) {
         var $container = $('#chat-messages-list');
