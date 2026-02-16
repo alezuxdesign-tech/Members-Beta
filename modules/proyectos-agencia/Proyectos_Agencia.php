@@ -291,16 +291,23 @@ class Proyectos_Agencia {
 		$project_id   = absint( $_POST['project_id'] );
 		$status       = sanitize_text_field( $_POST['status'] );
 		$current_step = sanitize_text_field( $_POST['current_step'] );
+		
+		// Meta Fields
 		$design_url   = esc_url_raw( $_POST['design_url'] );
+		$site_url     = esc_url_raw( $_POST['site_url'] );
+		$access_user  = sanitize_text_field( $_POST['access_user'] );
+		$access_pass  = sanitize_text_field( $_POST['access_pass'] );
 
 		$manager = new Project_Manager();
 		$manager->update_status( $project_id, $status, $current_step );
 
-		if ( ! empty( $design_url ) ) {
-			$manager->update_project_meta( $project_id, 'design_proposal_url', $design_url );
-		}
+		// Update Meta
+		if ( isset($_POST['design_url']) ) $manager->update_project_meta( $project_id, 'design_proposal_url', $design_url );
+		if ( isset($_POST['site_url']) ) $manager->update_project_meta( $project_id, 'site_url', $site_url );
+		if ( isset($_POST['access_user']) ) $manager->update_project_meta( $project_id, 'access_user', $access_user );
+		if ( isset($_POST['access_pass']) ) $manager->update_project_meta( $project_id, 'access_pass', $access_pass );
 
-		wp_send_json_success( 'Proyecto actualizado correctamente.' );
+		wp_send_json_success( 'Datos del proyecto actualizados.' );
 	}
 
 	public function ajax_submit_briefing() {

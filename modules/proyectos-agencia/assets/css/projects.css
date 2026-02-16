@@ -852,11 +852,17 @@
 /* =========================================
    CHAT INTERNO
    ========================================= */
+/* =========================================
+   CHAT INTERNO
+   ========================================= */
 .project-chat-container {
     background: #171923;
     border: 1px solid #2d3748;
     border-radius: 8px;
-    height: 400px;
+    height: 100%;
+    /* Fill parent */
+    min-height: 400px;
+    /* Fallback */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -869,7 +875,32 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    max-height: calc(100vh - 250px);
+    /* Limit height to allow scroll, approx */
 }
+
+/* =========================================
+   DYNAMIC FORM SECTIONS
+   ========================================= */
+.alezux-info-box {
+    background: rgba(66, 153, 225, 0.1);
+    /* Blue tint */
+    border: 1px solid rgba(66, 153, 225, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.alezux-info-box h5 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #90cdf4;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 
 .chat-loading {
     text-align: center;
