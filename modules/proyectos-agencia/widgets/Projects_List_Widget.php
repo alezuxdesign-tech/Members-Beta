@@ -998,6 +998,13 @@ class Projects_List_Widget extends Widget_Base {
 							case 'completed': $progress = 100; break;
 						}
 						?>
+						// Obtener fechas de inicio y fin
+						$start_date_meta = $manager->get_project_meta( $project->id, 'project_start_date' );
+						$end_date_meta   = $manager->get_project_meta( $project->id, 'project_end_date' );
+
+						$start_display = ! empty( $start_date_meta ) ? date_i18n( 'd M', strtotime( $start_date_meta ) ) : '-';
+						$end_display   = ! empty( $end_date_meta ) ? date_i18n( 'd M, Y', strtotime( $end_date_meta ) ) : '-';
+						?>
 						
 						<div class="alezux-project-card" onclick="AlezuxProjects.openPanel(<?php echo esc_attr($project->id); ?>)">
 							<div class="card-header">
@@ -1030,8 +1037,9 @@ class Projects_List_Widget extends Widget_Base {
 									</div>
 								</div>
 								
-								<div class="card-dates">
-									<i class="eicon-calendar"></i> <?php echo date_i18n( 'M j, Y', strtotime( $project->created_at ) ); ?>
+								<div class="card-dates" style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 10px; color: #718096;">
+									<span title="Fecha Inicio"><i class="eicon-calendar"></i> <?php echo $start_display; ?></span>
+									<span title="Fecha Fin"><i class="eicon-flag"></i> <?php echo $end_display; ?></span>
 								</div>
 							</div>
 						</div>
