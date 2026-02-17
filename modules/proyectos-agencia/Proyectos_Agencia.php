@@ -183,6 +183,7 @@ class Proyectos_Agencia {
 										'colors'              => 'Colores',
 										'business_desc'       => 'Descripción',
 										'logo_details'        => 'Detalles Logo',
+										'logo_url'            => 'Logotipo Subido',
 										'submitted_at'        => 'Enviado el'
 									];
 								?>
@@ -192,21 +193,29 @@ class Proyectos_Agencia {
 
 											$label = isset($labels_map[$key]) ? $labels_map[$key] : ucfirst( str_replace( '_', ' ', $key ) );
 										?>
-											<li style="margin-bottom:8px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
-												<strong style="color:#a0aec0; display:block;"><?php echo esc_html( $label ); ?>:</strong>
+											<li style="margin-bottom:12px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+												<strong style="color:#a0aec0; display:block; margin-bottom: 3px;"><?php echo esc_html( $label ); ?>:</strong>
 												
 												<?php if ( 'brand_colors' === $key && is_array( $val ) ) : ?>
-													<div style="display:flex; gap:5px; margin-top:5px;">
+													<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px;">
 														<?php foreach ( $val as $color ) : ?>
-															<span style="background:<?php echo esc_attr($color); ?>; width:20px; height:20px; display:inline-block; border:1px solid #ccc; border-radius:4px;" title="<?php echo esc_attr($color); ?>"></span>
+															<div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">
+																<span style="background:<?php echo esc_attr($color); ?>; width:16px; height:16px; display:inline-block; border:1px solid rgba(255,255,255,0.2); border-radius:3px; margin-right:6px;"></span>
+																<code style="font-size:12px; color:#e2e8f0; font-family:monospace;"><?php echo esc_html(strtoupper($color)); ?></code>
+															</div>
 														<?php endforeach; ?>
 													</div>
 												<?php elseif ( 'logo_url' === $key ) : ?>
-													<a href="<?php echo esc_url( $val ); ?>" target="_blank" style="color:#e11d48; text-decoration:underline; display:inline-block; margin-top:3px;">
-														Ver Archivo <i class="eicon-external-link-square"></i>
-													</a>
+													<div style="margin-top:5px;">
+														<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; text-align:center; margin-bottom:5px;">
+															<img src="<?php echo esc_url($val); ?>" style="max-width:100%; max-height:80px; object-fit:contain;" alt="Logotipo">
+														</div>
+														<a href="<?php echo esc_url( $val ); ?>" download target="_blank" class="alezux-marketing-btn" style="font-size:12px; padding:4px 10px; height:auto; line-height:1.4; width:100%; text-align:center;">
+															<i class="eicon-download-bold"></i> Descargar Imagen
+														</a>
+													</div>
 												<?php else : ?>
-													<span style="color:#e2e8f0;"><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
+													<span style="color:#e2e8f0; line-height:1.5; display:block;"><?php echo nl2br(esc_html( is_array($val) ? implode(', ', $val) : $val )); ?></span>
 												<?php endif; ?>
 											</li>
 										<?php endforeach; ?>
