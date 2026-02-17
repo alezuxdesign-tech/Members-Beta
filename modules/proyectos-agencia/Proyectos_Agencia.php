@@ -147,167 +147,156 @@ class Proyectos_Agencia {
 
 			<!-- Tab Content: Overview -->
 			<div id="tab-overview" class="tab-content active">
-				<div class="panel-section">
-					<h4 class="panel-section-title">Información General</h4>
-					<div class="detail-grid">
-						<div class="detail-item">
-							<label>Cliente</label>
-							<div class="client-mini-profile">
-								<?php echo get_avatar( $project->customer_id, 32 ); ?>
-								<div>
-									<span class="d-block"><?php echo $customer ? esc_html( $customer->display_name ) : 'Desconocido'; ?></span>
-									<small class="d-block text-muted"><?php echo $customer ? esc_html( $customer->user_email ) : ''; ?></small>
+				<?php
+				// Prepare Variables for the View
+				$briefing = isset($meta['briefing_data']) ? json_decode($meta['briefing_data'], true) : null;
+				$feedback = isset($meta['client_feedback']) ? $meta['client_feedback'] : '';
+				?>
+				<style>
+					.alezux-project-detail-dashboard .phase-card {
+						background: #f7fafc;
+						border: 1px solid #e2e8f0;
+						border-radius: 8px;
+						padding: 15px;
+						margin-bottom: 15px;
+						transition: all 0.3s ease;
+					}
+					.alezux-project-detail-dashboard .phase-card.active {
+						background: #fff;
+						border-color: #4299e1;
+						box-shadow: 0 4px 6px rgba(66, 153, 225, 0.1);
+					}
+					.alezux-project-detail-dashboard .phase-header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 10px;
+						font-size: 14px;
+					}
+					.alezux-project-detail-dashboard .phase-actions {
+						margin-top: 10px;
+					}
+				</style>
+
+				<div class="alezux-project-detail-dashboard">
+					
+					<div class="alezux-detail-grid">
+						<div class="alezux-detail-card" style="margin-bottom: 20px;">
+							<h3>Gestión de Fases</h3>
+							
+							<!-- FASE 1: Briefing -->
+							<div class="phase-card <?php echo $project->current_step === 'briefing' ? 'active' : ''; ?>">
+								<div class="phase-header">
+									<strong>1. Briefing</strong>
+									<?php if($project->status === 'briefing_completed' || !empty($briefing)): ?>
+										<span style="color:#48bb78;"><i class="eicon-check-circle"></i> Completado</span>
+									<?php else: ?>
+										<span style="color:#ecc94b;"><i class="eicon-clock-o"></i> Pendiente</span>
+									<?php endif; ?>
+								</div>
+								<div class="phase-actions">
+									<?php if(!empty($briefing)): ?>
+										<button onclick="jQuery('#briefing-details-container').slideToggle()" class="alezux-btn alezux-btn-sm alezux-btn-secondary" style="width:100%; text-align:center;">
+											<i class="eicon-eye"></i> Ver Datos Briefing
+										</button>
+									<?php else: ?>
+										<small>Esperando al cliente...</small>
+									<?php endif; ?>
 								</div>
 							</div>
-						</div>
-						<div class="detail-item">
-							<label>Fecha Inicio</label>
-							<p><i class="eicon-calendar"></i> <?php echo ! empty( $start_date ) ? date_i18n( get_option('date_format'), strtotime($start_date) ) : '-'; ?></p>
-						</div>
-						
-						<div class="detail-item">
-							<label>Fecha Fin</label>
-							<p><i class="eicon-calendar"></i> <?php echo ! empty( $end_date ) ? date_i18n( get_option('date_format'), strtotime($end_date) ) : '-'; ?></p>
-						</div>
-					</div>
-				</div>
 
-				<!-- Nueva Sección: Estado de Aprobaciones -->
-				<div class="panel-section">
-					<h4 class="panel-section-title">Estado de Aprobaciones</h4>
-					<?php
-					$logo_approval  = isset($meta['logo_approval_data']) ? json_decode($meta['logo_approval_data'], true) : null;
-					$design_approval= isset($meta['approval_data']) ? json_decode($meta['approval_data'], true) : null;
-					$final_approval = isset($meta['final_approval_data']) ? json_decode($meta['final_approval_data'], true) : null;
-					
-					// Briefing Status
-					$briefing_status_icon = !empty($briefing_data) ? 'eicon-check-circle' : 'eicon-circle-o';
-					$briefing_status_color = !empty($briefing_data) ? '#48bb78' : '#a0aec0';
-					
-					// Logo Status
-					$needs_logo = isset($meta['needs_logo_design']) && $meta['needs_logo_design'] === 'yes';
-					$logo_status_icon = $logo_approval ? 'eicon-check-circle' : ($needs_logo ? 'eicon-circle-o' : 'eicon-ban');
-					$logo_status_color = $logo_approval ? '#48bb78' : ($needs_logo ? '#a0aec0' : '#718096');
-					$logo_text = $needs_logo ? 'Diseño de Logo' : 'Diseño de Logo (No requerido)';
-
-					// Design Status
-					$design_status_icon = $design_approval ? 'eicon-check-circle' : 'eicon-circle-o';
-					$design_status_color = $design_approval ? '#48bb78' : '#a0aec0';
-
-					// Final Status
-					$final_status_icon = $final_approval ? 'eicon-check-circle' : 'eicon-circle-o';
-					$final_status_color = $final_approval ? '#48bb78' : '#a0aec0';
-					?>
-					
-					<div class="alezux-approvals-list">
-						<!-- Briefing -->
-						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
-							<i class="<?php echo $briefing_status_icon; ?>" style="color:<?php echo $briefing_status_color; ?>; font-size:18px; margin-right:10px;"></i>
-							<div>
-								<strong style="display:block; font-size:13px;">Briefing Inicial</strong>
-								<?php if ( ! empty($briefing_data['submitted_at']) ) : ?>
-									<span style="font-size:11px; color:#a0aec0;">Enviado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($briefing_data['submitted_at']) ); ?></span>
-								<?php else: ?>
-									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
-								<?php endif; ?>
+							<!-- FASE 2: Logo -->
+							<div class="phase-card <?php echo strpos($project->current_step, 'logo') !== false ? 'active' : ''; ?>">
+								<div class="phase-header">
+									<strong>2. Logo</strong>
+									<span><?php echo $project->current_step === 'logo_creation' ? 'En Diseño' : ''; ?></span>
+								</div>
+								<div class="phase-actions">
+									<div class="alezux-alert info" style="font-size:12px; padding:5px;">
+										Gestionar subida de propuestas desde el formulario manual inferior por ahora.
+									</div>
+								</div>
 							</div>
+
+							<!-- FASE 3: Diseño -->
+							<div class="phase-card <?php echo strpos($project->current_step, 'design') !== false ? 'active' : ''; ?>">
+								<div class="phase-header">
+									<strong>3. Diseño Web</strong>
+									<span><?php echo $project->current_step === 'design_creation' ? 'En Producción' : ''; ?></span>
+								</div>
+							</div>
+
+							<!-- FASE 4: Desarrollo -->
+							<div class="phase-card <?php echo $project->current_step === 'in_progress' ? 'active' : ''; ?>">
+								<div class="phase-header">
+									<strong>4. Desarrollo</strong>
+								</div>
+							</div>
+
+							<!-- FASE GLOBAL UPDATE -->
+							<hr>
+							<h4>Control Manual del Proyecto</h4>
+							<form id="update-project-status-form">
+								<input type="hidden" name="project_id" value="<?php echo esc_attr( $project->id ); ?>">
+								
+								<div class="alezux-form-group">
+									<label>Fase Actual (Override)</label>
+									<select name="current_step" class="alezux-select alezux-input">
+										<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
+										<option value="logo_creation" <?php selected( $project->current_step, 'logo_creation' ); ?>>2. Creación Logo</option>
+										<option value="logo_review" <?php selected( $project->current_step, 'logo_review' ); ?>>2.1. Revisión Logo</option>
+										<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>3. Creación Diseño</option>
+										<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>3.1. Revisión Diseño</option>
+										<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>4. Desarrollo</option>
+										<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>5. Optimización</option>
+										<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>6. Revisión Final</option>
+										<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>7. Completado</option>
+									</select>
+								</div>
+
+								<div class="alezux-form-group">
+									<label>Estado General</label>
+									<select name="status" class="alezux-select alezux-input">
+										<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
+										<option value="briefing_completed" <?php selected( $project->status, 'briefing_completed' ); ?>>Briefing OK</option>
+										<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
+										<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Finalizado</option>
+									</select>
+								</div>
+
+								<div class="alezux-form-group">
+									<label>URL Propuesta de Diseño</label>
+									<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url( $design_url ); ?>" placeholder="https://...">
+								</div>
+
+								<div class="alezux-form-group">
+									<label>URL del Sitio (Staging)</label>
+									<input type="url" name="site_url" class="alezux-input" value="<?php echo isset($meta['site_url']) ? esc_url($meta['site_url']) : ''; ?>" placeholder="https://...">
+								</div>
+
+								<div style="display:flex; gap:10px;">
+									<div style="flex:1;">
+										<label>Usuario WP</label>
+										<input type="text" name="access_user" class="alezux-input" value="<?php echo isset($meta['access_user']) ? esc_attr($meta['access_user']) : ''; ?>">
+									</div>
+									<div style="flex:1;">
+										<label>Pass WP</label>
+										<input type="text" name="access_pass" class="alezux-input" value="<?php echo isset($meta['access_pass']) ? esc_attr($meta['access_pass']) : ''; ?>">
+									</div>
+								</div>
+
+								<br>
+								<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">Actualizar Estado</button>
+							</form>
 						</div>
 
-						<!-- Logo -->
-						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
-							<i class="<?php echo $logo_status_icon; ?>" style="color:<?php echo $logo_status_color; ?>; font-size:18px; margin-right:10px;"></i>
-							<div>
-								<strong style="display:block; font-size:13px;"><?php echo $logo_text; ?></strong>
-								<?php if ( $logo_approval ) : ?>
-									<span style="font-size:11px; color:#a0aec0;">
-										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($logo_approval['approved_at']) ); ?>
-										<br>IP: <?php echo esc_html($logo_approval['ip_address']); ?>
-									</span>
-								<?php elseif($needs_logo): ?>
-									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
-								<?php endif; ?>
-							</div>
-						</div>
-
-						<!-- Web Design -->
-						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
-							<i class="<?php echo $design_status_icon; ?>" style="color:<?php echo $design_status_color; ?>; font-size:18px; margin-right:10px;"></i>
-							<div>
-								<strong style="display:block; font-size:13px;">Diseño Web</strong>
-								<?php if ( $design_approval ) : ?>
-									<span style="font-size:11px; color:#a0aec0;">
-										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($design_approval['approved_at']) ); ?>
-										<br>IP: <?php echo esc_html($design_approval['ip_address']); ?>
-									</span>
-								<?php else: ?>
-									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
-								<?php endif; ?>
-							</div>
-						</div>
-
-						<!-- Final -->
-						<div class="approval-item" style="display:flex; align-items:center;">
-							<i class="<?php echo $final_status_icon; ?>" style="color:<?php echo $final_status_color; ?>; font-size:18px; margin-right:10px;"></i>
-							<div>
-								<strong style="display:block; font-size:13px;">Aprobación Final</strong>
-								<?php if ( $final_approval ) : ?>
-									<span style="font-size:11px; color:#a0aec0;">
-										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($final_approval['approved_at']) ); ?>
-										<br>IP: <?php echo esc_html($final_approval['ip_address']); ?>
-									</span>
-								<?php else: ?>
-									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
-								<?php endif; ?>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="panel-section">
-					<h4 class="panel-section-title">Actualizar Estado</h4>
-					<form id="update-project-status-form" class="alezux-form-group">
-						<input type="hidden" name="project_id" value="<?php echo esc_attr($project->id); ?>">
-						
-						<?php 
-						// Fetch Meta Data for Dynamic Sections
-						$briefing_data = isset($meta['briefing_data']) ? json_decode($meta['briefing_data'], true) : null;
-						$site_url      = isset($meta['site_url']) ? $meta['site_url'] : '';
-						$access_user   = isset($meta['access_user']) ? $meta['access_user'] : '';
-						$access_pass   = isset($meta['access_pass']) ? $meta['access_pass'] : '';
-						?>
-
-						<div class="form-row" style="display:flex; gap:15px; margin-bottom:15px;">
-							<div style="flex:1;">
-								<label>Estado del Sistema</label>
-								<select name="status" class="alezux-input">
-									<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
-									<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
-									<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Completado</option>
-									<option value="cancelled" <?php selected( $project->status, 'cancelled' ); ?>>Cancelado</option>
-								</select>
-							</div>
-							<div style="flex:1;">
-								<label>Fase Actual (Visible Cliente)</label>
-								<select name="current_step" id="project-phase-select" class="alezux-input">
-									<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
-									<option value="logo_creation" <?php selected( $project->current_step, 'logo_creation' ); ?>>2. Creación Logo (Opcional)</option>
-									<option value="logo_review" <?php selected( $project->current_step, 'logo_review' ); ?>>3. Revisión Logo (Opcional)</option>
-									<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>4. Creación Diseño Web</option>
-									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>5. Revisión Diseño Web</option>
-									<option value="design_changes" <?php selected( $project->current_step, 'design_changes' ); ?>>6. Gestión de Cambios</option>
-									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>7. Desarrollo</option>
-									<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>8. Optimización</option>
-									<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>9. Revisión Final</option>
-									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>10. Completado</option>
-								</select>
-							</div>
-						</div>
-
-						<!-- DYNAMIC SECTION: BRIEFING VIEW -->
-						<div id="section-briefing" class="dynamic-section" style="display:none;">
-							<div class="alezux-info-box">
-								<h5><i class="eicon-info-circle"></i> Datos del Briefing</h5>
-								<?php if ( ! empty( $briefing_data ) ) : 
+						<!-- Columna: Información Detallada -->
+						<div class="alezux-detail-card">
+							
+							<!-- Data Briefing Hidden by Default -->
+							<div id="briefing-details-container" style="display:none; border:1px solid #eee; padding:15px; border-radius:5px; margin-bottom:20px;">
+								<h4>Datos del Briefing</h4>
+								<?php if ( ! empty( $briefing ) ) : 
 									$labels_map = [
 										'brand_name'          => 'Marca Comercial',
 										'legal_name'          => 'Razón Social',
@@ -326,93 +315,95 @@ class Proyectos_Agencia {
 										'slogan'              => 'Slogan',
 										'colors'              => 'Colores',
 										'business_desc'       => 'Descripción',
-										'logo_details'        => 'Detalles Logo',
-										'logo_url'            => 'Logotipo Subido',
 										'submitted_at'        => 'Enviado el'
 									];
 								?>
-									<ul class="alezux-data-list" style="padding-left:0; list-style:none; margin:0;">
-										<?php foreach ( $briefing_data as $key => $val ) : 
-											if ( empty($val) ) continue;
-
+									<ul class="alezux-data-list" style="list-style:none; padding:0;">
+										<?php foreach ( $briefing as $key => $val ) : 
+											if ( empty($val) ) continue; // Skip empty fields
 											$label = isset($labels_map[$key]) ? $labels_map[$key] : ucfirst( str_replace( '_', ' ', $key ) );
 										?>
-											<li style="margin-bottom:12px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
-												<strong style="color:#a0aec0; display:block; margin-bottom: 3px;"><?php echo esc_html( $label ); ?>:</strong>
+											<li style="margin-bottom:8px; font-size:13px;">
+												<strong style="color:#718096;"><?php echo esc_html( $label ); ?>:</strong>
 												
 												<?php if ( 'brand_colors' === $key && is_array( $val ) ) : ?>
-													<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px;">
+													<div style="display:flex; gap:5px; margin-top:5px;">
 														<?php foreach ( $val as $color ) : ?>
-															<div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">
-																<span style="background:<?php echo esc_attr($color); ?>; width:16px; height:16px; display:inline-block; border:1px solid rgba(255,255,255,0.2); border-radius:3px; margin-right:6px;"></span>
-																<code style="font-size:12px; color:#e2e8f0; font-family:monospace;"><?php echo esc_html(strtoupper($color)); ?></code>
-															</div>
+															<span style="background:<?php echo esc_attr($color); ?>; width:20px; height:20px; display:inline-block; border:1px solid #ccc; border-radius:4px;" title="<?php echo esc_attr($color); ?>"></span>
 														<?php endforeach; ?>
 													</div>
 												<?php elseif ( 'logo_url' === $key ) : ?>
-													<div style="margin-top:5px;">
-														<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; text-align:center; margin-bottom:5px;">
-															<img src="<?php echo esc_url($val); ?>" style="max-width:100%; max-height:80px; object-fit:contain;" alt="Logotipo">
-														</div>
-														<a href="<?php echo esc_url( $val ); ?>" download target="_blank" class="alezux-marketing-btn" style="font-size:12px; padding:4px 10px; height:auto; line-height:1.4; width:100%; text-align:center;">
-															<i class="eicon-download-bold"></i> Descargar Imagen
-														</a>
-													</div>
+													<br><a href="<?php echo esc_url( $val ); ?>" target="_blank" style="color:#e11d48; text-decoration:underline;">Ver Logo Subido <i class="eicon-external-link-square"></i></a>
 												<?php else : ?>
-													<span style="color:#e2e8f0; line-height:1.5; display:block;"><?php echo nl2br(esc_html( is_array($val) ? implode(', ', $val) : $val )); ?></span>
+													<span><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
 												<?php endif; ?>
 											</li>
 										<?php endforeach; ?>
 									</ul>
 								<?php else : ?>
-									<p class="text-muted">El cliente aún no ha enviado el briefing.</p>
+									<p class="description">El cliente aún no ha enviado el briefing.</p>
 								<?php endif; ?>
 							</div>
-						</div>
 
-						<!-- DYNAMIC SECTION: DESIGN URL -->
-						<div id="section-design" class="dynamic-section" style="display:none; margin-bottom:15px;">
-							<label>URL Propuesta de Diseño (Figma/PDF)</label>
-							<div class="alezux-input-group">
-								<span class="input-group-text"><i class="eicon-link"></i></span>
-								<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url($design_url); ?>" placeholder="https://figma.com/..." style="padding-left: 35px;">
+							<h4>Feedback Cliente</h4>
+							<div class="alezux-feedback-box" style="background:#fff3cd; padding:15px; border-left:4px solid #ecc94b; border-radius:4px;">
+								<p style="margin:0; font-style:italic;">
+									<?php echo ! empty( $feedback ) ? wp_kses_post( $feedback ) : 'Sin feedback reciente.'; ?>
+								</p>
 							</div>
-							<small class="text-muted">El cliente verá esto en su panel para aprobar/rechazar.</small>
-						</div>
 
-						<!-- DYNAMIC SECTION: DEVELOPMENT / CREDENTIALS -->
-						<div id="section-development" class="dynamic-section" style="display:none; margin-bottom:15px;">
-							<div class="alezux-info-box">
-								<h5><i class="eicon-code"></i> Credenciales de Acceso</h5>
-								<div class="form-group" style="margin-bottom:10px;">
-									<label>URL del Sitio (Staging/Prod)</label>
-									<input type="url" name="site_url" class="alezux-input" value="<?php echo esc_url($site_url); ?>" placeholder="https://cliente.miagencia.com">
-								</div>
-								<div class="form-row" style="display:flex; gap:10px;">
-									<div style="flex:1;">
-										<label>Usuario WP</label>
-										<input type="text" name="access_user" class="alezux-input" value="<?php echo esc_attr($access_user); ?>" placeholder="admin_cliente">
-									</div>
-									<div style="flex:1;">
-										<label>Contraseña</label>
-										<input type="text" name="access_pass" class="alezux-input" value="<?php echo esc_attr($access_pass); ?>" placeholder="********">
-									</div>
-								</div>
+							<!-- Previous Approvals Log -->
+							<div style="margin-top:20px;">
+								<h4>Historial de Aprobaciones</h4>
+								<?php
+									$logo_approval  = isset($meta['logo_approval_data']) ? json_decode($meta['logo_approval_data'], true) : null;
+									$design_approval= isset($meta['approval_data']) ? json_decode($meta['approval_data'], true) : null;
+									$final_approval = isset($meta['final_approval_data']) ? json_decode($meta['final_approval_data'], true) : null;
+								?>
+								<ul style="font-size:12px; color:#718096;">
+									<li><strong>Logo:</strong> <?php echo $logo_approval ? '✅ ' . date_i18n('d M H:i', strtotime($logo_approval['approved_at'])) : 'Pendiente'; ?></li>
+									<li><strong>Diseño:</strong> <?php echo $design_approval ? '✅ ' . date_i18n('d M H:i', strtotime($design_approval['approved_at'])) : 'Pendiente'; ?></li>
+									<li><strong>Final:</strong> <?php echo $final_approval ? '✅ ' . date_i18n('d M H:i', strtotime($final_approval['approved_at'])) : 'Pendiente'; ?></li>
+								</ul>
 							</div>
 						</div>
-
-						<button type="submit" class="alezux-marketing-btn primary" style="width:100%;">
-							<i class="eicon-save"></i> Guardar Todo
-						</button>
-						
-						<script>
-							// Inline init for dynamic logic
-							if(typeof AlezuxProjects !== 'undefined' && AlezuxProjects.initPhaseLogic) {
-								AlezuxProjects.initPhaseLogic();
-							}
-						</script>
-					</form>
+					</div>
 				</div>
+                
+                <script>
+                // Re-bind form submission for the new form
+                jQuery(document).ready(function($){
+                    $('#update-project-status-form').on('submit', function(e){
+                        e.preventDefault();
+                        var $form = $(this);
+                        var $btn = $form.find('button[type="submit"]');
+                        var originalText = $btn.text();
+                        $btn.prop('disabled', true).text('Guardando...');
+
+                        $.post(AlezuxProjects.ajaxurl, {
+                            action: 'alezux_update_project',
+                            nonce: AlezuxProjects.nonce,
+                            project_id: $form.find('input[name="project_id"]').val(),
+                            status: $form.find('select[name="status"]').val(),
+                            current_step: $form.find('select[name="current_step"]').val(),
+                            design_url: $form.find('input[name="design_url"]').val(),
+                            site_url: $form.find('input[name="site_url"]').val(),
+                            access_user: $form.find('input[name="access_user"]').val(),
+                            access_pass: $form.find('input[name="access_pass"]').val()
+                        }, function(response) {
+                             if(response.success) {
+                                  alert(response.data);
+                                  // Refresh Panel by clicking the card again or just reloading
+                                  // AlezuxProjects.openPanel($form.find('input[name="project_id"]').val());
+                             } else {
+                                  alert('Error: ' + response.data);
+                             }
+                        }).always(function(){
+                            $btn.prop('disabled', false).text(originalText);
+                        });
+                    });
+                });
+                </script>
 			</div>
 			
 			<!-- Tab Content: Chat -->

@@ -5,6 +5,25 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Alezux_Members\Modules\Proyectos_Agencia\Includes\Project_Manager;
 
+use function \esc_html__;
+use function \esc_html;
+use function \esc_attr;
+use function \esc_url;
+use function \esc_js;
+use function \get_userdata;
+use function \current_user_can;
+use function \get_avatar;
+use function \date_i18n;
+use function \get_option;
+use function \wp_kses_post;
+use function \wp_create_nonce;
+use function \admin_url;
+use function \wp_enqueue_script;
+use function \wp_enqueue_style;
+use function \wp_localize_script;
+use function \get_post_meta;
+use function \absint;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
