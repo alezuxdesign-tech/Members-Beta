@@ -1005,12 +1005,24 @@ class Projects_List_Widget extends Widget_Base {
 
 						$start_display = ! empty( $start_date_meta ) ? date_i18n( 'd M', strtotime( $start_date_meta ) ) : '-';
 						$end_display   = ! empty( $end_date_meta ) ? date_i18n( 'd M, Y', strtotime( $end_date_meta ) ) : '-';
+
+						// Traducción de estados
+						$status_labels = [
+							'pending'       => 'Pendiente',
+							'briefing'      => 'Briefing',
+							'design_review' => 'Revisión',
+							'in_progress'   => 'En Progreso',
+							'completed'     => 'Completado',
+							'cancelled'     => 'Cancelado',
+							'on_hold'       => 'En Espera',
+						];
+						$status_label = isset( $status_labels[ $project->status ] ) ? $status_labels[ $project->status ] : ucfirst( str_replace( '_', ' ', $project->status ) );
 						?>
 						
 						<div class="alezux-project-card" onclick="AlezuxProjects.openPanel(<?php echo esc_attr($project->id); ?>)">
 							<div class="card-header">
 								<span class="alezux-status-badge status-<?php echo esc_attr( $project->status ); ?>">
-									<?php echo esc_html( ucfirst( $project->status ) ); ?>
+									<?php echo esc_html( $status_label ); ?>
 								</span>
 								<button class="card-action-btn" title="Opciones"><i class="eicon-ellipsis-h"></i></button>
 							</div>
