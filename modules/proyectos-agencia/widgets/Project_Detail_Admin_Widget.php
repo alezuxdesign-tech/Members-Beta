@@ -71,6 +71,31 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 		$briefing = json_decode( $params_meta['briefing_data'], true );
 
 		?>
+		<style>
+			.alezux-project-detail-dashboard .phase-card {
+				background: #f7fafc;
+				border: 1px solid #e2e8f0;
+				border-radius: 8px;
+				padding: 15px;
+				margin-bottom: 15px;
+				transition: all 0.3s ease;
+			}
+			.alezux-project-detail-dashboard .phase-card.active {
+				background: #fff;
+				border-color: #4299e1;
+				box-shadow: 0 4px 6px rgba(66, 153, 225, 0.1);
+			}
+			.alezux-project-detail-dashboard .phase-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 10px;
+				font-size: 14px;
+			}
+			.alezux-project-detail-dashboard .phase-actions {
+				margin-top: 10px;
+			}
+		</style>
 		<div class="alezux-project-detail-dashboard">
 			<div class="alezux-detail-header">
 				<h2><?php echo esc_html( $project->name ); ?></h2>
@@ -80,19 +105,59 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 			</div>
 
 			<div class="alezux-detail-grid">
-				<!-- Columna Izquierda: Control de Estado -->
 				<div class="alezux-detail-card">
-					<h3>Gestión de Estado</h3>
+					<h3>Gestión de Fases</h3>
+					
+					<!-- FASE 1: Briefing -->
+					<div class="phase-card <?php echo $project->current_step === 'briefing' ? 'active' : ''; ?>">
+						<div class="phase-header">
+							<strong>1. Briefing</strong>
+							<?php if($project->status === 'briefing_completed' || !empty($briefing)): ?>
+								<span style="color:#48bb78;"><i class="eicon-check-circle"></i> Completado</span>
+							<?php else: ?>
+								<span style="color:#ecc94b;"><i class="eicon-clock-o"></i> Pendiente</span>
+							<?php endif; ?>
+						</div>
+						<div class="phase-actions">
+							<?php if(!empty($briefing)): ?>
+								<a href="#briefing-data" class="alezux-btn alezux-btn-sm alezux-btn-secondary" style="width:100%; text-align:center;">Ver Datos Abajo</a>
+							<?php else: ?>
+								<small>Esperando al cliente...</small>
+							<?php endif; ?>
+						</div>
+					</div>
+
+					<!-- FASE 2: Logo -->
+					<div class="phase-card <?php echo strpos($project->current_step, 'logo') !== false ? 'active' : ''; ?>">
+						<div class="phase-header">
+							<strong>2. Logo</strong>
+							<span><?php echo $project->current_step === 'logo_creation' ? 'En Diseño' : ''; ?></span>
+						</div>
+						<div class="phase-actions">
+							<button class="alezux-btn alezux-btn-sm alezux-btn-primary" style="width:100%;" onclick="alert('Funcionalidad de subida rápida en desarrollo. Por ahora usa la edición manual.');">
+								<i class="eicon-upload"></i> Subir Propuestas
+							</button>
+						</div>
+					</div>
+
+					<!-- FASE GLOBAL UPDATE -->
+					<hr>
+					<h4>Control Manual</h4>
 					<form id="update-project-status-form">
 						<input type="hidden" name="project_id" value="<?php echo esc_attr( $project->id ); ?>">
 						
 						<div class="alezux-form-group">
-							<label>Fase Actual</label>
+							<label>Fase Actual (Override)</label>
 							<select name="current_step" class="alezux-select">
 								<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
-								<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
-								<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
-								<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>4. Completado</option>
+								<option value="logo_creation" <?php selected( $project->current_step, 'logo_creation' ); ?>>2. Creación Logo</option>
+								<option value="logo_review" <?php selected( $project->current_step, 'logo_review' ); ?>>2.1. Revisión Logo</option>
+								<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>3. Creación Diseño</option>
+								<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>3.1. Revisión Diseño</option>
+								<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>4. Desarrollo</option>
+								<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>5. Optimización</option>
+								<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>6. Revisión Final</option>
+								<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>7. Completado</option>
 							</select>
 						</div>
 
@@ -100,9 +165,7 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 							<label>Estado General</label>
 							<select name="status" class="alezux-select">
 								<option value="pending" <?php selected( $project->status, 'pending' ); ?>>Pendiente</option>
-								<option value="briefing_completed" <?php selected( $project->status, 'briefing_completed' ); ?>>Briefing Completado</option>
-								<option value="design_review" <?php selected( $project->status, 'design_review' ); ?>>En Revisión</option>
-								<option value="approved" <?php selected( $project->status, 'approved' ); ?>>Aprobado</option>
+								<option value="briefing_completed" <?php selected( $project->status, 'briefing_completed' ); ?>>Briefing OK</option>
 								<option value="in_progress" <?php selected( $project->status, 'in_progress' ); ?>>En Progreso</option>
 								<option value="completed" <?php selected( $project->status, 'completed' ); ?>>Finalizado</option>
 							</select>
@@ -111,10 +174,9 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 						<div class="alezux-form-group">
 							<label>URL Propuesta de Diseño</label>
 							<input type="url" name="design_url" value="<?php echo esc_attr( $params_meta['design_url'] ); ?>" placeholder="https://...">
-							<small>Enlace a la imagen o PDF que verá el cliente.</small>
 						</div>
 
-						<button type="submit" class="alezux-btn alezux-btn-primary">Actualizar Proyecto</button>
+						<button type="submit" class="alezux-btn alezux-btn-primary">Actualizar Estado</button>
 					</form>
 				</div>
 

@@ -397,7 +397,10 @@ class Client_Project_Widget extends Widget_Base {
 			<div class="alezux-project-body">
 				<?php $this->render_project_timeline( $project->current_step, $project ); ?>
 				<?php
-				switch ( $project->current_step ) {
+				// Determine content to show: view_step OR current_step
+				$view_step = isset($_GET['view_step']) ? $_GET['view_step'] : $project->current_step;
+
+				switch ( $view_step ) {
 					case 'briefing':
 						$this->render_briefing_step( $project, $manager );
 						break;
@@ -429,11 +432,14 @@ class Client_Project_Widget extends Widget_Base {
 						$this->render_completed_step( $project );
 						break;
 					default:
-						echo '<p>Estado del proyecto desconocido (' . esc_html($project->current_step) . ').</p>';
+						// Fallback to current step if view step is invalid or just show default
+						$this->render_briefing_step( $project, $manager );
 				}
 				?>
 			</div>
 		</div>
+
+		<?php $this->render_assets_tab( $project, $manager ); ?>
 
 		<div id="tab-chat" class="client-tab-content">
 			<div class="alezux-project-body" style="min-height: 400px; display: flex; flex-direction: column;">
@@ -593,6 +599,9 @@ class Client_Project_Widget extends Widget_Base {
 				<button class="client-tab-btn active" onclick="openClientTab('tab-overview')">
 					<i class="eicon-info-circle-o"></i> Mi Proyecto
 				</button>
+				<button class="client-tab-btn" onclick="openClientTab('tab-assets')" style="display: <?php echo $project->status === 'completed' ? 'inline-block' : 'none'; ?>">
+					<i class="eicon-file-download"></i> Entregables
+				</button>
 				<button class="client-tab-btn" onclick="openClientTab('tab-chat')">
 					<i class="eicon-comment-o"></i> Mensajes <span class="message-counter" style="display:none;">0</span>
 				</button>
@@ -609,18 +618,6 @@ class Client_Project_Widget extends Widget_Base {
 			]
 		];
 
-		// Check if we need logo steps
-		// Note: We need to get meta here inside the loop or pass it down. 
-		// Since we are in render loop, better to check meta.
-		// For simplicity, we can assume if current step IS a logo step, we show them.
-		// OR we check the 'needs_logo_design' meta.
-		// To access meta here without passing manager, we might need a helper method or pass it.
-		// BUT we are inside the class, so we can instantiate manager or use a static helper?
-		// Actually, $project object might not have meta attached unless we queried it.
-		// Let's use a loose check: if we are IN a logo phase, show them.
-		// If we are PAST them, check if we DID them? That's harder.
-		// Better approach: Check if 'needs_logo_design' meta is 'yes'.
-		
 		$needs_logo = get_post_meta($project->id, 'needs_logo_design', true) === 'yes';
 
 		if ($needs_logo || $current_step === 'logo_creation' || $current_step === 'logo_review') {
@@ -629,55 +626,47 @@ class Client_Project_Widget extends Widget_Base {
 		}
 
 		$steps += [
-			'design_creation' => [
-				'label' => 'Creación', 
-				'desc' => 'Diseño Web'
-			],
-			'design_review' => [
-				'label' => 'Revisión', 
-				'desc' => 'Web'
-			],
-			'design_changes' => [
-				'label' => 'Cambios', 
-				'desc' => 'Ajustes'
-			],
-			'in_progress' => [
-				'label' => 'Desarrollo', 
-				'desc' => 'Código'
-			],
-			'optimization' => [
-				'label' => 'Optimización', 
-				'desc' => 'SEO/Vel'
-			],
-			'final_review' => [
-				'label' => 'Final', 
-				'desc' => 'Entrega'
-			],
-			'completed' => [
-				'label' => 'Listo', 
-				'desc' => 'Online'
-			]
+			'design_creation' => ['label' => 'Creación', 'desc' => 'Diseño Web'],
+			'design_review' => ['label' => 'Revisión', 'desc' => 'Web'],
+			'design_changes' => ['label' => 'Cambios', 'desc' => 'Ajustes'],
+			'in_progress' => ['label' => 'Desarrollo', 'desc' => 'Código'],
+			'optimization' => ['label' => 'Optimización', 'desc' => 'SEO/Vel'],
+			'final_review' => ['label' => 'Final', 'desc' => 'Entrega'],
+			'completed' => ['label' => 'Listo', 'desc' => 'Online']
 		];
 
 		$keys = array_keys( $steps );
 		$current_index = array_search( $current_step, $keys );
 		if ( $current_index === false ) $current_index = 0;
 
+		// Determine the active tab based on query param or current step
+		$active_tab = isset($_GET['view_step']) ? $_GET['view_step'] : $current_step;
+
 		echo '<div class="project-timeline">';
 		foreach ( $steps as $key => $info ) {
 			$index = array_search( $key, $keys );
 			$class = '';
 			$icon = '';
+			$is_clickable = true; // Make all steps clickable for navigation
 
 			if ( $index < $current_index ) {
 				$class = 'completed';
 				$icon = '<i class="eicon-check"></i>';
 			} elseif ( $index == $current_index ) {
-				$class = 'active';
+				$class = 'current'; // Mark current progress
+				$icon = '<i class="eicon-loading eicon-animation-spin"></i>'; 
 			}
 
-			echo '<div class="timeline-item ' . esc_attr( $class ) . '">';
-			echo '<div class="point ' . ( $class === 'active' ? 'pulse' : '' ) . '">' . $icon . '</div>';
+			if ($key === $active_tab) {
+				$class .= ' active-view'; // Mark currently viewing
+			}
+
+			// Onclick handler to switch view without page reload (or simpler with reload for now)
+			// Using ?view_step parameter to control what is rendered below
+			$onclick = "window.location.search = '?alezux_pid=" . $project->id . "&view_step=" . $key . "'";
+
+			echo '<div class="timeline-item ' . esc_attr( $class ) . '" onclick="' . $onclick . '" style="cursor:pointer;">';
+			echo '<div class="point ' . ( $class === 'current' ? 'pulse' : '' ) . '">' . $icon . '</div>';
 			echo '<div class="content"><strong>' . esc_html( $info['label'] ) . '</strong><span>' . esc_html( $info['desc'] ) . '</span></div>';
 			echo '</div>';
 		}
@@ -685,48 +674,32 @@ class Client_Project_Widget extends Widget_Base {
 	}
 
 	private function render_briefing_step( $project, $manager ) {
-		// Verificar si ya envió el briefing
+		// Modo Edición Siempre Activo si se selecciona
+		$is_submitted = $project->status === 'briefing_completed' || $project->status !== 'pending';
 		$briefing_data = $manager->get_project_meta( $project->id, 'briefing_data' );
-		
-		// Check editing mode
-		$is_editing = isset($_GET['edit_briefing']) && $_GET['edit_briefing'] === 'true';
-
-		if ( (! empty( $briefing_data ) || $project->status === 'briefing_completed') && ! $is_editing ) {
-			?>
-			<div class="alezux-step-container center-text">
-				<div style="font-size: 48px; margin-bottom: 20px;">📋</div>
-				<h3>Briefing Recibido</h3>
-				<p>¡Gracias! Hemos recibido la información de tu proyecto.</p>
-				<p>Nuestro equipo está analizando los detalles. Pronto actualizaremos el estado a <strong>Diseño</strong>.</p>
-				
-				<div class="alezux-alert info" style="margin-top: 20px; display: inline-block; text-align: left;">
-					<i class="eicon-info-circle-o"></i> Si necesitas modificar algo, puedes hacerlo aquí:
-					<br><br>
-					<a href="?alezux_pid=<?php echo $project->id; ?>&edit_briefing=true" class="alezux-btn alezux-btn-sm alezux-btn-secondary">
-						<i class="eicon-edit"></i> Editar Respuestas
-					</a>
-				</div>
-			</div>
-			<?php
-			return;
-		}
 		
 		// Helper to get value
 		$get_val = function($key) use ($briefing_data) {
 			return isset($briefing_data[$key]) ? esc_attr($briefing_data[$key]) : '';
 		};
+
+		// Si ya se envió, mostramos mensaje pero permitimos editar
 		?>
 		<div class="alezux-step-container">
-			<div class="step-intro">
-				<h3>👋 ¡Hola! Comencemos tu proyecto.</h3>
-				<p>Para empezar, necesitamos conocer los detalles de tu marca. Por favor completa este formulario.</p>
-				<?php if($is_editing): ?>
-					<div class="alezux-alert warning"><i class="eicon-edit"></i> Estás editando tu briefing. Guarda los cambios al finalizar.</div>
-				<?php endif; ?>
-			</div>
+			<?php if($is_submitted): ?>
+				<div class="alezux-alert success">
+					<i class="eicon-check-circle"></i> Briefing enviado. Puedes actualizar los datos si es necesario.
+				</div>
+			<?php else: ?>
+				<div class="step-intro">
+					<h3>👋 ¡Hola! Comencemos tu proyecto.</h3>
+					<p>Para empezar, necesitamos conocer los detalles de tu marca. Por favor completa este formulario.</p>
+				</div>
+			<?php endif; ?>
 			
 			<form id="client-briefing-form" class="alezux-briefing-form" enctype="multipart/form-data">
 				<input type="hidden" name="project_id" value="<?php echo esc_attr( $project->id ); ?>">
+				<input type="hidden" name="is_update" value="<?php echo $is_submitted ? '1' : '0'; ?>">
 				
 				<div class="form-section">
 					<h4>Datos Fiscales y Legales</h4>

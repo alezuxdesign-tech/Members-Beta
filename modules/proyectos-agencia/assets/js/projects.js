@@ -147,17 +147,14 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // Cliente: Enviar Briefing
+    // Cliente: Enviar Briefing (o Actualizar)
     $('#client-briefing-form').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
         var $btn = $form.find('button[type="submit"]');
 
-        // Validar campos requeridos básicos (si los hay)
-        // ...
-
         var originalText = $btn.html();
-        $btn.prop('disabled', true).html('<i class="eicon-loading eicon-animation-spin"></i> Enviando...');
+        $btn.prop('disabled', true).html('<i class="eicon-loading eicon-animation-spin"></i> Guardando...');
 
         // Prepare FormData for file upload
         var formData = new FormData(this);
@@ -172,8 +169,16 @@ jQuery(document).ready(function ($) {
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    alert('¡Gracias! Hemos recibido tu información.');
-                    window.location.reload();
+                    // Check if it was an update or initial submission
+                    var isUpdate = $form.find('input[name="is_update"]').val() === '1';
+
+                    if (isUpdate) {
+                        alert('Cambios guardados correctamente.');
+                        window.location.reload(); // Reload to reflect changes if needed
+                    } else {
+                        alert('¡Gracias! Hemos recibido tu información. El proyecto ha avanzado.');
+                        window.location.reload();
+                    }
                 } else {
                     alert('Error: ' + response.data);
                     $btn.prop('disabled', false).html(originalText);
@@ -652,5 +657,19 @@ jQuery(document).ready(function ($) {
 
     $('#project-phase-select').on('change', updateFields);
     updateFields(); // Run on init
+
+    // --- UTILS ---
+    $('.copy-btn').on('click', function (e) {
+        e.preventDefault();
+        // Logic handled inline in HTML for simplicity, but cleaner here:
+        // Already defined inline in the PHP render: onclick="navigator.clipboard.writeText(...)"
+        // Just adding visual feedback here if needed
+        var $btn = $(this);
+        var original = $btn.html();
+        $btn.html('<i class="eicon-check"></i>');
+        setTimeout(function () {
+            $btn.html(original);
+        }, 2000);
+    });
 
 });
