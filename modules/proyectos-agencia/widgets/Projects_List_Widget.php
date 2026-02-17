@@ -1063,15 +1063,17 @@ class Projects_List_Widget extends Widget_Base {
 							</select>
 						</div>
 
-						<div class="form-group-row" style="display:flex; gap:15px;">
-							<div class="form-group" style="flex:1;">
-								<label>Fecha de Inicio</label>
-								<input type="date" name="project_start_date" class="alezux-input" required value="<?php echo date('Y-m-d'); ?>">
+						<div class="form-group">
+							<label>Duración del Proyecto (Inicio - Fin)</label>
+							<div class="alezux-input-group">
+								<span class="input-group-text"><i class="eicon-calendar"></i></span>
+								<input type="text" id="project-date-range-selector" class="alezux-input" placeholder="Selecciona el rango de fechas..." required style="padding-left: 35px;">
 							</div>
-							<div class="form-group" style="flex:1;">
-								<label>Fecha de Fin</label>
-								<input type="date" name="project_end_date" class="alezux-input" required>
-							</div>
+							<small style="color: #ecc94b; margin-top: 5px; display: block; font-size: 12px;">* Los fines de semana (Sáb y Dom) están excluidos.</small>
+							
+							<!-- Hidden Inputs for Backend -->
+							<input type="hidden" name="project_start_date" required>
+							<input type="hidden" name="project_end_date" required>
 						</div>
 
 						<div class="form-actions" style="margin-top: 25px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">

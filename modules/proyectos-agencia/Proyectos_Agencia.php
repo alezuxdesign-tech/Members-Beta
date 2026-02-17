@@ -632,12 +632,18 @@ class Proyectos_Agencia {
 			[], 
 			ALEZUX_MEMBERS_VERSION . time() 
 		);
+
+		// Flatpickr (Date Range Picker)
+		wp_enqueue_style( 'flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css', [], '4.6.13' );
+		wp_enqueue_script( 'flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr', [], '4.6.13', true );
+		wp_enqueue_script( 'flatpickr-es', 'https://npmcdn.com/flatpickr/dist/l10n/es.js', ['flatpickr'], '4.6.13', true );
+
 		wp_enqueue_script( 
 			'alezux-projects-js', 
 			plugin_dir_url( __FILE__ ) . 'assets/js/projects.js', 
-			[ 'jquery' ], 
+			[ 'jquery', 'flatpickr' ], 
 			ALEZUX_MEMBERS_VERSION . time() . '_v2', 
-			true 
+			true  
 		);
 		
 		// Pasar variables a JS

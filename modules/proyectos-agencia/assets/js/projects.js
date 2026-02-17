@@ -21,21 +21,59 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    // Date Range Picker Logic
+    if ($('#project-date-range-selector').length) {
+        $('#project-date-range-selector').flatpickr({
+            mode: "range",
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            locale: "es", // Asegúrate de que flatpickr-l10n-es esté cargado
+            disable: [
+                function (date) {
+                    // Retorna true para deshabilitar (Domingo=0, Sábado=6)
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ],
+            onChange: function (selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    var start = instance.formatDate(selectedDates[0], "Y-m-d");
+                    var end = instance.formatDate(selectedDates[1], "Y-m-d");
+                    $('input[name="project_start_date"]').val(start);
+                    $('input[name="project_end_date"]').val(end);
+                } else {
+                    $('input[name="project_start_date"]').val('');
+                    $('input[name="project_end_date"]').val('');
+                }
+            }
+        });
+    }
+
     // Crear Proyecto AJAX
     $('#create-project-form').on('submit', function (e) {
         e.preventDefault();
 
         var $form = $(this);
         var $btn = $form.find('button[type="submit"]');
-        var originalText = $btn.text();
 
+        // Validación básica de fechas
+        var startDate = $form.find('input[name="project_start_date"]').val();
+        var endDate = $form.find('input[name="project_end_date"]').val();
+
+        if (!startDate || !endDate) {
+            alert('Por favor selecciona un rango de fechas válido.');
+            return;
+        }
+
+        var originalText = $btn.text();
         $btn.prop('disabled', true).text('Creando...');
 
         var data = {
             action: 'alezux_create_project',
             nonce: AlezuxProjects.nonce,
             project_name: $form.find('input[name="project_name"]').val(),
-            customer_id: $form.find('select[name="customer_id"]').val()
+            customer_id: $form.find('select[name="customer_id"]').val(),
+            project_start_date: startDate,
+            project_end_date: endDate
         };
 
         $.post(AlezuxProjects.ajaxurl, data, function (response) {
