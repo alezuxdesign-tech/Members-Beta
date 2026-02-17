@@ -87,7 +87,9 @@ class Proyectos_Agencia {
 		
 		// Cliente AJAX
 		add_action( 'wp_ajax_alezux_submit_briefing', [ $this, 'ajax_submit_briefing' ] );
+		add_action( 'wp_ajax_alezux_approve_logo', [ $this, 'ajax_approve_logo' ] ); // Fix: Hook Added
 		add_action( 'wp_ajax_alezux_approve_design', [ $this, 'ajax_approve_design' ] );
+		add_action( 'wp_ajax_alezux_approve_final', [ $this, 'ajax_approve_final' ] ); // Fix: Hook Added
 		add_action( 'wp_ajax_alezux_submit_rejection', [ $this, 'ajax_submit_rejection' ] );
 		
 		// Panel Lateral

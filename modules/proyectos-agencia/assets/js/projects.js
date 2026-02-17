@@ -625,6 +625,9 @@ jQuery(document).ready(function ($) {
         // Hide all initially if needed, or rely on specific checks
         // For now, we toggle based on phase
 
+        // Briefing Section - Always show if available (Admin Context primarily)
+        $('#section-briefing').show();
+
         // Design Section (URL) - Relevant from creation onwards
         if (['design_creation', 'design_review', 'design_changes', 'in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
             $('#section-design').fadeIn();
