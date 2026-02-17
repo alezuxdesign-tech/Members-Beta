@@ -678,6 +678,10 @@ class Client_Project_Widget extends Widget_Base {
 		$is_submitted = $project->status === 'briefing_completed' || $project->status !== 'pending';
 		$briefing_data = $manager->get_project_meta( $project->id, 'briefing_data' );
 		
+		if ( is_string( $briefing_data ) ) {
+			$briefing_data = json_decode( $briefing_data, true );
+		}
+		
 		// Helper to get value
 		$get_val = function($key) use ($briefing_data) {
 			return isset($briefing_data[$key]) ? esc_attr($briefing_data[$key]) : '';
