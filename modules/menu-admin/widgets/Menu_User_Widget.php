@@ -305,6 +305,33 @@ class Menu_User_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
+				'condition' => [
+					'skin' => 'classic', // Ocultar y no aplicar en Dock para evitar conflictos
+				],
+			]
+		);
+		
+		// Control de Relleno específico para Dock (Padding: 0 por defecto)
+		$this->add_responsive_control(
+			'item_padding_dock',
+			[
+				'label' => esc_html__( 'Relleno Interno (Dock)', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'default' => [
+					'top' => '0',
+					'right' => '0',
+					'bottom' => '0',
+					'left' => '0',
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [
+					'skin' => 'dock',
+				],
 			]
 		);
 
@@ -326,6 +353,10 @@ class Menu_User_Widget extends Widget_Base {
 				'label' => esc_html__( 'Tamaño Item (Dock)', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
+				'default' => [
+					'size' => 50,
+					'unit' => 'px',
+				],
 				'range' => [
 					'px' => [
 						'min' => 30,
@@ -333,7 +364,8 @@ class Menu_User_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; justify-content: center;',
+					// Añadimos box-sizing y aspecto 1/1 para asegurar cuadrado
+					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; justify-content: center; box-sizing: border-box; aspect-ratio: 1 / 1;',
 				],
 				'condition' => [
 					'skin' => 'dock',
