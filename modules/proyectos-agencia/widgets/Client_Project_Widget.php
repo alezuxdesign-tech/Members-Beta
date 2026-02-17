@@ -817,7 +817,10 @@ class Client_Project_Widget extends Widget_Base {
 						<div id="alezux-color-palette-container" class="alezux-color-palette">
 							<!-- Dynamic items will be added here by JS -->
 						</div>
-						<input type="hidden" name="brand_colors" id="brand_colors_input">
+						<?php
+						$colors_json = isset($briefing_data['brand_colors']) ? json_encode($briefing_data['brand_colors']) : '[]';
+						?>
+						<input type="hidden" name="brand_colors" id="brand_colors_input" value="<?php echo esc_attr($colors_json); ?>">
 					</div>
 
 					<div class="alezux-form-group">

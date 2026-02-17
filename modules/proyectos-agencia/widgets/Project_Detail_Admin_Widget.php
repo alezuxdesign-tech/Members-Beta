@@ -96,6 +96,9 @@ class Project_Detail_Admin_Widget extends Widget_Base {
 				margin-top: 10px;
 			}
 		</style>
+		<div style="background:red; color:white; padding:10px; text-align:center; font-weight:bold; border-radius:4px; margin-bottom:20px;">
+			DEBUG: WIDGET V2 LOADED - IF YOU SEE THIS, CACHE IS CLEARED.
+		</div>
 		<div class="alezux-project-detail-dashboard">
 			<div class="alezux-detail-header">
 				<h2><?php echo esc_html( $project->name ); ?></h2>
