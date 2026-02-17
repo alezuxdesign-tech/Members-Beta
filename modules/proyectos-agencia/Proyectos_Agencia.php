@@ -90,6 +90,8 @@ class Proyectos_Agencia {
 		$customer = get_userdata( $project->customer_id );
 		$meta = $manager->get_all_project_meta( $project_id );
 		$design_url = isset($meta['design_proposal_url']) ? $meta['design_proposal_url'] : '';
+		$est_duration = isset($meta['estimated_duration_weeks']) ? $meta['estimated_duration_weeks'] : '';
+		$est_end_date = isset($meta['estimated_end_date']) ? $meta['estimated_end_date'] : '';
 
 		ob_start();
 		?>
@@ -122,6 +124,20 @@ class Proyectos_Agencia {
 							<label>Fecha Inicio</label>
 							<p><i class="eicon-calendar"></i> <?php echo date_i18n( get_option('date_format'), strtotime($project->created_at) ); ?></p>
 						</div>
+						
+						<?php if ( ! empty( $est_duration ) ) : ?>
+						<div class="detail-item">
+							<label>Duración Est.</label>
+							<p><i class="eicon-clock"></i> <?php echo esc_html( $est_duration ); ?> Semanas</p>
+						</div>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $est_end_date ) ) : ?>
+						<div class="detail-item">
+							<label>Fecha Fin (Est)</label>
+							<p><i class="eicon-calendar"></i> <?php echo date_i18n( get_option('date_format'), strtotime($est_end_date) ); ?></p>
+						</div>
+						<?php endif; ?>
 					</div>
 				</div>
 
@@ -384,6 +400,19 @@ class Proyectos_Agencia {
 		$project_id = $manager->create_project( $name, $user_id );
 
 		if ( $project_id ) {
+			// Guardar duración y calcular fecha de fin
+			$duration = isset( $_POST['project_duration'] ) ? absint( $_POST['project_duration'] ) : 0;
+			if ( $duration > 0 ) {
+				$manager->update_project_meta( $project_id, 'estimated_duration_weeks', $duration );
+				
+				// Calcular fecha estimada de fin (semanas)
+				$created_at = current_time( 'timestamp' );
+				$end_date_timestamp = strtotime( "+{$duration} weeks", $created_at );
+				$end_date = date( 'Y-m-d H:i:s', $end_date_timestamp );
+				
+				$manager->update_project_meta( $project_id, 'estimated_end_date', $end_date );
+			}
+
 			wp_send_json_success( [ 'message' => 'Proyecto creado.', 'id' => $project_id ] );
 		} else {
 			wp_send_json_error( 'Error al crear proyecto en DB.' );

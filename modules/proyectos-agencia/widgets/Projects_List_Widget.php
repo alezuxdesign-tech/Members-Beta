@@ -1045,6 +1045,11 @@ class Projects_List_Widget extends Widget_Base {
 							</select>
 						</div>
 
+						<div class="form-group">
+							<label>Duración Estimada (Semanas)</label>
+							<input type="number" name="project_duration" class="alezux-input" required min="1" placeholder="Ej: 4">
+						</div>
+
 						<div class="form-actions" style="margin-top: 25px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
 							<button type="button" class="alezux-marketing-btn close-modal-btn" style="background: #e2e8f0; color: #4a5568; box-shadow: none;">Cancelar</button>
 							<button type="submit" class="alezux-marketing-btn primary">
