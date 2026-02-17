@@ -7,6 +7,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Alezux_Members\Modules\Proyectos_Agencia\Includes\Project_Manager;
 
+use function \add_action;
+use function \is_admin;
+use function \check_ajax_referer;
+use function \current_user_can;
+use function \wp_send_json_error;
+use function \wp_send_json_success;
+use function \absint;
+use function \get_userdata;
+use function \esc_attr;
+use function \esc_html;
+use function \esc_url;
+use function \esc_url_raw;
+use function \get_avatar;
+use function \date_i18n;
+use function \get_option;
+use function \update_option;
+use function \selected;
+use function \is_user_logged_in;
+use function \get_current_user_id;
+use function \wpautop;
+use function \make_clickable;
+use function \get_avatar_url;
+use function \wp_kses_post;
+use function \sanitize_text_field;
+use function \sanitize_textarea_field;
+use function \sanitize_email;
+use function \current_time;
+use function \wp_handle_upload;
+use function \do_action;
+use function \wp_enqueue_style;
+use function \wp_enqueue_script;
+use function \wp_localize_script;
+use function \plugin_dir_url;
+use function \admin_url;
+use function \wp_create_nonce;
+use function \get_users;
+use const \ABSPATH;
+
 class Proyectos_Agencia {
 
 	public function __construct() {
@@ -90,8 +128,8 @@ class Proyectos_Agencia {
 		$customer = get_userdata( $project->customer_id );
 		$meta = $manager->get_all_project_meta( $project_id );
 		$design_url = isset($meta['design_proposal_url']) ? $meta['design_proposal_url'] : '';
-		$est_duration = isset($meta['estimated_duration_weeks']) ? $meta['estimated_duration_weeks'] : '';
-		$est_end_date = isset($meta['estimated_end_date']) ? $meta['estimated_end_date'] : '';
+		$start_date = isset($meta['project_start_date']) ? $meta['project_start_date'] : '';
+		$end_date   = isset($meta['project_end_date']) ? $meta['project_end_date'] : '';
 
 		ob_start();
 		?>
@@ -122,22 +160,13 @@ class Proyectos_Agencia {
 						</div>
 						<div class="detail-item">
 							<label>Fecha Inicio</label>
-							<p><i class="eicon-calendar"></i> <?php echo date_i18n( get_option('date_format'), strtotime($project->created_at) ); ?></p>
+							<p><i class="eicon-calendar"></i> <?php echo ! empty( $start_date ) ? date_i18n( get_option('date_format'), strtotime($start_date) ) : '-'; ?></p>
 						</div>
 						
-						<?php if ( ! empty( $est_duration ) ) : ?>
 						<div class="detail-item">
-							<label>Duración Est.</label>
-							<p><i class="eicon-clock"></i> <?php echo esc_html( $est_duration ); ?> Semanas</p>
+							<label>Fecha Fin</label>
+							<p><i class="eicon-calendar"></i> <?php echo ! empty( $end_date ) ? date_i18n( get_option('date_format'), strtotime($end_date) ) : '-'; ?></p>
 						</div>
-						<?php endif; ?>
-
-						<?php if ( ! empty( $est_end_date ) ) : ?>
-						<div class="detail-item">
-							<label>Fecha Fin (Est)</label>
-							<p><i class="eicon-calendar"></i> <?php echo date_i18n( get_option('date_format'), strtotime($est_end_date) ); ?></p>
-						</div>
-						<?php endif; ?>
 					</div>
 				</div>
 
@@ -400,17 +429,15 @@ class Proyectos_Agencia {
 		$project_id = $manager->create_project( $name, $user_id );
 
 		if ( $project_id ) {
-			// Guardar duración y calcular fecha de fin
-			$duration = isset( $_POST['project_duration'] ) ? absint( $_POST['project_duration'] ) : 0;
-			if ( $duration > 0 ) {
-				$manager->update_project_meta( $project_id, 'estimated_duration_weeks', $duration );
-				
-				// Calcular fecha estimada de fin (semanas)
-				$created_at = current_time( 'timestamp' );
-				$end_date_timestamp = strtotime( "+{$duration} weeks", $created_at );
-				$end_date = date( 'Y-m-d H:i:s', $end_date_timestamp );
-				
-				$manager->update_project_meta( $project_id, 'estimated_end_date', $end_date );
+			// Guardar fechas de inicio y fin
+			$start_date = isset( $_POST['project_start_date'] ) ? sanitize_text_field( $_POST['project_start_date'] ) : '';
+			$end_date   = isset( $_POST['project_end_date'] ) ? sanitize_text_field( $_POST['project_end_date'] ) : '';
+
+			if ( ! empty( $start_date ) ) {
+				$manager->update_project_meta( $project_id, 'project_start_date', $start_date );
+			}
+			if ( ! empty( $end_date ) ) {
+				$manager->update_project_meta( $project_id, 'project_end_date', $end_date );
 			}
 
 			wp_send_json_success( [ 'message' => 'Proyecto creado.', 'id' => $project_id ] );

@@ -5,6 +5,24 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Alezux_Members\Modules\Proyectos_Agencia\Includes\Project_Manager;
 
+use function \esc_html__;
+use function \esc_html;
+use function \esc_attr;
+use function \esc_url;
+use function \date_i18n;
+use function \get_option;
+use function \current_user_can;
+use function \get_users;
+use function \get_userdata;
+use function \get_avatar;
+use function \is_admin;
+use function \add_action;
+use function \check_ajax_referer;
+use function \wp_send_json_error;
+use function \wp_send_json_success;
+use function \absint;
+use const \ABSPATH;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -1045,9 +1063,15 @@ class Projects_List_Widget extends Widget_Base {
 							</select>
 						</div>
 
-						<div class="form-group">
-							<label>Duración Estimada (Semanas)</label>
-							<input type="number" name="project_duration" class="alezux-input" required min="1" placeholder="Ej: 4">
+						<div class="form-group-row" style="display:flex; gap:15px;">
+							<div class="form-group" style="flex:1;">
+								<label>Fecha de Inicio</label>
+								<input type="date" name="project_start_date" class="alezux-input" required value="<?php echo date('Y-m-d'); ?>">
+							</div>
+							<div class="form-group" style="flex:1;">
+								<label>Fecha de Fin</label>
+								<input type="date" name="project_end_date" class="alezux-input" required>
+							</div>
 						</div>
 
 						<div class="form-actions" style="margin-top: 25px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
