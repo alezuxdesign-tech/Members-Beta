@@ -998,6 +998,7 @@ class Projects_List_Widget extends Widget_Base {
 							case 'completed': $progress = 100; break;
 						}
 						?>
+						<?php
 						// Obtener fechas de inicio y fin
 						$start_date_meta = $manager->get_project_meta( $project->id, 'project_start_date' );
 						$end_date_meta   = $manager->get_project_meta( $project->id, 'project_end_date' );
