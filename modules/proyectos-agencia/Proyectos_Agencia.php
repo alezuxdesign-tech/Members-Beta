@@ -197,9 +197,13 @@ class Proyectos_Agencia {
 								<label>Fase Actual (Visible Cliente)</label>
 								<select name="current_step" id="project-phase-select" class="alezux-input">
 									<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
-									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>2. Revisión Diseño</option>
-									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>3. Desarrollo</option>
-									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>4. Completado</option>
+									<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>2. Creación de Diseño</option>
+									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>3. Revisión Diseño</option>
+									<option value="design_changes" <?php selected( $project->current_step, 'design_changes' ); ?>>4. Gestión de Cambios</option>
+									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>5. Desarrollo</option>
+									<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>6. Optimización</option>
+									<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>7. Revisión Final</option>
+									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>8. Completado</option>
 								</select>
 							</div>
 						</div>

@@ -570,18 +570,20 @@ jQuery(document).ready(function ($) {
 
         function updateFields() {
             var phase = $select.val();
-            // Hide all first
+            // Hide all by default
             $('.dynamic-section').hide();
 
-            // Logic
-            if (phase === 'briefing') {
-                $('#section-briefing').fadeIn();
-            } else if (phase === 'design_review') {
+            // Always show Briefing if available (it's the base)
+            $('#section-briefing').show();
+
+            // Design Section (URL) - Relevant from creation onwards
+            if (['design_creation', 'design_review', 'design_changes', 'in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
                 $('#section-design').fadeIn();
-            } else if (phase === 'in_progress' || phase === 'completed') {
+            }
+
+            // Development Section (Credentials) - Relevant from development onwards
+            if (['in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
                 $('#section-development').fadeIn();
-                // Optionally show design too?
-                $('#section-design').show();
             }
         }
 

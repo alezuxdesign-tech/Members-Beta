@@ -57,9 +57,13 @@ class Client_Project_Widget extends Widget_Base {
 				'type' => Controls_Manager::SELECT,
 				'options' => [
 					'briefing' => '1. Briefing',
-					'design_review' => '2. Revisión Diseño',
-					'in_progress' => '3. Desarrollo',
-					'completed' => '4. Completado',
+					'design_creation' => '2. Creación Diseño',
+					'design_review' => '3. Revisión Diseño',
+					'design_changes' => '4. Cambios Diseño',
+					'in_progress' => '5. Desarrollo',
+					'optimization' => '6. Optimización',
+					'final_review' => '7. Revisión Final',
+					'completed' => '8. Completado',
 				],
 				'default' => 'design_review',
 				'condition' => [
@@ -397,17 +401,29 @@ class Client_Project_Widget extends Widget_Base {
 					case 'briefing':
 						$this->render_briefing_step( $project, $manager );
 						break;
+					case 'design_creation':
+						$this->render_design_creation_step( $project );
+						break;
 					case 'design_review':
 						$this->render_design_review_step( $project, $manager );
 						break;
+					case 'design_changes':
+						$this->render_design_changes_step( $project );
+						break;
 					case 'in_progress':
 						$this->render_progress_step( $project );
+						break;
+					case 'optimization':
+						$this->render_optimization_step( $project );
+						break;
+					case 'final_review':
+						$this->render_final_review_step( $project );
 						break;
 					case 'completed':
 						$this->render_completed_step( $project );
 						break;
 					default:
-						echo '<p>Estado del proyecto desconocido.</p>';
+						echo '<p>Estado del proyecto desconocido (' . esc_html($project->current_step) . ').</p>';
 				}
 				?>
 			</div>
@@ -507,11 +523,23 @@ class Client_Project_Widget extends Widget_Base {
 				// Force briefing form display
 				$this->render_briefing_step( $dummy_project, $manager_mock );
 				break;
+			case 'design_creation':
+				$this->render_design_creation_step( $dummy_project );
+				break;
 			case 'design_review':
 				$this->render_design_review_step( $dummy_project, $manager_mock );
 				break;
+			case 'design_changes':
+				$this->render_design_changes_step( $dummy_project );
+				break;
 			case 'in_progress':
 				$this->render_progress_step( $dummy_project );
+				break;
+			case 'optimization':
+				$this->render_optimization_step( $dummy_project );
+				break;
+			case 'final_review':
+				$this->render_final_review_step( $dummy_project );
 				break;
 			case 'completed':
 				$this->render_completed_step( $dummy_project );
@@ -565,19 +593,35 @@ class Client_Project_Widget extends Widget_Base {
 		$steps = [
 			'briefing' => [
 				'label' => 'Briefing', 
-				'desc' => 'Información recopilada'
+				'desc' => 'Datos'
+			],
+			'design_creation' => [
+				'label' => 'Creación', 
+				'desc' => 'Diseño'
 			],
 			'design_review' => [
-				'label' => 'Diseño', 
-				'desc' => 'Prototipo y Estilos'
+				'label' => 'Revisión', 
+				'desc' => 'Feedback'
+			],
+			'design_changes' => [
+				'label' => 'Cambios', 
+				'desc' => 'Ajustes'
 			],
 			'in_progress' => [
 				'label' => 'Desarrollo', 
-				'desc' => 'Programación & Montaje'
+				'desc' => 'Código'
+			],
+			'optimization' => [
+				'label' => 'Optimización', 
+				'desc' => 'SEO/Vel'
+			],
+			'final_review' => [
+				'label' => 'Final', 
+				'desc' => 'Entrega'
 			],
 			'completed' => [
-				'label' => 'Finalizado', 
-				'desc' => 'Entrega y Capacitación'
+				'label' => 'Listo', 
+				'desc' => 'Online'
 			]
 		];
 
@@ -798,6 +842,61 @@ class Client_Project_Widget extends Widget_Base {
 			
 			<div class="dev-note">
 				<i class="eicon-info-circle-o"></i> Te notificaremos por correo cuando el sitio esté listo para revisión.
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_design_creation_step( $project ) {
+		?>
+		<div class="alezux-step-container center-text">
+			<div style="font-size: 48px; margin-bottom: 20px;">🎨</div>
+			<h3>Creando tu Diseño</h3>
+			<p>Nuestro equipo de diseño está trabajando en tu propuesta visual basada en el briefing.</p>
+			<p>Te notificaremos pronto para que puedas revisar el prototipo.</p>
+		</div>
+		<?php
+	}
+
+	private function render_design_changes_step( $project ) {
+		?>
+		<div class="alezux-step-container center-text">
+			<div style="font-size: 48px; margin-bottom: 20px;">✏️</div>
+			<h3>Aplicando Cambios</h3>
+			<p>Hemos recibido tu feedback. Estamos ajustando el diseño según tus indicaciones.</p>
+			<p>Pronto recibirás la versión actualizada para tu aprobación.</p>
+		</div>
+		<?php
+	}
+
+	private function render_optimization_step( $project ) {
+		?>
+		<div class="alezux-step-container center-text">
+			<div style="font-size: 48px; margin-bottom: 20px;">🚀</div>
+			<h3>Optimizando Rendimiento</h3>
+			<p>El desarrollo principal ha terminado. Ahora estamos ajustando la velocidad, SEO y seguridad.</p>
+			<div class="alezux-alert info" style="margin-top: 20px; display: inline-block;">
+				<i class="eicon-loading eicon-animation-spin"></i> Realizando pruebas de carga y auditoría final...
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_final_review_step( $project ) {
+		?>
+		<div class="alezux-step-container center-text">
+			<div style="font-size: 48px; margin-bottom: 20px;">👀</div>
+			<h3>Revisión Final</h3>
+			<p>El proyecto está casi listo. Por favor revisa el sitio en el enlace de desarrollo.</p>
+			
+			<div class="approval-actions" style="margin-top: 30px;">
+				<a href="#" target="_blank" class="alezux-btn alezux-btn-secondary" style="margin-bottom: 15px;">
+					<i class="eicon-link"></i> Ver Sitio Staging
+				</a>
+				<br>
+				<button id="btn-approve-final" data-id="<?php echo esc_attr( $project->id ); ?>" class="alezux-btn alezux-btn-success">
+					<i class="eicon-check-circle-o"></i> Aprobar y Publicar
+				</button>
 			</div>
 		</div>
 		<?php
