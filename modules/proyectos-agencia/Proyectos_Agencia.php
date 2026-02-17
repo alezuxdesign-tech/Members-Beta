@@ -170,6 +170,97 @@ class Proyectos_Agencia {
 					</div>
 				</div>
 
+				<!-- Nueva Sección: Estado de Aprobaciones -->
+				<div class="panel-section">
+					<h4 class="panel-section-title">Estado de Aprobaciones</h4>
+					<?php
+					$logo_approval  = isset($meta['logo_approval_data']) ? json_decode($meta['logo_approval_data'], true) : null;
+					$design_approval= isset($meta['approval_data']) ? json_decode($meta['approval_data'], true) : null;
+					$final_approval = isset($meta['final_approval_data']) ? json_decode($meta['final_approval_data'], true) : null;
+					
+					// Briefing Status
+					$briefing_status_icon = !empty($briefing_data) ? 'eicon-check-circle' : 'eicon-circle-o';
+					$briefing_status_color = !empty($briefing_data) ? '#48bb78' : '#a0aec0';
+					
+					// Logo Status
+					$needs_logo = isset($meta['needs_logo_design']) && $meta['needs_logo_design'] === 'yes';
+					$logo_status_icon = $logo_approval ? 'eicon-check-circle' : ($needs_logo ? 'eicon-circle-o' : 'eicon-ban');
+					$logo_status_color = $logo_approval ? '#48bb78' : ($needs_logo ? '#a0aec0' : '#718096');
+					$logo_text = $needs_logo ? 'Diseño de Logo' : 'Diseño de Logo (No requerido)';
+
+					// Design Status
+					$design_status_icon = $design_approval ? 'eicon-check-circle' : 'eicon-circle-o';
+					$design_status_color = $design_approval ? '#48bb78' : '#a0aec0';
+
+					// Final Status
+					$final_status_icon = $final_approval ? 'eicon-check-circle' : 'eicon-circle-o';
+					$final_status_color = $final_approval ? '#48bb78' : '#a0aec0';
+					?>
+					
+					<div class="alezux-approvals-list">
+						<!-- Briefing -->
+						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
+							<i class="<?php echo $briefing_status_icon; ?>" style="color:<?php echo $briefing_status_color; ?>; font-size:18px; margin-right:10px;"></i>
+							<div>
+								<strong style="display:block; font-size:13px;">Briefing Inicial</strong>
+								<?php if ( ! empty($briefing_data['submitted_at']) ) : ?>
+									<span style="font-size:11px; color:#a0aec0;">Enviado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($briefing_data['submitted_at']) ); ?></span>
+								<?php else: ?>
+									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<!-- Logo -->
+						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
+							<i class="<?php echo $logo_status_icon; ?>" style="color:<?php echo $logo_status_color; ?>; font-size:18px; margin-right:10px;"></i>
+							<div>
+								<strong style="display:block; font-size:13px;"><?php echo $logo_text; ?></strong>
+								<?php if ( $logo_approval ) : ?>
+									<span style="font-size:11px; color:#a0aec0;">
+										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($logo_approval['approved_at']) ); ?>
+										<br>IP: <?php echo esc_html($logo_approval['ip_address']); ?>
+									</span>
+								<?php elseif($needs_logo): ?>
+									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<!-- Web Design -->
+						<div class="approval-item" style="display:flex; align-items:center; margin-bottom:10px;">
+							<i class="<?php echo $design_status_icon; ?>" style="color:<?php echo $design_status_color; ?>; font-size:18px; margin-right:10px;"></i>
+							<div>
+								<strong style="display:block; font-size:13px;">Diseño Web</strong>
+								<?php if ( $design_approval ) : ?>
+									<span style="font-size:11px; color:#a0aec0;">
+										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($design_approval['approved_at']) ); ?>
+										<br>IP: <?php echo esc_html($design_approval['ip_address']); ?>
+									</span>
+								<?php else: ?>
+									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
+								<?php endif; ?>
+							</div>
+						</div>
+
+						<!-- Final -->
+						<div class="approval-item" style="display:flex; align-items:center;">
+							<i class="<?php echo $final_status_icon; ?>" style="color:<?php echo $final_status_color; ?>; font-size:18px; margin-right:10px;"></i>
+							<div>
+								<strong style="display:block; font-size:13px;">Aprobación Final</strong>
+								<?php if ( $final_approval ) : ?>
+									<span style="font-size:11px; color:#a0aec0;">
+										Aprobado: <?php echo date_i18n( get_option('date_format') . ' H:i', strtotime($final_approval['approved_at']) ); ?>
+										<br>IP: <?php echo esc_html($final_approval['ip_address']); ?>
+									</span>
+								<?php else: ?>
+									<span style="font-size:11px; color:#a0aec0;">Pendiente</span>
+								<?php endif; ?>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="panel-section">
 					<h4 class="panel-section-title">Actualizar Estado</h4>
 					<form id="update-project-status-form" class="alezux-form-group">

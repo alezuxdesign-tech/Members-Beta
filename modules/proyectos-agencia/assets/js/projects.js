@@ -616,30 +616,38 @@ jQuery(document).ready(function ($) {
     });
 
     // --- PHASE LOGIC (Dynamic Fields) ---
-    AlezuxProjects.initPhaseLogic = function () {
+    function updateFields() {
         var $select = $('#project-phase-select');
         if ($select.length === 0) return;
+
+        var phase = $select.val();
+
+        // Hide all initially if needed, or rely on specific checks
+        // For now, we toggle based on phase
 
         // Design Section (URL) - Relevant from creation onwards
         if (['design_creation', 'design_review', 'design_changes', 'in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
             $('#section-design').fadeIn();
+        } else {
+            $('#section-design').hide();
         }
 
-        // Logo Phases (Could share Design Section or have its own if needed)
+        // Logo Phases 
         if (['logo_creation', 'logo_review'].indexOf(phase) !== -1) {
-            // For now, perhaps show design section if approved logo is needed there? 
-            // Or maybe nothing specific is needed from admin yet other than chat.
-            // Keeping it simple.
+            // Keep specific logo logic if needed
         }
 
         // Development Section (Credentials) - Relevant from development onwards
         if (['in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
             $('#section-development').fadeIn();
+        } else {
+            $('#section-development').hide();
         }
     }
 
-    $select.on('change', updateFields);
+    AlezuxProjects.initPhaseLogic = updateFields;
+
+    $('#project-phase-select').on('change', updateFields);
     updateFields(); // Run on init
-};
 
 });

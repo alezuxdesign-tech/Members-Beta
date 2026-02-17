@@ -993,6 +993,8 @@ class Projects_List_Widget extends Widget_Base {
 						$progress = 0;
 						switch($project->current_step) {
 							case 'briefing': $progress = 10; break;
+							case 'logo_creation': $progress = 15; break;
+							case 'logo_review': $progress = 20; break;
 							case 'design_creation': $progress = 25; break;
 							case 'design_review': $progress = 40; break;
 							case 'design_changes': $progress = 50; break;
