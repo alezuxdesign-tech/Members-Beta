@@ -32,6 +32,10 @@ class Menu_User_Widget extends Widget_Base {
 		return [ 'alezux-lms' ];
 	}
 
+	public function get_script_depends() {
+		return [ 'alezux-members-script' ]; 
+	}
+
 	protected function register_controls() {
 		// --- Sección de Contenido ---
 		$this->start_controls_section(
@@ -39,6 +43,36 @@ class Menu_User_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Items del Menú', 'alezux-members' ),
 				'tab' => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'skin',
+			[
+				'label' => esc_html__( 'Diseño (Skin)', 'alezux-members' ),
+				'type' => Controls_Manager::SELECT,
+				'default' => 'classic',
+				'options' => [
+					'classic' => esc_html__( 'Clásico (Lista)', 'alezux-members' ),
+					'dock' => esc_html__( 'Dock (Iconos)', 'alezux-members' ),
+				],
+				'prefix_class' => 'alezux-menu-skin-',
+				'render_type' => 'template',
+			]
+		);
+
+		$this->add_control(
+			'show_tooltip',
+			[
+				'label' => esc_html__( 'Mostrar Tooltip', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => 'yes',
+				'condition' => [
+					'skin' => 'dock',
+				],
 			]
 		);
 
@@ -62,6 +96,9 @@ class Menu_User_Widget extends Widget_Base {
 				'placeholder' => esc_html__( 'https://tunsitio.com', 'alezux-members' ),
 				'default' => [
 					'url' => '#',
+				],
+				'dynamic' => [
+					'active' => true,
 				],
 			]
 		);
@@ -114,6 +151,9 @@ class Menu_User_Widget extends Widget_Base {
 					'{{WRAPPER}}.alezux-menu-layout-column .alezux-menu-admin-item-link' => 'width: 100%;',
 				],
 				'prefix_class' => 'alezux-menu-layout-',
+				'condition' => [
+					'skin' => 'classic',
+				],
 			]
 		);
 
@@ -203,6 +243,27 @@ class Menu_User_Widget extends Widget_Base {
 				],
 			]
 		);
+		
+		$this->add_responsive_control(
+			'container_width',
+			[
+				'label' => esc_html__( 'Ancho (para Dock)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [
+						'min' => 40,
+						'max' => 200,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-container' => 'width: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'skin' => 'dock',
+				],
+			]
+		);
 
 		$this->end_controls_section();
 
@@ -255,6 +316,27 @@ class Menu_User_Widget extends Widget_Base {
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'item_dock_size',
+			[
+				'label' => esc_html__( 'Tamaño Item (Dock)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 30,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; justify-content: center;',
+				],
+				'condition' => [
+					'skin' => 'dock',
 				],
 			]
 		);
@@ -396,6 +478,21 @@ class Menu_User_Widget extends Widget_Base {
 				],
 			]
 		);
+		
+		$this->add_control(
+			'active_indicator_radius',
+			[
+				'label' => esc_html__( 'Radio Indicador Activo', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-menu-admin-item-link.alezux-menu-item-active' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [
+					'skin' => 'dock',
+				],
+			]
+		);
 
 		$this->end_controls_tab();
 
@@ -406,6 +503,9 @@ class Menu_User_Widget extends Widget_Base {
 			[
 				'name' => 'item_typography',
 				'selector' => '{{WRAPPER}} .alezux-menu-admin-item-text',
+				'condition' => [
+					'skin' => 'classic',
+				],
 			]
 		);
 
@@ -453,6 +553,9 @@ class Menu_User_Widget extends Widget_Base {
 					'{{WRAPPER}} .alezux-menu-admin-icon' => 'margin-right: {{SIZE}}{{UNIT}};',
 					'body.rtl {{WRAPPER}} .alezux-menu-admin-icon' => 'margin-left: {{SIZE}}{{UNIT}}; margin-right: 0;',
 				],
+				'condition' => [
+					'skin' => 'classic',
+				],
 			]
 		);
 
@@ -465,18 +568,25 @@ class Menu_User_Widget extends Widget_Base {
 		if ( empty( $settings['menu_items'] ) ) {
 			return;
 		}
+		
+		$is_dock = $settings['skin'] === 'dock';
+		$layout_style = '';
+		
+		if ( $is_dock ) {
+			// En dock forzamos columna y centrado generalmente, pero permitimos ajustes
+			$layout_style = 'display: flex; flex-direction: column; align-items: center; justify-content: center;';
+		} else {
+			// En clásico usa las opciones del control responsive
+			$layout_style = 'display: flex;'; // El resto viene por CSS inline del control
+		}
 
 		?>
 		<div class="alezux-menu-admin-container">
-			<ul class="alezux-menu-admin-list" style="display: flex; list-style: none; margin: 0; padding: 0;">
+			<ul class="alezux-menu-admin-list" style="<?php echo esc_attr( $layout_style ); ?> list-style: none; margin: 0; padding: 0;">
 				<?php
 				// Obtener URL actual normalizada para comparación
 				$protocol = is_ssl() ? 'https://' : 'http://';
 				$current_url_raw = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-				// Eliminamos query args para una comparación más limpia de "página", 
-				// o usamos la URL completa dependiendo de la necesidad. 
-				// Generalmente para menús, queremos coincidir path.
-				// Una forma segura es usar set_url_scheme y untrailingslashit
 				$current_url = untrailingslashit( strtok( $current_url_raw, '?' ) );
 
 				foreach ( $settings['menu_items'] as $index => $item ) : 
@@ -496,15 +606,28 @@ class Menu_User_Widget extends Widget_Base {
 					}
 					
 					$active_class = $is_active ? ' alezux-menu-item-active' : '';
+					$item_classes = 'alezux-menu-admin-item-link' . $active_class;
+					
+					// Estilos inline base para el link
+					$link_style = 'display: flex; align-items: center; text-decoration: none; transition: all 0.3s ease; position: relative;';
+					
+					// Atributos de Tooltip para Dock
+					$tooltip_attr = '';
+					if ( $is_dock && 'yes' === $settings['show_tooltip'] ) {
+						$tooltip_attr = ' title="' . esc_attr( $item['text'] ) . '"';
+					}
 					?>
 					<li class="alezux-menu-admin-item elementor-repeater-item-<?php echo esc_attr( $item['_id'] ); ?>">
-						<a class="alezux-menu-admin-item-link<?php echo esc_attr( $active_class ); ?>" <?php echo $this->get_render_attribute_string( $link_key ); ?> style="display: flex; align-items: center; text-decoration: none; transition: all 0.3s ease;">
+						<a class="<?php echo esc_attr( $item_classes ); ?>" <?php echo $this->get_render_attribute_string( $link_key ); echo $tooltip_attr; ?> style="<?php echo esc_attr( $link_style ); ?>">
 							<?php if ( ! empty( $item['icon']['value'] ) ) : ?>
 								<span class="alezux-menu-admin-icon" style="display: inline-flex; align-items: center; justify-content: center;">
 									<?php Icons_Manager::render_icon( $item['icon'], [ 'aria-hidden' => 'true' ] ); ?>
 								</span>
 							<?php endif; ?>
-							<span class="alezux-menu-admin-item-text"><?php echo esc_html( $item['text'] ); ?></span>
+							
+							<?php if ( ! $is_dock ) : ?>
+								<span class="alezux-menu-admin-item-text"><?php echo esc_html( $item['text'] ); ?></span>
+							<?php endif; ?>
 						</a>
 					</li>
 				<?php endforeach; ?>
