@@ -1040,4 +1040,72 @@ class Client_Project_Widget extends Widget_Base {
 		];
 		return isset( $labels[$status] ) ? $labels[$status] : ucfirst( $status );
 	}
+
+	private function render_assets_tab( $project, $manager ) {
+		$meta = $manager->get_all_project_meta( $project->id );
+		?>
+		<div id="tab-assets" class="client-tab-content">
+			<div class="alezux-project-body">
+				<div class="alezux-step-container">
+					<h3><i class="eicon-file-download"></i> Entregables y Recursos</h3>
+					<p>Aquí encontrarás todos los archivos finales y accesos de tu proyecto.</p>
+
+					<div class="assets-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+						
+						<!-- Tarjeta de Logos -->
+						<div class="asset-card alezux-card">
+							<h4><i class="eicon-image-bold"></i> Kit de Marca</h4>
+							<p class="description">Descarga tu logotipo en alta calidad y vectores.</p>
+							
+							<?php if ( ! empty( $meta['final_logo_url'] ) ) : ?>
+								<div class="asset-preview">
+									<img src="<?php echo esc_url( $meta['final_logo_url'] ); ?>" alt="Logo Final" style="max-height: 80px; display: block; margin: 0 auto 15px;">
+								</div>
+								<a href="<?php echo esc_url( $meta['final_logo_url'] ); ?>" download class="alezux-btn alezux-btn-primary alezux-btn-block">
+									<i class="eicon-download-bold"></i> Descargar Logo
+								</a>
+							<?php else : ?>
+								<div class="alezux-alert info">
+									Tu kit de marca estará disponible aquí al finalizar la fase de diseño.
+								</div>
+							<?php endif; ?>
+						</div>
+
+						<!-- Tarjeta de Credenciales -->
+						<div class="asset-card alezux-card">
+							<h4><i class="eicon-lock-user"></i> Credenciales de Acceso</h4>
+							<p class="description">Accesos administrativos a tu sitio web.</p>
+
+							<?php if ( ! empty( $meta['access_user'] ) ) : ?>
+								<div class="credentials-box" style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 8px;">
+									<div class="cred-row" style="margin-bottom: 10px;">
+										<strong>URL:</strong> 
+										<a href="<?php echo isset($meta['site_url']) ? esc_url( $meta['site_url'] ) : '#'; ?>" target="_blank">Ver Sitio <i class="eicon-external-link-square"></i></a>
+									</div>
+									<div class="cred-row" style="margin-bottom: 10px;">
+										<strong>Usuario:</strong> 
+										<code id="cred-user"><?php echo esc_html( $meta['access_user'] ); ?></code>
+										<button class="copy-btn" onclick="navigator.clipboard.writeText('<?php echo esc_js($meta['access_user']); ?>')"><i class="eicon-copy"></i></button>
+									</div>
+									<div class="cred-row">
+										<strong>Contraseña:</strong> 
+										<div style="display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
+											<input type="password" value="<?php echo isset($meta['access_pass']) ? esc_attr( $meta['access_pass'] ) : ''; ?>" id="cred-pass-input" readonly style="border:none; width: 100%; background: transparent;">
+											<button onclick="var i = document.getElementById('cred-pass-input'); i.type = i.type === 'password' ? 'text' : 'password';"><i class="eicon-eye"></i></button>
+										</div>
+									</div>
+								</div>
+							<?php else : ?>
+								<div class="alezux-alert info">
+									Las credenciales se generarán al finalizar el desarrollo.
+								</div>
+							<?php endif; ?>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
 }
