@@ -163,12 +163,55 @@ class Proyectos_Agencia {
 						<div id="section-briefing" class="dynamic-section" style="display:none;">
 							<div class="alezux-info-box">
 								<h5><i class="eicon-info-circle"></i> Datos del Briefing</h5>
-								<?php if ($briefing_data): ?>
-									<p><strong>Marca:</strong> <?php echo esc_html($briefing_data['brand_name'] ?? '-'); ?></p>
-									<p><strong>Eslogan:</strong> <?php echo esc_html($briefing_data['slogan'] ?? '-'); ?></p>
-									<p><strong>Colores:</strong> <?php echo esc_html($briefing_data['colors'] ?? '-'); ?></p>
-									<p><strong>Descripción:</strong><br> <?php echo nl2br(esc_html($briefing_data['business_desc'] ?? '-')); ?></p>
-								<?php else: ?>
+								<?php if ( ! empty( $briefing_data ) ) : 
+									$labels_map = [
+										'brand_name'          => 'Marca Comercial',
+										'legal_name'          => 'Razón Social',
+										'tax_id'              => 'CIF / NIT',
+										'fiscal_address'      => 'Dirección Fiscal',
+										'commercial_registry' => 'Registro Mercantil',
+										'jurisdiction'        => 'Jurisdicción',
+										'phone'               => 'Teléfono',
+										'whatsapp'            => 'WhatsApp',
+										'contact_email'       => 'Email Contacto',
+										'privacy_email'       => 'Email Privacidad',
+										'dpo_email'           => 'Email DPO',
+										'website_url'         => 'Sitio Web',
+										'business_activity'   => 'Actividad',
+										'business_sectors'    => 'Sectores',
+										'slogan'              => 'Slogan',
+										'colors'              => 'Colores',
+										'business_desc'       => 'Descripción',
+										'logo_details'        => 'Detalles Logo',
+										'submitted_at'        => 'Enviado el'
+									];
+								?>
+									<ul class="alezux-data-list" style="padding-left:0; list-style:none; margin:0;">
+										<?php foreach ( $briefing_data as $key => $val ) : 
+											if ( empty($val) ) continue;
+
+											$label = isset($labels_map[$key]) ? $labels_map[$key] : ucfirst( str_replace( '_', ' ', $key ) );
+										?>
+											<li style="margin-bottom:8px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
+												<strong style="color:#a0aec0; display:block;"><?php echo esc_html( $label ); ?>:</strong>
+												
+												<?php if ( 'brand_colors' === $key && is_array( $val ) ) : ?>
+													<div style="display:flex; gap:5px; margin-top:5px;">
+														<?php foreach ( $val as $color ) : ?>
+															<span style="background:<?php echo esc_attr($color); ?>; width:20px; height:20px; display:inline-block; border:1px solid #ccc; border-radius:4px;" title="<?php echo esc_attr($color); ?>"></span>
+														<?php endforeach; ?>
+													</div>
+												<?php elseif ( 'logo_url' === $key ) : ?>
+													<a href="<?php echo esc_url( $val ); ?>" target="_blank" style="color:#e11d48; text-decoration:underline; display:inline-block; margin-top:3px;">
+														Ver Archivo <i class="eicon-external-link-square"></i>
+													</a>
+												<?php else : ?>
+													<span style="color:#e2e8f0;"><?php echo esc_html( is_array($val) ? implode(', ', $val) : $val ); ?></span>
+												<?php endif; ?>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								<?php else : ?>
 									<p class="text-muted">El cliente aún no ha enviado el briefing.</p>
 								<?php endif; ?>
 							</div>
