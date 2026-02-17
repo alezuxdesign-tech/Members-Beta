@@ -22,24 +22,44 @@ jQuery(document).ready(function ($) {
     });
 
     // Date Range Picker Logic
+    // Date Range Picker Logic
     if ($('#project-date-range-selector').length) {
         $('#project-date-range-selector').flatpickr({
             mode: "range",
             dateFormat: "Y-m-d",
             minDate: "today",
             locale: "es", // Asegúrate de que flatpickr-l10n-es esté cargado
-            disable: [
-                function (date) {
-                    // Retorna true para deshabilitar (Domingo=0, Sábado=6)
-                    return (date.getDay() === 0 || date.getDay() === 6);
+            onDayCreate: function (dObj, dStr, fp, dayElem) {
+                // Add class for weekend days to style them
+                // 0 = Sunday, 6 = Saturday
+                if (dayElem.dateObj.getDay() === 0 || dayElem.dateObj.getDay() === 6) {
+                    dayElem.classList.add("flatpickr-weekend");
                 }
-            ],
+            },
             onChange: function (selectedDates, dateStr, instance) {
+                // Validate Start Date
+                if (selectedDates.length > 0) {
+                    var start = selectedDates[0];
+                    if (start.getDay() === 0 || start.getDay() === 6) {
+                        alert("La fecha de inicio no puede ser un fin de semana (Sábado o Domingo).");
+                        instance.clear();
+                        return;
+                    }
+                }
+
+                // Validate End Date and Update Inputs
                 if (selectedDates.length === 2) {
-                    var start = instance.formatDate(selectedDates[0], "Y-m-d");
-                    var end = instance.formatDate(selectedDates[1], "Y-m-d");
-                    $('input[name="project_start_date"]').val(start);
-                    $('input[name="project_end_date"]').val(end);
+                    var end = selectedDates[1];
+                    if (end.getDay() === 0 || end.getDay() === 6) {
+                        alert("La fecha de finalización no puede ser un fin de semana (Sábado o Domingo).");
+                        instance.clear();
+                        return;
+                    }
+
+                    var startFmt = instance.formatDate(selectedDates[0], "Y-m-d");
+                    var endFmt = instance.formatDate(selectedDates[1], "Y-m-d");
+                    $('input[name="project_start_date"]').val(startFmt);
+                    $('input[name="project_end_date"]').val(endFmt);
                 } else {
                     $('input[name="project_start_date"]').val('');
                     $('input[name="project_end_date"]').val('');

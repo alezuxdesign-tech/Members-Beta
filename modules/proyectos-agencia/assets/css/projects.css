@@ -1330,3 +1330,34 @@
 .color-item .color-code {
     display: none;
 }
+
+/* =========================================
+   FLATPICKR CUSTOM STYLES
+   ========================================= */
+.flatpickr-day.flatpickr-weekend {
+    background-color: #2d3748 !important;
+    /* Darker background */
+    color: #718096 !important;
+    /* Muted text */
+    text-decoration: line-through;
+}
+
+.flatpickr-day.flatpickr-weekend:hover {
+    background-color: #2d3748 !important;
+    color: #718096 !important;
+    cursor: not-allowed;
+}
+
+/* Ensure selected range highlights over weekends but weekend style persists slightly */
+.flatpickr-calendar .flatpickr-day.selected.flatpickr-weekend,
+.flatpickr-calendar .flatpickr-day.startRange.flatpickr-weekend,
+.flatpickr-calendar .flatpickr-day.endRange.flatpickr-weekend,
+.flatpickr-calendar .flatpickr-day.inRange.flatpickr-weekend {
+    background-color: #3f4d63 !important;
+    /* Slightly lighter than weekend base but darker than active range */
+    color: #a0aec0 !important;
+    text-decoration: none;
+    /* Remove strikethrough when in range? Maybe keep it to signify exclusion */
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
