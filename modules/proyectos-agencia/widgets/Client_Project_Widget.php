@@ -395,11 +395,17 @@ class Client_Project_Widget extends Widget_Base {
 
 		<div id="tab-overview" class="client-tab-content active">
 			<div class="alezux-project-body">
-				<?php $this->render_project_timeline( $project->current_step ); ?>
+				<?php $this->render_project_timeline( $project->current_step, $project ); ?>
 				<?php
 				switch ( $project->current_step ) {
 					case 'briefing':
 						$this->render_briefing_step( $project, $manager );
+						break;
+					case 'logo_creation':
+						$this->render_logo_creation_step( $project );
+						break;
+					case 'logo_review':
+						$this->render_logo_review_step( $project, $manager );
 						break;
 					case 'design_creation':
 						$this->render_design_creation_step( $project );
@@ -523,6 +529,12 @@ class Client_Project_Widget extends Widget_Base {
 				// Force briefing form display
 				$this->render_briefing_step( $dummy_project, $manager_mock );
 				break;
+			case 'logo_creation':
+				$this->render_logo_creation_step( $dummy_project );
+				break;
+			case 'logo_review':
+				$this->render_logo_review_step( $dummy_project, $manager_mock );
+				break;
 			case 'design_creation':
 				$this->render_design_creation_step( $dummy_project );
 				break;
@@ -589,19 +601,41 @@ class Client_Project_Widget extends Widget_Base {
 		<?php
 	}
 
-	private function render_project_timeline( $current_step ) {
+	private function render_project_timeline( $current_step, $project = null ) {
 		$steps = [
 			'briefing' => [
 				'label' => 'Briefing', 
 				'desc' => 'Datos'
-			],
+			]
+		];
+
+		// Check if we need logo steps
+		// Note: We need to get meta here inside the loop or pass it down. 
+		// Since we are in render loop, better to check meta.
+		// For simplicity, we can assume if current step IS a logo step, we show them.
+		// OR we check the 'needs_logo_design' meta.
+		// To access meta here without passing manager, we might need a helper method or pass it.
+		// BUT we are inside the class, so we can instantiate manager or use a static helper?
+		// Actually, $project object might not have meta attached unless we queried it.
+		// Let's use a loose check: if we are IN a logo phase, show them.
+		// If we are PAST them, check if we DID them? That's harder.
+		// Better approach: Check if 'needs_logo_design' meta is 'yes'.
+		
+		$needs_logo = get_post_meta($project->id, 'needs_logo_design', true) === 'yes';
+
+		if ($needs_logo || $current_step === 'logo_creation' || $current_step === 'logo_review') {
+			$steps['logo_creation'] = ['label' => 'Logo', 'desc' => 'Diseño'];
+			$steps['logo_review'] = ['label' => 'Rev. Logo', 'desc' => 'Feedback'];
+		}
+
+		$steps += [
 			'design_creation' => [
 				'label' => 'Creación', 
-				'desc' => 'Diseño'
+				'desc' => 'Diseño Web'
 			],
 			'design_review' => [
 				'label' => 'Revisión', 
-				'desc' => 'Feedback'
+				'desc' => 'Web'
 			],
 			'design_changes' => [
 				'label' => 'Cambios', 
@@ -654,7 +688,10 @@ class Client_Project_Widget extends Widget_Base {
 		// Verificar si ya envió el briefing
 		$briefing_data = $manager->get_project_meta( $project->id, 'briefing_data' );
 		
-		if ( ! empty( $briefing_data ) || $project->status === 'briefing_completed' ) {
+		// Check editing mode
+		$is_editing = isset($_GET['edit_briefing']) && $_GET['edit_briefing'] === 'true';
+
+		if ( (! empty( $briefing_data ) || $project->status === 'briefing_completed') && ! $is_editing ) {
 			?>
 			<div class="alezux-step-container center-text">
 				<div style="font-size: 48px; margin-bottom: 20px;">📋</div>
@@ -663,17 +700,29 @@ class Client_Project_Widget extends Widget_Base {
 				<p>Nuestro equipo está analizando los detalles. Pronto actualizaremos el estado a <strong>Diseño</strong>.</p>
 				
 				<div class="alezux-alert info" style="margin-top: 20px; display: inline-block; text-align: left;">
-					<i class="eicon-info-circle-o"></i> Si necesitas modificar algo urgente, por favor contáctanos directamente.
+					<i class="eicon-info-circle-o"></i> Si necesitas modificar algo, puedes hacerlo aquí:
+					<br><br>
+					<a href="?alezux_pid=<?php echo $project->id; ?>&edit_briefing=true" class="alezux-btn alezux-btn-sm alezux-btn-secondary">
+						<i class="eicon-edit"></i> Editar Respuestas
+					</a>
 				</div>
 			</div>
 			<?php
 			return;
 		}
+		
+		// Helper to get value
+		$get_val = function($key) use ($briefing_data) {
+			return isset($briefing_data[$key]) ? esc_attr($briefing_data[$key]) : '';
+		};
 		?>
 		<div class="alezux-step-container">
 			<div class="step-intro">
 				<h3>👋 ¡Hola! Comencemos tu proyecto.</h3>
 				<p>Para empezar, necesitamos conocer los detalles de tu marca. Por favor completa este formulario.</p>
+				<?php if($is_editing): ?>
+					<div class="alezux-alert warning"><i class="eicon-edit"></i> Estás editando tu briefing. Guarda los cambios al finalizar.</div>
+				<?php endif; ?>
 			</div>
 			
 			<form id="client-briefing-form" class="alezux-briefing-form" enctype="multipart/form-data">
@@ -683,23 +732,23 @@ class Client_Project_Widget extends Widget_Base {
 					<h4>Datos Fiscales y Legales</h4>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Nombre completo o Razón Social</label>
-						<input type="text" name="legal_name" placeholder="Ej: TechSolutions S.L.">
+						<input type="text" name="legal_name" value="<?php echo $get_val('legal_name'); ?>" placeholder="Ej: TechSolutions S.L.">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">CIF / NIF / NIT</label>
-						<input type="text" name="tax_id" placeholder="Ej: B-12345678">
+						<input type="text" name="tax_id" value="<?php echo $get_val('tax_id'); ?>" placeholder="Ej: B-12345678">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Dirección Fiscal Completa</label>
-						<input type="text" name="fiscal_address" placeholder="Calle, Número, CP, Ciudad...">
+						<input type="text" name="fiscal_address" value="<?php echo $get_val('fiscal_address'); ?>" placeholder="Calle, Número, CP, Ciudad...">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Registro Mercantil (Opcional)</label>
-						<input type="text" name="commercial_registry" placeholder="Tomo, Libro, Folio...">
+						<input type="text" name="commercial_registry" value="<?php echo $get_val('commercial_registry'); ?>" placeholder="Tomo, Libro, Folio...">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Ciudad o País (Jurisdicción Legal)</label>
-						<input type="text" name="jurisdiction" placeholder="Ej: Madrid, España">
+						<input type="text" name="jurisdiction" value="<?php echo $get_val('jurisdiction'); ?>" placeholder="Ej: Madrid, España">
 					</div>
 				</div>
 
@@ -707,23 +756,23 @@ class Client_Project_Widget extends Widget_Base {
 					<h4>Información de Contacto</h4>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Teléfono de Contacto</label>
-						<input type="text" name="phone" placeholder="+34 600 000 000">
+						<input type="text" name="phone" value="<?php echo $get_val('phone'); ?>" placeholder="+34 600 000 000">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">WhatsApp (Atención al Cliente)</label>
-						<input type="text" name="whatsapp" placeholder="Para botón de contacto en la web">
+						<input type="text" name="whatsapp" value="<?php echo $get_val('whatsapp'); ?>" placeholder="Para botón de contacto en la web">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Correo Electrónico de Contacto</label>
-						<input type="email" name="contact_email" placeholder="hola@miempresa.com">
+						<input type="email" name="contact_email" value="<?php echo $get_val('contact_email'); ?>" placeholder="hola@miempresa.com">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Correo para Privacidad / Baja (Si es diferente)</label>
-						<input type="email" name="privacy_email" placeholder="privacidad@miempresa.com">
+						<input type="email" name="privacy_email" value="<?php echo $get_val('privacy_email'); ?>" placeholder="privacidad@miempresa.com">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Correo del DPO / Responsable de Datos (Si aplica)</label>
-						<input type="email" name="dpo_email" placeholder="dpo@miempresa.com">
+						<input type="email" name="dpo_email" value="<?php echo $get_val('dpo_email'); ?>" placeholder="dpo@miempresa.com">
 					</div>
 				</div>
 
@@ -731,18 +780,47 @@ class Client_Project_Widget extends Widget_Base {
 					<h4>Detalles del Negocio y Marca</h4>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Nombre Comercial o de Marca</label>
-						<input type="text" name="brand_name" placeholder="Ej: TechSolutions">
+						<input type="text" name="brand_name" value="<?php echo $get_val('brand_name'); ?>" placeholder="Ej: TechSolutions">
 					</div>
 					
 					<!-- Logo Section -->
 					<div class="alezux-form-group">
-						<label class="high-contrast-label">Logotipo</label>
+						<label class="high-contrast-label">¿Tienes un Logotipo diseñado?</label>
+						<select name="has_logo" id="has_logo_selector" class="alezux-select">
+							<option value="yes" <?php echo $get_val('has_logo') === 'yes' ? 'selected' : ''; ?>>Sí, ya tengo un logo (Subir archivo)</option>
+							<option value="no" <?php echo $get_val('has_logo') === 'no' ? 'selected' : ''; ?>>No, necesito que lo diseñen</option>
+						</select>
+					</div>
+
+					<div class="alezux-form-group" id="logo_upload_section">
+						<label class="high-contrast-label">Subir Logotipo</label>
 						<div class="logo-upload-wrapper">
 							<input type="file" name="logo_file" id="logo_file" accept="image/*,.pdf,.svg,.eps,.ai">
-							<p class="description"><small>Sube tu logo (PNG, SVG, PDF, AI). Si no lo tienes, descríbelo abajo.</small></p>
+							<p class="description"><small>Sube tu logo (PNG, SVG, PDF, AI).</small></p>
 						</div>
-						<textarea name="logo_details" rows="2" placeholder="O indícanos aquí cómo deseas tu logo o enlace a referencias..."></textarea>
 					</div>
+
+					<div class="alezux-form-group" id="logo_details_section" style="display:none;">
+						<label class="high-contrast-label">Referencias para el Logo</label>
+						<textarea name="logo_details" rows="3" placeholder="Descríbenos cómo te gustaría tu logo, estilo, formas, etc..."><?php echo $get_val('logo_details'); ?></textarea>
+					</div>
+
+					<script>
+					jQuery(document).ready(function($){
+						function toggleLogoSections() {
+							var val = $('#has_logo_selector').val();
+							if(val === 'yes') {
+								$('#logo_upload_section').show();
+								$('#logo_details_section').hide();
+							} else {
+								$('#logo_upload_section').hide();
+								$('#logo_details_section').show();
+							}
+						}
+						$('#has_logo_selector').on('change', toggleLogoSections);
+						toggleLogoSections(); // Run on init
+					});
+					</script>
 
 					<!-- Color Picker Section -->
 					<div class="alezux-form-group">
@@ -767,15 +845,15 @@ class Client_Project_Widget extends Widget_Base {
 
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">URL del Sitio Web (Si ya tienes dominio)</label>
-						<input type="text" name="website_url" placeholder="https://www.miempresa.com">
+						<input type="text" name="website_url" value="<?php echo $get_val('website_url'); ?>" placeholder="https://www.miempresa.com">
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Actividad del Negocio (Productos/Servicios)</label>
-						<textarea name="business_activity" rows="3" placeholder="Descríbenos qué vendes o qué servicios ofreces..."></textarea>
+						<textarea name="business_activity" rows="3" placeholder="Descríbenos qué vendes o qué servicios ofreces..."><?php echo $get_val('business_activity'); ?></textarea>
 					</div>
 					<div class="alezux-form-group">
 						<label class="high-contrast-label">Sectores de Actividad (Para promociones)</label>
-						<input type="text" name="business_sectors" placeholder="Ej: Educación, Salud, Marketing...">
+						<input type="text" name="business_sectors" value="<?php echo $get_val('business_sectors'); ?>" placeholder="Ej: Educación, Salud, Marketing...">
 					</div>
 				</div>
 
@@ -790,6 +868,71 @@ class Client_Project_Widget extends Widget_Base {
 		<?php
 	}
 
+
+
+	private function render_logo_creation_step( $project ) {
+		?>
+		<div class="alezux-step-container center-text">
+			<div style="font-size: 48px; margin-bottom: 20px;">🎨</div>
+			<h3>Diseñando tu Logotipo</h3>
+			<p>Nuestro equipo creativo está trabajando en las propuestas para tu identidad visual.</p>
+			<p>Te notificaremos pronto para que puedas revisar las opciones.</p>
+		</div>
+		<?php
+	}
+
+	private function render_logo_review_step( $project, $manager ) {
+		// Similar to design review but for logo
+		// Assuming we use same meta 'design_proposal_url' or a new one?
+		// Let's assume we use 'logo_proposal_url' or re-use 'design_proposal_url' contextually if simple.
+		// For robustness, let's look for 'logo_proposal_url' or fallback to design url.
+		$logo_url = $manager->get_project_meta( $project->id, 'logo_proposal_url' );
+		if(!$logo_url) $logo_url = $manager->get_project_meta( $project->id, 'design_proposal_url' );
+
+		?>
+		<div class="alezux-step-container center-text">
+			<div class="step-intro">
+				<h3>✨ Propuesta de Logotipo</h3>
+				<p>Hemos diseñado una identidad para tu marca. Por favor revísala.</p>
+			</div>
+
+			<div class="design-preview-box">
+				<?php if ( $logo_url ) : ?>
+					<a href="<?php echo esc_url( $logo_url ); ?>" target="_blank" class="design-preview-link">
+						<img src="<?php echo esc_url( $logo_url ); ?>" alt="Propuesta de Logo" style="max-height:300px; object-fit:contain;">
+					</a>
+					<a href="<?php echo esc_url( $logo_url ); ?>" target="_blank" class="alezux-btn alezux-btn-secondary download-btn">
+						<i class="eicon-download-bold"></i> Ver Imagen
+					</a>
+				<?php else : ?>
+					<div class="alezux-alert warning">La imagen de la propuesta no se encuentra disponible aún.</div>
+				<?php endif; ?>
+			</div>
+
+			<div class="approval-actions">
+				<button id="btn-approve-logo" data-id="<?php echo esc_attr( $project->id ); ?>" class="alezux-btn alezux-btn-success alezux-btn-block">
+					<i class="eicon-check-circle-o"></i> Aprobar Logo
+				</button>
+				
+				<button id="btn-reject-modal-trigger-logo" class="alezux-btn alezux-btn-ghost alezux-btn-sm" onclick="jQuery('#reject-modal').slideToggle();">
+					Solicitar Cambios
+				</button>
+			</div>
+			
+			<!-- Reuse Rejection Modal logic via JS, just change context? -->
+			<!-- Ideally we need to tell backend this is LOGO rejection, not web design rejection. -->
+			<!-- For simplicity, we can use same endpoint but maybe add a data-type to the button? -->
+			<!-- Or just use the generic feedback loop and let admin decipher context from phase. -->
+			
+			<div id="reject-modal" style="display:none;" class="alezux-mini-modal">
+				<h4>Comentarios sobre el Logo</h4>
+				<textarea id="reject-feedback" placeholder="Describe qué cambios necesitas en el logo..."></textarea>
+				<button id="btn-submit-rejection" data-id="<?php echo esc_attr( $project->id ); ?>" class="alezux-btn alezux-btn-primary alezux-btn-sm">Enviar Comentarios</button>
+			</div>
+		</div>
+		<?php
+	}
+	
 	private function render_design_review_step( $project, $manager ) {
 		$design_url = $manager->get_project_meta( $project->id, 'design_proposal_url' );
 		?>

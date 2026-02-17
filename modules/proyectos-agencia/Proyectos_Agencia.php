@@ -197,13 +197,15 @@ class Proyectos_Agencia {
 								<label>Fase Actual (Visible Cliente)</label>
 								<select name="current_step" id="project-phase-select" class="alezux-input">
 									<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
-									<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>2. Creación de Diseño</option>
-									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>3. Revisión Diseño</option>
-									<option value="design_changes" <?php selected( $project->current_step, 'design_changes' ); ?>>4. Gestión de Cambios</option>
-									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>5. Desarrollo</option>
-									<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>6. Optimización</option>
-									<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>7. Revisión Final</option>
-									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>8. Completado</option>
+									<option value="logo_creation" <?php selected( $project->current_step, 'logo_creation' ); ?>>2. Creación Logo (Opcional)</option>
+									<option value="logo_review" <?php selected( $project->current_step, 'logo_review' ); ?>>3. Revisión Logo (Opcional)</option>
+									<option value="design_creation" <?php selected( $project->current_step, 'design_creation' ); ?>>4. Creación Diseño Web</option>
+									<option value="design_review" <?php selected( $project->current_step, 'design_review' ); ?>>5. Revisión Diseño Web</option>
+									<option value="design_changes" <?php selected( $project->current_step, 'design_changes' ); ?>>6. Gestión de Cambios</option>
+									<option value="in_progress" <?php selected( $project->current_step, 'in_progress' ); ?>>7. Desarrollo</option>
+									<option value="optimization" <?php selected( $project->current_step, 'optimization' ); ?>>8. Optimización</option>
+									<option value="final_review" <?php selected( $project->current_step, 'final_review' ); ?>>9. Revisión Final</option>
+									<option value="completed" <?php selected( $project->current_step, 'completed' ); ?>>10. Completado</option>
 								</select>
 							</div>
 						</div>
@@ -515,6 +517,7 @@ class Proyectos_Agencia {
 			'business_activity'   => sanitize_textarea_field( $_POST['business_activity'] ),
 			'business_sectors'    => sanitize_text_field( $_POST['business_sectors'] ),
 			'logo_details'        => sanitize_textarea_field( $_POST['logo_details'] ),
+			'has_logo'            => sanitize_text_field( $_POST['has_logo'] ),
 			// Legacy/Optional
 			'slogan'              => sanitize_text_field( $_POST['slogan'] ),
 			'business_desc'       => sanitize_textarea_field( $_POST['business_desc'] ), 
@@ -547,12 +550,43 @@ class Proyectos_Agencia {
 		// Guardar Meta
 		$manager->update_project_meta( $project_id, 'briefing_data', json_encode( $briefing_data ) );
 		
-		// Actualizar Estado
-		$manager->update_status( $project_id, 'briefing_completed', 'briefing' ); // Se mantiene en briefing visiblemente o avanza a revisión? Mejor dejarlo en briefing hasta que admin revise
+		// Update needs_logo_design meta
+		$needs_logo = ( isset($_POST['has_logo']) && $_POST['has_logo'] === 'no' ) ? 'yes' : 'no';
+		$manager->update_project_meta( $project_id, 'needs_logo_design', $needs_logo );
 
-		// Enviar Notificación al Admin (Future Scope)
+		// Actualizar Estado
+		// Si necesita logo, el siguiente paso es logo_creation
+		// Si NO necesita logo (ya lo tiene), el siguiente paso es design_creation
+		$next_step = ($needs_logo === 'yes') ? 'logo_creation' : 'design_creation';
+		
+		$manager->update_status( $project_id, 'briefing_completed', $next_step ); 
 
 		wp_send_json_success( 'Briefing enviado correctamente.' );
+	}
+
+	public function ajax_approve_logo() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		$project_id = absint( $_POST['project_id'] );
+		
+		$manager = new Project_Manager();
+		$project = $manager->get_project( $project_id );
+
+		if ( ! $project || $project->customer_id != get_current_user_id() ) {
+			wp_send_json_error( 'No tienes permiso.' );
+		}
+
+		// Marcar aprobación de logo
+		$approval_data = [
+			'approved_at' => current_time( 'mysql' ),
+			'ip_address'  => $_SERVER['REMOTE_ADDR']
+		];
+		$manager->update_project_meta( $project_id, 'logo_approval_data', json_encode( $approval_data ) );
+		
+		// Avanzar a Creación de Diseño
+		$manager->update_status( $project_id, 'design_creation', 'design_creation' );
+
+		wp_send_json_success( 'Logo aprobado. ¡Comenzamos con el diseño web!' );
 	}
 
 	public function ajax_approve_design() {
@@ -579,6 +613,32 @@ class Proyectos_Agencia {
 		$manager->update_status( $project_id, 'in_progress', 'in_progress' );
 
 		wp_send_json_success( 'Diseño aprobado. ¡Comenzamos el desarrollo!' );
+	}
+
+	public function ajax_approve_final() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		$project_id = absint( $_POST['project_id'] );
+		
+		$manager = new Project_Manager();
+		$project = $manager->get_project( $project_id );
+
+		if ( ! $project || $project->customer_id != get_current_user_id() ) {
+			wp_send_json_error( 'No tienes permiso.' );
+		}
+
+		// Marcar aprobación final
+		$approval_data = [
+			'approved_at' => current_time( 'mysql' ),
+			'ip_address'  => $_SERVER['REMOTE_ADDR']
+		];
+
+		$manager->update_project_meta( $project_id, 'final_approval_data', json_encode( $approval_data ) );
+		
+		// Finalizar Proyecto
+		$manager->update_status( $project_id, 'completed', 'completed' );
+
+		wp_send_json_success( '¡Felicidades! Tu proyecto ha sido aprobado y finalizado.' );
 	}
 
 	public function ajax_submit_rejection() {

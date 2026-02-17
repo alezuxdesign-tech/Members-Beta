@@ -300,6 +300,58 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // Cliente: Aprobar Logo
+    $('#btn-approve-logo').on('click', function (e) {
+        e.preventDefault();
+        if (!confirm('¿Estás seguro de aprobar el logo? Pasaremos a la fase de diseño web.')) return;
+
+        var $btn = $(this);
+        var originalText = $btn.html();
+        $btn.prop('disabled', true).html('<i class="eicon-loading eicon-animation-spin"></i> Procesando...');
+
+        var data = {
+            action: 'alezux_approve_logo',
+            nonce: AlezuxProjects.nonce,
+            project_id: $btn.data('id')
+        };
+
+        $.post(AlezuxProjects.ajaxurl, data, function (response) {
+            if (response.success) {
+                alert('¡Genial! Logo aprobado.');
+                window.location.reload();
+            } else {
+                alert('Error: ' + response.data);
+                $btn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
+    // Cliente: Aprobar Final
+    $('#btn-approve-final').on('click', function (e) {
+        e.preventDefault();
+        if (!confirm('¿Estás seguro de aprobar y finalizar el proyecto?')) return;
+
+        var $btn = $(this);
+        var originalText = $btn.html();
+        $btn.prop('disabled', true).html('<i class="eicon-loading eicon-animation-spin"></i> Procesando...');
+
+        var data = {
+            action: 'alezux_approve_final',
+            nonce: AlezuxProjects.nonce,
+            project_id: $btn.data('id')
+        };
+
+        $.post(AlezuxProjects.ajaxurl, data, function (response) {
+            if (response.success) {
+                alert('¡Felicidades! Proyecto finalizado.');
+                window.location.reload();
+            } else {
+                alert('Error: ' + response.data);
+                $btn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
     // Cliente: Rechazar / Solicitar Cambios (Toggle Modal)
     $('#btn-reject-modal-trigger').on('click', function (e) {
         e.preventDefault();
@@ -568,27 +620,26 @@ jQuery(document).ready(function ($) {
         var $select = $('#project-phase-select');
         if ($select.length === 0) return;
 
-        function updateFields() {
-            var phase = $select.val();
-            // Hide all by default
-            $('.dynamic-section').hide();
-
-            // Always show Briefing if available (it's the base)
-            $('#section-briefing').show();
-
-            // Design Section (URL) - Relevant from creation onwards
-            if (['design_creation', 'design_review', 'design_changes', 'in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
-                $('#section-design').fadeIn();
-            }
-
-            // Development Section (Credentials) - Relevant from development onwards
-            if (['in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
-                $('#section-development').fadeIn();
-            }
+        // Design Section (URL) - Relevant from creation onwards
+        if (['design_creation', 'design_review', 'design_changes', 'in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
+            $('#section-design').fadeIn();
         }
 
-        $select.on('change', updateFields);
-        updateFields(); // Run on init
-    };
+        // Logo Phases (Could share Design Section or have its own if needed)
+        if (['logo_creation', 'logo_review'].indexOf(phase) !== -1) {
+            // For now, perhaps show design section if approved logo is needed there? 
+            // Or maybe nothing specific is needed from admin yet other than chat.
+            // Keeping it simple.
+        }
+
+        // Development Section (Credentials) - Relevant from development onwards
+        if (['in_progress', 'optimization', 'final_review', 'completed'].indexOf(phase) !== -1) {
+            $('#section-development').fadeIn();
+        }
+    }
+
+    $select.on('change', updateFields);
+    updateFields(); // Run on init
+};
 
 });
