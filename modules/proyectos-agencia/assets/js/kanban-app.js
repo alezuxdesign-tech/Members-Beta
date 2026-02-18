@@ -383,14 +383,56 @@ jQuery(document).ready(function ($) {
 
         // --- DELIVERY ---
         else if (activeTabStep === 'delivery') {
+            const logos = getVal('delivery.logos', []);
+            const credentials = getVal('delivery.credentials', {});
+            const videoLinks = getVal('delivery.video_links', []);
+
+            let logosHtml = '';
+            logos.forEach((url, i) => {
+                logosHtml += `
+                    <div class="file-item-row" data-url="${url}">
+                        <a href="${url}" target="_blank" class="file-link"><i class="fas fa-image"></i> Logo ${i + 1}</a>
+                        <span class="remove-logo" style="color:red;cursor:pointer;margin-left:10px;">&times;</span>
+                    </div>`;
+            });
+
             contentHtml = `
                 <div class="step-content animate-fade-in">
                     <h4>Entrega Final</h4>
-                    <label>Credenciales (JSON):</label>
-                    <textarea class="alezux-input" name="delivery[credentials]" rows="4">${JSON.stringify(getVal('delivery.credentials', {}), null, 2)}</textarea>
                     
-                    <label style="margin-top:10px;">Archivos Finales (URLs una por línea):</label>
-                    <textarea class="alezux-input" name="delivery[final_assets]" rows="4">${getVal('delivery.final_assets', []).join('\n')}</textarea>
+                    <div class="delivery-section">
+                        <h5>1. Logos del Proyecto</h5>
+                        <div id="logos-list" style="margin-bottom:10px;">${logosHtml}</div>
+                        <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-logos">
+                            <i class="fas fa-cloud-upload-alt"></i> Subir Logos
+                        </button>
+                        <input type="file" id="logos-native-upload" multiple style="display:none;">
+                        <input type="hidden" id="logos-input" name="delivery[logos]" value="${logos.join(',')}">
+                    </div>
+
+                    <div class="delivery-section" style="margin-top:20px;">
+                        <h5>2. Credenciales de Acceso</h5>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                             <div style="grid-column: span 2;">
+                                <label>URL de Login:</label>
+                                <input type="text" class="alezux-input" name="delivery[login_url]" value="${credentials.login_url || ''}">
+                             </div>
+                             <div>
+                                <label>Usuario:</label>
+                                <input type="text" class="alezux-input" name="delivery[user]" value="${credentials.user || ''}">
+                             </div>
+                             <div>
+                                <label>Contraseña:</label>
+                                <input type="text" class="alezux-input" name="delivery[password]" value="${credentials.password || ''}">
+                             </div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-section" style="margin-top:20px;">
+                        <h5>3. Links de Videos (Tutoriales)</h5>
+                        <p class="guidance-text">Ingresa una URL por línea.</p>
+                        <textarea class="alezux-input" name="delivery[video_links]" rows="4" placeholder="https://...">${videoLinks.join('\n')}</textarea>
+                    </div>
                 </div>`;
         }
 
@@ -586,6 +628,62 @@ jQuery(document).ready(function ($) {
             });
         }
 
+        // Bind Delivery Specific Actions
+        if (activeTabStep === 'delivery') {
+            $('#btn-upload-logos').on('click', function () { $('#logos-native-upload').click(); });
+
+            $('#logos-native-upload').on('change', function () {
+                const files = this.files;
+                if (!files.length) return;
+
+                const btn = $('#btn-upload-logos');
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Subiendo...');
+                btn.prop('disabled', true);
+
+                let uploadedUrls = [];
+                let uploadPromises = [];
+
+                Array.from(files).forEach(file => {
+                    let formData = new FormData();
+                    formData.append('action', 'alezux_agency_upload_file');
+                    formData.append('file', file);
+
+                    let p = $.ajax({
+                        url: alezux_agency_vars.ajax_url,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.success) uploadedUrls.push(response.data.url);
+                        }
+                    });
+                    uploadPromises.push(p);
+                });
+
+                Promise.all(uploadPromises).then(() => {
+                    const currentVal = $('#logos-input').val();
+                    let currentUrls = currentVal ? currentVal.split(',') : [];
+                    currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
+
+                    $('#logos-input').val(currentUrls.join(','));
+                    saveCurrentStepData(false, null, true);
+                }).always(() => {
+                    btn.html('<i class="fas fa-cloud-upload-alt"></i> Subir Logos');
+                    btn.prop('disabled', false);
+                });
+            });
+
+            $(document).off('click', '.remove-logo').on('click', '.remove-logo', function () {
+                const urlToRemove = $(this).parent().data('url');
+                const currentVal = $('#logos-input').val();
+                let currentUrls = currentVal ? currentVal.split(',') : [];
+                currentUrls = currentUrls.filter(u => u !== urlToRemove);
+                $('#logos-input').val(currentUrls.join(','));
+                renderModalContent();
+            });
+        }
+
         // Update main modal footer to be hidden or standard
         $('#save-project-btn').hide(); // Hide the old global save button
     }
@@ -630,11 +728,17 @@ jQuery(document).ready(function ($) {
             const stagingUrl = $('input[name="development[staging_url]"]').val();
             formData.development = { staging_url: stagingUrl || '' };
         } else if (activeTabStep === 'delivery') {
-            const finalAssets = $('textarea[name="delivery[final_assets]"]').val();
-            const credentials = $('textarea[name="delivery[credentials]"]').val();
+            const logos = $('#logos-input').val();
+            const videoLinks = $('textarea[name="delivery[video_links]"]').val();
+
             formData.delivery = {
-                final_assets: finalAssets ? finalAssets.split('\n') : [],
-                credentials: credentials ? JSON.parse(credentials || '{}') : {}
+                logos: logos ? logos.split(',').filter(s => s) : [],
+                credentials: {
+                    login_url: $('input[name="delivery[login_url]"]').val() || '',
+                    user: $('input[name="delivery[user]"]').val() || '',
+                    password: $('input[name="delivery[password]"]').val() || ''
+                },
+                video_links: videoLinks ? videoLinks.split('\n').filter(s => s) : []
             };
         }
 
