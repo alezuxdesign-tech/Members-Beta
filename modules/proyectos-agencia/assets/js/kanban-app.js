@@ -249,6 +249,29 @@ jQuery(document).ready(function ($) {
             const files = getVal('identity.proposal_files', []);
             const status = getVal('identity.status', '');
             const clientFeedback = getVal('identity.client_feedback', '');
+            const history = getVal('identity.history', []);
+
+            // Render History
+            let historyHtml = '';
+            if (history.length > 0) {
+                historyHtml += '<div class="history-section" style="margin-bottom:20px; background:#f9f9f9; padding:10px; border-radius:5px;"><h5>Historial de Versiones</h5>';
+                history.forEach((version, idx) => {
+                    const date = version.timestamp || 'N/A';
+                    const msg = version.message || `Versión ${idx + 1}`;
+                    let vFilesHtml = '';
+                    if (version.files && version.files.length) {
+                        version.files.forEach((f, i) => {
+                            vFilesHtml += `<a href="${f}" target="_blank" style="display:block; font-size:12px;"><i class="fas fa-paperclip"></i> Archivo ${i + 1}</a>`;
+                        });
+                    }
+                    historyHtml += `
+                        <div class="history-item" style="border-bottom:1px solid #ddd; padding:5px 0;">
+                            <strong>${date}</strong> - ${msg}
+                            <div style="margin-left:10px;">${vFilesHtml}</div>
+                        </div>`;
+                });
+                historyHtml += '</div>';
+            }
 
             let fileListHtml = '';
             files.forEach((url, i) => {
@@ -273,7 +296,9 @@ jQuery(document).ready(function ($) {
                     <h4>Identidad (Propuestas)</h4>
                     ${statusAlert}
                     
-                    <label>Archivos de Propuesta:</label>
+                    ${historyHtml}
+
+                    <label>Archivos de Propuesta (Borrador Actual):</label>
                     <div id="identity-files-list" style="margin-bottom:10px;">${fileListHtml}</div>
                     
                     <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-identity">
@@ -286,7 +311,7 @@ jQuery(document).ready(function ($) {
                         <button type="button" class="alezux-btn alezux-btn-info" id="btn-send-review">
                             <i class="fas fa-paper-plane"></i> Guardar y Enviar a Revisión
                         </button>
-                        <p class="guidance-text">Al enviar, el cliente recibirá una notificación para revisar.</p>
+                        <p class="guidance-text">Al enviar, los archivos actuales se guardarán en el historial y se notificará al cliente.</p>
                     </div>
                 </div>`;
         }
@@ -451,6 +476,38 @@ jQuery(document).ready(function ($) {
 
             // Send Review
             $('#btn-send-review').off('click').on('click', function () {
+                const currentVal = $('#identity-files-input').val();
+                let currentFiles = currentVal ? currentVal.split(',') : [];
+
+                if (currentFiles.length === 0) {
+                    alert('Debes subir al menos un archivo antes de enviar a revisión.');
+                    return;
+                }
+
+                if (!confirm('¿Estás seguro de enviar estos archivos a revisión? Se guardará una versión en el historial.')) return;
+
+                // Add to History
+                if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
+                if (!currentModalProject.data.identity.history) currentModalProject.data.identity.history = [];
+
+                currentModalProject.data.identity.history.unshift({
+                    timestamp: new Date().toLocaleString(),
+                    files: currentFiles,
+                    message: 'Enviado a revisión'
+                });
+
+                // Clear current files? -> User logic implies "sending new files", so maybe we keep them as "current draft" or clear them?
+                // Usually in this workflow, the "Current Proposal" becomes the "History" and the input clears for next round, OR it stays. 
+                // Based on "Se envia por primera vez... luego se le envia los nuevos", it suggests we might want to keep them visible but marked as sent?
+                // The implementation plan says "Upload only saves draft". "Send moves to history". 
+                // Let's Keep them in "proposal_files" so they are visible as "Latest status", but ALSO in history.
+                // Actually, if we want to "upload new files with changes", we might want to clear the input for the next round?
+                // Let's CLEAR the input to allow fresh upload for next round, as the "Current" is now in history.
+                // BUT, the UI renders "Archivos de Propuesta (Borrador Actual)". If we clear it, they disappear.
+                // Let's keep them. The user can remove them if they want to start fresh, or add to them.
+
+                statusAlert = `<div class="alezux-alert-warning">Esperando revisión del cliente.</div>`; // Optimistic UI update? No, renderModalContent will handle it.
+
                 saveCurrentStepData(false, 'pending_review');
             });
         }
