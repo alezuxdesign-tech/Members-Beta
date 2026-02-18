@@ -99,13 +99,17 @@ class Ajax_Handler {
             $client_name = $client ? $client->display_name : 'Usuario Eliminado';
             $client_avatar = get_avatar_url($p->client_id);
             
+            $data = json_decode($p->project_data, true) ?: [];
+            
             $formatted[] = [
                 'id' => $p->id,
-                'title' => $client_name, // Project Title is usually Client Name
+                'title' => $client_name,
                 'client_name' => $client_name,
                 'client_avatar' => $client_avatar,
                 'status' => $p->status,
-                'step' => $p->current_step
+                'step' => $p->current_step,
+                'start_date' => $data['start_date'] ?? '',
+                'end_date' => $data['end_date'] ?? ''
             ];
         }
 

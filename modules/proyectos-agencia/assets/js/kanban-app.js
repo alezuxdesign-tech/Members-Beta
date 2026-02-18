@@ -64,6 +64,11 @@ jQuery(document).ready(function ($) {
 
         const avatarHtml = project.client_avatar ? `<img src="${project.client_avatar}" style="width:24px;height:24px;border-radius:50%;margin-right:5px;">` : '';
 
+        const datesHtml = project.start_date && project.end_date ? `
+            <div class="kanban-card-date">
+                <i class="far fa-calendar-alt"></i> ${project.start_date} / ${project.end_date}
+            </div>` : '';
+
         return $(`
             <div class="kanban-card" data-id="${project.id}">
                 <div class="kanban-card-title">${project.title}</div>
@@ -72,6 +77,7 @@ jQuery(document).ready(function ($) {
                         ${avatarHtml} <span>${project.client_name}</span>
                     </div>
                 </div>
+                ${datesHtml}
                 <div style="margin-top:8px;">
                     <span class="kanban-card-step status-${project.step}">${stepLabel}</span>
                 </div>
@@ -218,6 +224,14 @@ jQuery(document).ready(function ($) {
             stepperHtml += `<div class="step-item ${isActive}" data-step="${step.id}">${step.label}</div>`;
         });
         stepperHtml += '</div>';
+
+        const datesHeader = getVal('start_date') && getVal('end_date') ? `
+            <div class="modal-project-dates">
+                <span><strong>Inicio:</strong> ${getVal('start_date')}</span>
+                <span><strong>Fin estimado:</strong> ${getVal('end_date')}</span>
+            </div>` : '';
+
+        stepperHtml += datesHeader;
 
         // Sections (Only render active one visually, but input fields need to persist? 
         // Better to re-render inputs based on activeTabStep to avoid clutter)

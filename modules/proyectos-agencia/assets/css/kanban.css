@@ -136,10 +136,62 @@
 }
 
 .kanban-card-step {
-    background: #e9ecef;
-    padding: 2px 6px;
-    border-radius: 4px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
     font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kanban-card-step.status-briefing {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.kanban-card-step.status-identity {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.kanban-card-step.status-web_design {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.kanban-card-step.status-development {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.kanban-card-step.status-delivery {
+    background: #d4edda;
+    color: #155724;
+}
+
+.kanban-card-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 5px;
+    background: #f8f9fa;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.modal-project-dates {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    background: #fdfdfd;
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
 }
 
 /* Modal */
