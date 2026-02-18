@@ -100,9 +100,6 @@ jQuery(document).ready(function ($) {
         const detailsModal = $('#project-modal');
         const newProjectModal = $('#new-project-modal');
 
-        // Modals
-        const detailsModal = $('#project-modal');
-        const newProjectModal = $('#new-project-modal');
 
         $('.close-details').on('click', function () { detailsModal.hide(); });
         $('.close-new').on('click', function () { newProjectModal.hide(); });
