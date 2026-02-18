@@ -41,6 +41,7 @@ class Proyectos_Agencia extends Module_Base {
 	}
     
     public function register_widgets( $widgets_manager ) {
+        // error_log('Proyectos_Agencia: Attempting to register widgets.');
         if ( ! did_action( 'elementor/loaded' ) ) {
 			return;
 		}
@@ -48,12 +49,16 @@ class Proyectos_Agencia extends Module_Base {
         require_once ALEZUX_PROYECTOS_AGENCIA_PATH . 'widgets/Project_Manager_Admin_Widget.php';
         require_once ALEZUX_PROYECTOS_AGENCIA_PATH . 'widgets/Project_Client_View_Widget.php';
         
-        if ( class_exists( 'Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Manager_Admin_Widget' ) ) {
-            $widgets_manager->register( new Widgets\Project_Manager_Admin_Widget() );
+        if ( class_exists( '\Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Manager_Admin_Widget' ) ) {
+            $widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Manager_Admin_Widget() );
+            // error_log('Proyectos_Agencia: Registered Admin Widget.');
+        } else {
+             // error_log('Proyectos_Agencia: Admin Widget Class NOT found.');
         }
 
-        if ( class_exists( 'Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Client_View_Widget' ) ) {
-            $widgets_manager->register( new Widgets\Project_Client_View_Widget() );
+        if ( class_exists( '\Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Client_View_Widget' ) ) {
+            $widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Client_View_Widget() );
+             // error_log('Proyectos_Agencia: Registered Client Widget.');
         }
     }
     
