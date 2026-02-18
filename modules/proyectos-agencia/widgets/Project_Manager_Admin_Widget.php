@@ -59,6 +59,168 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 			]
 		);
 
+        $this->add_control(
+			'board_title',
+			[
+				'label' => 'Título del Tablero',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'Gestor de Proyectos',
+			]
+		);
+
+        $this->add_control(
+			'button_text',
+			[
+				'label' => 'Texto del Botón',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'Nuevo Proyecto',
+			]
+		);
+
+		$this->end_controls_section();
+
+        // Section: Column Titles
+        $this->start_controls_section(
+			'columns_section',
+			[
+				'label' => 'Títulos de Columnas',
+				'tab' => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+        $this->add_control(
+			'col_start_title',
+			[
+				'label' => 'Por Comenzar',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'Por Comenzar',
+			]
+		);
+
+        $this->add_control(
+			'col_process_title',
+			[
+				'label' => 'En Proceso',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'En Proceso',
+			]
+		);
+
+        $this->add_control(
+			'col_review_title',
+			[
+				'label' => 'En Revisión',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'En Revisión',
+			]
+		);
+
+        $this->add_control(
+			'col_approved_title',
+			[
+				'label' => 'Aprobado',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'Aprobado',
+			]
+		);
+
+        $this->add_control(
+			'col_delivered_title',
+			[
+				'label' => 'Entregado',
+				'type' => Controls_Manager::TEXT,
+				'default' => 'Entregado',
+			]
+		);
+
+        $this->end_controls_section();
+
+        // Section: Styles
+        $this->start_controls_section(
+			'style_section',
+			[
+				'label' => 'Estilos de Colores',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_control(
+			'btn_color',
+			[
+				'label' => 'Color Boton Nuevo',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#007bff',
+                'selectors' => [
+                    '{{WRAPPER}} #add-project-btn' => 'background: {{VALUE}};',
+                ],
+			]
+		);
+
+        $this->add_control(
+			'col_start_color',
+			[
+				'label' => 'Color: Por Comenzar',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#6c757d',
+                'selectors' => [
+                    '{{WRAPPER}} .kanban-column-header.start' => 'border-bottom-color: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .kanban-column[data-status="start"] .kanban-card' => 'border-left-color: {{VALUE}};',
+                ],
+			]
+		);
+
+        $this->add_control(
+			'col_process_color',
+			[
+				'label' => 'Color: En Proceso',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#007bff',
+                'selectors' => [
+                    '{{WRAPPER}} .kanban-column-header.process' => 'border-bottom-color: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .kanban-column[data-status="process"] .kanban-card' => 'border-left-color: {{VALUE}};',
+                ],
+			]
+		);
+
+        $this->add_control(
+			'col_review_color',
+			[
+				'label' => 'Color: En Revisión',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#fd7e14',
+                'selectors' => [
+                    '{{WRAPPER}} .kanban-column-header.review' => 'border-bottom-color: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .kanban-column[data-status="review"] .kanban-card' => 'border-left-color: {{VALUE}};',
+                ],
+			]
+		);
+
+        $this->add_control(
+			'col_approved_color',
+			[
+				'label' => 'Color: Aprobado',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#28a745',
+                'selectors' => [
+                    '{{WRAPPER}} .kanban-column-header.approved' => 'border-bottom-color: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .kanban-column[data-status="approved"] .kanban-card' => 'border-left-color: {{VALUE}};',
+                ],
+			]
+		);
+
+        $this->add_control(
+			'col_delivered_color',
+			[
+				'label' => 'Color: Entregado',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#6610f2',
+                'selectors' => [
+                    '{{WRAPPER}} .kanban-column-header.delivered' => 'border-bottom-color: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .kanban-column[data-status="delivered"] .kanban-card' => 'border-left-color: {{VALUE}};',
+                ],
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -85,16 +247,16 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 		?>
 		<div class="alezux-kanban-board" id="alezux-kanban-app">
             <div class="kanban-header">
-                <h2>Gestor de Proyectos</h2>
+                <h2><?php echo esc_html($settings['board_title']); ?></h2>
                  <button id="add-project-btn" class="alezux-btn alezux-btn-primary">
-                    <i class="fas fa-plus"></i> Nuevo Proyecto
+                    <i class="fas fa-plus"></i> <?php echo esc_html($settings['button_text']); ?>
                 </button>
             </div>
             
             <div class="kanban-container">
                 <!-- Column: Por Comenzar -->
                 <div class="kanban-column" data-status="start">
-                    <div class="kanban-column-header start">Por Comenzar</div>
+                    <div class="kanban-column-header start"><?php echo esc_html($settings['col_start_title']); ?></div>
                     <div class="kanban-column-body" id="col-start">
                         <!-- Items inject via JS -->
                         <div class="kanban-loading">Cargando...</div>
@@ -103,25 +265,25 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 
                 <!-- Column: En Proceso -->
                 <div class="kanban-column" data-status="process">
-                    <div class="kanban-column-header process">En Proceso</div>
+                    <div class="kanban-column-header process"><?php echo esc_html($settings['col_process_title']); ?></div>
                     <div class="kanban-column-body" id="col-process"></div>
                 </div>
 
                  <!-- Column: En Revisión -->
                 <div class="kanban-column" data-status="review">
-                    <div class="kanban-column-header review">En Revisión</div>
+                    <div class="kanban-column-header review"><?php echo esc_html($settings['col_review_title']); ?></div>
                     <div class="kanban-column-body" id="col-review"></div>
                 </div>
 
                 <!-- Column: Aprobado -->
                 <div class="kanban-column" data-status="approved">
-                    <div class="kanban-column-header approved">Aprobado</div>
+                    <div class="kanban-column-header approved"><?php echo esc_html($settings['col_approved_title']); ?></div>
                     <div class="kanban-column-body" id="col-approved"></div>
                 </div>
 
                 <!-- Column: Entregado -->
                 <div class="kanban-column" data-status="delivered">
-                    <div class="kanban-column-header delivered">Entregado</div>
+                    <div class="kanban-column-header delivered"><?php echo esc_html($settings['col_delivered_title']); ?></div>
                     <div class="kanban-column-body" id="col-delivered"></div>
                 </div>
             </div>
@@ -134,9 +296,6 @@ class Project_Manager_Admin_Widget extends Widget_Base {
                 <h3 id="modal-project-title">Detalles del Proyecto</h3>
                 <!-- Dynamic Content Here -->
                 <div id="modal-body-content"></div>
-                <div class="modal-footer">
-                     <button id="save-project-btn" class="alezux-btn alezux-btn-success">Guardar Cambios</button>
-                </div>
             </div>
         </div>
 

@@ -11,7 +11,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.kanban-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+#add-project-btn {
+    white-space: nowrap;
+    min-width: 180px;
+    justify-content: center;
 }
 
 .kanban-container {
