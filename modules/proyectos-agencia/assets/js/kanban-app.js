@@ -100,13 +100,16 @@ jQuery(document).ready(function ($) {
         const detailsModal = $('#project-modal');
         const newProjectModal = $('#new-project-modal');
 
+        // Modals
+        const detailsModal = $('#project-modal');
+        const newProjectModal = $('#new-project-modal');
+
         $('.close-details').on('click', function () { detailsModal.hide(); });
         $('.close-new').on('click', function () { newProjectModal.hide(); });
 
         // Open New Project Modal
         $('#add-project-btn').on('click', function () {
             newProjectModal.show();
-            // Init Datepickers if jQuery UI is available
             if ($.fn.datepicker) {
                 $('.datepicker').datepicker({
                     dateFormat: 'yy-mm-dd',
@@ -114,8 +117,7 @@ jQuery(document).ready(function ($) {
                 });
             }
 
-            // Load Users for Select (Simple population for now, better with Select2 AJAX if available)
-            // Since we don't know if Select2 is enqueued, we'll try basic AJAX populate on focus/click first time
+            // Load Users for Select
             const clientSelect = $('#new-project-client');
             if (clientSelect.children('option').length <= 1) {
                 $.post(alezux_agency_vars.ajax_url, {
@@ -147,7 +149,7 @@ jQuery(document).ready(function ($) {
             }
 
             $.post(alezux_agency_vars.ajax_url, {
-                action: 'alezux_agency_create_project', // We need to update this handler or create it if not fully impl
+                action: 'alezux_agency_create_project',
                 title: title,
                 client_id: clientId,
                 start_date: start,
@@ -157,7 +159,7 @@ jQuery(document).ready(function ($) {
                 if (response.success) {
                     alert('Proyecto creado!');
                     newProjectModal.hide();
-                    loadProjects(); // Reload board
+                    loadProjects();
                     $('#new-project-form')[0].reset();
                 } else {
                     alert('Error: ' + response.data);
@@ -165,7 +167,7 @@ jQuery(document).ready(function ($) {
             });
         });
 
-        // Update Project Status Drop
+        // Update Project Status Helper
         function updateProjectStatus(projectId, newStatus) {
             $.post(alezux_agency_vars.ajax_url, {
                 action: 'alezux_agency_update_project_status',
@@ -175,22 +177,25 @@ jQuery(document).ready(function ($) {
             }, function (response) {
                 if (!response.success) {
                     alert('Error al actualizar estado');
-                    // Revert UI change if needed (reload)
                     loadProjects();
                 }
             });
         }
 
-        // Open Modal on Card Click
+        // Open Details Modal on Card Click
         $(document).on('click', '.kanban-card', function () {
             const projectId = $(this).data('id');
             const modalBody = $('#modal-body-content');
+
+            // Set ID for save button context
+            $('#project-edit-form').data('id', projectId); // Though form is dynamic, we set context maybe on button?
+            // Actually button is outside dynamic content, so specific ID handling needed.
+            $('#save-project-btn').data('id', projectId);
 
             $('#modal-project-title').text('Cargando...');
             modalBody.html('<div class="kanban-loading">Obteniendo datos...</div>');
             detailsModal.show();
 
-            // Fetch details
             $.ajax({
                 url: alezux_agency_vars.ajax_url,
                 type: 'POST',
@@ -219,6 +224,7 @@ jQuery(document).ready(function ($) {
             };
 
             let html = `
+            <form id="project-edit-form" data-id="${project.id}">
                 <div class="project-details-header">
                     <p><strong>Cliente:</strong> ${project.client_name} (${project.client_email})</p>
                     <p><strong>Estado:</strong> ${project.status}</p>
@@ -226,135 +232,100 @@ jQuery(document).ready(function ($) {
 
                 <hr>
 
-                    <div class="alezux-tabs">
-                        <!-- Simple tabs logic could go here, for now linear -->
-
-                        <!-- STEP 1: Briefing (Read Only for Admin mostly) -->
-                        <div class="step-section">
-                            <h4>1. Briefing</h4>
-                            <label>Preferencias Web (Cliente):</label>
-                            <textarea class="alezux-input" readonly>${getVal('briefing.web_preferences')}</textarea>
-
-                            <label>Tiene Logo:</label>
-                            <input type="text" class="alezux-input" readonly value="${getVal('briefing.has_logo', 'No definido')}">
-                        </div>
-
-                        <!-- STEP 2: Identity -->
-                        <div class="step-section">
-                            <h4>2. Identidad (Logo)</h4>
-                            <label>Archivos Propuesta (URLs sep. por coma):</label>
-                            <input type="text" class="alezux-input" name="identity[proposal_files]" value="${getVal('identity.proposal_files', []).join(', ')}">
-                                <small>Feedback Cliente: ${getVal('identity.client_feedback', 'Pendiente')}</small>
-                        </div>
-
-                        <!-- STEP 3: Web Design -->
-                        <div class="step-section">
-                            <h4>3. Diseño Web (Figma)</h4>
-                            <label>URL Prototipo Figma:</label>
-                            <input type="text" class="alezux-input" name="web_design[figma_url]" value="${getVal('web_design.figma_url')}">
-                                <small>Estado: ${getVal('web_design.status', 'Pendiente')}</small>
-                        </div>
-
-                        <!-- STEP 4: Development -->
-                        <div class="step-section">
-                            <h4>4. Desarrollo</h4>
-                            <label>URL Staging:</label>
-                            <input type="text" class="alezux-input" name="development[staging_url]" value="${getVal('development.staging_url')}">
-                        </div>
-
-                        <!-- STEP 5: Delivery -->
-                        <div class="step-section">
-                            <h4>5. Entrega Final</h4>
-                            <label>Credenciales (JSON):</label>
-                            <textarea class="alezux-input" name="delivery[credentials]">${JSON.stringify(getVal('delivery.credentials', {}))}</textarea>
-
-                            <label>Archivos Finales (URLs):</label>
-                            <textarea class="alezux-input" name="delivery[final_assets]">${getVal('delivery.final_assets', []).join('\n')}</textarea>
-                        </div>
+                <div class="alezux-tabs">
+                    <!-- STEP 1: Briefing -->
+                    <div class="step-section">
+                        <h4>1. Briefing</h4>
+                        <label>Preferencias Web:</label>
+                        <textarea class="alezux-input" readonly>${getVal('briefing.web_preferences')}</textarea>
+                        <label>Tiene Logo:</label>
+                        <input type="text" class="alezux-input" readonly value="${getVal('briefing.has_logo', 'No definido')}">
                     </div>
-                </form>
-            `;
+
+                    <!-- STEP 2: Identity -->
+                    <div class="step-section">
+                        <h4>2. Identidad (Logo)</h4>
+                        <label>Archivos Propuesta (URLs sep. por coma):</label>
+                        <input type="text" class="alezux-input" name="identity[proposal_files]" value="${getVal('identity.proposal_files', []).join(', ')}">
+                        <small>Feedback Cliente: ${getVal('identity.client_feedback', 'Pendiente')}</small>
+                    </div>
+
+                    <!-- STEP 3: Web Design -->
+                    <div class="step-section">
+                        <h4>3. Diseño Web (Figma)</h4>
+                        <label>URL Prototipo Figma:</label>
+                        <input type="text" class="alezux-input" name="web_design[figma_url]" value="${getVal('web_design.figma_url')}">
+                        <small>Estado: ${getVal('web_design.status', 'Pendiente')}</small>
+                    </div>
+
+                    <!-- STEP 4: Development -->
+                    <div class="step-section">
+                        <h4>4. Desarrollo</h4>
+                        <label>URL Staging:</label>
+                        <input type="text" class="alezux-input" name="development[staging_url]" value="${getVal('development.staging_url')}">
+                    </div>
+
+                    <!-- STEP 5: Delivery -->
+                    <div class="step-section">
+                        <h4>5. Entrega Final</h4>
+                        <label>Credenciales (JSON):</label>
+                        <textarea class="alezux-input" name="delivery[credentials]">${JSON.stringify(getVal('delivery.credentials', {}))}</textarea>
+                        <label>Archivos Finales (URLs):</label>
+                        <textarea class="alezux-input" name="delivery[final_assets]">${getVal('delivery.final_assets', []).join('\n')}</textarea>
+                    </div>
+                </div>
+            </form>
+        `;
 
             $('#modal-body-content').html(html);
         }
 
         // Save Project Data
-        $('#save-project-btn').on('click', function () {
-            const form = $('#project-edit-form');
-            const projectId = form.data('id');
+        $('#save-project-btn').off('click').on('click', function () {
+            const projectId = $(this).data('id');
             if (!projectId) return;
 
-            // Collect Data
-            // This is a naive collection, in production we need better parsing
+            // Manual collection from dynamic form
+            const proposalFiles = $('input[name="identity[proposal_files]"]').val();
+            const figmaUrl = $('input[name="web_design[figma_url]"]').val();
+            const stagingUrl = $('input[name="development[staging_url]"]').val();
+            const finalAssets = $('textarea[name="delivery[final_assets]"]').val();
+
             const formData = {
                 identity: {
-                    proposal_files: $('input[name="identity[proposal_files]"]').val().split(',').map(s => s.trim()).filter(s => s)
+                    proposal_files: proposalFiles ? proposalFiles.split(',').map(s => s.trim()).filter(s => s) : []
                 },
                 web_design: {
-                    figma_url: $('input[name="web_design[figma_url]"]').val()
+                    figma_url: figmaUrl || ''
                 },
                 development: {
-                    staging_url: $('input[name="development[staging_url]"]').val()
+                    staging_url: stagingUrl || ''
                 },
                 delivery: {
-                    // simple parse for now
-                    final_assets: $('textarea[name="delivery[final_assets]"]').val().split('\n')
+                    final_assets: finalAssets ? finalAssets.split('\n') : []
                 }
             };
 
-            $.ajax({
-                url: alezux_agency_vars.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'alezux_agency_update_project_data',
-                    project_id: projectId,
-                    project_data: JSON.stringify(formData),
-                    nonce: alezux_agency_vars.nonce
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert('Guardado correctamente');
-                        modal.hide();
-                    } else {
-                        alert('Error: ' + response.data);
-                    }
+            $.post(alezux_agency_vars.ajax_url, {
+                action: 'alezux_agency_update_project_data',
+                project_id: projectId,
+                project_data: JSON.stringify(formData),
+                nonce: alezux_agency_vars.nonce
+            }, function (response) {
+                if (response.success) {
+                    alert('Guardado correctamente');
+                    detailsModal.hide();
+                    loadProjects(); // Refresh to update any status/visuals
+                } else {
+                    alert('Error: ' + response.data);
                 }
             });
         });
 
-        closeBtn.on('click', function () {
-            modal.hide();
-        });
-
-        $(window).on('click', function (event) {
-            if (event.target == modal[0]) {
-                modal.hide();
-            }
-        });
-
-        // Add Project Logic
-        $('#add-project-btn').on('click', function () {
-            // Simple User Selection Logic for MVP
-            // In a real scenario we would use Select2 with AJAX search
-            const clientEmail = prompt("Ingresa el ID del usuario cliente para crear un proyecto:");
-            if (clientEmail) {
-                $.ajax({
-                    url: alezux_agency_vars.ajax_url,
-                    type: 'POST',
-                    data: {
-                        action: 'alezux_agency_create_project',
-                        client_id: clientEmail, // For now passing ID directly
-                        nonce: alezux_agency_vars.nonce
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            loadProjects();
-                        } else {
-                            alert(response.data);
-                        }
-                    }
-                });
-            }
+        // Close on outside click
+        $(window).on('click', function (e) {
+            if ($(e.target).is(detailsModal)) detailsModal.hide();
+            if ($(e.target).is(newProjectModal)) newProjectModal.hide();
         });
 
     });
