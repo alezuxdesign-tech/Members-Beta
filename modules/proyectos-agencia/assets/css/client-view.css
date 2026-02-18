@@ -1,0 +1,194 @@
+/* Client View Timeline CSS */
+.alezux-client-project {
+    font-family: 'Inter', sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+}
+
+.project-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    background: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #6c757d;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+}
+
+.timeline-step.active .step-circle {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+.timeline-step.completed .step-circle {
+    background: #28a745;
+    color: white;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.timeline-step.active .step-label {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.step-line {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e9ecef;
+    z-index: -1;
+}
+
+.timeline-step.completed .step-line {
+    background: #28a745;
+}
+
+/* Content Area */
+.step-content {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-content h3 {
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.alezux-form-group {
+    margin-bottom: 20px;
+}
+
+.alezux-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.alezux-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.alezux-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.alezux-btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.alezux-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.alezux-btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.alezux-btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.alezux-btn-warning {
+    background: #ffc107;
+    color: black;
+}
+
+.delivery-hero {
+    text-align: center;
+    padding: 40px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.delivery-folder {
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.files-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.file-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+}

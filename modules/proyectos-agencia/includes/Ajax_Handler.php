@@ -1,0 +1,236 @@
+<?php
+namespace Alezux_Members\Modules\Proyectos_Agencia\Includes;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+class Ajax_Handler {
+
+	public static function init() {
+		$actions = [
+			'alezux_agency_get_projects',
+			'alezux_agency_create_project',
+			'alezux_agency_update_project_status',
+            'alezux_agency_search_users',
+            'alezux_agency_get_project_details',
+            'alezux_agency_update_project_data',
+            'alezux_agency_client_save_briefing',
+            'alezux_agency_client_send_feedback'
+		];
+
+		foreach ( $actions as $action ) {
+			add_action( "wp_ajax_$action", [ __CLASS__, $action ] );
+		}
+	}
+
+    public static function alezux_agency_get_projects() {
+        self::check_permissions();
+
+        $manager = new Projects_Manager();
+        $projects = $manager->get_projects();
+        
+        // Format for frontend
+        $formatted = [];
+        foreach($projects as $p) {
+            $client = get_userdata($p->client_id);
+            $client_name = $client ? $client->display_name : 'Usuario Eliminado';
+            $client_avatar = get_avatar_url($p->client_id);
+            
+            $formatted[] = [
+                'id' => $p->id,
+                'title' => $client_name, // Project Title is usually Client Name
+                'client_name' => $client_name,
+                'client_avatar' => $client_avatar,
+                'status' => $p->status,
+                'step' => $p->current_step
+            ];
+        }
+
+        wp_send_json_success( $formatted );
+    }
+
+    public static function alezux_agency_update_project_status() {
+         self::check_permissions();
+         
+         $project_id = intval( $_POST['project_id'] );
+         $new_status = sanitize_text_field( $_POST['status'] );
+         
+         if ( ! $project_id || ! $new_status ) {
+             wp_send_json_error( 'Datos incompletos.' );
+         }
+         
+         $manager = new Projects_Manager();
+         $result = $manager->update_status( $project_id, $new_status );
+         
+         if ( $result !== false ) {
+             wp_send_json_success( 'Estado actualizado.' );
+         } else {
+             wp_send_json_error( 'Error al actualizar DB.' );
+         }
+    }
+    
+    public static function alezux_agency_create_project() {
+        self::check_permissions();
+        
+        $client_id = intval( $_POST['client_id'] );
+        if ( ! $client_id ) {
+            wp_send_json_error( 'Debes seleccionar un cliente.' );
+        }
+        
+        $manager_id = get_current_user_id();
+        
+        $manager = new Projects_Manager();
+        $new_id = $manager->create_project( $client_id, $manager_id );
+        
+        if ( $new_id ) {
+            wp_send_json_success( ['id' => $new_id, 'message' => 'Proyecto creado correctamente.'] );
+        } else {
+            wp_send_json_error( 'Error al crear proyecto.' );
+        }
+    }
+
+    public static function alezux_agency_search_users() {
+        self::check_permissions();
+        
+        $term = sanitize_text_field( $_GET['term'] );
+        if ( empty( $term ) ) {
+            wp_send_json_success([]);
+        }
+        
+        $users = get_users([
+            'search' => '*' . $term . '*',
+            'number' => 10,
+            'fields' => ['ID', 'display_name', 'user_email']
+        ]);
+        
+        $results = [];
+        foreach($users as $u) {
+            $results[] = [
+                'id' => $u->ID,
+                'text' => $u->display_name . ' (' . $u->user_email . ')'
+            ];
+        }
+        
+        wp_send_json_success( $results );
+    }
+
+    public static function alezux_agency_get_project_details() {
+        self::check_permissions();
+        
+        $project_id = intval( $_GET['project_id'] );
+        if ( ! $project_id ) wp_send_json_error( 'ID faltante' );
+        
+        $manager = new Projects_Manager();
+        $project = $manager->get_project( $project_id );
+        
+        if ( ! $project ) wp_send_json_error( 'Proyecto no encontrado' );
+        
+        $client = get_userdata( $project->client_id );
+        $project->client_name = $client ? $client->display_name : 'N/A';
+        $project->client_email = $client ? $client->user_email : 'N/A';
+        $project->data = json_decode( $project->project_data, true );
+        
+        wp_send_json_success( $project );
+    }
+
+    public static function alezux_agency_update_project_data() {
+        self::check_permissions();
+        
+        $project_id = intval( $_POST['project_id'] );
+        $data_json = stripslashes( $_POST['project_data'] ); // JSON string from frontend
+        $data_array = json_decode( $data_json, true );
+        
+        if ( ! $project_id || ! is_array( $data_array ) ) {
+            wp_send_json_error( 'Datos inválidos' );
+        }
+        
+        $manager = new Projects_Manager();
+        $updated = $manager->update_project_data( $project_id, $data_array );
+        
+        if ( $updated !== false ) {
+            wp_send_json_success( 'Datos guardados' );
+        } else {
+            wp_send_json_error( 'Error al guardar (o sin cambios)' );
+        }
+    }
+
+    public static function alezux_agency_client_save_briefing() {
+        if ( ! is_user_logged_in() ) wp_send_json_error( 'No autorizado' );
+        
+        $project_id = intval( $_POST['project_id'] );
+        $web_prefs = sanitize_textarea_field( $_POST['web_preferences'] );
+        $has_logo = sanitize_text_field( $_POST['has_logo'] );
+        $legal_data = sanitize_textarea_field( $_POST['legal_data'] );
+
+        // Verify ownership
+        if ( ! self::verify_project_ownership( $project_id ) ) {
+            wp_send_json_error( 'No tienes permiso para editar este proyecto.' );
+        }
+
+        $manager = new Projects_Manager();
+        
+        // Construct partial data update
+        $update_data = [
+            'briefing' => [
+                'web_preferences' => $web_prefs,
+                'has_logo' => $has_logo,
+                'legal_data' => $legal_data,
+                'completed_at' => current_time('mysql')
+            ]
+        ];
+
+        // We also might want to advance step or notify admin here
+        
+        if ( $manager->update_project_data( $project_id, $update_data ) !== false ) {
+            wp_send_json_success( 'Briefing guardado correctamente.' );
+        } else {
+             wp_send_json_error( 'Error al guardar.' );
+        }
+    }
+    
+    public static function alezux_agency_client_send_feedback() {
+         if ( ! is_user_logged_in() ) wp_send_json_error( 'No autorizado' );
+         
+         $project_id = intval( $_POST['project_id'] );
+         $step = sanitize_text_field( $_POST['step'] ); // identity, web_design, etc
+         $action = sanitize_text_field( $_POST['action_type'] ); // approve, changes
+         $feedback = sanitize_textarea_field( $_POST['feedback'] );
+         
+         if ( ! self::verify_project_ownership( $project_id ) ) {
+            wp_send_json_error( 'No tienes permiso.' );
+        }
+        
+        $manager = new Projects_Manager();
+        
+        $update_data = [
+            $step => [
+                 'status' => ($action === 'approve') ? 'approved' : 'changes_requested',
+                 'client_feedback' => $feedback,
+                 'feedback_date' => current_time('mysql')
+            ]
+        ];
+        
+        if ( $manager->update_project_data( $project_id, $update_data ) !== false ) {
+            // Ideally notify admin via email
+            wp_send_json_success( 'Tu respuesta ha sido enviada.' );
+        } else {
+             wp_send_json_error( 'Error al procesar.' );
+        }
+    }
+
+    private static function check_permissions() {
+        if ( ! current_user_can( 'edit_posts' ) ) { 
+            wp_send_json_error( 'No tienes permisos de administración.' );
+            die();
+        }
+    }
+    
+    private static function verify_project_ownership( $project_id ) {
+        $manager = new Projects_Manager();
+        $project = $manager->get_project( $project_id );
+        if ( ! $project ) return false;
+        
+        return ( intval( $project->client_id ) === get_current_user_id() );
+    }
+}
