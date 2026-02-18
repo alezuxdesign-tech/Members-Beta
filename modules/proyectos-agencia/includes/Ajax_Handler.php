@@ -17,7 +17,8 @@ class Ajax_Handler {
             'alezux_agency_update_project_data',
             'alezux_agency_update_project_step',
             'alezux_agency_client_save_briefing',
-            'alezux_agency_client_send_feedback'
+            'alezux_agency_client_send_feedback',
+            'alezux_agency_upload_file'
 		];
 
 		foreach ( $actions as $action ) {
@@ -299,5 +300,28 @@ class Ajax_Handler {
         if ( ! $project ) return false;
         
         return ( intval( $project->client_id ) === get_current_user_id() );
+    }
+
+    public static function alezux_agency_upload_file() {
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            wp_send_json_error( 'No autorizado' );
+        }
+
+        if ( empty( $_FILES['file'] ) ) {
+            wp_send_json_error( 'No se recibió ningún archivo.' );
+        }
+
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+        $attachment_id = media_handle_upload( 'file', 0 ); // 0 = unattached
+
+        if ( is_wp_error( $attachment_id ) ) {
+            wp_send_json_error( 'Error al subir archivo: ' . $attachment_id->get_error_message() );
+        } else {
+            $url = wp_get_attachment_url( $attachment_id );
+            wp_send_json_success( [ 'url' => $url, 'id' => $attachment_id ] );
+        }
     }
 }

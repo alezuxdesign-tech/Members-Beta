@@ -277,8 +277,9 @@ jQuery(document).ready(function ($) {
                     <div id="identity-files-list" style="margin-bottom:10px;">${fileListHtml}</div>
                     
                     <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-identity">
-                        <i class="fas fa-cloud-upload-alt"></i> Subir/Seleccionar Archivos
+                        <i class="fas fa-cloud-upload-alt"></i> Subir Archivos (PC)
                     </button>
+                    <input type="file" id="identity-native-upload" multiple style="display:none;">
                     <input type="hidden" name="identity[proposal_files]" id="identity-files-input" value="${files.join(',')}">
                     
                     <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
@@ -353,28 +354,59 @@ jQuery(document).ready(function ($) {
         // Bind Identity Specific Actions
         if (activeTabStep === 'identity') {
             // Upload Button
+            // Native Upload Trigger
             $('#btn-upload-identity').on('click', function (e) {
                 e.preventDefault();
-                let frame = wp.media({
-                    title: 'Seleccionar Propuestas',
-                    button: { text: 'Usar estos archivos' },
-                    multiple: true
+                $('#identity-native-upload').click();
+            });
+
+            // Handle File Selection
+            $('#identity-native-upload').on('change', function () {
+                const files = this.files;
+                if (!files.length) return;
+
+                // UI Feedback
+                const btn = $('#btn-upload-identity');
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Subiendo...');
+                btn.prop('disabled', true);
+
+                let uploadedUrls = [];
+                let uploadPromises = [];
+
+                Array.from(files).forEach(file => {
+                    let formData = new FormData();
+                    formData.append('action', 'alezux_agency_upload_file');
+                    formData.append('file', file);
+                    // alezux_agency_vars is globally available
+
+                    let p = $.ajax({
+                        url: alezux_agency_vars.ajax_url,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.success) {
+                                uploadedUrls.push(response.data.url);
+                            } else {
+                                alert('Error subiendo ' + file.name + ': ' + (response.data || 'Unknown error'));
+                            }
+                        },
+                        error: function () {
+                            alert('Error de red al subir ' + file.name);
+                        }
+                    });
+                    uploadPromises.push(p);
                 });
 
-                frame.on('select', function () {
-                    const attachments = frame.state().get('selection').toJSON();
-                    const urls = attachments.map(a => a.url);
-
-                    // Add to list visually
+                Promise.all(uploadPromises).then(() => {
                     const currentVal = $('#identity-files-input').val();
                     let currentUrls = currentVal ? currentVal.split(',') : [];
-                    currentUrls = [...currentUrls, ...urls].filter(s => s); // Ensure no empty strings
+                    currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
 
                     $('#identity-files-input').val(currentUrls.join(','));
-                    renderModalContent(); // Re-render to show new files
+                    renderModalContent(); // Re-render to show new state
                 });
-
-                frame.open();
             });
 
             // Remove File
