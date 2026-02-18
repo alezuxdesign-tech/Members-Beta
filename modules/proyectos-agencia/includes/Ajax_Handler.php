@@ -103,16 +103,18 @@ class Ajax_Handler {
     public static function alezux_agency_search_users() {
         self::check_permissions();
         
-        $term = sanitize_text_field( $_GET['term'] );
-        if ( empty( $term ) ) {
-            wp_send_json_success([]);
+        $term = sanitize_text_field( $_GET['term'] ?? '' );
+        
+        $args = [
+            'number' => 20,
+            'fields' => ['ID', 'display_name', 'user_email']
+        ];
+
+        if ( ! empty( $term ) ) {
+            $args['search'] = '*' . $term . '*';
         }
         
-        $users = get_users([
-            'search' => '*' . $term . '*',
-            'number' => 10,
-            'fields' => ['ID', 'display_name', 'user_email']
-        ]);
+        $users = get_users($args);
         
         $results = [];
         foreach($users as $u) {
@@ -128,7 +130,7 @@ class Ajax_Handler {
     public static function alezux_agency_get_project_details() {
         self::check_permissions();
         
-        $project_id = intval( $_GET['project_id'] );
+        $project_id = intval( $_POST['project_id'] );
         if ( ! $project_id ) wp_send_json_error( 'ID faltante' );
         
         $manager = new Projects_Manager();

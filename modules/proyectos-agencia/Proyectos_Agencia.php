@@ -64,11 +64,13 @@ class Proyectos_Agencia extends Module_Base {
     
     public function enqueue_scripts() {
         // CSS
-        wp_register_style( 'alezux-kanban-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/kanban.css', [], '1.0.4' );
-        wp_register_style( 'alezux-client-view-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/client-view.css', [], '1.0.4' );
+        wp_register_style( 'alezux-kanban-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/kanban.css', [], '1.0.5' );
+        wp_register_style( 'alezux-client-view-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/client-view.css', [], '1.0.5' );
+        // jQuery UI CSS for Datepicker
+        wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css', [], '1.12.1' );
         
         // JS - Admin
-        wp_register_script( 'alezux-kanban-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/kanban-app.js', ['jquery', 'jquery-ui-sortable'], '1.0.4', true );
+        wp_register_script( 'alezux-kanban-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/kanban-app.js', ['jquery', 'jquery-ui-sortable', 'jquery-ui-datepicker'], '1.0.5', true );
         
         wp_localize_script( 'alezux-kanban-js', 'alezux_agency_vars', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -76,11 +78,16 @@ class Proyectos_Agencia extends Module_Base {
         ] );
 
         // JS - Client
-         wp_register_script( 'alezux-client-app-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/client-app.js', ['jquery'], '1.0.4', true );
+         wp_register_script( 'alezux-client-app-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/client-app.js', ['jquery'], '1.0.5', true );
           wp_localize_script( 'alezux-client-app-js', 'alezux_agency_vars', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'alezux_agency_nonce' )
         ] );
+
+        // Enqueue styles
+        if ( current_user_can( 'edit_posts' ) ) {
+             wp_enqueue_style( 'jquery-ui' );
+        }
 
         // Enqueue styles globally for now, or check for widget presence (optimized)
         // For simplicity in this phase, we enqueue if the class exists or globally if preferred.
