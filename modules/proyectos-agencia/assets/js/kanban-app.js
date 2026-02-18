@@ -246,15 +246,46 @@ jQuery(document).ready(function ($) {
 
         // --- IDENTITY ---
         else if (activeTabStep === 'identity') {
+            const files = getVal('identity.proposal_files', []);
+            const status = getVal('identity.status', '');
+            const clientFeedback = getVal('identity.client_feedback', '');
+
+            let fileListHtml = '';
+            files.forEach((url, i) => {
+                fileListHtml += `
+                    <div class="file-item-row" data-url="${url}">
+                        <a href="${url}" target="_blank" class="file-link"><i class="fas fa-file"></i> Ver Archivo ${i + 1}</a>
+                        <span class="remove-file" style="color:red;cursor:pointer;margin-left:10px;">&times;</span>
+                    </div>`;
+            });
+
+            let statusAlert = '';
+            if (status === 'changes_requested') {
+                statusAlert = `<div class="alezux-alert-error"><strong>Cambios Solicitados:</strong> ${clientFeedback}</div>`;
+            } else if (status === 'approved') {
+                statusAlert = `<div class="alezux-alert-success"><strong>¡Aprobado por el Cliente!</strong> Puedes avanzar.</div>`;
+            } else if (status === 'pending_review') {
+                statusAlert = `<div class="alezux-alert-warning">Esperando revisión del cliente.</div>`;
+            }
+
             contentHtml = `
                 <div class="step-content animate-fade-in">
                     <h4>Identidad (Propuestas)</h4>
-                    <label>URLs de Propuestas (separadas por coma):</label>
-                    <input type="text" class="alezux-input" name="identity[proposal_files]" value="${getVal('identity.proposal_files', []).join(', ')}">
-                    <p class="guidance-text">Sube los archivos a la biblioteca y pega aquí los enlaces.</p>
-                    <div class="feedback-box">
-                        <strong>Feedback Cliente:</strong> 
-                        <p>${getVal('identity.client_feedback', 'Sin feedback aún.')}</p>
+                    ${statusAlert}
+                    
+                    <label>Archivos de Propuesta:</label>
+                    <div id="identity-files-list" style="margin-bottom:10px;">${fileListHtml}</div>
+                    
+                    <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-identity">
+                        <i class="fas fa-cloud-upload-alt"></i> Subir/Seleccionar Archivos
+                    </button>
+                    <input type="hidden" name="identity[proposal_files]" id="identity-files-input" value="${files.join(',')}">
+                    
+                    <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                        <button type="button" class="alezux-btn alezux-btn-info" id="btn-send-review">
+                            <i class="fas fa-paper-plane"></i> Guardar y Enviar a Revisión
+                        </button>
+                        <p class="guidance-text">Al enviar, el cliente recibirá una notificación para revisar.</p>
                     </div>
                 </div>`;
         }
@@ -319,30 +350,75 @@ jQuery(document).ready(function ($) {
         $('#btn-save-step').on('click', function () { saveCurrentStepData(false); });
         $('#btn-advance-step').on('click', function () { saveCurrentStepData(true); });
 
+        // Bind Identity Specific Actions
+        if (activeTabStep === 'identity') {
+            // Upload Button
+            $('#btn-upload-identity').on('click', function (e) {
+                e.preventDefault();
+                let frame = wp.media({
+                    title: 'Seleccionar Propuestas',
+                    button: { text: 'Usar estos archivos' },
+                    multiple: true
+                });
+
+                frame.on('select', function () {
+                    const attachments = frame.state().get('selection').toJSON();
+                    const urls = attachments.map(a => a.url);
+
+                    // Add to list visually
+                    const currentVal = $('#identity-files-input').val();
+                    let currentUrls = currentVal ? currentVal.split(',') : [];
+                    currentUrls = [...currentUrls, ...urls].filter(s => s); // Ensure no empty strings
+
+                    $('#identity-files-input').val(currentUrls.join(','));
+                    renderModalContent(); // Re-render to show new files
+                });
+
+                frame.open();
+            });
+
+            // Remove File
+            $(document).off('click', '.remove-file').on('click', '.remove-file', function () {
+                const urlToRemove = $(this).parent().data('url');
+                const currentVal = $('#identity-files-input').val();
+                let currentUrls = currentVal ? currentVal.split(',') : [];
+
+                currentUrls = currentUrls.filter(u => u !== urlToRemove);
+                $('#identity-files-input').val(currentUrls.join(','));
+                renderModalContent();
+            });
+
+            // Send Review
+            $('#btn-send-review').off('click').on('click', function () {
+                saveCurrentStepData(false, 'pending_review');
+            });
+        }
+
         // Update main modal footer to be hidden or standard
         $('#save-project-btn').hide(); // Hide the old global save button
     }
 
-    function saveCurrentStepData(advance = false) {
+    function saveCurrentStepData(advance = false, specificStatus = null) {
         const projectId = currentModalProject.id;
-
-        // 1. Collect Data based on Active Step
-        const proposalFiles = $('input[name="identity[proposal_files]"]').val();
-        const figmaUrl = $('input[name="web_design[figma_url]"]').val();
-        const stagingUrl = $('input[name="development[staging_url]"]').val();
-        const finalAssets = $('textarea[name="delivery[final_assets]"]').val();
-        const credentials = $('textarea[name="delivery[credentials]"]').val();
-
-        // Construct update object (partial)
         let formData = {};
 
         if (activeTabStep === 'identity') {
-            formData.identity = { proposal_files: proposalFiles ? proposalFiles.split(',').map(s => s.trim()).filter(s => s) : [] };
+            const proposalFiles = $('input[name="identity[proposal_files]"]').val();
+            formData.identity = {
+                proposal_files: proposalFiles ? proposalFiles.split(',').filter(s => s) : []
+            };
+            if (specificStatus) {
+                formData.identity.status = specificStatus;
+            }
         } else if (activeTabStep === 'web_design') {
+            const figmaUrl = $('input[name="web_design[figma_url]"]').val();
             formData.web_design = { figma_url: figmaUrl || '' };
         } else if (activeTabStep === 'development') {
+            const stagingUrl = $('input[name="development[staging_url]"]').val();
             formData.development = { staging_url: stagingUrl || '' };
         } else if (activeTabStep === 'delivery') {
+            const finalAssets = $('textarea[name="delivery[final_assets]"]').val();
+            const credentials = $('textarea[name="delivery[credentials]"]').val();
             formData.delivery = {
                 final_assets: finalAssets ? finalAssets.split('\n') : [],
                 credentials: credentials ? JSON.parse(credentials || '{}') : {}
@@ -358,13 +434,13 @@ jQuery(document).ready(function ($) {
         }, function (response) {
             if (response.success) {
                 // Update local model
-                // We need to merge formData into currentModalProject.data
                 $.extend(true, currentModalProject.data, formData);
 
                 if (advance) {
                     advanceToNextStep(projectId);
                 } else {
                     alert('Datos guardados.');
+                    if (specificStatus) renderModalContent(); // Refresh to show status update
                 }
             } else {
                 alert('Error al guardar datos: ' + response.data);

@@ -237,26 +237,56 @@ class Project_Client_View_Widget extends Widget_Base {
                     
                     <?php 
                     $files = isset($data['identity']['proposal_files']) ? $data['identity']['proposal_files'] : [];
+                    $status = isset($data['identity']['status']) ? $data['identity']['status'] : '';
+                    
                     if(empty($files)): ?>
-                        <div class="alezux-alert-warning">Aún no hemos subido propuestas. Por favor espera.</div>
+                        <div class="alezux-alert-warning">
+                            <i class="fas fa-paint-brush"></i> Estamos trabajando en tus propuestas de diseño. Te notificaremos pronto.
+                        </div>
                     <?php else: ?>
-                        <div class="files-grid">
-                            <?php foreach($files as $file): ?>
-                                <a href="<?php echo esc_url($file); ?>" target="_blank" class="file-card">
-                                    <i class="fas fa-file-image"></i> Ver Propuesta
-                                </a>
+                        
+                        <?php if($status === 'changes_requested'): ?>
+                            <div class="alezux-alert-info">Has solicitado cambios. Estamos trabajando en ello.</div>
+                        <?php elseif($status === 'approved'): ?>
+                             <div class="alezux-alert-success">¡Has aprobado esta etapa! Pasaremos al desarrollo web pronto.</div>
+                        <?php else: ?>
+                             <div class="alezux-alert-info">Por favor revisa las propuestas y danos tu feedback.</div>
+                        <?php endif; ?>
+
+                        <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; margin: 20px 0;">
+                            <?php foreach($files as $index => $file): 
+                                $ext = pathinfo($file, PATHINFO_EXTENSION);
+                                $icon = in_array(strtolower($ext), ['jpg','jpeg','png','gif','webp']) ? 'fa-file-image' : 'fa-file-pdf';
+                            ?>
+                                <div class="file-card" style="border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;">
+                                    <i class="fas <?php echo $icon; ?>" style="font-size:30px; color:#555; margin-bottom:10px; display:block;"></i>
+                                    <span style="display:block; margin-bottom:10px; font-weight:500;">Propuesta <?php echo $index + 1; ?></span>
+                                    <a href="<?php echo esc_url($file); ?>" target="_blank" class="alezux-btn alezux-btn-secondary" style="font-size:12px;">
+                                        <i class="fas fa-eye"></i> Ver / Descargar
+                                    </a>
+                                </div>
                             <?php endforeach; ?>
                         </div>
                         
+                        <?php if($status !== 'approved'): ?>
                         <div class="action-buttons">
-                            <button class="alezux-btn alezux-btn-success" data-action="approve" data-step="identity">Aprobar Diseño</button>
-                            <button class="alezux-btn alezux-btn-danger" onclick="$('#feedback-identity').toggle()">Solicitar Cambios</button>
+                            <button class="alezux-btn alezux-btn-success" data-action="approve" data-step="identity">
+                                <i class="fas fa-check-circle"></i> Aprobar Diseño
+                            </button>
+                            <button class="alezux-btn alezux-btn-danger" onclick="jQuery('#feedback-identity').slideToggle()">
+                                <i class="fas fa-edit"></i> Sugerir Cambios
+                            </button>
                         </div>
                         
-                        <div id="feedback-identity" style="display:none; margin-top:15px;">
-                            <textarea class="alezux-input" id="identity-feedback-text" placeholder="Describe los cambios solicitados..."></textarea>
-                            <button class="alezux-btn alezux-btn-primary" data-action="changes" data-step="identity">Enviar Cambios</button>
+                        <div id="feedback-identity" style="display:none; margin-top:20px; background:#f9f9f9; padding:15px; border-radius:8px;">
+                            <label>Describe los cambios que te gustaría ver:</label>
+                            <textarea class="alezux-input" id="identity-feedback-text" rows="4" placeholder="Ej: Me gustaría un color azul más oscuro en el logo..."></textarea>
+                            <div style="text-align:right; margin-top:10px;">
+                                <button class="alezux-btn alezux-btn-primary" data-action="changes" data-step="identity">Enviar Sugerencias</button>
+                            </div>
                         </div>
+                        <?php endif; ?>
+
                     <?php endif; ?>
                 </div>
                 <?php endif; ?>

@@ -265,3 +265,40 @@
     padding-top: 15px;
     border-top: 1px solid #eee;
 }
+
+/* Identity Step specific */
+.file-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.file-item-row:hover {
+    background: #f1f1f1;
+}
+
+.file-link {
+    text-decoration: none;
+    color: #0073aa;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remove-file {
+    font-size: 18px;
+    line-height: 1;
+    color: #dc3232;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.remove-file:hover {
+    color: #a00;
+}
