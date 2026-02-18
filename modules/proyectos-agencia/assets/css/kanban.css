@@ -23,7 +23,8 @@
 
 #add-project-btn {
     white-space: nowrap;
-    min-width: 180px;
+    width: fit-content;
+    flex: 0 0 auto;
     justify-content: center;
 }
 
