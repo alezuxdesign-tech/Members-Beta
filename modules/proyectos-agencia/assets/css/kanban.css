@@ -182,3 +182,86 @@
 .close-modal:hover {
     color: black;
 }
+
+/* Stepper UI */
+.alezux-stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    background: #f8f9fa;
+    padding: 5px;
+    border-radius: 8px;
+    gap: 5px;
+}
+
+.step-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px 5px;
+    background: #e9ecef;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.step-item:hover {
+    background: #dee2e6;
+    color: #495057;
+}
+
+.step-item.active {
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.step-content {
+    background: #fff;
+    padding: 10px 5px;
+    min-height: 200px;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 6px;
+    color: #856404;
+}
+
+.guidance-text {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.step-footer-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}

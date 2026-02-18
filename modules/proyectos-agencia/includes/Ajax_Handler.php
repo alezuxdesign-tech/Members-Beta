@@ -15,6 +15,7 @@ class Ajax_Handler {
             'alezux_agency_search_users',
             'alezux_agency_get_project_details',
             'alezux_agency_update_project_data',
+            'alezux_agency_update_project_step',
             'alezux_agency_client_save_briefing',
             'alezux_agency_client_send_feedback'
 		];
@@ -23,6 +24,49 @@ class Ajax_Handler {
 			add_action( "wp_ajax_$action", [ __CLASS__, $action ] );
 		}
 	}
+
+    // ... (existing functions)
+
+    public static function alezux_agency_update_project_step() {
+        self::check_permissions();
+        
+        $project_id = intval( $_POST['project_id'] );
+        $new_step = sanitize_text_field( $_POST['step'] );
+        
+        if ( ! $project_id || ! $new_step ) {
+            wp_send_json_error( 'Datos incompletos' );
+        }
+        
+        $manager = new Projects_Manager();
+        $updated = $manager->update_step( $project_id, $new_step );
+        
+        if ( $updated !== false ) {
+            wp_send_json_success( 'Paso actualizado' );
+        } else {
+            wp_send_json_error( 'Error al actualizar paso' );
+        }
+    }
+    
+    public static function alezux_agency_update_project_data() {
+        self::check_permissions();
+        
+        $project_id = intval( $_POST['project_id'] );
+        $data_json = stripslashes( $_POST['project_data'] ); // JSON string from frontend
+        $data_array = json_decode( $data_json, true );
+        
+        if ( ! $project_id || ! is_array( $data_array ) ) {
+            wp_send_json_error( 'Datos inválidos' );
+        }
+        
+        $manager = new Projects_Manager();
+        $updated = $manager->update_project_data( $project_id, $data_array );
+        
+        if ( $updated !== false ) {
+            wp_send_json_success( 'Datos guardados' );
+        } else {
+            wp_send_json_error( 'Error al guardar (o sin cambios)' );
+        }
+    }
 
     public static function alezux_agency_get_projects() {
         self::check_permissions();

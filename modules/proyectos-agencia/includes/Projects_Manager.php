@@ -103,6 +103,20 @@ class Projects_Manager {
     }
     
     /**
+     * Update project current step
+     */
+    public function update_step( $id, $new_step ) {
+        global $wpdb;
+        return $wpdb->update( 
+            $this->table_name, 
+            [ 'current_step' => $new_step ], 
+            [ 'id' => $id ], 
+            [ '%s' ], 
+            [ '%d' ] 
+        );
+    }
+    
+    /**
      * Update project data (JSON)
      */
     public function update_project_data( $id, $new_data_array ) {
