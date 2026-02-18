@@ -351,7 +351,7 @@ class Project_Client_View_Widget extends Widget_Base {
                         <h4><i class="fas fa-folder-open"></i> Archivos Finales</h4>
                         <ul>
                             <?php 
-                             $assets = isset($data['delivery']['final_assets']) ? $data['delivery']['final_assets'] : [];
+                             $assets = isset($data['delivery']['logos']) ? $data['delivery']['logos'] : [];
                              if(!empty($assets)):
                                 foreach($assets as $asset): ?>
                                 <li><a href="<?php echo esc_url($asset); ?>" target="_blank"><i class="fas fa-download"></i> Descargar Recurso</a></li>
@@ -366,10 +366,25 @@ class Project_Client_View_Widget extends Widget_Base {
                         <h4><i class="fas fa-key"></i> Credenciales</h4>
                         <div class="credentials-box">
                             <?php $creds = isset($data['delivery']['credentials']) ? $data['delivery']['credentials'] : []; ?>
-                            <p><strong>URL Admin:</strong> <?php echo $creds['url'] ?? 'N/A'; ?></p>
-                            <p><strong>Usuario:</strong> <?php echo $creds['user'] ?? 'N/A'; ?></p>
-                            <!-- Password usually better shared securely 1-on-1 -->
+                            <p><strong>URL Admin:</strong> <?php echo !empty($creds['login_url']) ? '<a href="'.esc_url($creds['login_url']).'" target="_blank">'.esc_html($creds['login_url']).'</a>' : 'N/A'; ?></p>
+                            <p><strong>Usuario:</strong> <?php echo esc_html($creds['user'] ?? 'N/A'); ?></p>
+                            <p><strong>Contraseña:</strong> <?php echo !empty($creds['password']) ? '<code>' . esc_html($creds['password']) . '</code>' : 'N/A'; ?></p>
                         </div>
+                    </div>
+
+                    <div class="delivery-folder">
+                        <h4><i class="fas fa-video"></i> Video Tutoriales</h4>
+                        <ul>
+                            <?php 
+                             $videos = isset($data['delivery']['video_links']) ? $data['delivery']['video_links'] : [];
+                             if(!empty($videos)):
+                                foreach($videos as $video): ?>
+                                <li><a href="<?php echo esc_url($video); ?>" target="_blank"><i class="fas fa-play-circle"></i> Ver Tutorial</a></li>
+                                <?php endforeach; 
+                             else: ?>
+                                <li>No hay tutoriales disponibles aún.</li>
+                             <?php endif; ?>
+                        </ul>
                     </div>
                 </div>
                 <?php endif; ?>
