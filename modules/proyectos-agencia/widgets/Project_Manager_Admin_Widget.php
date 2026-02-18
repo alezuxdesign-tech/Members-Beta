@@ -135,24 +135,210 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 
         $this->end_controls_section();
 
-        // Section: Styles
+        // Section: Board Header
         $this->start_controls_section(
-			'style_section',
+			'board_header_style',
 			[
-				'label' => 'Estilos de Colores',
+				'label' => 'Estilo del Encabezado',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'title_typography',
+				'label' => 'Tipografía Título',
+				'selector' => '{{WRAPPER}} .kanban-header h2',
+			]
+		);
+
+        $this->add_control(
+			'title_color',
+			[
+				'label' => 'Color del Título',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .kanban-header h2' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->end_controls_section();
+
+        // Section: Kanban Board Style
+        $this->start_controls_section(
+			'board_style_section',
+			[
+				'label' => 'Estilo del Tablero',
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
 
         $this->add_control(
-			'btn_color',
+			'board_bg',
 			[
-				'label' => 'Color Boton Nuevo',
+				'label' => 'Fondo del Tablero',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#f4f6f9',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-kanban-board' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_responsive_control(
+			'board_padding',
+			[
+				'label' => 'Padding',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-kanban-board' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'board_radius',
+			[
+				'label' => 'Border Radius',
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', '%' ],
+				'range' => [
+					'px' => [ 'min' => 0, 'max' => 50 ],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-kanban-board' => 'border-radius: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->end_controls_section();
+
+        // Section: Buttons Style
+        $this->start_controls_section(
+			'buttons_style_section',
+			[
+				'label' => 'Estilo del Botón',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->start_controls_tabs( 'btn_tabs' );
+
+        $this->start_controls_tab(
+            'btn_normal',
+            [
+                'label' => 'Normal',
+            ]
+        );
+
+        $this->add_control(
+			'btn_bg',
+			[
+				'label' => 'Fondo',
 				'type' => Controls_Manager::COLOR,
 				'default' => '#007bff',
                 'selectors' => [
                     '{{WRAPPER}} #add-project-btn' => 'background: {{VALUE}};',
                 ],
+			]
+		);
+
+        $this->add_control(
+			'btn_text_color',
+			[
+				'label' => 'Color de Texto',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #add-project-btn' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'btn_hover',
+            [
+                'label' => 'Hover',
+            ]
+        );
+
+        $this->add_control(
+			'btn_bg_hover',
+			[
+				'label' => 'Fondo (Hover)',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} #add-project-btn:hover' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'btn_typography',
+				'label' => 'Tipografía Botón',
+				'selector' => '{{WRAPPER}} #add-project-btn',
+			]
+		);
+
+        $this->add_responsive_control(
+			'btn_padding',
+			[
+				'label' => 'Padding',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} #add-project-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->end_controls_section();
+
+        // Section: Column Styles
+        $this->start_controls_section(
+			'columns_style_section',
+			[
+				'label' => 'Estilo de Columnas',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'col_typography',
+				'label' => 'Tipografía Columnas',
+				'selector' => '{{WRAPPER}} .kanban-column-header',
+			]
+		);
+
+        $this->add_control(
+			'col_card_bg',
+			[
+				'label' => 'Fondo de Tarjetas',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .kanban-card' => 'background: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'card_title_typography',
+				'label' => 'Tipografía Tarjeta',
+				'selector' => '{{WRAPPER}} .kanban-card-title',
 			]
 		);
 
@@ -222,6 +408,51 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+        // Section: Modal Style
+        $this->start_controls_section(
+			'modal_style_section',
+			[
+				'label' => 'Estilo de Modales',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_control(
+			'modal_bg',
+			[
+				'label' => 'Fondo del Modal',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#fefefe',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-modal-content' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'modal_title_typography',
+				'label' => 'Tipografía Títulos Modal',
+				'selector' => '{{WRAPPER}} .alezux-modal-content h3',
+			]
+		);
+
+        $this->add_control(
+			'modal_overlay_color',
+			[
+				'label' => 'Color Overlay',
+				'type' => Controls_Manager::COLOR,
+				'default' => 'rgba(0,0,0,0.5)',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-modal' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->end_controls_section();
+
 	}
 
 	protected function render() {

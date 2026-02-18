@@ -1,9 +1,7 @@
 /* CSS for Kanban Board */
 .alezux-kanban-board {
-    font-family: 'Inter', sans-serif;
-    padding: 20px;
-    background: #f4f6f9;
-    border-radius: 10px;
+    font-family: inherit;
+    /* Styles now controlled by Elementor */
     overflow-x: auto;
 }
 
@@ -224,7 +222,7 @@
 }
 
 .alezux-modal-content {
-    background-color: #fefefe;
+    /* Background and typography now controlled by Elementor */
     padding: 25px;
     border-radius: 10px;
     width: 80%;
@@ -233,7 +231,7 @@
     overflow-y: auto;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     position: relative;
-    color: #333;
+    color: inherit;
 }
 
 .close-modal {
