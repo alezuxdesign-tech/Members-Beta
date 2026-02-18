@@ -125,7 +125,7 @@ class Project_Client_View_Widget extends Widget_Base {
                     <h3>Briefing Inicial</h3>
                     <p>Cuéntanos sobre tu visión para el sitio web y tu marca.</p>
                     
-                    <form id="briefing-form">
+                    <form id="briefing-form" enctype="multipart/form-data">
                         <div class="alezux-form-group">
                             <label>Referencias de Sitios Web (URLs y qué te gusta):</label>
                             <textarea class="alezux-input" name="web_preferences"><?php echo isset($data['briefing']['web_preferences']) ? esc_textarea($data['briefing']['web_preferences']) : ''; ?></textarea>
@@ -133,22 +133,100 @@ class Project_Client_View_Widget extends Widget_Base {
                         
                         <div class="alezux-form-group">
                             <label>¿Ya tienes Logo?</label>
-                            <select class="alezux-input" name="has_logo">
-                                <option value="no">No, necesito uno</option>
-                                <option value="yes">Sí, ya tengo</option>
+                            <select class="alezux-input" name="has_logo" id="has-logo-select">
+                                <option value="no" <?php selected( ($data['briefing']['has_logo'] ?? ''), 'no' ); ?>>No, necesito uno</option>
+                                <option value="yes" <?php selected( ($data['briefing']['has_logo'] ?? ''), 'yes' ); ?>>Sí, ya tengo</option>
                             </select>
                         </div>
+                        
+                        <div class="alezux-form-group" id="logo-upload-group" style="display: <?php echo ($data['briefing']['has_logo'] ?? '') === 'yes' ? 'block' : 'none'; ?>;">
+                            <label>Sube tu Logo (PNG, SVG, JPG):</label>
+                            <input type="file" class="alezux-input" name="logo_file" accept="image/*">
+                            <?php if(!empty($data['briefing']['logo_url'])): ?>
+                                <p>Logo actual: <a href="<?php echo esc_url($data['briefing']['logo_url']); ?>" target="_blank">Ver Logo</a></p>
+                            <?php endif; ?>
+                        </div>
 
-                         <div class="alezux-form-group">
-                            <label>Datos Legales (Para pie de página y políticas):</label>
-                            <textarea class="alezux-input" name="legal_data"><?php echo isset($data['briefing']['legal_data']) ? esc_textarea($data['briefing']['legal_data']) : ''; ?></textarea>
+                         <div class="alezux-section-title" style="margin-top:30px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                            <h4>Datos Legales y de Contacto</h4>
+                        </div>
+
+                        <div class="alezux-grid-2">
+                             <div class="alezux-form-group">
+                                <label>1. Nombre completo o Razón Social</label>
+                                <input type="text" class="alezux-input" name="legal_name" value="<?php echo esc_attr($data['briefing']['legal_name'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>2. CIF / NIF / NIT</label>
+                                <input type="text" class="alezux-input" name="legal_id" value="<?php echo esc_attr($data['briefing']['legal_id'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>3. Dirección fiscal completa</label>
+                                <input type="text" class="alezux-input" name="legal_address" value="<?php echo esc_attr($data['briefing']['legal_address'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>4. Teléfono de contacto</label>
+                                <input type="text" class="alezux-input" name="legal_phone" value="<?php echo esc_attr($data['briefing']['legal_phone'] ?? ''); ?>">
+                            </div>
+                             <div class="alezux-form-group">
+                                <label>5. Correo electrónico de contacto</label>
+                                <input type="email" class="alezux-input" name="legal_email" value="<?php echo esc_attr($data['briefing']['legal_email'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>6. Correo privacidad (si es diferente)</label>
+                                <input type="email" class="alezux-input" name="privacy_email" value="<?php echo esc_attr($data['briefing']['privacy_email'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>7. URL del sitio web</label>
+                                <input type="text" class="alezux-input" name="legal_url" value="<?php echo esc_attr($data['briefing']['legal_url'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>8. Nombre comercial o de marca</label>
+                                <input type="text" class="alezux-input" name="brand_name" value="<?php echo esc_attr($data['briefing']['brand_name'] ?? ''); ?>">
+                            </div>
+                             <div class="alezux-form-group">
+                                <label>9. Actividad del negocio</label>
+                                <input type="text" class="alezux-input" name="business_activity" value="<?php echo esc_attr($data['briefing']['business_activity'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>10. Registro Mercantil</label>
+                                <input type="text" class="alezux-input" name="legal_registry" value="<?php echo esc_attr($data['briefing']['legal_registry'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>11. Correo DPO (si aplica)</label>
+                                <input type="email" class="alezux-input" name="dpo_email" value="<?php echo esc_attr($data['briefing']['dpo_email'] ?? ''); ?>">
+                            </div>
+                             <div class="alezux-form-group">
+                                <label>12. Sectores de actividad (Marketing)</label>
+                                <input type="text" class="alezux-input" name="marketing_sectors" value="<?php echo esc_attr($data['briefing']['marketing_sectors'] ?? ''); ?>">
+                            </div>
+                            <div class="alezux-form-group">
+                                <label>13. Jurisdicción (Ciudad/País)</label>
+                                <input type="text" class="alezux-input" name="jurisdiction" value="<?php echo esc_attr($data['briefing']['jurisdiction'] ?? ''); ?>">
+                            </div>
+                             <div class="alezux-form-group">
+                                <label>14. WhatsApp para contrataciones</label>
+                                <input type="text" class="alezux-input" name="whatsapp" value="<?php echo esc_attr($data['briefing']['whatsapp'] ?? ''); ?>">
+                            </div>
                         </div>
                         
-                        <div class="form-actions">
-                            <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-full-control">¡Todo en sus manos!</button>
-                            <button type="submit" class="alezux-btn alezux-btn-primary">Guardar y Enviar</button>
+                        <div class="form-actions" style="margin-top:30px;">
+                            <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-full-control" style="display:none;">¡Todo en sus manos!</button>
+                            <button type="submit" class="alezux-btn alezux-btn-primary" id="save-briefing-btn">Guardar y Enviar</button>
                         </div>
                     </form>
+                    
+                    <script>
+                        jQuery(document).ready(function($){
+                            $('#has-logo-select').change(function(){
+                                if($(this).val() == 'yes') {
+                                    $('#logo-upload-group').slideDown();
+                                } else {
+                                    $('#logo-upload-group').slideUp();
+                                }
+                            });
+                        });
+                    </script>
                 </div>
                 <?php endif; ?>
 

@@ -96,108 +96,176 @@ jQuery(document).ready(function ($) {
                 }
             }
         });
-    }
+        // Modals
+        const detailsModal = $('#project-modal');
+        const newProjectModal = $('#new-project-modal');
 
-    // Modal Logic
-    const modal = $('#project-modal');
-    const closeBtn = $('.close-modal');
+        $('.close-details').on('click', function () { detailsModal.hide(); });
+        $('.close-new').on('click', function () { newProjectModal.hide(); });
 
-    // Open Modal on Card Click
-    $(document).on('click', '.kanban-card', function () {
-        const projectId = $(this).data('id');
-        const modalBody = $('#modal-body-content');
+        // Open New Project Modal
+        $('#add-project-btn').on('click', function () {
+            newProjectModal.show();
+            // Init Datepickers if jQuery UI is available
+            if ($.fn.datepicker) {
+                $('.datepicker').datepicker({
+                    dateFormat: 'yy-mm-dd',
+                    beforeShowDay: $.datepicker.noWeekends
+                });
+            }
 
-        $('#modal-project-title').text('Cargando...');
-        modalBody.html('<div class="kanban-loading">Obteniendo datos...</div>');
-        modal.show();
-
-        // Fetch details
-        $.ajax({
-            url: alezux_agency_vars.ajax_url,
-            type: 'POST', // Changed to POST for consistency, though GET is in PHP
-            data: {
-                action: 'alezux_agency_get_project_details',
-                project_id: projectId, // PHP expects GET usually but let's try REQUEST or fix PHP
-                nonce: alezux_agency_vars.nonce
-            },
-            method: 'GET', // PHP defines $_GET for this one
-            success: function (response) {
-                if (response.success) {
-                    renderModalContent(response.data);
-                } else {
-                    modalBody.html('<div class="alezux-alert-error">' + response.data + '</div>');
-                }
+            // Load Users for Select (Simple population for now, better with Select2 AJAX if available)
+            // Since we don't know if Select2 is enqueued, we'll try basic AJAX populate on focus/click first time
+            const clientSelect = $('#new-project-client');
+            if (clientSelect.children('option').length <= 1) {
+                $.post(alezux_agency_vars.ajax_url, {
+                    action: 'alezux_agency_search_users',
+                    term: '',
+                    nonce: alezux_agency_vars.nonce
+                }, function (response) {
+                    if (response.success) {
+                        response.data.forEach(user => {
+                            clientSelect.append(new Option(user.text, user.id));
+                        });
+                    }
+                });
             }
         });
-    });
 
-    function renderModalContent(project) {
-        $('#modal-project-title').text('Proyecto: ' + project.client_name);
-        const data = project.data || {};
+        // Handle New Project Submit
+        $('#new-project-form').on('submit', function (e) {
+            e.preventDefault();
 
-        // Helper to get value
-        const getVal = (path, defaultVal = '') => {
-            return path.split('.').reduce((o, i) => o ? o[i] : null, data) || defaultVal;
-        };
+            const title = $('#new-project-name').val();
+            const clientId = $('#new-project-client').val();
+            const start = $('#new-project-start').val();
+            const end = $('#new-project-end').val();
 
-        const html = `
-            <form id="project-edit-form" data-id="${project.id}">
-                <div class="alezux-form-group">
-                    <h4>Información General</h4>
+            if (!title || !clientId || !start || !end) {
+                alert('Por favor completa todos los campos.');
+                return;
+            }
+
+            $.post(alezux_agency_vars.ajax_url, {
+                action: 'alezux_agency_create_project', // We need to update this handler or create it if not fully impl
+                title: title,
+                client_id: clientId,
+                start_date: start,
+                end_date: end,
+                nonce: alezux_agency_vars.nonce
+            }, function (response) {
+                if (response.success) {
+                    alert('Proyecto creado!');
+                    newProjectModal.hide();
+                    loadProjects(); // Reload board
+                    $('#new-project-form')[0].reset();
+                } else {
+                    alert('Error: ' + response.data);
+                }
+            });
+        });
+
+        // Update Project Status Drop
+        function updateProjectStatus(projectId, newStatus) {
+            $.post(alezux_agency_vars.ajax_url, {
+                action: 'alezux_agency_update_project_status',
+                project_id: projectId,
+                status: newStatus,
+                nonce: alezux_agency_vars.nonce
+            }, function (response) {
+                if (!response.success) {
+                    alert('Error al actualizar estado');
+                    // Revert UI change if needed (reload)
+                    loadProjects();
+                }
+            });
+        }
+
+        // Open Modal on Card Click
+        $(document).on('click', '.kanban-card', function () {
+            const projectId = $(this).data('id');
+            const modalBody = $('#modal-body-content');
+
+            $('#modal-project-title').text('Cargando...');
+            modalBody.html('<div class="kanban-loading">Obteniendo datos...</div>');
+            detailsModal.show();
+
+            // Fetch details
+            $.ajax({
+                url: alezux_agency_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_agency_get_project_details',
+                    project_id: projectId,
+                    nonce: alezux_agency_vars.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        renderModalContent(response.data);
+                    } else {
+                        modalBody.html('<div class="alezux-alert-error">' + response.data + '</div>');
+                    }
+                }
+            });
+        });
+
+        // Render Modal Content
+        function renderModalContent(project) {
+            $('#modal-project-title').text('Proyecto: ' + project.client_name);
                     <p><strong>Cliente:</strong> ${project.client_name} (${project.client_email})</p>
                     <p><strong>Estado:</strong> ${project.status}</p>
-                </div>
+                </div >
 
                 <hr>
 
-                <div class="alezux-tabs">
-                    <!-- Simple tabs logic could go here, for now linear -->
-                    
-                    <!-- STEP 1: Briefing (Read Only for Admin mostly) -->
-                    <div class="step-section">
-                        <h4>1. Briefing</h4>
-                        <label>Preferencias Web (Cliente):</label>
-                        <textarea class="alezux-input" readonly>${getVal('briefing.web_preferences')}</textarea>
-                        
-                        <label>Tiene Logo:</label>
-                        <input type="text" class="alezux-input" readonly value="${getVal('briefing.has_logo', 'No definido')}">
-                    </div>
+                    <div class="alezux-tabs">
+                        <!-- Simple tabs logic could go here, for now linear -->
 
-                    <!-- STEP 2: Identity -->
-                    <div class="step-section">
-                        <h4>2. Identidad (Logo)</h4>
-                        <label>Archivos Propuesta (URLs sep. por coma):</label>
-                        <input type="text" class="alezux-input" name="identity[proposal_files]" value="${getVal('identity.proposal_files', []).join(', ')}">
-                        <small>Feedback Cliente: ${getVal('identity.client_feedback', 'Pendiente')}</small>
-                    </div>
+                        <!-- STEP 1: Briefing (Read Only for Admin mostly) -->
+                        <div class="step-section">
+                            <h4>1. Briefing</h4>
+                            <label>Preferencias Web (Cliente):</label>
+                            <textarea class="alezux-input" readonly>${getVal('briefing.web_preferences')}</textarea>
 
-                    <!-- STEP 3: Web Design -->
-                    <div class="step-section">
-                        <h4>3. Diseño Web (Figma)</h4>
-                        <label>URL Prototipo Figma:</label>
-                        <input type="text" class="alezux-input" name="web_design[figma_url]" value="${getVal('web_design.figma_url')}">
-                        <small>Estado: ${getVal('web_design.status', 'Pendiente')}</small>
-                    </div>
-                    
-                    <!-- STEP 4: Development -->
-                     <div class="step-section">
-                        <h4>4. Desarrollo</h4>
-                        <label>URL Staging:</label>
-                        <input type="text" class="alezux-input" name="development[staging_url]" value="${getVal('development.staging_url')}">
-                    </div>
+                            <label>Tiene Logo:</label>
+                            <input type="text" class="alezux-input" readonly value="${getVal('briefing.has_logo', 'No definido')}">
+                        </div>
 
-                    <!-- STEP 5: Delivery -->
-                    <div class="step-section">
-                        <h4>5. Entrega Final</h4>
-                        <label>Credenciales (JSON):</label>
-                        <textarea class="alezux-input" name="delivery[credentials]">${JSON.stringify(getVal('delivery.credentials', {}))}</textarea>
-                        
-                        <label>Archivos Finales (URLs):</label>
-                        <textarea class="alezux-input" name="delivery[final_assets]">${getVal('delivery.final_assets', []).join('\n')}</textarea>
+                        <!-- STEP 2: Identity -->
+                        <div class="step-section">
+                            <h4>2. Identidad (Logo)</h4>
+                            <label>Archivos Propuesta (URLs sep. por coma):</label>
+                            <input type="text" class="alezux-input" name="identity[proposal_files]" value="${getVal('identity.proposal_files', []).join(', ')}">
+                                <small>Feedback Cliente: ${getVal('identity.client_feedback', 'Pendiente')}</small>
+                        </div>
+
+                        <!-- STEP 3: Web Design -->
+                        <div class="step-section">
+                            <h4>3. Diseño Web (Figma)</h4>
+                            <label>URL Prototipo Figma:</label>
+                            <input type="text" class="alezux-input" name="web_design[figma_url]" value="${getVal('web_design.figma_url')}">
+                                <small>Estado: ${getVal('web_design.status', 'Pendiente')}</small>
+                        </div>
+
+                        <!-- STEP 4: Development -->
+                        <div class="step-section">
+                            <h4>4. Desarrollo</h4>
+                            <label>URL Staging:</label>
+                            <input type="text" class="alezux-input" name="development[staging_url]" value="${getVal('development.staging_url')}">
+                        </div>
+
+                        <!-- STEP 5: Delivery -->
+                        <div class="step-section">
+                            <h4>5. Entrega Final</h4>
+                            <label>Credenciales (JSON):</label>
+                            <textarea class="alezux-input" name="delivery[credentials]">${JSON.stringify(getVal('delivery.credentials', {}))}</textarea>
+
+                            <label>Archivos Finales (URLs):</label>
+                            <textarea class="alezux-input" name="delivery[final_assets]">${getVal('delivery.final_assets', []).join('\n')}</textarea>
+                        </div>
                     </div>
-                </div>
-            </form>
-        `;
+                </form>
+            `;
 
         $('#modal-body-content').html(html);
     }

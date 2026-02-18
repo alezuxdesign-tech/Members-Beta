@@ -17,7 +17,7 @@ class Projects_Manager {
     /**
      * Create a new project
      */
-    public function create_project( $client_id, $manager_id, $status = 'start' ) {
+    public function create_project( $client_id, $manager_id, $status = 'start', $initial_data = [] ) {
         global $wpdb;
         
         $data = [
@@ -25,7 +25,7 @@ class Projects_Manager {
             'manager_id' => $manager_id,
             'status' => $status,
             'current_step' => 'briefing',
-            'project_data' => json_encode([]), // Empty initial data
+            'project_data' => json_encode($initial_data), 
             'created_at' => current_time( 'mysql' )
         ];
 

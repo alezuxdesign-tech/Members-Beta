@@ -8,14 +8,28 @@ jQuery(document).ready(function ($) {
     $('#briefing-form').on('submit', function (e) {
         e.preventDefault();
 
-        const data = $(this).serialize() + '&action=alezux_agency_client_save_briefing&project_id=' + projectId + '&nonce=' + alezux_agency_vars.nonce;
+        // Use FormData for file uploads
+        const formData = new FormData(this);
+        formData.append('action', 'alezux_agency_client_save_briefing');
+        formData.append('project_id', projectId);
+        formData.append('nonce', alezux_agency_vars.nonce);
 
-        $.post(alezux_agency_vars.ajax_url, data, function (response) {
-            if (response.success) {
-                alert('Información guardada. ¡Gracias!');
-                location.reload();
-            } else {
-                alert('Error: ' + response.data);
+        $.ajax({
+            url: alezux_agency_vars.ajax_url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    alert('Información guardada correctamente.');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (response.data || 'Ocurrió un error inesperado.'));
+                }
+            },
+            error: function () {
+                alert('Error de conexión.');
             }
         });
     });

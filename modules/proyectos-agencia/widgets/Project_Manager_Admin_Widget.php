@@ -127,16 +127,52 @@ class Project_Manager_Admin_Widget extends Widget_Base {
             </div>
 		</div>
 
-        <!-- Project Modal (Hidden by default) -->
+        <!-- Project Details Modal (Hidden by default) -->
         <div id="project-modal" class="alezux-modal" style="display:none;">
             <div class="alezux-modal-content">
-                <span class="close-modal">&times;</span>
+                <span class="close-modal close-details">&times;</span>
                 <h3 id="modal-project-title">Detalles del Proyecto</h3>
                 <!-- Dynamic Content Here -->
                 <div id="modal-body-content"></div>
                 <div class="modal-footer">
                      <button id="save-project-btn" class="alezux-btn alezux-btn-success">Guardar Cambios</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- New Project Modal (Hidden by default) -->
+        <div id="new-project-modal" class="alezux-modal" style="display:none;">
+            <div class="alezux-modal-content">
+                <span class="close-modal close-new">&times;</span>
+                <h3>Crear Nuevo Proyecto</h3>
+                <form id="new-project-form">
+                    <div class="alezux-form-group">
+                        <label>Nombre del Proyecto</label>
+                        <input type="text" id="new-project-name" class="alezux-input" required placeholder="Ej: Rediseño Web X">
+                    </div>
+                    
+                    <div class="alezux-form-group">
+                        <label>Cliente (Usuario WP)</label>
+                        <select id="new-project-client" class="alezux-input" style="width:100%;" required>
+                            <option value="">Buscar usuario...</option>
+                        </select>
+                    </div>
+
+                    <div class="alezux-form-group-row" style="display:flex; gap:15px;">
+                        <div class="alezux-form-group" style="flex:1;">
+                            <label>Fecha Inicio</label>
+                            <input type="text" id="new-project-start" class="alezux-input datepicker" required>
+                        </div>
+                        <div class="alezux-form-group" style="flex:1;">
+                            <label>Fecha Fin</label>
+                            <input type="text" id="new-project-end" class="alezux-input datepicker" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer" style="margin-top:20px;">
+                        <button type="submit" class="alezux-btn alezux-btn-primary">Crear Proyecto</button>
+                    </div>
+                </form>
             </div>
         </div>
 		<?php
