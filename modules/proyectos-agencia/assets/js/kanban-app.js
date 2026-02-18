@@ -459,7 +459,15 @@ jQuery(document).ready(function ($) {
                     currentModalProject.data.identity.proposal_files = currentUrls;
 
                     $('#identity-files-input').val(currentUrls.join(','));
-                    saveCurrentStepData(false);
+                    // Silent save to persist draft
+                    saveCurrentStepData(false, null, true);
+                }).catch(err => {
+                    console.error(err);
+                    alert('Error en la subida de archivos.');
+                }).always(() => {
+                    const btn = $('#btn-upload-identity');
+                    btn.html('<i class="fas fa-cloud-upload-alt"></i> Subir Archivos (PC)');
+                    btn.prop('disabled', false);
                 });
             });
 
@@ -516,17 +524,26 @@ jQuery(document).ready(function ($) {
         $('#save-project-btn').hide(); // Hide the old global save button
     }
 
-    function saveCurrentStepData(advance = false, specificStatus = null) {
+    function saveCurrentStepData(advance = false, specificStatus = null, silent = false) {
         const projectId = currentModalProject.id;
         let formData = {};
 
         if (activeTabStep === 'identity') {
             const proposalFiles = $('input[name="identity[proposal_files]"]').val();
+            // Retrieve existing history and feedback from model
+            const currentHistory = (currentModalProject.data.identity && currentModalProject.data.identity.history) ? currentModalProject.data.identity.history : [];
+            const currentFeedback = (currentModalProject.data.identity && currentModalProject.data.identity.client_feedback) ? currentModalProject.data.identity.client_feedback : '';
+
             formData.identity = {
-                proposal_files: proposalFiles ? proposalFiles.split(',').filter(s => s) : []
+                proposal_files: proposalFiles ? proposalFiles.split(',').filter(s => s) : [],
+                history: currentHistory,
+                client_feedback: currentFeedback
             };
             if (specificStatus) {
                 formData.identity.status = specificStatus;
+            } else {
+                // Preserve existing status
+                formData.identity.status = (currentModalProject.data.identity && currentModalProject.data.identity.status) ? currentModalProject.data.identity.status : '';
             }
         } else if (activeTabStep === 'web_design') {
             const figmaUrl = $('input[name="web_design[figma_url]"]').val();
@@ -556,9 +573,12 @@ jQuery(document).ready(function ($) {
 
                 if (advance) {
                     advanceToNextStep(projectId);
-                } else {
+                } else if (!silent) {
                     alert('Datos guardados.');
                     if (specificStatus) renderModalContent(); // Refresh to show status update
+                } else {
+                    // Silent save: just update UI if needed (e.g. status)
+                    if (specificStatus) renderModalContent();
                 }
             } else {
                 alert('Error al guardar datos: ' + response.data);
