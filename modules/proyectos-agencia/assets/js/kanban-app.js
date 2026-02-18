@@ -331,12 +331,17 @@ jQuery(document).ready(function ($) {
         // Navigation Buttons
         const confirmBtn = `<button class="alezux-btn alezux-btn-primary" id="btn-advance-step">Completar y Avanzar</button>`;
         const saveBtnOnly = `<button class="alezux-btn alezux-btn-success" id="btn-save-step">Guardar Datos</button>`;
+        const deleteBtn = `<button class="alezux-btn alezux-btn-danger" id="btn-delete-project" style="float:left;">Eliminar Proyecto</button>`;
 
         const footerControls = `
             <div class="step-footer-controls">
-                ${saveBtnOnly}
-                ${activeTabStep !== 'delivery' ? confirmBtn : ''}
+                ${deleteBtn}
+                <span>
+                    ${saveBtnOnly}
+                    ${activeTabStep !== 'delivery' ? confirmBtn : ''}
+                </span>
             </div>
+            <div style="clear:both;"></div>
         `;
 
         $('#modal-body-content').html(stepperHtml + '<form id="project-edit-form">' + contentHtml + '</form>' + footerControls);
@@ -350,6 +355,27 @@ jQuery(document).ready(function ($) {
         // Bind Action Buttons
         $('#btn-save-step').on('click', function () { saveCurrentStepData(false); });
         $('#btn-advance-step').on('click', function () { saveCurrentStepData(true); });
+
+        // Bind Delete Project
+        $('#btn-delete-project').on('click', function () {
+            if (confirm('¿Estás seguro de que deseas ELIMINAR este proyecto? Esta acción no se puede deshacer.')) {
+                $.post(alezux_agency_vars.ajax_url, {
+                    action: 'alezux_agency_delete_project',
+                    project_id: currentModalProject.id,
+                    nonce: alezux_agency_vars.nonce
+                }, function (response) {
+                    if (response.success) {
+                        alert('Proyecto eliminado.');
+                        // Remove from DOM
+                        $(`.kanban-card[data-id="${currentModalProject.id}"]`).remove();
+                        // Close Modal
+                        $('#project-details-modal').hide();
+                    } else {
+                        alert('Error: ' + response.data);
+                    }
+                });
+            }
+        });
 
         // Bind Identity Specific Actions
         if (activeTabStep === 'identity') {

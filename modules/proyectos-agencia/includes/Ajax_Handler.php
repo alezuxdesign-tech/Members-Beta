@@ -18,13 +18,30 @@ class Ajax_Handler {
             'alezux_agency_update_project_step',
             'alezux_agency_client_save_briefing',
             'alezux_agency_client_send_feedback',
-            'alezux_agency_upload_file'
+            'alezux_agency_upload_file',
+            'alezux_agency_delete_project'
 		];
 
 		foreach ( $actions as $action ) {
 			add_action( "wp_ajax_$action", [ __CLASS__, $action ] );
 		}
 	}
+
+    public static function alezux_agency_delete_project() {
+        if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'No autorizado' );
+        
+        $project_id = intval( $_POST['project_id'] );
+        if ( ! $project_id ) wp_send_json_error( 'ID faltante' );
+        
+        $manager = new Projects_Manager();
+        $result = $manager->delete_project( $project_id );
+        
+        if ( $result !== false ) {
+            wp_send_json_success( 'Proyecto eliminado.' );
+        } else {
+            wp_send_json_error( 'Error al eliminar.' );
+        }
+    }
 
     // ... (existing functions)
 

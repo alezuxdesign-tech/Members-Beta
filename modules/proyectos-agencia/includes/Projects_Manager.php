@@ -139,5 +139,19 @@ class Projects_Manager {
             [ '%s' ], 
             [ '%d' ] 
         );
+            [ '%d' ] 
+        );
+    }
+    
+    /**
+     * Delete project
+     */
+    public function delete_project( $id ) {
+        global $wpdb;
+        return $wpdb->delete( 
+            $this->table_name, 
+            [ 'id' => $id ], 
+            [ '%d' ] 
+        );
     }
 }
