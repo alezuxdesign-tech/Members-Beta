@@ -190,26 +190,7 @@ class Ajax_Handler {
         wp_send_json_success( $project );
     }
 
-    public static function alezux_agency_update_project_data() {
-        self::check_permissions();
-        
-        $project_id = intval( $_POST['project_id'] );
-        $data_json = stripslashes( $_POST['project_data'] ); // JSON string from frontend
-        $data_array = json_decode( $data_json, true );
-        
-        if ( ! $project_id || ! is_array( $data_array ) ) {
-            wp_send_json_error( 'Datos inválidos' );
-        }
-        
-        $manager = new Projects_Manager();
-        $updated = $manager->update_project_data( $project_id, $data_array );
-        
-        if ( $updated !== false ) {
-            wp_send_json_success( 'Datos guardados' );
-        } else {
-            wp_send_json_error( 'Error al guardar (o sin cambios)' );
-        }
-    }
+
 
     public static function alezux_agency_client_save_briefing() {
         if ( ! is_user_logged_in() ) wp_send_json_error( 'No autorizado' );
