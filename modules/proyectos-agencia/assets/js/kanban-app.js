@@ -318,13 +318,54 @@ jQuery(document).ready(function ($) {
 
         // --- WEB DESIGN ---
         else if (activeTabStep === 'web_design') {
+            const figmaUrl = getVal('web_design.figma_url');
+            const status = getVal('web_design.status', '');
+            const clientFeedback = getVal('web_design.client_feedback', '');
+            const history = getVal('web_design.history', []);
+
+            // Render History
+            let historyHtml = '';
+            if (history.length > 0) {
+                historyHtml += '<div class="history-section" style="margin-bottom:20px; background:#f9f9f9; padding:10px; border-radius:5px;"><h5>Historial de Versiones</h5>';
+                history.forEach((version, idx) => {
+                    const date = version.timestamp || 'N/A';
+                    const msg = version.message || `Versión ${idx + 1}`;
+                    const vUrl = version.url || '#';
+                    historyHtml += `
+                        <div class="history-item" style="border-bottom:1px solid #ddd; padding:5px 0;">
+                            <strong>${date}</strong> - ${msg}
+                            <div style="margin-left:10px;">
+                                <a href="${vUrl}" target="_blank" style="font-size:12px;"><i class="fas fa-external-link-alt"></i> Ver Prototipo</a>
+                            </div>
+                        </div>`;
+                });
+                historyHtml += '</div>';
+            }
+
+            let statusAlert = '';
+            if (status === 'changes_requested') {
+                statusAlert = `<div class="alezux-alert-error"><strong>Cambios Solicitados:</strong> ${clientFeedback}</div>`;
+            } else if (status === 'approved') {
+                statusAlert = `<div class="alezux-alert-success"><strong>¡Aprobado por el Cliente!</strong> Puedes avanzar.</div>`;
+            } else if (status === 'pending_review') {
+                statusAlert = `<div class="alezux-alert-warning">Esperando revisión del cliente.</div>`;
+            }
+
             contentHtml = `
                 <div class="step-content animate-fade-in">
                     <h4>Diseño Web (Figma)</h4>
-                    <label>URL Prototipo Figma:</label>
-                    <input type="text" class="alezux-input" name="web_design[figma_url]" value="${getVal('web_design.figma_url')}">
-                    <div class="feedback-box">
-                        <strong>Estado:</strong> ${getVal('web_design.status', 'En Proceso')}
+                    ${statusAlert}
+                    
+                    ${historyHtml}
+
+                    <label>URL Prototipo Figma (Actual):</label>
+                    <input type="text" class="alezux-input" name="web_design[figma_url]" value="${figmaUrl}">
+                    
+                    <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                        <button type="button" class="alezux-btn alezux-btn-info" id="btn-send-review-web">
+                            <i class="fas fa-paper-plane"></i> Guardar y Enviar a Revisión
+                        </button>
+                        <p class="guidance-text">Al enviar, la URL actual se guardará en el historial y se notificará al cliente.</p>
                     </div>
                 </div>`;
         }
@@ -516,6 +557,31 @@ jQuery(document).ready(function ($) {
 
                 statusAlert = `<div class="alezux-alert-warning">Esperando revisión del cliente.</div>`; // Optimistic UI update? No, renderModalContent will handle it.
 
+            });
+        }
+
+        // Bind Web Design Specific Actions
+        if (activeTabStep === 'web_design') {
+            $('#btn-send-review-web').off('click').on('click', function () {
+                const currentUrl = $('input[name="web_design[figma_url]"]').val();
+
+                if (!currentUrl) {
+                    alert('Debes ingresar la URL de Figma antes de enviar a revisión.');
+                    return;
+                }
+
+                if (!confirm('¿Estás seguro de enviar este diseño a revisión? Se guardará una versión en el historial.')) return;
+
+                // Add to History
+                if (!currentModalProject.data.web_design) currentModalProject.data.web_design = {};
+                if (!currentModalProject.data.web_design.history) currentModalProject.data.web_design.history = [];
+
+                currentModalProject.data.web_design.history.unshift({
+                    timestamp: new Date().toLocaleString(),
+                    url: currentUrl,
+                    message: 'Enviado a revisión'
+                });
+
                 saveCurrentStepData(false, 'pending_review');
             });
         }
@@ -547,7 +613,19 @@ jQuery(document).ready(function ($) {
             }
         } else if (activeTabStep === 'web_design') {
             const figmaUrl = $('input[name="web_design[figma_url]"]').val();
-            formData.web_design = { figma_url: figmaUrl || '' };
+            const currentHistory = (currentModalProject.data.web_design && currentModalProject.data.web_design.history) ? currentModalProject.data.web_design.history : [];
+            const currentFeedback = (currentModalProject.data.web_design && currentModalProject.data.web_design.client_feedback) ? currentModalProject.data.web_design.client_feedback : '';
+
+            formData.web_design = {
+                figma_url: figmaUrl || '',
+                history: currentHistory,
+                client_feedback: currentFeedback
+            };
+            if (specificStatus) {
+                formData.web_design.status = specificStatus;
+            } else {
+                formData.web_design.status = (currentModalProject.data.web_design && currentModalProject.data.web_design.status) ? currentModalProject.data.web_design.status : '';
+            }
         } else if (activeTabStep === 'development') {
             const stagingUrl = $('input[name="development[staging_url]"]').val();
             formData.development = { staging_url: stagingUrl || '' };
