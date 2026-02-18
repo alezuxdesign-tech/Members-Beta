@@ -139,8 +139,6 @@ class Projects_Manager {
             [ '%s' ], 
             [ '%d' ] 
         );
-            [ '%d' ] 
-        );
     }
     
     /**
