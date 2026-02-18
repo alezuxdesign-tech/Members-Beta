@@ -98,6 +98,10 @@ class Proyectos_Agencia {
 		// Chat Interno
 		add_action( 'wp_ajax_alezux_get_project_messages', [ $this, 'ajax_get_project_messages' ] );
 		add_action( 'wp_ajax_alezux_send_project_message', [ $this, 'ajax_send_project_message' ] );
+
+		// Gestión Entregables y Tutoriales
+		add_action( 'wp_ajax_alezux_save_deliverables', [ $this, 'ajax_save_deliverables' ] );
+		add_action( 'wp_ajax_alezux_save_tutorials', [ $this, 'ajax_save_tutorials' ] );
 	}
 
 	public function register_widgets( $widgets_manager ) {
@@ -106,10 +110,14 @@ class Proyectos_Agencia {
 		require_once __DIR__ . '/widgets/Projects_List_Widget.php';
 		require_once __DIR__ . '/widgets/Project_Detail_Admin_Widget.php';
 		require_once __DIR__ . '/widgets/Client_Project_Widget.php';
+		require_once __DIR__ . '/widgets/Project_Deliverables_Widget.php';
+		require_once __DIR__ . '/widgets/Project_Tutorials_Widget.php';
 
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Projects_List_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Detail_Admin_Widget() );
 		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Client_Project_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Deliverables_Widget() );
+		$widgets_manager->register( new \Alezux_Members\Modules\Proyectos_Agencia\Widgets\Project_Tutorials_Widget() );
 	}
 
 	public function ajax_get_project_details() {
@@ -130,8 +138,10 @@ class Proyectos_Agencia {
 		$customer = get_userdata( $project->customer_id );
 		$meta = $manager->get_all_project_meta( $project_id );
 		$design_url = isset($meta['design_proposal_url']) ? $meta['design_proposal_url'] : '';
-		$start_date = isset($meta['project_start_date']) ? $meta['project_start_date'] : '';
-		$end_date   = isset($meta['project_end_date']) ? $meta['project_end_date'] : '';
+		
+		// Load Deliverables (Folders) & Tutorials
+		$deliverables = $manager->get_project_deliverables( $project_id );
+		$tutorials    = $manager->get_project_tutorials( $project_id );
 
 		ob_start();
 		?>
@@ -142,7 +152,7 @@ class Proyectos_Agencia {
 			<div class="alezux-tabs-header">
 				<button class="tab-btn active" data-tab="tab-overview"><i class="eicon-dashboard"></i> Overview</button>
 				<button class="tab-btn" data-tab="tab-chat"><i class="eicon-comment"></i> Chat</button>
-				<button class="tab-btn" data-tab="tab-docs" disabled title="Próximamente"><i class="eicon-file-text"></i> Docs</button>
+				<button class="tab-btn" data-tab="tab-deliverables"><i class="eicon-folder"></i> Entregas</button>
 			</div>
 
 			<!-- Tab Content: Overview -->
@@ -152,6 +162,7 @@ class Proyectos_Agencia {
 				$briefing = isset($meta['briefing_data']) ? json_decode($meta['briefing_data'], true) : null;
 				$feedback = isset($meta['client_feedback']) ? $meta['client_feedback'] : '';
 				?>
+				<!-- Estilos del Dashboard -->
 				<style>
 					.alezux-project-detail-dashboard .phase-card {
 						background: #f7fafc;
@@ -196,7 +207,7 @@ class Proyectos_Agencia {
 								</div>
 								<div class="phase-actions">
 									<?php if(!empty($briefing)): ?>
-										<button onclick="jQuery('#briefing-details-container').slideToggle()" class="alezux-btn alezux-btn-sm alezux-btn-secondary" style="width:100%; text-align:center;">
+										<button onclick="jQuery('#section-briefing').slideToggle()" class="alezux-btn alezux-btn-sm alezux-btn-secondary" style="width:100%; text-align:center;">
 											<i class="eicon-eye"></i> Ver Datos Briefing
 										</button>
 									<?php else: ?>
@@ -241,7 +252,7 @@ class Proyectos_Agencia {
 								
 								<div class="alezux-form-group">
 									<label>Fase Actual (Override)</label>
-									<select name="current_step" class="alezux-select alezux-input">
+									<select name="current_step" id="project-phase-select" class="alezux-select alezux-input">
 										<option value="briefing" <?php selected( $project->current_step, 'briefing' ); ?>>1. Briefing</option>
 										<option value="logo_creation" <?php selected( $project->current_step, 'logo_creation' ); ?>>2. Creación Logo</option>
 										<option value="logo_review" <?php selected( $project->current_step, 'logo_review' ); ?>>2.1. Revisión Logo</option>
@@ -264,17 +275,19 @@ class Proyectos_Agencia {
 									</select>
 								</div>
 
-								<div class="alezux-form-group">
-									<label>URL Propuesta de Diseño</label>
-									<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url( $design_url ); ?>" placeholder="https://...">
+								<div id="section-design">
+									<div class="alezux-form-group">
+										<label>URL Propuesta de Diseño</label>
+										<input type="url" name="design_url" class="alezux-input" value="<?php echo esc_url( $design_url ); ?>" placeholder="https://...">
+									</div>
+
+									<div class="alezux-form-group">
+										<label>URL del Sitio (Staging)</label>
+										<input type="url" name="site_url" class="alezux-input" value="<?php echo isset($meta['site_url']) ? esc_url($meta['site_url']) : ''; ?>" placeholder="https://...">
+									</div>
 								</div>
 
-								<div class="alezux-form-group">
-									<label>URL del Sitio (Staging)</label>
-									<input type="url" name="site_url" class="alezux-input" value="<?php echo isset($meta['site_url']) ? esc_url($meta['site_url']) : ''; ?>" placeholder="https://...">
-								</div>
-
-								<div style="display:flex; gap:10px;">
+								<div id="section-development" style="display:flex; gap:10px;">
 									<div style="flex:1;">
 										<label>Usuario WP</label>
 										<input type="text" name="access_user" class="alezux-input" value="<?php echo isset($meta['access_user']) ? esc_attr($meta['access_user']) : ''; ?>">
@@ -294,7 +307,7 @@ class Proyectos_Agencia {
 						<div class="alezux-detail-card">
 							
 							<!-- Data Briefing Hidden by Default -->
-							<div id="briefing-details-container" style="display:none; border:1px solid #eee; padding:15px; border-radius:5px; margin-bottom:20px;">
+							<div id="section-briefing" style="display:none; border:1px solid #eee; padding:15px; border-radius:5px; margin-bottom:20px;">
 								<h4>Datos del Briefing</h4>
 								<?php if ( ! empty( $briefing ) ) : 
 									$labels_map = [
@@ -370,40 +383,6 @@ class Proyectos_Agencia {
 					</div>
 				</div>
                 
-                <script>
-                // Re-bind form submission for the new form
-                jQuery(document).ready(function($){
-                    $('#update-project-status-form').on('submit', function(e){
-                        e.preventDefault();
-                        var $form = $(this);
-                        var $btn = $form.find('button[type="submit"]');
-                        var originalText = $btn.text();
-                        $btn.prop('disabled', true).text('Guardando...');
-
-                        $.post(AlezuxProjects.ajaxurl, {
-                            action: 'alezux_update_project',
-                            nonce: AlezuxProjects.nonce,
-                            project_id: $form.find('input[name="project_id"]').val(),
-                            status: $form.find('select[name="status"]').val(),
-                            current_step: $form.find('select[name="current_step"]').val(),
-                            design_url: $form.find('input[name="design_url"]').val(),
-                            site_url: $form.find('input[name="site_url"]').val(),
-                            access_user: $form.find('input[name="access_user"]').val(),
-                            access_pass: $form.find('input[name="access_pass"]').val()
-                        }, function(response) {
-                             if(response.success) {
-                                  alert(response.data);
-                                  // Refresh Panel by clicking the card again or just reloading
-                                  // AlezuxProjects.openPanel($form.find('input[name="project_id"]').val());
-                             } else {
-                                  alert('Error: ' + response.data);
-                             }
-                        }).always(function(){
-                            $btn.prop('disabled', false).text(originalText);
-                        });
-                    });
-                });
-                </script>
 			</div>
 			
 			<!-- Tab Content: Chat -->
@@ -422,13 +401,156 @@ class Proyectos_Agencia {
 				</div>
 			</div>
 
-			<!-- Tab Content: Docs (Placeholder) -->
-			<div id="tab-docs" class="tab-content">
-				<div class="alezux-empty-state">
-					<i class="eicon-file-text"></i>
-					<h3>Documentación</h3>
-					<p>Próximamente podrás gestionar archivos aquí.</p>
+			<!-- Tab Content: Entregas (NUEVO) -->
+			<div id="tab-deliverables" class="tab-content">
+				
+				<div style="display:flex; height:100%; gap:20px;">
+					<!-- Left: Management UI -->
+					<div style="flex:1; background:#f9f9f9; padding:20px; border-radius:8px; overflow-y:auto;">
+						
+						<h3>Carpetas (Archivos)</h3>
+						<div class="alezux-repeater-field">
+							<textarea id="deliverables-json" class="alezux-input" rows="5" placeholder="JSON Structure (Advanced)" style="display:none;"><?php echo json_encode($deliverables); ?></textarea>
+							
+							<!-- Simple UI for Folders -->
+							<div id="folders-ui-list"></div>
+							<button id="add-folder-btn" class="alezux-btn alezux-btn-sm" style="margin-top:10px;"><i class="eicon-plus"></i> Nueva Carpeta</button>
+						</div>
+
+						<hr style="margin:20px 0;">
+
+						<h3>Tutoriales (Netflix)</h3>
+						<div class="alezux-repeater-field">
+							<textarea id="tutorials-json" class="alezux-input" rows="5" placeholder="JSON Structure (Advanced)" style="display:none;"><?php echo json_encode($tutorials); ?></textarea>
+							
+							<!-- Simple UI for Tutorials -->
+							<div id="tutorials-ui-list"></div>
+							<button id="add-tutorial-btn" class="alezux-btn alezux-btn-sm" style="margin-top:10px;"><i class="eicon-plus"></i> Nuevo Video</button>
+						</div>
+						
+						<br><br>
+						<button id="save-deliverables-btn" class="alezux-marketing-btn primary" style="width:100%;">Guadar Cambios</button>
+
+					</div>
+
+					<!-- Right: Preview / Tips -->
+					<div style="width:300px; padding:20px; background:#e2e8f0; border-radius:8px;">
+						<h4>¿Cómo funciona?</h4>
+						<p><small>Define las carpetas y sube enlaces a Dropbox/Drive/S3 para los archivos. Para los videos, usa enlaces de YouTube/Vimeo/MP4.</small></p>
+						<p><strong>Estructura Carpetas:</strong> Se recomienda usar iconos como "assets", "logo", "legal".</p>
+						<p><strong>Videos:</strong> Usa thumbnails de alta calidad (16:9).</p>
+					</div>
 				</div>
+
+				<script>
+				jQuery(document).ready(function($){
+					// -- DATA --
+					let deliverables = <?php echo json_encode($deliverables ?: []); ?>;
+					let tutorials = <?php echo json_encode($tutorials ?: []); ?>;
+
+					// -- RENDERS --
+					function renderFolders() {
+						let html = '';
+						deliverables.forEach((folder, index) => {
+							html += `
+								<div class="folder-item" style="background:white; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:4px;">
+									<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+										<input type="text" value="${folder.name}" placeholder="Nombre Carpeta" onchange="updateFolder(${index}, 'name', this.value)" style="width:70%; font-weight:bold;">
+										<button class="alezux-btn-delete" onclick="removeFolder(${index})" style="color:red; background:none; border:none;"><i class="eicon-trash"></i></button>
+									</div>
+									<div class="files-list">
+										${folder.files ? folder.files.map((file, fIndex) => `
+											<div style="display:flex; gap:5px; margin-top:5px;">
+												<input type="text" value="${file.name}" placeholder="Nombre Archivo" onchange="updateFile(${index}, ${fIndex}, 'name', this.value)" style="flex:1;">
+												<input type="text" value="${file.url}" placeholder="URL Descarga" onchange="updateFile(${index}, ${fIndex}, 'url', this.value)" style="flex:2;">
+												<button onclick="removeFile(${index}, ${fIndex})" style="color:red; border:none; background:none;">&times;</button>
+											</div>
+										`).join('') : ''}
+										<button onclick="addFile(${index})" style="font-size:12px; margin-top:5px; background:none; border:none; color:#4299e1; cursor:pointer;">+ Añadir Archivo</button>
+									</div>
+								</div>
+							`;
+						});
+						$('#folders-ui-list').html(html);
+					}
+
+					function renderTutorials() {
+						let html = '';
+						tutorials.forEach((video, index) => {
+							html += `
+								<div class="tutorial-item" style="background:white; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:4px; display:flex; gap:10px;">
+									<div style="width:80px; height:60px; background:#ddd; background-size:cover; background-image:url(${video.thumbnail || ''});"></div>
+									<div style="flex:1;">
+										<input type="text" value="${video.title}" placeholder="Título Video" onchange="updateTutorial(${index}, 'title', this.value)" style="width:100%; margin-bottom:5px;">
+										<input type="text" value="${video.url}" placeholder="URL Video (YT/Vimeo/MP4)" onchange="updateTutorial(${index}, 'url', this.value)" style="width:100%; margin-bottom:5px;">
+										<input type="text" value="${video.thumbnail}" placeholder="URL Thumbnail" onchange="updateTutorial(${index}, 'thumbnail', this.value)" style="width:100%;">
+										<input type="hidden" value="${video.type || 'video'}" onchange="updateTutorial(${index}, 'type', this.value)">
+									</div>
+									<button class="alezux-btn-delete" onclick="removeTutorial(${index})" style="color:red; background:none; border:none; align-self:start;"><i class="eicon-trash"></i></button>
+								</div>
+							`;
+						});
+						$('#tutorials-ui-list').html(html);
+					}
+
+					// -- ACTIONS --
+					window.updateFolder = (index, key, val) => { deliverables[index][key] = val; renderFolders(); };
+					window.removeFolder = (index) => { if(confirm('¿Borrar carpeta?')) { deliverables.splice(index, 1); renderFolders(); } };
+					
+					window.addFile = (index) => { 
+						if(!deliverables[index].files) deliverables[index].files = [];
+						deliverables[index].files.push({name: 'Nuevo Archivo', url: ''});
+						renderFolders();
+					};
+					window.updateFile = (fIndex, fileIndex, key, val) => { deliverables[fIndex].files[fileIndex][key] = val; }; // No re-render to keep focus, usually
+					window.removeFile = (fIndex, fileIndex) => { deliverables[fIndex].files.splice(fileIndex, 1); renderFolders(); };
+
+					window.updateTutorial = (index, key, val) => { 
+						tutorials[index][key] = val;
+						// Auto-detect type
+						if (key === 'url') {
+							if(val.includes('youtube') || val.includes('youtu.be')) tutorials[index].type = 'youtube';
+							else if(val.includes('vimeo')) tutorials[index].type = 'vimeo';
+							else tutorials[index].type = 'video';
+						}
+					};
+					window.removeTutorial = (index) => { if(confirm('¿Borrar video?')) { tutorials.splice(index, 1); renderTutorials(); } };
+
+					$('#add-folder-btn').click(function(e){ e.preventDefault(); deliverables.push({name: 'Nueva Carpeta', files: []}); renderFolders(); });
+					$('#add-tutorial-btn').click(function(e){ e.preventDefault(); tutorials.push({title: 'Nuevo Video', url: '', thumbnail: ''}); renderTutorials(); });
+
+					// Init
+					renderFolders();
+					renderTutorials();
+
+					// -- SAVE --
+					$('#save-deliverables-btn').click(function(e){
+						e.preventDefault();
+						let btn = $(this);
+						btn.prop('disabled', true).text('Guardando...');
+
+						// Save Deliverables
+						$.post(AlezuxProjects.ajaxurl, {
+							action: 'alezux_save_deliverables',
+							nonce: AlezuxProjects.nonce,
+							project_id: <?php echo $project_id; ?>,
+							deliverables: JSON.stringify(deliverables)
+						}, function(res1) {
+							// Save Tutorials
+							$.post(AlezuxProjects.ajaxurl, {
+								action: 'alezux_save_tutorials',
+								nonce: AlezuxProjects.nonce,
+								project_id: <?php echo $project_id; ?>,
+								tutorials: JSON.stringify(tutorials)
+							}, function(res2) {
+								alert('Datos guardados correctamente.');
+								btn.prop('disabled', false).text('Guardar Cambios');
+							});
+						});
+					});
+
+				});
+				</script>
 			</div>
 
 		</div>
@@ -799,6 +921,47 @@ class Proyectos_Agencia {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'nonce'   => wp_create_nonce( 'alezux_projects_nonce' )
 		]);
+	}
+	public function ajax_save_deliverables() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'No tienes permisos.' );
+		}
+
+		$project_id = absint( $_POST['project_id'] );
+		$data_json  = stripslashes( $_POST['deliverables'] );
+		$data       = json_decode( $data_json, true );
+
+		if ( ! is_array( $data ) ) {
+			wp_send_json_error( 'Datos inválidos.' );
+		}
+
+		$manager = new Project_Manager();
+		$manager->update_project_deliverables( $project_id, $data );
+
+		wp_send_json_success( 'Carpetas actualizadas.' );
+	}
+
+	public function ajax_save_tutorials() {
+		check_ajax_referer( 'alezux_projects_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'No tienes permisos.' );
+		}
+
+		$project_id = absint( $_POST['project_id'] );
+		$data_json  = stripslashes( $_POST['tutorials'] );
+		$data       = json_decode( $data_json, true );
+
+		if ( ! is_array( $data ) ) {
+			wp_send_json_error( 'Datos inválidos.' );
+		}
+
+		$manager = new Project_Manager();
+		$manager->update_project_tutorials( $project_id, $data );
+
+		wp_send_json_success( 'Tutoriales actualizados.' );
 	}
 }
 

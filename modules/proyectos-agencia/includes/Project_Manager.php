@@ -278,4 +278,34 @@ class Project_Manager {
 	}
 
 
+	/**
+	 * Obtiene la estructura de entregables (Carpetas/Archivos).
+	 */
+	public function get_project_deliverables( $project_id ) {
+		$data = $this->get_project_meta( $project_id, 'deliverables_structure' );
+		return $data ? json_decode( $data, true ) : [];
+	}
+
+	/**
+	 * Actualiza la estructura de entregables.
+	 */
+	public function update_project_deliverables( $project_id, $structure ) {
+		return $this->update_project_meta( $project_id, 'deliverables_structure', json_encode( $structure ) );
+	}
+
+	/**
+	 * Obtiene la lista de tutoriales (Videos).
+	 */
+	public function get_project_tutorials( $project_id ) {
+		$data = $this->get_project_meta( $project_id, 'tutorials_list' );
+		return $data ? json_decode( $data, true ) : [];
+	}
+
+	/**
+	 * Actualiza la lista de tutoriales.
+	 */
+	public function update_project_tutorials( $project_id, $tutorials ) {
+		return $this->update_project_meta( $project_id, 'tutorials_list', json_encode( $tutorials ) );
+	}
+
 }
