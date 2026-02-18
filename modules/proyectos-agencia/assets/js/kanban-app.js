@@ -212,9 +212,17 @@ jQuery(document).ready(function ($) {
         // Render Modal Content
         function renderModalContent(project) {
             $('#modal-project-title').text('Proyecto: ' + project.client_name);
+
+            // Helper for safe access
+            const getVal = (path, def = '') => {
+                return path.split('.').reduce((acc, part) => acc && acc[part], project.data) || def;
+            };
+
+            let html = `
+                <div class="project-details-header">
                     <p><strong>Cliente:</strong> ${project.client_name} (${project.client_email})</p>
                     <p><strong>Estado:</strong> ${project.status}</p>
-                </div >
+                </div>
 
                 <hr>
 
@@ -267,86 +275,86 @@ jQuery(document).ready(function ($) {
                 </form>
             `;
 
-        $('#modal-body-content').html(html);
-    }
-
-    // Save Project Data
-    $('#save-project-btn').on('click', function () {
-        const form = $('#project-edit-form');
-        const projectId = form.data('id');
-        if (!projectId) return;
-
-        // Collect Data
-        // This is a naive collection, in production we need better parsing
-        const formData = {
-            identity: {
-                proposal_files: $('input[name="identity[proposal_files]"]').val().split(',').map(s => s.trim()).filter(s => s)
-            },
-            web_design: {
-                figma_url: $('input[name="web_design[figma_url]"]').val()
-            },
-            development: {
-                staging_url: $('input[name="development[staging_url]"]').val()
-            },
-            delivery: {
-                // simple parse for now
-                final_assets: $('textarea[name="delivery[final_assets]"]').val().split('\n')
-            }
-        };
-
-        $.ajax({
-            url: alezux_agency_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'alezux_agency_update_project_data',
-                project_id: projectId,
-                project_data: JSON.stringify(formData),
-                nonce: alezux_agency_vars.nonce
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert('Guardado correctamente');
-                    modal.hide();
-                } else {
-                    alert('Error: ' + response.data);
-                }
-            }
-        });
-    });
-
-    closeBtn.on('click', function () {
-        modal.hide();
-    });
-
-    $(window).on('click', function (event) {
-        if (event.target == modal[0]) {
-            modal.hide();
+            $('#modal-body-content').html(html);
         }
-    });
 
-    // Add Project Logic
-    $('#add-project-btn').on('click', function () {
-        // Simple User Selection Logic for MVP
-        // In a real scenario we would use Select2 with AJAX search
-        const clientEmail = prompt("Ingresa el ID del usuario cliente para crear un proyecto:");
-        if (clientEmail) {
+        // Save Project Data
+        $('#save-project-btn').on('click', function () {
+            const form = $('#project-edit-form');
+            const projectId = form.data('id');
+            if (!projectId) return;
+
+            // Collect Data
+            // This is a naive collection, in production we need better parsing
+            const formData = {
+                identity: {
+                    proposal_files: $('input[name="identity[proposal_files]"]').val().split(',').map(s => s.trim()).filter(s => s)
+                },
+                web_design: {
+                    figma_url: $('input[name="web_design[figma_url]"]').val()
+                },
+                development: {
+                    staging_url: $('input[name="development[staging_url]"]').val()
+                },
+                delivery: {
+                    // simple parse for now
+                    final_assets: $('textarea[name="delivery[final_assets]"]').val().split('\n')
+                }
+            };
+
             $.ajax({
                 url: alezux_agency_vars.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'alezux_agency_create_project',
-                    client_id: clientEmail, // For now passing ID directly
+                    action: 'alezux_agency_update_project_data',
+                    project_id: projectId,
+                    project_data: JSON.stringify(formData),
                     nonce: alezux_agency_vars.nonce
                 },
                 success: function (response) {
                     if (response.success) {
-                        loadProjects();
+                        alert('Guardado correctamente');
+                        modal.hide();
                     } else {
-                        alert(response.data);
+                        alert('Error: ' + response.data);
                     }
                 }
             });
-        }
-    });
+        });
 
-});
+        closeBtn.on('click', function () {
+            modal.hide();
+        });
+
+        $(window).on('click', function (event) {
+            if (event.target == modal[0]) {
+                modal.hide();
+            }
+        });
+
+        // Add Project Logic
+        $('#add-project-btn').on('click', function () {
+            // Simple User Selection Logic for MVP
+            // In a real scenario we would use Select2 with AJAX search
+            const clientEmail = prompt("Ingresa el ID del usuario cliente para crear un proyecto:");
+            if (clientEmail) {
+                $.ajax({
+                    url: alezux_agency_vars.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'alezux_agency_create_project',
+                        client_id: clientEmail, // For now passing ID directly
+                        nonce: alezux_agency_vars.nonce
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            loadProjects();
+                        } else {
+                            alert(response.data);
+                        }
+                    }
+                });
+            }
+        });
+
+    });
