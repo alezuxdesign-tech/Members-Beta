@@ -439,17 +439,18 @@ jQuery(document).ready(function ($) {
         // Navigation Buttons
         const confirmBtn = `<button class="alezux-btn alezux-btn-primary" id="btn-advance-step">Completar y Avanzar</button>`;
         const saveBtnOnly = `<button class="alezux-btn alezux-btn-success" id="btn-save-step">Guardar Datos</button>`;
-        const deleteBtn = `<button class="alezux-btn alezux-btn-danger" id="btn-delete-project" style="float:left;">Eliminar Proyecto</button>`;
+        const deleteBtn = `<button class="alezux-btn alezux-btn-danger" id="btn-delete-project">Eliminar Proyecto</button>`;
 
         const footerControls = `
             <div class="step-footer-controls">
-                ${deleteBtn}
-                <span>
+                <div class="step-footer-left">
+                    ${deleteBtn}
+                </div>
+                <div class="step-footer-actions">
                     ${saveBtnOnly}
                     ${activeTabStep !== 'delivery' ? confirmBtn : ''}
-                </span>
+                </div>
             </div>
-            <div style="clear:both;"></div>
         `;
 
         $('#modal-body-content').html(stepperHtml + '<form id="project-edit-form">' + contentHtml + '</form>' + footerControls);
