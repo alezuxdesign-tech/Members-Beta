@@ -404,8 +404,11 @@ jQuery(document).ready(function ($) {
                     let currentUrls = currentVal ? currentVal.split(',') : [];
                     currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
 
+                    if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
+                    currentModalProject.data.identity.proposal_files = currentUrls;
+
                     $('#identity-files-input').val(currentUrls.join(','));
-                    renderModalContent(); // Re-render to show new state
+                    saveCurrentStepData(false);
                 });
             });
 
