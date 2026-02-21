@@ -70,7 +70,7 @@ class Proyectos_Agencia extends Module_Base {
         wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css', [], '1.12.1' );
         
         // JS - Admin
-        wp_register_script( 'alezux-kanban-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/kanban-app.js', ['jquery', 'jquery-ui-sortable', 'jquery-ui-datepicker'], '1.1.6', true );
+        wp_register_script( 'alezux-kanban-js', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/js/kanban-app.js', ['jquery', 'jquery-ui-sortable', 'jquery-ui-datepicker', 'jquery-ui-resizable'], '1.1.6', true );
         
         wp_localize_script( 'alezux-kanban-js', 'alezux_agency_vars', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
