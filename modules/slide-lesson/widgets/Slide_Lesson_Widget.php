@@ -277,6 +277,7 @@ class Slide_Lesson_Widget extends Widget_Base {
 				'options' => [
 					'default' => esc_html__( 'Por Defecto', 'alezux-members' ),
 					'custom'  => esc_html__( 'Personalizado (Avanzado)', 'alezux-members' ),
+					'title_aligned' => esc_html__( 'Alineado al Título (Flexbox)', 'alezux-members' ),
 				],
 				'condition' => [ 'show_arrows' => 'yes' ],
 			]
