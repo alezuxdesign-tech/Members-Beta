@@ -450,8 +450,12 @@ class Finanzas extends Module_Base {
 
         // 4. NEW Sales Dashboard Universal Logic
         // Load on Admin Dashboard OR if widgets are present (Frontend)
-        $screen = get_current_screen();
-        $is_dashboard = $screen ? $screen->id === 'dashboard' || $screen->id === 'toplevel_page_alezux-dashboard' : false;
+        if ( is_admin() ) {
+            $screen = get_current_screen();
+            $is_dashboard = $screen ? $screen->id === 'dashboard' || $screen->id === 'toplevel_page_alezux-dashboard' : false;
+        } else {
+            $is_dashboard = false;
+        }
 
         if ( file_exists( ALEZUX_FINANZAS_PATH . 'assets/js/sales-dashboard.js' ) ) {
             wp_register_script( 'alezux-sales-dashboard-js', ALEZUX_FINANZAS_URL . 'assets/js/sales-dashboard.js', ['jquery', 'flatpickr-js', 'flatpickr-es-js', 'chart-js'], $version, true );
@@ -462,8 +466,15 @@ class Finanzas extends Module_Base {
                  'server_date'  => current_time( 'Y-m-d' ), // Pass server date for strict validation
              ] );
              
-             // Enqueue if we are on Admin Dashboard OR if Elementor Editor
-             if ( is_admin() || \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+             // Enqueue if we are on Admin Dashboard OR if Elementor Editor is active and class exists
+             $is_elementor_editor = false;
+             if ( did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) ) {
+                 if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+                     $is_elementor_editor = true;
+                 }
+             }
+
+             if ( $is_dashboard || $is_elementor_editor ) {
                    wp_enqueue_script('alezux-sales-dashboard-js');
              }
         }
