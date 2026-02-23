@@ -710,10 +710,18 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 align-items: flex-end;
                 z-index: 1;
                 padding: 0 10px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* IE and Edge */
+            }
+            .alezux-bars-container::-webkit-scrollbar {
+                display: none; /* Chrome, Safari and Opera */
             }
             
             .alezux-bar-column {
                 flex: 1;
+                min-width: 45px; /* Evita que se encojan demasiado en móvil */
                 height: 100%;
                 display: flex;
                 flex-direction: column;
