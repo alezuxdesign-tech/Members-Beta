@@ -721,13 +721,14 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             
             .alezux-bar-column {
                 flex: 1;
-                min-width: 45px; /* Evita que se encojan demasiado en móvil */
+                min-width: 65px; /* Aumentado para dar más espacio a los nombres de los meses */
                 height: 100%;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
                 align-items: center;
                 position: relative;
+                padding: 0 5px; /* Añade un poco de respiro entre columnas */
             }
             
             .alezux-bar-item {
