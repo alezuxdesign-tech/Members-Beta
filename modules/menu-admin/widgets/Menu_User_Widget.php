@@ -290,6 +290,9 @@ class Menu_User_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-list' => 'gap: {{SIZE}}{{UNIT}};',
 				],
+				'condition' => [
+					'skin' => 'classic',
+				],
 			]
 		);
 
