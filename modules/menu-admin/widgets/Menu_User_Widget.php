@@ -151,9 +151,6 @@ class Menu_User_Widget extends Widget_Base {
 					'{{WRAPPER}}.alezux-menu-layout-column .alezux-menu-admin-item-link' => 'width: 100%;',
 				],
 				'prefix_class' => 'alezux-menu-layout-',
-				'condition' => [
-					'skin' => 'classic',
-				],
 			]
 		);
 
@@ -605,8 +602,9 @@ class Menu_User_Widget extends Widget_Base {
 		$layout_style = '';
 		
 		if ( $is_dock ) {
-			// En dock forzamos columna y centrado generalmente, pero permitimos ajustes
-			$layout_style = 'display: flex; flex-direction: column; align-items: center; justify-content: center;';
+			// En dock forzamos el gap según sea necesario y permitimos que direction lo fije el control layout
+			// Eliminamos flex-direction: column forzado, dependeremos del Responsive Control `layout`.
+			$layout_style = 'display: flex; align-items: center; justify-content: center;';
 		} else {
 			// En clásico usa las opciones del control responsive
 			$layout_style = 'display: flex;'; // El resto viene por CSS inline del control
