@@ -290,9 +290,6 @@ class Menu_User_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-list' => 'gap: {{SIZE}}{{UNIT}};',
 				],
-				'condition' => [
-					'skin' => 'classic',
-				],
 			]
 		);
 
@@ -301,12 +298,8 @@ class Menu_User_Widget extends Widget_Base {
 			[
 				'label' => esc_html__( 'Relleno del Item', 'alezux-members' ),
 				'type' => Controls_Manager::DIMENSIONS,
-				'size_units' => [ 'px', 'em', '%' ],
 				'selectors' => [
 					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				],
-				'condition' => [
-					'skin' => 'classic', // Ocultar y no aplicar en Dock para evitar conflictos
 				],
 			]
 		);
@@ -346,7 +339,6 @@ class Menu_User_Widget extends Widget_Base {
 				],
 			]
 		);
-		
 		$this->add_responsive_control(
 			'item_dock_size',
 			[
@@ -364,8 +356,8 @@ class Menu_User_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					// Añadimos box-sizing y aspecto 1/1 para asegurar cuadrado
-					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; justify-content: center; box-sizing: border-box; aspect-ratio: 1 / 1;',
+					'{{WRAPPER}} .alezux-menu-admin-item-link' => 'justify-content: center;',
+					'{{WRAPPER}} .alezux-menu-admin-icon' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; justify-content: center; box-sizing: border-box; aspect-ratio: 1 / 1; display: flex; align-items: center;',
 				],
 				'condition' => [
 					'skin' => 'dock',
