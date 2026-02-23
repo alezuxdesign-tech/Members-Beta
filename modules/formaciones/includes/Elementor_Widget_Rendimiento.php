@@ -692,6 +692,7 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 border-bottom: 0px solid #eee;
                 display: flex;
                 align-items: flex-end;
+                min-width: 0; /* Permite que el contenedor se encoja y habilite el scroll interno */
             }
             
             .alezux-chart-grid-line {
@@ -701,7 +702,6 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 border-top: 1px dashed #ccc;
                 z-index: 0;
             }
-            
             .alezux-bars-container {
                 display: flex;
                 width: 100%;
@@ -714,6 +714,7 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
                 overflow-y: hidden;
                 scrollbar-width: none; /* Firefox */
                 -ms-overflow-style: none; /* IE and Edge */
+                -webkit-overflow-scrolling: touch; /* Scroll fluido en dispositivos móviles / iOS */
             }
             .alezux-bars-container::-webkit-scrollbar {
                 display: none; /* Chrome, Safari and Opera */
