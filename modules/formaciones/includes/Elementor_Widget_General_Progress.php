@@ -130,7 +130,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			]
 		);
 		
-		$this->add_control(
+		$this->add_responsive_control(
 			'chart_bar_width',
 			[
 				'label' => __( 'Grosor de Barra', 'alezux-members' ),
@@ -234,7 +234,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'list_gap',
 			[
 				'label' => __( 'Espacio entre items', 'alezux-members' ),
