@@ -97,7 +97,7 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'chart_size',
 			[
 				'label' => __( 'Tamaño del Gráfico (px)', 'alezux-members' ),
@@ -466,7 +466,8 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 						<?php
 							$percent_style = '';
 							if ( isset($settings['chart_percent_glow_show']) && 'yes' === $settings['chart_percent_glow_show'] ) {
-								$percent_style = 'text-shadow: 0 0 15px ' . $settings['chart_percent_color'] . ';';
+								$glow_color = isset($settings['chart_percent_color']) ? $settings['chart_percent_color'] : '#ffb800';
+								$percent_style = 'text-shadow: 0 0 15px ' . $glow_color . ';';
 							}
 						?>
 						<div class="alezux-chart-percent" style="<?php echo esc_attr($percent_style); ?>"><?php echo esc_html( $average_progress ); ?>%</div>
