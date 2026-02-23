@@ -102,7 +102,7 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 			]
 		);
 
-        $this->add_control(
+        $this->add_responsive_control(
 			'container_padding',
 			[
 				'label' => __( 'Relleno (Padding)', 'alezux-members' ),
@@ -130,7 +130,7 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 			]
 		);
 
-        $this->add_control(
+        $this->add_responsive_control(
 			'container_border_radius',
 			[
 				'label' => __( 'Radio del Borde', 'alezux-members' ),
@@ -202,6 +202,18 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 			]
 		);
 
+        $this->add_responsive_control(
+			'tabs_margin',
+			[
+				'label' => __( 'Margen', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-rendimiento-tabs' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
         $this->add_control(
 			'tabs_bg_color',
 			[
@@ -210,6 +222,18 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 				'default' => '#f5f5f5',
 				'selectors' => [
 					'{{WRAPPER}} .alezux-rendimiento-tabs' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_responsive_control(
+			'tabs_padding',
+			[
+				'label' => __( 'Relleno (Padding) Interno', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-tab-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -269,6 +293,34 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
+
+        $this->add_responsive_control(
+            'chart_height',
+            [
+                'label' => __( 'Altura del Gráfico', 'alezux-members' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'vh' ],
+                'range' => [
+                    'px' => [
+                        'min' => 100,
+                        'max' => 600,
+                        'step' => 1,
+                    ],
+                    'vh' => [
+                        'min' => 10,
+                        'max' => 100,
+                        'step' => 1,
+                    ],
+                ],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => 250,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .alezux-rendimiento-chart-area' => 'height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
 
         $this->add_control(
 			'chart_bar_color',
@@ -615,7 +667,6 @@ class Elementor_Widget_Rendimiento extends Widget_Base {
             /* Chart Layout */
             .alezux-rendimiento-chart-area {
                 display: flex;
-                height: 250px;
                 width: 100%;
             }
             .alezux-axis-y {
