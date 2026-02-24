@@ -3,6 +3,8 @@ namespace Alezux_Members\Modules\Listing\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Border;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -139,6 +141,204 @@ class Listing_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-primary' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Tipografía Section
+		$this->start_controls_section(
+			'typography_section',
+			[
+				'label' => esc_html__( 'Tipografías', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'title_typography',
+				'label' => esc_html__( 'Título Principal', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-listing-title',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'desc_typography',
+				'label' => esc_html__( 'Descripción Principal', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-listing-desc',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'task_title_typography',
+				'label' => esc_html__( 'Títulos de Tareas', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .task-title, {{WRAPPER}} .alezux-tasks-subtitle',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'task_desc_typography',
+				'label' => esc_html__( 'Descripción de Tareas', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .task-desc',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'meta_typography',
+				'label' => esc_html__( 'Textos Meta (Fecha)', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .task-meta',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Íconos Section
+		$this->start_controls_section(
+			'icons_section',
+			[
+				'label' => esc_html__( 'Íconos', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'icon_color',
+			[
+				'label' => esc_html__( 'Color de Íconos', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-icon svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .alezux-btn-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_color_hover',
+			[
+				'label' => esc_html__( 'Color de Íconos Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-icon:hover svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .alezux-btn-icon:hover i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close:hover svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_size',
+			[
+				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 60,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-btn-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-listing-modal-close i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .alezux-listing-modal-close svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_box_size',
+			[
+				'label' => esc_html__( 'Caja Atrás (Fondo)', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 20,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn-icon' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// Botones Section
+		$this->start_controls_section(
+			'buttons_style_section',
+			[
+				'label' => esc_html__( 'Botones', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+		
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => esc_html__( 'Color de Texto', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color',
+			[
+				'label' => esc_html__( 'Background Color', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'label' => esc_html__( 'Tipografía', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_border_radius',
+			[
+				'label' => esc_html__( 'Border Radius', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
