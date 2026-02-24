@@ -20,8 +20,9 @@ class Listing extends Module_Base {
 		// Registrar Widgets de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 
-		// AJAX para creación de tareas (Admin)
+		// AJAX para creación y edición de tareas (Admin)
 		add_action( 'wp_ajax_alezux_listing_add_task', [ $this, 'ajax_add_task' ] );
+		add_action( 'wp_ajax_alezux_listing_edit_task', [ $this, 'ajax_edit_task' ] );
 		add_action( 'wp_ajax_alezux_listing_delete_task', [ $this, 'ajax_delete_task' ] );
 		
 		// AJAX para ver tareas creadas (Admin)
@@ -127,6 +128,42 @@ class Listing extends Module_Base {
 			wp_send_json_success( [ 'message' => 'Tarea creada exitosamente.' ] );
 		} else {
 			wp_send_json_error( [ 'message' => 'Error al guardar la tarea en la base de datos.' ] );
+		}
+	}
+
+	public function ajax_edit_task() {
+		check_ajax_referer( 'alezux_listing_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'administrator' ) ) {
+			wp_send_json_error( [ 'message' => 'No tienes permisos.' ] );
+		}
+
+		$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+		$title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+		$description = isset( $_POST['description'] ) ? sanitize_textarea_field( $_POST['description'] ) : '';
+
+		if ( ! $id || empty( $title ) ) {
+			wp_send_json_error( [ 'message' => 'ID de tarea y título son obligatorios.' ] );
+		}
+
+		global $wpdb;
+		$tasks_table = $wpdb->prefix . 'alezux_listing_tasks';
+
+		$updated = $wpdb->update(
+			$tasks_table,
+			[
+				'title'       => $title,
+				'description' => $description
+			],
+			[ 'id' => $id ],
+			[ '%s', '%s' ],
+			[ '%d' ]
+		);
+
+		if ( $updated !== false ) {
+			wp_send_json_success( [ 'message' => 'Tarea actualizada exitosamente.' ] );
+		} else {
+			wp_send_json_error( [ 'message' => 'Error al actualizar la tarea en la base de datos.' ] );
 		}
 	}
 
