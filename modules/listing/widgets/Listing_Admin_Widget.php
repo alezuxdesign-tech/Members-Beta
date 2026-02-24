@@ -427,6 +427,15 @@ class Listing_Admin_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
+		// === SECCIÓN BOTÓN CERRAR ===
+		$this->start_controls_section(
+			'close_button_section',
+			[
+				'label' => esc_html__( 'Botón Cerrar (X)', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
 		$this->add_control(
 			'close_icon_color',
 			[
