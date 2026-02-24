@@ -126,10 +126,13 @@ jQuery(document).ready(function ($) {
     }
 
     // Modal de Confirmación
-    function customConfirm($parent, message, callback) {
+    function customConfirm(message, callback) {
+        // Eliminar confirmaciones pasadas si existen
+        $('.confirm-modal-alezux').remove();
+
         const id = 'confirm-' + Date.now();
         const markup = `
-            <div id="${id}" class="alezux-modal-overlay" style="display:flex; z-index: 999999;">
+            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display:flex; z-index: 999999;">
                 <div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
                     <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
@@ -141,7 +144,7 @@ jQuery(document).ready(function ($) {
                 </div>
             </div>
         `;
-        $parent.append(markup);
+        $('body').append(markup);
 
         $(`#${id} .btn-cancel-confirm`).on('click', function (e) {
             e.preventDefault();
@@ -164,7 +167,7 @@ jQuery(document).ready(function ($) {
         const $btn = $(this);
         const $widget = $(this).closest('.alezux-listing-admin');
 
-        customConfirm($widget, "Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
+        customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
             $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
 
             $.ajax({
@@ -203,7 +206,15 @@ jQuery(document).ready(function ($) {
 
         const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
-        const $editModal = $widget.find('#alezux-edit-task-modal');
+        let $editModal = $widget.find('#alezux-edit-task-modal');
+
+        // Si no se encuentra dentro del widget (quizás ya se movió al body) o si estamos en Elementor que aísla los Modales
+        if ($editModal.length > 0) {
+            // Lo movemos al body para escapar de cualquier stacking context (overflow, transform) que rompa el "position: fixed"
+            $('body').append($editModal);
+        } else {
+            $editModal = $('#alezux-edit-task-modal');
+        }
 
         // Poner datos en formulario
         $editModal.find('#edit_task_id').val($taskItem.data('id'));
