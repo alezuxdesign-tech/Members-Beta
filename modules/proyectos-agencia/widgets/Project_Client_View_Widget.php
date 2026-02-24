@@ -703,6 +703,321 @@ class Project_Client_View_Widget extends Widget_Base {
 		$this->end_controls_tabs();
 
 		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Alertas y Estados
+		// ==========================
+		$this->start_controls_section(
+			'style_alerts_section',
+			[
+				'label' => 'Alertas y Estados',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		// Control Info / Warning
+		$this->add_control(
+			'alert_info_heading',
+			[
+				'label' => 'Alertas de Información / Aviso',
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+		$this->add_control(
+			'alert_info_bg',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-info' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-alert-warning' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+		$this->add_control(
+			'alert_info_color',
+			[
+				'label' => 'Color de Texto',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-info' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-alert-warning' => 'color: {{VALUE}};',
+				],
+			]
+		);
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'alert_info_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .alezux-alert-info, {{WRAPPER}} .alezux-alert-warning',
+			]
+		);
+		
+		// Control Success
+		$this->add_control(
+			'alert_success_heading',
+			[
+				'label' => 'Alertas de Éxito',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+		$this->add_control(
+			'alert_success_bg',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-success' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+		$this->add_control(
+			'alert_success_color',
+			[
+				'label' => 'Color de Texto',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-success' => 'color: {{VALUE}};',
+				],
+			]
+		);
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'alert_success_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .alezux-alert-success',
+			]
+		);
+
+		$this->add_responsive_control(
+			'alert_radius',
+			[
+				'label' => 'Radio de Borde Común',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-info, {{WRAPPER}} .alezux-alert-warning, {{WRAPPER}} .alezux-alert-success' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'alert_padding',
+			[
+				'label' => 'Relleno Común (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-alert-info, {{WRAPPER}} .alezux-alert-warning, {{WRAPPER}} .alezux-alert-success' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Tarjetas de Archivos
+		// ==========================
+		$this->start_controls_section(
+			'style_file_cards_section',
+			[
+				'label' => 'Tarjetas de Archivos',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'file_card_bg',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .file-card' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'file_card_text_color',
+			[
+				'label' => 'Color de Texto Principal',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .file-card span' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		 $this->add_control(
+			'file_card_icon_color',
+			[
+				'label' => 'Color del Icono',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .file-card i:first-child' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'file_card_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .file-card',
+			]
+		);
+
+		$this->add_responsive_control(
+			'file_card_radius',
+			[
+				'label' => 'Radio de Borde',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .file-card' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'file_card_padding',
+			[
+				'label' => 'Relleno (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .file-card' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+				],
+			]
+		);
+		
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Entrega Final
+		// ==========================
+		$this->start_controls_section(
+			'style_delivery_section',
+			[
+				'label' => 'Entrega Final (Paso 5)',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'delivery_hero_heading',
+			[
+				'label' => 'Cabecera (Regalo)',
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'delivery_hero_bg',
+			[
+				'label' => 'Fondo de Cabecera',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .delivery-hero' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delivery_hero_icon_color',
+			[
+				'label' => 'Color del Icono Regalo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .delivery-hero i' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		 $this->add_responsive_control(
+			'delivery_hero_radius',
+			[
+				'label' => 'Radio de Borde Cabecera',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .delivery-hero' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'delivery_hero_padding',
+			[
+				'label' => 'Padding Cabecera',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .delivery-hero' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delivery_folders_heading',
+			[
+				'label' => 'Carpetas / Cajas de Recursos',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'delivery_folder_bg',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .delivery-folder' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .credentials-box' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'delivery_folder_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .delivery-folder, {{WRAPPER}} .credentials-box',
+			]
+		);
+
+		 $this->add_responsive_control(
+			'delivery_folder_radius',
+			[
+				'label' => 'Radio de Borde',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .delivery-folder, {{WRAPPER}} .credentials-box' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'delivery_folder_padding',
+			[
+				'label' => 'Padding',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .delivery-folder, {{WRAPPER}} .credentials-box' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
