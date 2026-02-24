@@ -191,13 +191,13 @@ class Listing_Admin_Widget extends Widget_Base {
 			</div>
 
 			<!-- Modal Edit Task -->
-			<div class="alezux-modal-overlay alezux-edit-task-modal" style="display: none;">
-				<div class="alezux-modal-content">
-					<div class="alezux-modal-header">
+			<div class="alezux-listing-modal-overlay alezux-edit-task-modal" style="display: none;">
+				<div class="alezux-listing-modal-content">
+					<div class="alezux-listing-modal-header">
 						<h3>Editar Tarea</h3>
-						<span class="alezux-modal-close"><i class="fas fa-times"></i></span>
+						<span class="alezux-listing-modal-close"><i class="fas fa-times"></i></span>
 					</div>
-					<div class="alezux-modal-body">
+					<div class="alezux-listing-modal-body">
 						<form class="alezux-form alezux-edit-task-form">
 							<input type="hidden" class="edit_task_id" name="edit_task_id">
 							<div class="alezux-form-group">

@@ -26,8 +26,8 @@ jQuery(document).ready(function ($) {
 
         const id = 'confirm-' + Date.now();
         const markup = `
-            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display: flex; z-index: 999999;">
-                <div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
+            <div id="${id}" class="alezux-listing-modal-overlay confirm-modal-alezux" style="display: flex; z-index: 999999;">
+                <div class="alezux-listing-modal-content" style="max-width: 400px; text-align: center;">
                     <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
                     <p style="color: #a0a0a0; margin-bottom: 25px; line-height: 1.5;">${message}</p>
@@ -228,8 +228,8 @@ jQuery(document).ready(function ($) {
     });
 
     // CLOSE ANY MODAL
-    $(document.body).on('click', '.alezux-modal-close', function () {
-        const $overlay = $(this).closest('.alezux-modal-overlay');
+    $(document.body).on('click', '.alezux-listing-modal-close', function () {
+        const $overlay = $(this).closest('.alezux-listing-modal-overlay');
         $overlay.fadeOut(200, function () {
             if ($overlay.hasClass('moved-to-body-modal')) {
                 $overlay.remove(); // Eliminamos clon fantasma del body
