@@ -8,6 +8,19 @@ jQuery(document).ready(function ($) {
     const emptyMsg = $userWidget.data('empty-msg') || 'No hay tareas pendientes.';
 
     function loadUserTasks() {
+        // Verificar dummy data primero (para Elementor Editor)
+        if ($userWidget.attr('data-dummy-tasks')) {
+            try {
+                const dummyTasks = JSON.parse($userWidget.attr('data-dummy-tasks'));
+                if (dummyTasks && dummyTasks.length > 0) {
+                    renderUserTasks(dummyTasks);
+                    return; // Prevenimos AJAX
+                }
+            } catch (e) {
+                console.error("Error parsing dummy tasks", e);
+            }
+        }
+
         $.ajax({
             url: alezux_listing_vars.ajax_url,
             type: 'POST',
