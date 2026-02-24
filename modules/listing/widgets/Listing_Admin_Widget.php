@@ -62,6 +62,30 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'edit_icon',
+			[
+				'label' => esc_html__( 'Ícono del Botón: Editar', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-pen',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delete_icon',
+			[
+				'label' => esc_html__( 'Ícono del Botón: Eliminar', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-trash',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Style Tab
@@ -118,8 +142,22 @@ class Listing_Admin_Widget extends Widget_Base {
 			return;
 		}
 
+		$edit_icon_html = '<i class="fas fa-pen"></i>';
+		if ( ! empty( $settings['edit_icon']['value'] ) ) {
+			ob_start();
+			\Elementor\Icons_Manager::render_icon( $settings['edit_icon'], [ 'aria-hidden' => 'true' ] );
+			$edit_icon_html = ob_get_clean();
+		}
+
+		$delete_icon_html = '<i class="fas fa-trash"></i>';
+		if ( ! empty( $settings['delete_icon']['value'] ) ) {
+			ob_start();
+			\Elementor\Icons_Manager::render_icon( $settings['delete_icon'], [ 'aria-hidden' => 'true' ] );
+			$delete_icon_html = ob_get_clean();
+		}
+
 		?>
-		<div class="alezux-listing-admin">
+		<div class="alezux-listing-admin" data-icon-edit="<?php echo esc_attr( $edit_icon_html ); ?>" data-icon-delete="<?php echo esc_attr( $delete_icon_html ); ?>">
 			<div class="alezux-listing-header">
 				<h2 class="alezux-listing-title"><?php echo esc_html( $settings['header_title'] ); ?></h2>
 				<p class="alezux-listing-desc"><?php echo esc_html( $settings['header_description'] ); ?></p>

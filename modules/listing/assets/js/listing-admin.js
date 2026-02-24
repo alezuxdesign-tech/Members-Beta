@@ -4,8 +4,12 @@ jQuery(document).ready(function ($) {
     const $msgDiv = $('#alezux-task-form-msg');
     const $submitBtn = $('#alezux-submit-task-btn');
     const $tasksList = $('#alezux-admin-tasks-list');
+    const $adminWidget = $('.alezux-listing-admin');
 
     if ($adminForm.length === 0) return;
+
+    const iconEdit = $adminWidget.data('icon-edit') || '<i class="fas fa-edit"></i>';
+    const iconDelete = $adminWidget.data('icon-delete') || '<i class="fas fa-trash"></i>';
 
     // Load Tasks on INIT
     function loadTasks() {
@@ -46,8 +50,8 @@ jQuery(document).ready(function ($) {
                         <small class="task-meta">Creada: ${task.formatted_date}</small>
                     </div>
                     <div class="task-actions">
-                        <button class="alezux-btn-icon btn-edit-task" title="Editar Tarea" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 35px; height: 35px; border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-right: 5px;"><i class="fas fa-edit"></i></button>
-                        <button class="alezux-btn-icon btn-delete-task" title="Eliminar Tarea" style="background: rgba(255,71,87,0.1); color: #ff4757; border: 1px solid rgba(255,71,87,0.2); width: 35px; height: 35px; border-radius: 8px; cursor: pointer; transition: all 0.3s;"><i class="fas fa-trash"></i></button>
+                        <button class="alezux-btn-icon btn-edit-task" title="Editar Tarea" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-right: 5px;">${iconEdit}</button>
+                        <button class="alezux-btn-icon btn-delete-task" title="Eliminar Tarea" style="background: rgba(255,71,87,0.1); color: #ff4757; border: 1px solid rgba(255,71,87,0.2); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.3s;">${iconDelete}</button>
                     </div>
                 </div>
             `;
@@ -176,12 +180,12 @@ jQuery(document).ready(function ($) {
                         $taskItem.fadeOut(300, function () { $(this).remove(); });
                     } else {
                         showNotification(response.data.message, "error");
-                        $btn.html('<i class="fas fa-trash"></i>').prop('disabled', false);
+                        $btn.html(iconDelete).prop('disabled', false);
                     }
                 },
                 error: function () {
                     showNotification('Error al intentar borrar la tarea.', 'error');
-                    $btn.html('<i class="fas fa-trash"></i>').prop('disabled', false);
+                    $btn.html(iconDelete).prop('disabled', false);
                 }
             });
         });
