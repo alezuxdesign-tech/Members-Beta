@@ -323,6 +323,69 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 		);
 
         $this->add_control(
+			'col_container_bg',
+			[
+				'label' => 'Fondo de la Columna de Estado',
+				'type' => Controls_Manager::COLOR,
+                'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .kanban-column' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'col_container_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .kanban-column',
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'col_container_shadow',
+				'label' => 'Sombra de Caja',
+				'selector' => '{{WRAPPER}} .kanban-column',
+			]
+		);
+
+        $this->add_responsive_control(
+			'col_container_radius',
+			[
+				'label' => 'Radio de Borde (Columna)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .kanban-column' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->add_responsive_control(
+			'col_container_padding',
+			[
+				'label' => 'Padding de Columna',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .kanban-column' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'card_style_heading',
+			[
+				'label' => 'Tarjetas de Proyecto Internas',
+				'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+			]
+		);
+
+        $this->add_control(
 			'col_card_bg',
 			[
 				'label' => 'Fondo de Tarjetas',
