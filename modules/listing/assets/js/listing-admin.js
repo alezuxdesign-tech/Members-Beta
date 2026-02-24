@@ -32,8 +32,8 @@ jQuery(document).ready(function ($) {
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
                     <p style="color: #a0a0a0; margin-bottom: 25px; line-height: 1.5;">${message}</p>
                     <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button class="alezux-btn btn-cancel-confirm" type="button" style="background: transparent; border: 1px solid #333; color: #fff;">Cancelar</button>
-                        <button class="alezux-btn btn-accept-confirm" type="button" style="background: #ff4757; color: #fff;">Sí, Eliminar</button>
+                        <span class="alezux-btn btn-cancel-confirm" role="button" tabindex="0" style="background: transparent; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Cancelar</span>
+                        <span class="alezux-btn btn-accept-confirm" role="button" tabindex="0" style="background: #ff4757; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Sí, Eliminar</span>
                     </div>
                 </div>
             </div>
@@ -231,7 +231,9 @@ jQuery(document).ready(function ($) {
     $(document.body).on('click', '.alezux-modal-close', function () {
         const $overlay = $(this).closest('.alezux-modal-overlay');
         $overlay.fadeOut(200, function () {
-            // Ya no lo removemos del DOM porque ahora reutilizamos el mismo elemento reubicado.
+            if ($overlay.hasClass('moved-to-body-modal')) {
+                $overlay.remove(); // Eliminamos clon fantasma del body
+            }
         });
     });
 
@@ -245,50 +247,48 @@ jQuery(document).ready(function ($) {
         const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
 
-        // Buscar The Modal en el Widget
-        let $editModal = $widget.find('.alezux-edit-task-modal');
+        // El modal base original de Elementor lo dejamos donde está (oculto en el DOM del widget)
+        const $originalModal = $widget.find('.alezux-edit-task-modal').not('.moved-to-body-modal');
 
-        // Si no está, lo buscamos en el documento (porque ya fue movido al body previamente)
-        if ($editModal.length === 0) {
-            $editModal = $('.alezux-edit-task-modal').first();
-        }
+        // Removemos de memoria cualquier clon activo "fantasma" que exista en body por intentos previos
+        $('body > .alezux-edit-task-modal.moved-to-body-modal').remove();
 
-        if ($editModal.length === 0) {
-            console.error("No se encontró el modal en el DOM.");
+        if ($originalModal.length === 0) {
+            console.error("No se encontró el modal primario en el Widget DOM. Recargue editor.");
             return;
         }
 
-        // Mover al body para evitar problemas de z-index y overflow (Copiado de Plans Manager)
-        if ($editModal.parent()[0].tagName !== 'BODY') {
-            $editModal.appendTo('body');
-        }
+        // Clonamos fresco para evitar duplicados de events y lo tiramos a element superior
+        const $editModal = $originalModal.clone().addClass('moved-to-body-modal');
+        $('body').append($editModal);
 
-        // Popular datos
+        console.log("Mostrando Modal Editar CLONADO", $editModal);
+
+        // Popular datos en el clon
         $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
         $editModal.find('.edit_task_title').val($taskItem.find('.task-title').text());
         $editModal.find('.edit_task_description').val($taskItem.find('.task-desc').text());
 
-        console.log("Mostrando Modal Editar", $editModal);
-
-        // Mostrar Modalidad forzando propiedades que puedan estar ocultas por Elementor
-        $editModal.removeClass('alezux-hidden moved-to-body-modal').css({
+        // Mostrar Modalidad forzando propiedades que puedan estar bloqueadas
+        $editModal.removeClass('alezux-hidden').css({
             'display': 'flex',
             'opacity': '1',
             'visibility': 'visible',
             'z-index': '999999'
         }).hide().fadeIn(200);
 
-        // Referencia estricta para saber qué widget disparó y actualizar solo ése
+        // Referencia estricta para saber qué widget disparó original
         $editModal.data('parent-widget', $widget);
     });
 
     // SUBMIT EDIT FORM
-    $(document).on('submit', '.alezux-edit-task-form', function (e) {
+    $(document.body).on('submit', '.alezux-edit-task-form', function (e) {
         e.preventDefault();
 
         const $form = $(this);
         const $modal = $form.closest('.alezux-edit-task-modal');
-        const $btn = $form.find('.alezux-submit-edit-task-btn');
+        // Identificando botones Submit dentro de un form clonado
+        const $btn = $form.find('button[type="submit"]');
         const $parentWidget = $modal.data('parent-widget');
 
         const id = $form.find('.edit_task_id').val();
@@ -315,7 +315,11 @@ jQuery(document).ready(function ($) {
                 if (response.success) {
                     showNotification(response.data.message, 'success');
 
-                    $modal.fadeOut(200); // Ya no lo removemos del dom
+                    $modal.fadeOut(200, function () {
+                        if ($modal.hasClass('moved-to-body-modal')) {
+                            $modal.remove(); // Eliminamos el clon despues de éxito
+                        }
+                    });
 
                     // Recargamos el listado correspondiente
                     if ($parentWidget && $parentWidget.length > 0) {
