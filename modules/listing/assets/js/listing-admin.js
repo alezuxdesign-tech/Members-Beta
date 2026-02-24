@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 
         const id = 'confirm-' + Date.now();
         const markup = `
-            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display:flex; z-index: 999999;">
+            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display:none; z-index: 999999;">
                 <div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
                     <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
@@ -39,6 +39,9 @@ jQuery(document).ready(function ($) {
             </div>
         `;
         $('body').append(markup);
+
+        // Forzar display flex tras agregarlo al DOM para aplicar la animación correctamente
+        $(`#${id}`).fadeIn(200).css('display', 'flex');
 
         $(`#${id} .btn-cancel-confirm`).on('click', function (e) {
             e.preventDefault();
@@ -255,20 +258,30 @@ jQuery(document).ready(function ($) {
         // Para evitar problemas de z-index del iframe de Elementor, clonamos el modal a la raíz de body
         let $editModal;
         if ($originalModal.length > 0) {
+            // Se clona limpiando eventos previos (true, true si hiciera falta, pero aquí el modal base suele no tenerlos delegados directo)
             $editModal = $originalModal.clone().addClass('moved-to-body-modal');
             $('body').append($editModal);
         } else {
-            // Fallback por si acaso ya se había movido y no está en el widget
-            $editModal = $('.alezux-edit-task-modal');
+            // Fallback
+            $editModal = $('.alezux-edit-task-modal').first();
+            if (!$editModal.hasClass('moved-to-body-modal')) {
+                $editModal.addClass('moved-to-body-modal');
+                $('body').append($editModal); // Mover al body
+            }
         }
+
+        // Limpiar cualquier estado anterior
+        $editModal.hide();
 
         // Popular datos
         $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
         $editModal.find('.edit_task_title').val($taskItem.find('.task-title').text());
         $editModal.find('.edit_task_description').val($taskItem.find('.task-desc').text());
 
-        // Mostrar modalidad (con display flex para el contenedor general por los estilos)
-        $editModal.fadeIn().css('display', 'flex').css('z-index', '999999');
+        console.log("Mostrando Modal Editar", $editModal);
+
+        // Mostrar Modalidad
+        $editModal.fadeIn(200).css('display', 'flex');
 
         // Referencia estricta para saber qué widget disparó y actualizar solo ése
         $editModal.data('parent-widget', $widget);
