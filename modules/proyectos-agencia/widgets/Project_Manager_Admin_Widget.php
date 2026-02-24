@@ -182,7 +182,7 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'default' => '#f4f6f9',
 				'selectors' => [
-					'{{WRAPPER}} .alezux-kanban-board' => 'background: {{VALUE}};',
+					'{{WRAPPER}} .alezux-kanban-board' => 'background: {{VALUE}} !important;',
 				],
 			]
 		);
