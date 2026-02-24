@@ -86,6 +86,18 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'edit_close_icon',
+			[
+				'label' => esc_html__( 'Ícono de Cerrar Modal', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-times',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Style Tab
@@ -156,6 +168,13 @@ class Listing_Admin_Widget extends Widget_Base {
 			$delete_icon_html = ob_get_clean();
 		}
 
+		$edit_close_icon_html = '<i class="fas fa-times"></i>';
+		if ( ! empty( $settings['edit_close_icon']['value'] ) ) {
+			ob_start();
+			\Elementor\Icons_Manager::render_icon( $settings['edit_close_icon'], [ 'aria-hidden' => 'true' ] );
+			$edit_close_icon_html = ob_get_clean();
+		}
+
 		?>
 		<div class="alezux-listing-admin" data-icon-edit="<?php echo esc_attr( $edit_icon_html ); ?>" data-icon-delete="<?php echo esc_attr( $delete_icon_html ); ?>">
 			<div class="alezux-listing-header">
@@ -195,7 +214,7 @@ class Listing_Admin_Widget extends Widget_Base {
 				<div class="alezux-listing-modal-content">
 					<div class="alezux-listing-modal-header">
 						<h3>Editar Tarea</h3>
-						<span class="alezux-listing-modal-close"><i class="fas fa-times"></i></span>
+						<span class="alezux-listing-modal-close"><?php echo $edit_close_icon_html; ?></span>
 					</div>
 					<div class="alezux-listing-modal-body">
 						<form class="alezux-form alezux-edit-task-form">

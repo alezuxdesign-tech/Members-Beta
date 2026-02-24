@@ -192,8 +192,6 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log("Btn Eliminar Clickeado");
-
         const $btn = $(this);
         const $taskItem = $btn.closest('.alezux-task-item');
         const taskId = $taskItem.attr('data-id');
@@ -242,8 +240,6 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log("Btn Editar Clickeado");
-
         const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
 
@@ -261,8 +257,6 @@ jQuery(document).ready(function ($) {
         // Clonamos fresco para evitar duplicados de events y lo tiramos a element superior
         const $editModal = $originalModal.clone().addClass('moved-to-body-modal');
         $('body').append($editModal);
-
-        console.log("Mostrando Modal Editar CLONADO", $editModal);
 
         // Popular datos en el clon
         $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
