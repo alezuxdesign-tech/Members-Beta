@@ -239,31 +239,39 @@ class Listing_Admin_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'icon_color',
+			'edit_icon_heading',
 			[
-				'label' => esc_html__( 'Color de Íconos', 'alezux-members' ),
+				'label' => esc_html__( 'Botón Editar', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'edit_icon_color',
+			[
+				'label' => esc_html__( 'Color de Editar', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-btn-icon svg' => 'fill: {{VALUE}};',
-					'{{WRAPPER}} .alezux-btn-icon i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .btn-edit-task svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-edit-task i' => 'color: {{VALUE}};',
 				],
 			]
 		);
 
 		$this->add_control(
-			'icon_color_hover',
+			'edit_icon_color_hover',
 			[
-				'label' => esc_html__( 'Color de Íconos Hover', 'alezux-members' ),
+				'label' => esc_html__( 'Color Hover', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .alezux-btn-icon:hover svg' => 'fill: {{VALUE}};',
-					'{{WRAPPER}} .alezux-btn-icon:hover i' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .btn-edit-task:hover svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-edit-task:hover i' => 'color: {{VALUE}};',
 				],
 			]
 		);
 
 		$this->add_responsive_control(
-			'icon_size',
+			'edit_icon_size',
 			[
 				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
@@ -274,8 +282,59 @@ class Listing_Admin_Widget extends Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .alezux-btn-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} .alezux-btn-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .btn-edit-task i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .btn-edit-task svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delete_icon_heading',
+			[
+				'label' => esc_html__( 'Botón Eliminar', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'delete_icon_color',
+			[
+				'label' => esc_html__( 'Color de Eliminar', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-delete-task i' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delete_icon_color_hover',
+			[
+				'label' => esc_html__( 'Color Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task:hover svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-delete-task:hover i' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'delete_icon_size',
+			[
+				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 60,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .btn-delete-task svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);

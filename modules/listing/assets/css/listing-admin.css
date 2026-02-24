@@ -189,8 +189,8 @@ textarea.alezux-input {
 }
 
 .alezux-btn-icon {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -199,6 +199,22 @@ textarea.alezux-input {
     justify-content: center;
     font-size: 14px;
     transition: all 0.3s ease;
+    margin-right: 5px;
+    pointer-events: auto;
+}
+
+.btn-edit-task {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-delete-task {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    margin-right: 0;
+    /* Último elemento */
 }
 
 .alezux-btn-icon i,

@@ -107,10 +107,10 @@ jQuery(document).ready(function ($) {
                         <small class="task-meta">Creada: ${task.formatted_date}</small>
                     </div>
                     <div class="task-actions">
-                        <span class="alezux-btn-icon btn-edit-task" role="button" title="Editar Tarea" style="display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-right: 5px; pointer-events: auto;">
+                        <span class="alezux-btn-icon btn-edit-task" role="button" title="Editar Tarea">
                             <span style="pointer-events: none;">${iconEditUrl}</span>
                         </span>
-                        <span class="alezux-btn-icon btn-delete-task" role="button" title="Eliminar Tarea" style="display: inline-flex; align-items: center; justify-content: center; background: rgba(255,71,87,0.1); color: #ff4757; border: 1px solid rgba(255,71,87,0.2); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.3s; pointer-events: auto;">
+                        <span class="alezux-btn-icon btn-delete-task" role="button" title="Eliminar Tarea">
                             <span style="pointer-events: none;">${iconDeleteUrl}</span>
                         </span>
                     </div>
@@ -261,9 +261,26 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        // Clonamos fresco para evitar duplicados de events y lo tiramos a element superior
+        // Clonamos fresco para evitar duplicados de events
         const $editModal = $originalModal.clone().addClass('moved-to-body-modal');
-        $('body').append($editModal);
+
+        // Extraemos las clases y el ID de Elementor para que {{WRAPPER}} pueda afectar estilos en el CSS dinámico
+        const $elementorElement = $widget.closest('.elementor-element');
+        const elementorClasses = $elementorElement.attr('class') || '';
+        const elementorId = $elementorElement.attr('data-id') || '';
+
+        // Lo envolvemos en un contenedor falso transparente para atrapar los settings visuales
+        if (elementorClasses && elementorId) {
+            const $wrapper = $('<div>', {
+                'class': elementorClasses,
+                'data-id': elementorId,
+                'style': 'position: static; display: contents;'
+            });
+            $wrapper.append($editModal);
+            $('body').append($wrapper);
+        } else {
+            $('body').append($editModal);
+        }
 
         // Popular datos en el clon
         $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
