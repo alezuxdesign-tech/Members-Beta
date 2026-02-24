@@ -116,6 +116,16 @@ add_action( 'admin_enqueue_scripts', function() {
 });
 
 /**
+ * Forzar carga de FontAwesome en el frontend para evitar iconos y spinners desaparecidos en widgets
+ */
+add_action( 'elementor/frontend/after_enqueue_styles', function() {
+	wp_enqueue_style( 'elementor-icons-shared-0' );
+	wp_enqueue_style( 'elementor-icons-fa-solid' );
+	wp_enqueue_style( 'elementor-icons-fa-regular' );
+	wp_enqueue_style( 'elementor-icons-fa-brands' );
+} );
+
+/**
  * Inyectar CSS de "Solo Admin" en el Frontend
  */
 add_action( 'wp_head', function() {
