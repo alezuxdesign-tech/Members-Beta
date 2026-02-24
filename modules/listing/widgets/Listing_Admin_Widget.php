@@ -100,6 +100,32 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'preview_dummy_data',
+			[
+				'label' => esc_html__( 'Ver Datos de Prueba', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => esc_html__( 'Mostrar tareas falsas en el editor para previsualizar estilos de tipografía.', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'preview_show_modal',
+			[
+				'label' => esc_html__( 'Forzar Modal Abierto', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => esc_html__( 'Forza que el Modal de Edición siempre esté abierto dentro de Elementor para estilizar sus textos y botones.', 'alezux-members' ),
+			]
+		);
+
 		$this->end_controls_section();
 
 		// Style Tab
@@ -220,8 +246,6 @@ class Listing_Admin_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-icon svg' => 'fill: {{VALUE}};',
 					'{{WRAPPER}} .alezux-btn-icon i' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-listing-modal-close' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-listing-modal-close svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
@@ -234,8 +258,6 @@ class Listing_Admin_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-icon:hover svg' => 'fill: {{VALUE}};',
 					'{{WRAPPER}} .alezux-btn-icon:hover i' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-listing-modal-close:hover' => 'color: {{VALUE}};',
-					'{{WRAPPER}} .alezux-listing-modal-close:hover svg' => 'fill: {{VALUE}};',
 				],
 			]
 		);
@@ -254,6 +276,55 @@ class Listing_Admin_Widget extends Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .alezux-btn-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .alezux-btn-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'close_icon_heading',
+			[
+				'label' => esc_html__( 'Botón Cerrar (X)', 'alezux-members' ),
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'close_icon_color',
+			[
+				'label' => esc_html__( 'Color de Cerrar', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-listing-modal-close' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'close_icon_color_hover',
+			[
+				'label' => esc_html__( 'Color de Cerrar Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-listing-modal-close:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .alezux-listing-modal-close:hover svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'close_icon_size',
+			[
+				'label' => esc_html__( 'Tamaño de Cerrar', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 60,
+					],
+				],
+				'selectors' => [
 					'{{WRAPPER}} .alezux-listing-modal-close i' => 'font-size: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}} .alezux-listing-modal-close svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 				],
@@ -394,7 +465,7 @@ class Listing_Admin_Widget extends Widget_Base {
 					</div>
 					<button type="submit" class="alezux-btn alezux-btn-primary" id="alezux-submit-task-btn">
 						<span class="btn-text">Crear Tarea</span>
-						<i class="fas fa-spinner fa-spin btn-icon" style="display: none;"></i>
+						<span class="btn-loading" style="display: none; padding-left: 10px;">Guardando...</span>
 					</button>
 					<div id="alezux-task-form-msg" class="alezux-form-msg"></div>
 				</form>
@@ -403,14 +474,58 @@ class Listing_Admin_Widget extends Widget_Base {
 			<div class="alezux-listing-tasks-wrapper">
 				<h3 class="alezux-tasks-subtitle">Tareas Creadas</h3>
 				<div id="alezux-admin-tasks-list" class="alezux-tasks-list">
-					<div class="alezux-loading-tasks">
-						<i class="fas fa-circle-notch fa-spin"></i> Cargando tareas...
-					</div>
+					<?php
+					$is_elementor_editor = \Elementor\Plugin::$instance->editor->is_edit_mode();
+					
+					if ( $is_elementor_editor && 'yes' === $settings['preview_dummy_data'] ) {
+						$dummy_tasks = [
+							[
+								'id' => 1,
+								'title' => 'Conectar Meta Business Manager',
+								'description' => 'El estudiante debe dar acceso de anunciante a nuestra cuenta publicitaria.',
+								'created_at' => wp_date( 'Y-m-d H:i:s' )
+							],
+							[
+								'id' => 2,
+								'title' => 'Llenar Onboarding Formulario',
+								'description' => 'Recopilar todos los datos del negocio del cliente, URLs y accesos básicos antes de agendar llamada inicial.',
+								'created_at' => wp_date( 'Y-m-d H:i:s', strtotime('-2 days') )
+							]
+						];
+
+						foreach ( $dummy_tasks as $task ) {
+							$date_format = date_i18n( get_option('date_format'), strtotime($task['created_at']) );
+							echo '<div class="alezux-task-item" data-id="' . esc_attr($task['id']) . '">
+								<div class="task-info">
+									<h4 class="task-title">' . esc_html($task['title']) . '</h4>
+									<p class="task-desc">' . esc_html($task['description']) . '</p>
+									<span class="task-meta"><i class="far fa-calendar-alt"></i> ' . esc_html($date_format) . '</span>
+								</div>
+								<div class="task-actions">
+									<span class="alezux-btn-icon btn-edit-task" role="button" tabindex="0">' . $edit_icon_html . '</span>
+									<span class="alezux-btn-icon btn-delete-task" role="button" tabindex="0" style="color: #ff4757;">' . $delete_icon_html . '</span>
+								</div>
+							</div>';
+						}
+					} else {
+						echo '<div class="alezux-loading-tasks"><i class="fas fa-circle-notch fa-spin"></i> Cargando tareas...</div>';
+					}
+					?>
 				</div>
 			</div>
 
 			<!-- Modal Edit Task -->
-			<div class="alezux-listing-modal-overlay alezux-edit-task-modal" style="display: none;">
+			<?php
+			$modal_style = 'display: none;';
+			$modal_class = 'alezux-listing-modal-overlay alezux-edit-task-modal';
+			
+			if ( $is_elementor_editor && 'yes' === $settings['preview_show_modal'] ) {
+				// Estilos en línea para forzar display relativo y prevenir que el overlay ocupe 100vh tapando Elementor
+				$modal_style = 'display: flex; opacity: 1; position: relative !important; z-index: 10 !important; max-height: 500px; padding: 20px; background: transparent;';
+				$modal_class .= ' editor-preview-active'; 
+			}
+			?>
+			<div class="<?php echo esc_attr( $modal_class ); ?>" style="<?php echo esc_attr( $modal_style ); ?>">
 				<div class="alezux-listing-modal-content">
 					<div class="alezux-listing-modal-header">
 						<h3>Editar Tarea</h3>
@@ -429,7 +544,7 @@ class Listing_Admin_Widget extends Widget_Base {
 							</div>
 							<button type="submit" class="alezux-btn alezux-btn-primary alezux-submit-edit-task-btn">
 								<span class="btn-text">Guardar Cambios</span>
-								<i class="fas fa-spinner fa-spin btn-icon" style="display: none;"></i>
+								<span class="btn-loading" style="display: none; padding-left: 10px;">Guardando...</span>
 							</button>
 						</form>
 					</div>

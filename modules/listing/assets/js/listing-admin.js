@@ -57,6 +57,13 @@ jQuery(document).ready(function ($) {
         const $tasksList = $widget.find('#alezux-admin-tasks-list');
         if ($tasksList.length === 0) return;
 
+        // Evitar carga AJAX en el editor de Elementor si se están renderizando datos dummy por PHP
+        if ($('body').hasClass('elementor-editor-active') && $tasksList.find('.alezux-task-item').length > 0) {
+            return;
+        }
+
+        $tasksList.html('<div class="alezux-loading-tasks"><i class="fas fa-circle-notch fa-spin"></i> Cargando tareas...</div>');
+
         const iconEdit = $widget.attr('data-icon-edit') || '<i class="fas fa-edit"></i>';
         const iconDelete = $widget.attr('data-icon-delete') || '<i class="fas fa-trash"></i>';
 
@@ -154,7 +161,7 @@ jQuery(document).ready(function ($) {
 
         $submitBtn.prop('disabled', true);
         $submitBtn.find('.btn-text').hide();
-        $submitBtn.find('.btn-icon').show();
+        $submitBtn.find('.btn-loading').show();
         $msgDiv.removeClass('success error').hide();
 
         $.ajax({
@@ -181,7 +188,7 @@ jQuery(document).ready(function ($) {
             complete: function () {
                 $submitBtn.prop('disabled', false);
                 $submitBtn.find('.btn-text').show();
-                $submitBtn.find('.btn-icon').hide();
+                $submitBtn.find('.btn-loading').hide();
                 setTimeout(() => $msgDiv.fadeOut(), 4000);
             }
         });
@@ -293,7 +300,7 @@ jQuery(document).ready(function ($) {
 
         $btn.prop('disabled', true);
         $btn.find('.btn-text').hide();
-        $btn.find('.btn-icon').show();
+        $btn.find('.btn-loading').show();
 
         $.ajax({
             url: alezux_listing_vars.ajax_url,
