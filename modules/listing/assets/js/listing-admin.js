@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 
         const id = 'confirm-' + Date.now();
         const markup = `
-            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display:none; z-index: 999999;">
+            <div id="${id}" class="alezux-modal-overlay confirm-modal-alezux" style="display: flex; z-index: 999999;">
                 <div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
                     <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
@@ -39,9 +39,6 @@ jQuery(document).ready(function ($) {
             </div>
         `;
         $('body').append(markup);
-
-        // Forzar display flex tras agregarlo al DOM para aplicar la animación correctamente
-        $(`#${id}`).fadeIn(200).css('display', 'flex');
 
         $(`#${id} .btn-cancel-confirm`).on('click', function (e) {
             e.preventDefault();
@@ -280,8 +277,8 @@ jQuery(document).ready(function ($) {
 
         console.log("Mostrando Modal Editar", $editModal);
 
-        // Mostrar Modalidad
-        $editModal.fadeIn(200).css('display', 'flex');
+        // Mostrar Modalidad evitando fadeIn bug e instanciando directamente display flex
+        $editModal.css({ 'display': 'flex', 'opacity': '1' });
 
         // Referencia estricta para saber qué widget disparó y actualizar solo ése
         $editModal.data('parent-widget', $widget);
