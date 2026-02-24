@@ -74,9 +74,21 @@ class Project_Client_View_Widget extends Widget_Base {
 			Group_Control_Background::get_type(),
 			[
 				'name' => 'container_background',
-				'label' => 'Fondo',
+				'label' => 'Fondo General',
 				'types' => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .alezux-client-project',
+			]
+		);
+
+		$this->add_control(
+			'force_bg_general',
+			[
+				'label' => 'Color de Fondo (Forzado)',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+				],
+				'description' => 'Usa esto si el Fondo General no se aplica correctamente debido al tema.',
 			]
 		);
 
@@ -110,6 +122,61 @@ class Project_Client_View_Widget extends Widget_Base {
 				'name' => 'container_box_shadow',
 				'label' => 'Sombra de Caja',
 				'selector' => '{{WRAPPER}} .alezux-client-project',
+			]
+		);
+
+		$this->add_control(
+			'content_area_heading',
+			[
+				'label' => 'Caja de Contenido (Tarjeta Interna)',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'content_background',
+				'label' => 'Fondo del Contenido',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .project-content-area, {{WRAPPER}} .step-content',
+			]
+		);
+
+		$this->add_control(
+			'force_bg_content',
+			[
+				'label' => 'Color Fondo Contenido (Forzado)',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .project-content-area' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+					'{{WRAPPER}} .step-content' => 'background-color: {{VALUE}} !important; background-image: none !important;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'content_padding',
+			[
+				'label' => 'Relleno del Contenido (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .project-content-area, {{WRAPPER}} .step-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'content_border_radius',
+			[
+				'label' => 'Radio de Borde Contenido',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .project-content-area, {{WRAPPER}} .step-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
 
