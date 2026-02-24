@@ -189,7 +189,7 @@ jQuery(document).ready(function ($) {
 
         const $btn = $(this);
         const $taskItem = $btn.closest('.alezux-task-item');
-        const taskId = $taskItem.data('id');
+        const taskId = $taskItem.attr('data-id');
         const originalHtml = $btn.html();
 
         customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
@@ -237,26 +237,25 @@ jQuery(document).ready(function ($) {
 
         const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
-        const $originalModal = $widget.find('#alezux-edit-task-modal');
+        const $originalModal = $widget.find('.alezux-edit-task-modal').not('.moved-to-body-modal');
 
         // Removemos cualquier modal flotante viejo que haya quedado en el body
-        $('body > #alezux-edit-task-modal.moved-to-body-modal').remove();
+        $('body > .alezux-edit-task-modal.moved-to-body-modal').remove();
 
         // Para evitar problemas de z-index del iframe de Elementor, clonamos el modal a la raíz de body
         let $editModal;
         if ($originalModal.length > 0) {
             $editModal = $originalModal.clone().addClass('moved-to-body-modal');
-            $editModal.attr('id', 'alezux-edit-task-modal'); // asegurar que el id siga siendo el mismo
             $('body').append($editModal);
         } else {
             // Fallback por si acaso ya se había movido y no está en el widget
-            $editModal = $('#alezux-edit-task-modal');
+            $editModal = $('.alezux-edit-task-modal');
         }
 
         // Popular datos
-        $editModal.find('#edit_task_id').val($taskItem.data('id'));
-        $editModal.find('#edit_task_title').val($taskItem.find('.task-title').text());
-        $editModal.find('#edit_task_description').val($taskItem.find('.task-desc').text());
+        $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
+        $editModal.find('.edit_task_title').val($taskItem.find('.task-title').text());
+        $editModal.find('.edit_task_description').val($taskItem.find('.task-desc').text());
 
         // Mostrar modalidad (con display flex para el contenedor general por los estilos)
         $editModal.fadeIn().css('display', 'flex').css('z-index', '999999');
@@ -266,17 +265,17 @@ jQuery(document).ready(function ($) {
     });
 
     // SUBMIT EDIT FORM
-    $(document).on('submit', '#alezux-edit-task-form', function (e) {
+    $(document).on('submit', '.alezux-edit-task-form', function (e) {
         e.preventDefault();
 
         const $form = $(this);
-        const $modal = $form.closest('#alezux-edit-task-modal');
-        const $btn = $form.find('#alezux-submit-edit-task-btn');
+        const $modal = $form.closest('.alezux-edit-task-modal');
+        const $btn = $form.find('.alezux-submit-edit-task-btn');
         const $parentWidget = $modal.data('parent-widget');
 
-        const id = $form.find('#edit_task_id').val();
-        const title = $form.find('#edit_task_title').val();
-        const description = $form.find('#edit_task_description').val();
+        const id = $form.find('.edit_task_id').val();
+        const title = $form.find('.edit_task_title').val();
+        const description = $form.find('.edit_task_description').val();
 
         if (!title) return;
 

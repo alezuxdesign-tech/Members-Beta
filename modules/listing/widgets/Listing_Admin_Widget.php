@@ -191,24 +191,24 @@ class Listing_Admin_Widget extends Widget_Base {
 			</div>
 
 			<!-- Modal Edit Task -->
-			<div id="alezux-edit-task-modal" class="alezux-modal-overlay" style="display: none;">
+			<div class="alezux-modal-overlay alezux-edit-task-modal" style="display: none;">
 				<div class="alezux-modal-content">
 					<div class="alezux-modal-header">
 						<h3>Editar Tarea</h3>
 						<span class="alezux-modal-close"><i class="fas fa-times"></i></span>
 					</div>
 					<div class="alezux-modal-body">
-						<form id="alezux-edit-task-form" class="alezux-form">
-							<input type="hidden" id="edit_task_id" name="edit_task_id">
+						<form class="alezux-form alezux-edit-task-form">
+							<input type="hidden" class="edit_task_id" name="edit_task_id">
 							<div class="alezux-form-group">
-								<label for="edit_task_title">Nombre de la Tarea</label>
-								<input type="text" id="edit_task_title" name="edit_task_title" class="alezux-input" required>
+								<label>Nombre de la Tarea</label>
+								<input type="text" name="edit_task_title" class="alezux-input edit_task_title" required>
 							</div>
 							<div class="alezux-form-group">
-								<label for="edit_task_description">Descripción</label>
-								<textarea id="edit_task_description" name="edit_task_description" class="alezux-input" rows="3"></textarea>
+								<label>Descripción</label>
+								<textarea name="edit_task_description" class="alezux-input edit_task_description" rows="3"></textarea>
 							</div>
-							<button type="submit" class="alezux-btn alezux-btn-primary" id="alezux-submit-edit-task-btn">
+							<button type="submit" class="alezux-btn alezux-btn-primary alezux-submit-edit-task-btn">
 								<span class="btn-text">Guardar Cambios</span>
 								<i class="fas fa-spinner fa-spin btn-icon" style="display: none;"></i>
 							</button>
