@@ -57,6 +57,23 @@ class Project_Client_View_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'preview_step',
+			[
+				'label' => 'Previsualizar Paso (Solo Editor)',
+				'type' => Controls_Manager::SELECT,
+				'options' => [
+					'briefing' => '1. Briefing Inicial',
+					'identity' => '2. Propuesta de Identidad',
+					'web_design' => '3. Diseño UI/UX',
+					'development' => '4. Desarrollo & Montaje',
+					'delivery' => '5. Entrega Final',
+				],
+				'default' => 'briefing',
+				'description' => 'Elige qué paso quieres previsualizar dentro del editor de Elementor para diseñar sus contenidos.',
+			]
+		);
+
 		$this->end_controls_section();
 
 		// ==========================
@@ -689,26 +706,62 @@ class Project_Client_View_Widget extends Widget_Base {
 	}
 
 	protected function render() {
-        if ( ! is_user_logged_in() ) {
+        $settings = $this->get_settings_for_display();
+        $is_edit_mode = \Elementor\Plugin::$instance->editor->is_edit_mode();
+
+        if ( ! is_user_logged_in() && ! $is_edit_mode ) {
             echo '<div class="alezux-alert-info">Debes iniciar sesión para ver tu proyecto.</div>';
             return;
         }
 
-        $user_id = get_current_user_id();
-        $manager = new Projects_Manager();
-        
-        // Find project for this client
-        $projects = $manager->get_projects( [ 'client_id' => $user_id ] );
-        
-        if ( empty( $projects ) ) {
-            echo '<div class="alezux-alert-info">' . $this->get_settings_for_display( 'no_project_message' ) . '</div>';
-            return;
-        }
+        if ( $is_edit_mode ) {
+            // Datos ficticios para el editor
+            $current_step = isset($settings['preview_step']) ? $settings['preview_step'] : 'briefing';
+            $project_id = 'demo-123';
+            $data = [
+                'briefing' => [
+                    'has_logo' => 'yes',
+                    'logo_url' => '#'
+                ],
+                'identity' => [
+                    'status' => 'pending', 
+                    'proposal_files' => ['https://via.placeholder.com/800x600?text=Proposicion+1', 'https://via.placeholder.com/800x600?text=Proposicion+2']
+                ],
+                'web_design' => [
+                    'figma_url' => 'https://figma.com/demo'
+                ],
+                'development' => [
+                    'staging_url' => 'https://staging.ejemplotest.com'
+                ],
+                'delivery' => [
+                    'logos' => ['https://via.placeholder.com/150?text=Logo.zip'],
+                    'video_links' => ['https://youtube.com/demo1', 'https://youtube.com/demo2'],
+                    'credentials' => [
+                        'login_url' => 'https://ejemplo.com/wp-admin',
+                        'user' => 'admin_test',
+                        'password' => 'Pass1234!'
+                    ]
+                ]
+            ];
+        } else {
+            // Datos reales para el front-end
+            $user_id = get_current_user_id();
+            $manager = new Projects_Manager();
+            
+            // Buscar proyecto para el cliente
+            $projects = $manager->get_projects( [ 'client_id' => $user_id ] );
+            
+            if ( empty( $projects ) ) {
+                echo '<div class="alezux-alert-info">' . esc_html( $settings['no_project_message'] ) . '</div>';
+                return;
+            }
 
-        // Get the most recent project
-        $project = $projects[0];
-        $data = json_decode( $project->project_data, true ) ?: [];
-        $current_step = $project->current_step; // briefing, identity, web_design, development, delivery
+            // Conseguir proyecto más reciente
+            $project = $projects[0];
+            $project_id = $project->id;
+            $data = json_decode( $project->project_data, true ) ?: [];
+            $current_step = $project->current_step;
+        }
 
         // Map steps to order
         $steps = [
@@ -724,7 +777,7 @@ class Project_Client_View_Widget extends Widget_Base {
 
         // Render Timeline
 		?>
-		<div class="alezux-client-project" id="alezux-client-app" data-id="<?php echo $project->id; ?>">
+		<div class="alezux-client-project" id="alezux-client-app" data-id="<?php echo esc_attr($project_id); ?>">
             
             <!-- Timeline Header -->
             <div class="project-timeline">
