@@ -42,6 +42,10 @@ jQuery(document).ready(function ($) {
         }
 
         tasks.forEach(task => {
+            console.log("Renderizando tarea ID:", task.id);
+            console.log("Icon Edit HTML:", iconEdit);
+            console.log("Icon Delete HTML:", iconDelete);
+
             const html = `
                 <div class="alezux-task-item" data-id="${task.id}">
                     <div class="task-info">
@@ -158,10 +162,13 @@ jQuery(document).ready(function ($) {
     // Delete Task
     $tasksList.on('click', '.btn-delete-task', function (e) {
         e.preventDefault();
+        console.log("Click detectado en Eliminar Tarea!");
 
         const $taskItem = $(this).closest('.alezux-task-item');
         const taskId = $taskItem.data('id');
         const $btn = $(this);
+
+        console.log("Task ID a eliminar:", taskId);
 
         customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
             $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
@@ -201,7 +208,11 @@ jQuery(document).ready(function ($) {
 
     $tasksList.on('click', '.btn-edit-task', function (e) {
         e.preventDefault();
+        console.log("Click detectado en Editar Tarea!");
+
         const $taskItem = $(this).closest('.alezux-task-item');
+        console.log("Task ID a editar:", $taskItem.data('id'));
+        console.log("HTML del item de tarea a editar:", $taskItem.html());
 
         // Poner datos en formulario
         $('#edit_task_id').val($taskItem.data('id'));
