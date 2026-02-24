@@ -228,13 +228,10 @@ jQuery(document).ready(function ($) {
     });
 
     // CLOSE ANY MODAL
-    $(document).on('click', '.alezux-modal-close', function () {
+    $(document.body).on('click', '.alezux-modal-close', function () {
         const $overlay = $(this).closest('.alezux-modal-overlay');
         $overlay.fadeOut(200, function () {
-            // Si el modal fue clonado/movido al body lo eliminamos del DOM en lugar de solo esconderlo
-            if ($overlay.hasClass('moved-to-body-modal')) {
-                $overlay.remove();
-            }
+            // Ya no lo removemos del DOM porque ahora reutilizamos el mismo elemento reubicado.
         });
     });
 
@@ -247,28 +244,24 @@ jQuery(document).ready(function ($) {
 
         const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
-        const $originalModal = $widget.find('.alezux-edit-task-modal').not('.moved-to-body-modal');
 
-        // Removemos cualquier modal flotante viejo que haya quedado en el body
-        $('body > .alezux-edit-task-modal.moved-to-body-modal').remove();
+        // Buscar The Modal en el Widget
+        let $editModal = $widget.find('.alezux-edit-task-modal');
 
-        // Para evitar problemas de z-index del iframe de Elementor, clonamos el modal a la raíz de body
-        let $editModal;
-        if ($originalModal.length > 0) {
-            // Se clona limpiando eventos previos (true, true si hiciera falta, pero aquí el modal base suele no tenerlos delegados directo)
-            $editModal = $originalModal.clone().addClass('moved-to-body-modal');
-            $('body').append($editModal);
-        } else {
-            // Fallback
+        // Si no está, lo buscamos en el documento (porque ya fue movido al body previamente)
+        if ($editModal.length === 0) {
             $editModal = $('.alezux-edit-task-modal').first();
-            if (!$editModal.hasClass('moved-to-body-modal')) {
-                $editModal.addClass('moved-to-body-modal');
-                $('body').append($editModal); // Mover al body
-            }
         }
 
-        // Limpiar cualquier estado anterior
-        $editModal.hide();
+        if ($editModal.length === 0) {
+            console.error("No se encontró el modal en el DOM.");
+            return;
+        }
+
+        // Mover al body para evitar problemas de z-index y overflow (Copiado de Plans Manager)
+        if ($editModal.parent()[0].tagName !== 'BODY') {
+            $editModal.appendTo('body');
+        }
 
         // Popular datos
         $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
@@ -277,8 +270,13 @@ jQuery(document).ready(function ($) {
 
         console.log("Mostrando Modal Editar", $editModal);
 
-        // Mostrar Modalidad evitando fadeIn bug e instanciando directamente display flex
-        $editModal.css({ 'display': 'flex', 'opacity': '1' });
+        // Mostrar Modalidad forzando propiedades que puedan estar ocultas por Elementor
+        $editModal.removeClass('alezux-hidden moved-to-body-modal').css({
+            'display': 'flex',
+            'opacity': '1',
+            'visibility': 'visible',
+            'z-index': '999999'
+        }).hide().fadeIn(200);
 
         // Referencia estricta para saber qué widget disparó y actualizar solo ése
         $editModal.data('parent-widget', $widget);
@@ -317,9 +315,7 @@ jQuery(document).ready(function ($) {
                 if (response.success) {
                     showNotification(response.data.message, 'success');
 
-                    $modal.fadeOut(200, function () {
-                        if ($modal.hasClass('moved-to-body-modal')) $modal.remove();
-                    });
+                    $modal.fadeOut(200); // Ya no lo removemos del dom
 
                     // Recargamos el listado correspondiente
                     if ($parentWidget && $parentWidget.length > 0) {
