@@ -8,8 +8,8 @@ jQuery(document).ready(function ($) {
 
     if ($adminForm.length === 0) return;
 
-    const iconEdit = $adminWidget.data('icon-edit') || '<i class="fas fa-edit"></i>';
-    const iconDelete = $adminWidget.data('icon-delete') || '<i class="fas fa-trash"></i>';
+    const iconEdit = $adminWidget.attr('data-icon-edit') || '<i class="fas fa-edit"></i>';
+    const iconDelete = $adminWidget.attr('data-icon-delete') || '<i class="fas fa-trash"></i>';
 
     // Load Tasks on INIT
     function loadTasks() {
