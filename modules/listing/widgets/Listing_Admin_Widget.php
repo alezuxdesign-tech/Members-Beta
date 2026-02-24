@@ -229,27 +229,19 @@ class Listing_Admin_Widget extends Widget_Base {
 
 		$this->end_controls_section();
 
-		// Íconos Section
+		// === SECCIÓN BOTÓN EDITAR ===
 		$this->start_controls_section(
-			'icons_section',
-			[
-				'label' => esc_html__( 'Íconos', 'alezux-members' ),
-				'tab' => Controls_Manager::TAB_STYLE,
-			]
-		);
-
-		$this->add_control(
-			'edit_icon_heading',
+			'edit_button_section',
 			[
 				'label' => esc_html__( 'Botón Editar', 'alezux-members' ),
-				'type' => Controls_Manager::HEADING,
+				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
 
 		$this->add_control(
 			'edit_icon_color',
 			[
-				'label' => esc_html__( 'Color de Editar', 'alezux-members' ),
+				'label' => esc_html__( 'Color de Ícono', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .btn-edit-task svg' => 'fill: {{VALUE}};',
@@ -270,10 +262,32 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'edit_btn_bg',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-edit-task' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'edit_btn_bg_hover',
+			[
+				'label' => esc_html__( 'Color Fondo Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-edit-task:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->add_responsive_control(
 			'edit_icon_size',
 			[
-				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'label' => esc_html__( 'Tamaño Ícono', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [
@@ -288,19 +302,45 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'delete_icon_heading',
+		$this->add_responsive_control(
+			'edit_btn_padding',
+			[
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-edit-task' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'edit_btn_border_radius',
+			[
+				'label' => esc_html__( 'Redondeo de Bordes', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-edit-task' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// === SECCIÓN BOTÓN ELIMINAR ===
+		$this->start_controls_section(
+			'delete_button_section',
 			[
 				'label' => esc_html__( 'Botón Eliminar', 'alezux-members' ),
-				'type' => Controls_Manager::HEADING,
-				'separator' => 'before',
+				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
 
 		$this->add_control(
 			'delete_icon_color',
 			[
-				'label' => esc_html__( 'Color de Eliminar', 'alezux-members' ),
+				'label' => esc_html__( 'Color de Ícono', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .btn-delete-task svg' => 'fill: {{VALUE}};',
@@ -321,10 +361,32 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'delete_btn_bg',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'delete_btn_bg_hover',
+			[
+				'label' => esc_html__( 'Color Fondo Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->add_responsive_control(
 			'delete_icon_size',
 			[
-				'label' => esc_html__( 'Tamaño', 'alezux-members' ),
+				'label' => esc_html__( 'Tamaño Ícono', 'alezux-members' ),
 				'type' => Controls_Manager::SLIDER,
 				'range' => [
 					'px' => [
@@ -339,14 +401,31 @@ class Listing_Admin_Widget extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
-			'close_icon_heading',
+		$this->add_responsive_control(
+			'delete_btn_padding',
 			[
-				'label' => esc_html__( 'Botón Cerrar (X)', 'alezux-members' ),
-				'type' => Controls_Manager::HEADING,
-				'separator' => 'before',
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
 			]
 		);
+
+		$this->add_responsive_control(
+			'delete_btn_border_radius',
+			[
+				'label' => esc_html__( 'Redondeo de Bordes', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-delete-task' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
 
 		$this->add_control(
 			'close_icon_color',

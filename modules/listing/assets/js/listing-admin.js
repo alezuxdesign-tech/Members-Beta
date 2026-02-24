@@ -264,20 +264,32 @@ jQuery(document).ready(function ($) {
         // Clonamos fresco para evitar duplicados de events
         const $editModal = $originalModal.clone().addClass('moved-to-body-modal');
 
-        // Extraemos las clases y el ID de Elementor para que {{WRAPPER}} pueda afectar estilos en el CSS dinámico
+        // Extraemos las clases y el ID de Elementor para que {{WRAPPER}} pueda afectar estilos
         const $elementorElement = $widget.closest('.elementor-element');
         const elementorClasses = $elementorElement.attr('class') || '';
         const elementorId = $elementorElement.attr('data-id') || '';
 
-        // Lo envolvemos en un contenedor falso transparente para atrapar los settings visuales
+        // Obtenemos la estructura base global que Elementor inyecta en el frontend (ej. elementor-1234)
+        const $elementorRoot = $widget.closest('.elementor');
+        const rootClasses = $elementorRoot.attr('class') || '';
+
+        // Lo envolvemos en un doble contenedor falso transparente para imitar el árbol DOM de Elementor
         if (elementorClasses && elementorId) {
-            const $wrapper = $('<div>', {
+            const $innerWrapper = $('<div>', {
                 'class': elementorClasses,
                 'data-id': elementorId,
                 'style': 'position: static; display: contents;'
-            });
-            $wrapper.append($editModal);
-            $('body').append($wrapper);
+            }).append($editModal);
+
+            if (rootClasses) {
+                const $outerWrapper = $('<div>', {
+                    'class': rootClasses,
+                    'style': 'position: static; display: contents;'
+                }).append($innerWrapper);
+                $('body').append($outerWrapper);
+            } else {
+                $('body').append($innerWrapper);
+            }
         } else {
             $('body').append($editModal);
         }
