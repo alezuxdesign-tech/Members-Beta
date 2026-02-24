@@ -3,6 +3,10 @@ namespace Alezux_Members\Modules\Proyectos_Agencia\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Background;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Box_Shadow;
 use Alezux_Members\Modules\Proyectos_Agencia\Includes\Projects_Manager;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -52,6 +56,567 @@ class Project_Client_View_Widget extends Widget_Base {
 				'default' => 'No tienes un proyecto activo en este momento.',
 			]
 		);
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Contenedor
+		// ==========================
+		$this->start_controls_section(
+			'style_container_section',
+			[
+				'label' => 'Contenedor',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name' => 'container_background',
+				'label' => 'Fondo',
+				'types' => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} .alezux-client-project',
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_padding',
+			[
+				'label' => 'Relleno (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'container_border_radius',
+			[
+				'label' => 'Radio de Borde',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-client-project' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'container_box_shadow',
+				'label' => 'Sombra de Caja',
+				'selector' => '{{WRAPPER}} .alezux-client-project',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Tipografía y Textos
+		// ==========================
+		$this->start_controls_section(
+			'style_typography_section',
+			[
+				'label' => 'Tipografía y Textos',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_title_style',
+			[
+				'label' => 'Títulos Principales (H3)',
+				'type' => Controls_Manager::HEADING,
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label' => 'Color de Título',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .step-content h3' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .delivery-hero h2' => 'color: {{VALUE}};',
+					'{{WRAPPER}} h4' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'title_typography',
+				'selector' => '{{WRAPPER}} .step-content h3, {{WRAPPER}} .delivery-hero h2, {{WRAPPER}} h4',
+			]
+		);
+
+		$this->add_control(
+			'heading_text_style',
+			[
+				'label' => 'Textos Generales (P)',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'text_color',
+			[
+				'label' => 'Color de Texto',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} p' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .delivery-folder li' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .credentials-box p' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'text_typography',
+				'selector' => '{{WRAPPER}} p, {{WRAPPER}} .delivery-folder li, {{WRAPPER}} .credentials-box p',
+			]
+		);
+
+		$this->add_control(
+			'heading_label_style',
+			[
+				'label' => 'Etiquetas (Labels)',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'label_color',
+			[
+				'label' => 'Color de Etiqueta',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} label' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .step-label' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'label_typography',
+				'selector' => '{{WRAPPER}} label',
+			]
+		);
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Línea de Tiempo (Pasos)
+		// ==========================
+		$this->start_controls_section(
+			'style_timeline_section',
+			[
+				'label' => 'Línea de Tiempo',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+		
+		$this->add_control(
+			'timeline_line_color',
+			[
+				'label' => 'Color de Línea Conectora',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .step-line' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_timeline_style' );
+
+		// Inactivo
+		$this->start_controls_tab(
+			'tab_timeline_inactive',
+			[
+				'label' => 'Inactivo',
+			]
+		);
+
+		$this->add_control(
+			'step_inactive_bg_color',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step:not(.active):not(.completed) .step-circle' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_inactive_text_color',
+			[
+				'label' => 'Color de Número/Icono',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step:not(.active):not(.completed) .step-circle' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_inactive_label_color',
+			[
+				'label' => 'Color de Etiqueta',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step:not(.active):not(.completed) .step-label' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Activo
+		$this->start_controls_tab(
+			'tab_timeline_active',
+			[
+				'label' => 'Activo',
+			]
+		);
+
+		$this->add_control(
+			'step_active_bg_color',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.active .step-circle' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_active_text_color',
+			[
+				'label' => 'Color de Número',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.active .step-circle' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_active_label_color',
+			[
+				'label' => 'Color de Etiqueta',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.active .step-label' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Completado
+		$this->start_controls_tab(
+			'tab_timeline_completed',
+			[
+				'label' => 'Completado',
+			]
+		);
+
+		$this->add_control(
+			'step_completed_bg_color',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.completed .step-circle' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_completed_icon_color',
+			[
+				'label' => 'Color de Icono',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.completed .step-circle' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'step_completed_label_color',
+			[
+				'label' => 'Color de Etiqueta',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .timeline-step.completed .step-label' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Formularios (Inputs)
+		// ==========================
+		$this->start_controls_section(
+			'style_form_section',
+			[
+				'label' => 'Campos de Entrada (Inputs)',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'input_bg_color',
+			[
+				'label' => 'Color de Fondo',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'input_text_color',
+			[
+				'label' => 'Color de Texto',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name' => 'input_border',
+				'label' => 'Borde',
+				'selector' => '{{WRAPPER}} .alezux-input',
+			]
+		);
+
+		$this->add_responsive_control(
+			'input_border_radius',
+			[
+				'label' => 'Radio de Borde',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'input_padding',
+			[
+				'label' => 'Relleno (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'input_focus_heading',
+			[
+				'label' => 'Estado: Foco (Activo)',
+				'type' => Controls_Manager::HEADING,
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'input_focus_border_color',
+			[
+				'label' => 'Color de Borde al Enfocar',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-input:focus' => 'border-color: {{VALUE}}; outline: none;',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// ==========================
+		// STYLE TAB: Botones
+		// ==========================
+		$this->start_controls_section(
+			'style_buttons_section',
+			[
+				'label' => 'Botones Generales',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'button_typography',
+				'selector' => '{{WRAPPER}} .alezux-btn',
+			]
+		);
+
+		$this->add_responsive_control(
+			'button_border_radius',
+			[
+				'label' => 'Radio de Borde',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+		
+		$this->add_responsive_control(
+			'button_padding',
+			[
+				'label' => 'Relleno (Padding)',
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->start_controls_tabs( 'tabs_button_style' );
+
+		// Normal
+		$this->start_controls_tab(
+			'tab_button_normal',
+			[
+				'label' => 'Normal',
+			]
+		);
+
+		$this->add_control(
+			'button_text_color',
+			[
+				'label' => 'Color de Texto Primary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-primary' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_bg_color',
+			[
+				'label' => 'Color de Fondo Primary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-primary' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'button_sec_text_color',
+			[
+				'label' => 'Color de Texto Secondary',
+				'type' => Controls_Manager::COLOR,
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-secondary' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_sec_bg_color',
+			[
+				'label' => 'Color de Fondo Secondary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-secondary' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		// Hover
+		$this->start_controls_tab(
+			'tab_button_hover',
+			[
+				'label' => 'Hover',
+			]
+		);
+
+		$this->add_control(
+			'button_hover_text_color',
+			[
+				'label' => 'Color de Texto Primary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-primary:hover' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_hover_bg_color',
+			[
+				'label' => 'Color de Fondo Primary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-primary:hover' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+		
+		$this->add_control(
+			'button_sec_hover_text_color',
+			[
+				'label' => 'Color de Texto Secondary',
+				'type' => Controls_Manager::COLOR,
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-secondary:hover' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_sec_hover_bg_color',
+			[
+				'label' => 'Color de Fondo Secondary',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-btn.alezux-btn-secondary:hover' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
 
 		$this->end_controls_section();
 	}
