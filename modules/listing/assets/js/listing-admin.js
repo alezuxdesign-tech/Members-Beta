@@ -42,10 +42,6 @@ jQuery(document).ready(function ($) {
         }
 
         tasks.forEach(task => {
-            console.log("Renderizando tarea ID:", task.id);
-            console.log("Icon Edit HTML:", iconEdit);
-            console.log("Icon Delete HTML:", iconDelete);
-
             const html = `
                 <div class="alezux-task-item" data-id="${task.id}">
                     <div class="task-info">
@@ -130,22 +126,22 @@ jQuery(document).ready(function ($) {
     }
 
     // Modal de Confirmación
-    function customConfirm(message, callback) {
+    function customConfirm($parent, message, callback) {
         const id = 'confirm-' + Date.now();
         const markup = `
-            <div id="${id}" class="alezux-modal-overlay" style="display:flex;">
+            <div id="${id}" class="alezux-modal-overlay" style="display:flex; z-index: 999999;">
                 <div class="alezux-modal-content" style="max-width: 400px; text-align: center;">
                     <div style="font-size: 40px; color: #ff4757; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
                     <h3 style="margin-bottom: 10px;">¿Estás seguro?</h3>
                     <p style="color: #a0a0a0; margin-bottom: 25px; line-height: 1.5;">${message}</p>
                     <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button class="alezux-btn btn-cancel-confirm" style="background: transparent; border: 1px solid #333; color: #fff;">Cancelar</button>
-                        <button class="alezux-btn btn-accept-confirm" style="background: #ff4757; color: #fff;">Sí, Eliminar</button>
+                        <button class="alezux-btn btn-cancel-confirm" type="button" style="background: transparent; border: 1px solid #333; color: #fff;">Cancelar</button>
+                        <button class="alezux-btn btn-accept-confirm" type="button" style="background: #ff4757; color: #fff;">Sí, Eliminar</button>
                     </div>
                 </div>
             </div>
         `;
-        $('body').append(markup);
+        $parent.append(markup);
 
         $(`#${id} .btn-cancel-confirm`).on('click', function (e) {
             e.preventDefault();
@@ -162,15 +158,13 @@ jQuery(document).ready(function ($) {
     // Delete Task
     $tasksList.on('click', '.btn-delete-task', function (e) {
         e.preventDefault();
-        console.log("Click detectado en Eliminar Tarea!");
 
         const $taskItem = $(this).closest('.alezux-task-item');
         const taskId = $taskItem.data('id');
         const $btn = $(this);
+        const $widget = $(this).closest('.alezux-listing-admin');
 
-        console.log("Task ID a eliminar:", taskId);
-
-        customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
+        customConfirm($widget, "Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
             $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
 
             $.ajax({
@@ -199,36 +193,36 @@ jQuery(document).ready(function ($) {
     });
 
     // === Edit Task ===
-    const $editModal = $('#alezux-edit-task-modal');
-    const $editForm = $('#alezux-edit-task-form');
-
-    $('.alezux-modal-close').on('click', function () {
+    // Uso de delegación de eventos al documento o al widget contenedor para evitar referencias huérfanas
+    $(document).on('click', '.alezux-modal-close', function () {
         $(this).closest('.alezux-modal-overlay').fadeOut();
     });
 
     $tasksList.on('click', '.btn-edit-task', function (e) {
         e.preventDefault();
-        console.log("Click detectado en Editar Tarea!");
 
         const $taskItem = $(this).closest('.alezux-task-item');
-        console.log("Task ID a editar:", $taskItem.data('id'));
-        console.log("HTML del item de tarea a editar:", $taskItem.html());
+        const $widget = $(this).closest('.alezux-listing-admin');
+        const $editModal = $widget.find('#alezux-edit-task-modal');
 
         // Poner datos en formulario
-        $('#edit_task_id').val($taskItem.data('id'));
-        $('#edit_task_title').val($taskItem.find('.task-title').text());
-        $('#edit_task_description').val($taskItem.find('.task-desc').text());
+        $editModal.find('#edit_task_id').val($taskItem.data('id'));
+        $editModal.find('#edit_task_title').val($taskItem.find('.task-title').text());
+        $editModal.find('#edit_task_description').val($taskItem.find('.task-desc').text());
 
-        $editModal.fadeIn().css('display', 'flex');
+        $editModal.fadeIn().css('display', 'flex').css('z-index', '999999');
     });
 
-    $editForm.on('submit', function (e) {
+    $(document).on('submit', '#alezux-edit-task-form', function (e) {
         e.preventDefault();
 
-        const $btn = $('#alezux-submit-edit-task-btn');
-        const id = $('#edit_task_id').val();
-        const title = $('#edit_task_title').val();
-        const description = $('#edit_task_description').val();
+        const $form = $(this);
+        const $modal = $form.closest('#alezux-edit-task-modal');
+        const $btn = $form.find('#alezux-submit-edit-task-btn');
+
+        const id = $form.find('#edit_task_id').val();
+        const title = $form.find('#edit_task_title').val();
+        const description = $form.find('#edit_task_description').val();
 
         if (!title) return;
 
@@ -249,7 +243,7 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 if (response.success) {
                     showNotification(response.data.message, 'success');
-                    $editModal.fadeOut();
+                    $modal.fadeOut();
                     loadTasks();
                 } else {
                     showNotification(response.data.message, 'error');
