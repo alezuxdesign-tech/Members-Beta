@@ -1391,7 +1391,7 @@ class Estudiantes_Widget extends Widget_Base {
 								</td>
 								<td style="text-align: right;">
 									<button class="alezux-action-btn" data-student-id="<?php echo \esc_attr( $student->ID ); ?>">
-										<i class="fa fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>
+										<i class="fas fa-cog"></i> <?php \esc_html_e( 'Gestionar', 'alezux-members' ); ?>
 									</button>
 								</td>
 							</tr>
@@ -1436,7 +1436,7 @@ class Estudiantes_Widget extends Widget_Base {
                     <div class="alezux-modal-body">
                         <!-- Loading State -->
                         <div id="alezux-modal-loading" style="text-align:center; padding: 40px;">
-                            <i class="fa fa-spinner fa-spin" style="font-size: 30px; color: #6366f1;"></i>
+                            <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: #6366f1;"></i>
                         </div>
 
                         <!-- Content State -->
@@ -1460,7 +1460,7 @@ class Estudiantes_Widget extends Widget_Base {
                                 </div>
                                 <div class="alezux-full-width" style="margin-top:10px;">
                                     <button class="alezux-btn alezux-btn-primary" id="btn-save-student-data">
-                                        <?php \esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?> <i class="fa fa-spinner alezux-spinner"></i>
+                                        <?php \esc_html_e( 'Guardar Cambios', 'alezux-members' ); ?> <i class="fas fa-spinner alezux-spinner"></i>
                                     </button>
                                 </div>
                             </div>
@@ -1470,7 +1470,7 @@ class Estudiantes_Widget extends Widget_Base {
                             <div class="alezux-manage-form-grid">
                                 <div>
                                     <button class="alezux-btn alezux-btn-warning alezux-btn-block" id="btn-reset-password">
-                                        <i class="fa fa-key"></i> <?php \esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
+                                        <i class="fas fa-key"></i> <?php \esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
                                     </button>
                                     <small style="display:block; margin-top:5px; color:#888; font-size:11px;">
                                         Genera una nueva y la envía por correo.
@@ -1478,7 +1478,7 @@ class Estudiantes_Widget extends Widget_Base {
                                 </div>
                                 <div>
                                     <button class="alezux-btn alezux-btn-danger alezux-btn-block" id="btn-block-user">
-                                        <i class="fa fa-ban"></i> <span id="lbl-block-user"><?php \esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
+                                        <i class="fas fa-ban"></i> <span id="lbl-block-user"><?php \esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
                                     </button>
                                 </div>
                             </div>
@@ -1506,7 +1506,7 @@ class Estudiantes_Widget extends Widget_Base {
             <div id="alezux-alert-modal-overlay" class="alezux-management-modal-overlay" style="display:none; z-index: 10001;">
                 <div class="alezux-alert-modal">
                     <div class="alezux-alert-icon" id="alezux-alert-icon">
-                        <i class="fa fa-info-circle"></i>
+                        <i class="fas fa-info-circle"></i>
                     </div>
                     <h3 id="alezux-alert-title">Título Alerta</h3>
                     <p id="alezux-alert-message">Mensaje de alerta</p>

@@ -506,7 +506,7 @@ class Estudiantes_Register_Widget extends Widget_Base {
 
 				<div class="alezux-form-actions">
 					<button type="submit" class="alezux-register-submit">
-						<?php echo esc_html( $settings['text_button'] ); ?> <i class="fa fa-spinner fa-spin" style="display:none;"></i>
+						<?php echo esc_html( $settings['text_button'] ); ?> <i class="fas fa-spinner fa-spin" style="display:none;"></i>
 					</button>
 				</div>
                 <div class="alezux-form-message"></div>

@@ -18,10 +18,10 @@ jQuery(document).ready(function ($) {
         var $btnCancel = $('#alezux-alert-cancel');
 
         $icon.removeClass('success error warning').addClass(type);
-        if (type === 'success') $icon.html('<i class="fa fa-check-circle"></i>');
-        if (type === 'error') $icon.html('<i class="fa fa-times-circle"></i>');
-        if (type === 'warning') $icon.html('<i class="fa fa-exclamation-triangle"></i>');
-        if (type === 'info') $icon.html('<i class="fa fa-info-circle"></i>');
+        if (type === 'success') $icon.html('<i class="fas fa-check-circle"></i>');
+        if (type === 'error') $icon.html('<i class="fas fa-times-circle"></i>');
+        if (type === 'warning') $icon.html('<i class="fas fa-exclamation-triangle"></i>');
+        if (type === 'info') $icon.html('<i class="fas fa-info-circle"></i>');
 
         $title.text(title);
         $msg.html(message);
@@ -42,7 +42,7 @@ jQuery(document).ready(function ($) {
         var $btnCancel = $('#alezux-alert-cancel');
 
         $icon.removeClass('success error info').addClass('warning');
-        $icon.html('<i class="fa fa-question-circle"></i>');
+        $icon.html('<i class="fas fa-question-circle"></i>');
 
         $title.text(title);
         $msg.html(message);
@@ -178,7 +178,7 @@ jQuery(document).ready(function ($) {
                     </td>
                     <td style="text-align: right;">
                         <button class="alezux-action-btn" data-student-id="${student.id}">
-                            <i class="fa fa-cog"></i> Gestionar
+                            <i class="fas fa-cog"></i> Gestionar
                         </button>
                     </td>
                 </tr>
@@ -196,7 +196,7 @@ jQuery(document).ready(function ($) {
         var prevPage = Math.max(1, currentPage - 1);
         var nextPage = Math.min(totalPages, currentPage + 1);
 
-        html += `<button class="page-btn prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}" ${currentPage <= 1 ? 'disabled' : ''}><i class="fa fa-chevron-left"></i></button>`;
+        html += `<button class="page-btn prev ${currentPage <= 1 ? 'disabled' : ''}" data-page="${prevPage}" ${currentPage <= 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
 
         for (var i = 1; i <= totalPages; i++) {
             if (i == currentPage) {
@@ -208,7 +208,7 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        html += `<button class="page-btn next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}" ${currentPage >= totalPages ? 'disabled' : ''}><i class="fa fa-chevron-right"></i></button>`;
+        html += `<button class="page-btn next ${currentPage >= totalPages ? 'disabled' : ''}" data-page="${nextPage}" ${currentPage >= totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
         $container.html(html);
     }
 
@@ -387,9 +387,9 @@ jQuery(document).ready(function ($) {
         var $btn = $('#btn-block-user');
         $btn.data('is-blocked', isBlocked);
         if (isBlocked) {
-            $btn.html('<i class="fa fa-unlock"></i> Desbloquear Acceso').css('background', '#10b981');
+            $btn.html('<i class="fas fa-unlock"></i> Desbloquear Acceso').css('background', '#10b981');
         } else {
-            $btn.html('<i class="fa fa-ban"></i> Bloquear Acceso Academia').css('background', '');
+            $btn.html('<i class="fas fa-ban"></i> Bloquear Acceso Academia').css('background', '');
         }
     }
 
