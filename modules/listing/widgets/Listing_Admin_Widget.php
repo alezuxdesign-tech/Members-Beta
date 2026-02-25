@@ -630,23 +630,43 @@ class Listing_Admin_Widget extends Widget_Base {
 								'id' => 1,
 								'title' => 'Conectar Meta Business Manager',
 								'description' => 'El estudiante debe dar acceso de anunciante a nuestra cuenta publicitaria.',
-								'created_at' => wp_date( 'Y-m-d H:i:s' )
+								'created_at' => wp_date( 'Y-m-d H:i:s' ),
+								'completed_by' => [
+									[ 'display_name' => 'Juan Pérez', 'user_email' => 'juan@prueba.com' ],
+									[ 'display_name' => 'María Gómez', 'user_email' => 'maria@ejemplo.com' ]
+								]
 							],
 							[
 								'id' => 2,
 								'title' => 'Llenar Onboarding Formulario',
 								'description' => 'Recopilar todos los datos del negocio del cliente, URLs y accesos básicos antes de agendar llamada inicial.',
-								'created_at' => wp_date( 'Y-m-d H:i:s', strtotime('-2 days') )
+								'created_at' => wp_date( 'Y-m-d H:i:s', strtotime('-2 days') ),
+								'completed_by' => []
 							]
 						];
 
 						foreach ( $dummy_tasks as $task ) {
 							$date_format = date_i18n( get_option('date_format'), strtotime($task['created_at']) );
+							
+							$completed_html = '';
+							if ( ! empty( $task['completed_by'] ) ) {
+								$completed_html .= '<div class="task-completed-users" style="margin-top: 10px; padding: 10px; background: rgba(46, 213, 115, 0.1); border-radius: 8px;">';
+								$completed_html .= '<strong style="font-size: 12px; display: block; margin-bottom: 5px; color: #2ed573;"><i class="fas fa-check-circle"></i> Completado por (' . count($task['completed_by']) . '):</strong>';
+								$completed_html .= '<ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #a0a0a0;">';
+								foreach ( $task['completed_by'] as $user ) {
+									$completed_html .= '<li>- ' . esc_html( $user['display_name'] ) . ' (' . esc_html( $user['user_email'] ) . ')</li>';
+								}
+								$completed_html .= '</ul></div>';
+							} else {
+								$completed_html .= '<div class="task-completed-users" style="margin-top: 10px; font-size: 12px; color: #a0a0a0;">Nadie ha completado esta tarea aún.</div>';
+							}
+
 							echo '<div class="alezux-task-item" data-id="' . esc_attr($task['id']) . '">
 								<div class="task-info">
 									<h4 class="task-title">' . esc_html($task['title']) . '</h4>
 									<p class="task-desc">' . esc_html($task['description']) . '</p>
 									<span class="task-meta"><i class="far fa-calendar-alt"></i> ' . esc_html($date_format) . '</span>
+									' . $completed_html . '
 								</div>
 								<div class="task-actions">
 									<span class="alezux-btn-icon btn-edit-task" role="button" tabindex="0">' . $edit_icon_html . '</span>

@@ -207,9 +207,23 @@ class Listing extends Module_Base {
 		
 		$tasks = $wpdb->get_results( "SELECT * FROM $tasks_table ORDER BY created_at DESC" );
 		
+		$user_tasks_table = $wpdb->prefix . 'alezux_listing_user_tasks';
+		$users_table = $wpdb->users;
+
 		// Opcional: Formatear fecha
 		foreach( $tasks as $task ) {
 			$task->formatted_date = date_i18n( get_option( 'date_format' ), strtotime( $task->created_at ) );
+			
+			// Usuarios que completaron esta tarea
+			$completed_sql = $wpdb->prepare( "
+				SELECT u.display_name, u.user_email 
+				FROM $user_tasks_table ut
+				INNER JOIN $users_table u ON ut.user_id = u.ID
+				WHERE ut.task_id = %d AND ut.status = 'completed'
+				ORDER BY ut.completed_at DESC
+			", $task->id );
+			
+			$task->completed_by = $wpdb->get_results( $completed_sql );
 		}
 
 		wp_send_json_success( $tasks );

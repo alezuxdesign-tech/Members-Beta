@@ -99,12 +99,29 @@ jQuery(document).ready(function ($) {
         }
 
         tasks.forEach(task => {
+            let completedHtml = '';
+            if (task.completed_by && task.completed_by.length > 0) {
+                completedHtml = `
+                    <div class="task-completed-users" style="margin-top: 10px; padding: 10px; background: rgba(46, 213, 115, 0.1); border-radius: 8px;">
+                        <strong style="font-size: 12px; display: block; margin-bottom: 5px; color: #2ed573;">
+                            <i class="fas fa-check-circle"></i> Completado por (${task.completed_by.length}):
+                        </strong>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #a0a0a0;">
+                            ${task.completed_by.map(user => `<li>- ${user.display_name} (${user.user_email})</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                completedHtml = `<div class="task-completed-users" style="margin-top: 10px; font-size: 12px; color: #a0a0a0;">Nadie ha completado esta tarea aún.</div>`;
+            }
+
             const html = `
                 <div class="alezux-task-item" data-id="${task.id}">
                     <div class="task-info">
                         <strong class="task-title">${task.title}</strong>
                         ${task.description ? `<p class="task-desc">${task.description}</p>` : ''}
-                        <small class="task-meta">Creada: ${task.formatted_date}</small>
+                        <small class="task-meta"><i class="far fa-calendar-alt"></i> ${task.formatted_date}</small>
+                        ${completedHtml}
                     </div>
                     <div class="task-actions">
                         <span class="alezux-btn-icon btn-edit-task" role="button" title="Editar Tarea">
