@@ -66,6 +66,7 @@ jQuery(document).ready(function ($) {
 
         const iconEdit = $widget.attr('data-icon-edit') || '<i class="fas fa-edit"></i>';
         const iconDelete = $widget.attr('data-icon-delete') || '<i class="fas fa-trash"></i>';
+        const iconHistory = $widget.attr('data-icon-history') || '<i class="fas fa-users"></i>';
 
         // Set Loading state
         $tasksList.html('<div class="alezux-loading-tasks" style="padding: 20px; text-align: center; color: #a0a0a0;"><i class="fas fa-circle-notch fa-spin"></i> Cargando tareas...</div>');
@@ -79,7 +80,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 if (response.success) {
-                    renderTasks($tasksList, response.data, iconEdit, iconDelete);
+                    renderTasks($tasksList, response.data, iconHistory, iconEdit, iconDelete);
                 } else {
                     $tasksList.html('<div class="alezux-error-notice">Error al cargar tareas.</div>');
                 }
@@ -90,7 +91,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function renderTasks($listContainer, tasks, iconEditUrl, iconDeleteUrl) {
+    function renderTasks($listContainer, tasks, iconHistoryUrl, iconEditUrl, iconDeleteUrl) {
         $listContainer.empty();
 
         if (tasks.length === 0) {
@@ -99,31 +100,18 @@ jQuery(document).ready(function ($) {
         }
 
         tasks.forEach(task => {
-            let completedHtml = '';
-            if (task.completed_by && task.completed_by.length > 0) {
-                completedHtml = `
-                    <div class="task-completed-users" style="margin-top: 10px; padding: 10px; background: rgba(46, 213, 115, 0.1); border-radius: 8px;">
-                        <strong style="font-size: 12px; display: block; margin-bottom: 5px; color: #2ed573;">
-                            <i class="fas fa-check-circle"></i> Completado por (${task.completed_by.length}):
-                        </strong>
-                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #a0a0a0;">
-                            ${task.completed_by.map(user => `<li>- ${user.display_name} (${user.user_email})</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            } else {
-                completedHtml = `<div class="task-completed-users" style="margin-top: 10px; font-size: 12px; color: #a0a0a0;">Nadie ha completado esta tarea aún.</div>`;
-            }
-
+            const completedJson = encodeURIComponent(JSON.stringify(task.completed_by || []));
             const html = `
-                <div class="alezux-task-item" data-id="${task.id}">
+                <div class="alezux-task-item" data-id="${task.id}" data-completed="${completedJson}">
                     <div class="task-info">
                         <strong class="task-title">${task.title}</strong>
                         ${task.description ? `<p class="task-desc">${task.description}</p>` : ''}
                         <small class="task-meta"><i class="far fa-calendar-alt"></i> ${task.formatted_date}</small>
-                        ${completedHtml}
                     </div>
                     <div class="task-actions">
+                        <span class="alezux-btn-icon btn-history-task" role="button" title="Historial">
+                            <span style="pointer-events: none;">${iconHistoryUrl}</span>
+                        </span>
                         <span class="alezux-btn-icon btn-edit-task" role="button" title="Editar Tarea">
                             <span style="pointer-events: none;">${iconEditUrl}</span>
                         </span>
@@ -137,10 +125,94 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    function setupHistoryModal($widget) {
+        if ($('body').hasClass('elementor-editor-active')) return;
+
+        const $originalHistoryModal = $widget.find('.alezux-history-task-modal');
+        if (!$originalHistoryModal.length) return;
+
+        // Moverlo al body solo la primera vez para que no se duplique
+        if ($originalHistoryModal.parent().closest('.elementor-widget-alezux_listing_admin').length) {
+            $originalHistoryModal.appendTo('body');
+        }
+
+        const $historyModal = $originalHistoryModal;
+        const $closeHistoryBtn = $historyModal.find('.alezux-listing-modal-close');
+
+        const $taskNameDisplay = $historyModal.find('.history-task-name');
+        const $historyTableBody = $historyModal.find('.history-table-body');
+
+        // Eliminar listeners viejos si se re-renderiza
+        $widget.off('click', '.btn-history-task').on('click', '.btn-history-task', function (e) {
+            e.preventDefault();
+            const $item = $(this).closest('.alezux-task-item');
+            const taskTitle = $item.find('.task-title').text();
+
+            $taskNameDisplay.text(taskTitle);
+
+            let completedUsers = [];
+            try {
+                let dataAttr = $item.attr('data-completed');
+                if (dataAttr) {
+                    completedUsers = JSON.parse(decodeURIComponent(dataAttr));
+                }
+            } catch (err) {
+                console.error("No se pudieron parsear los usuarios completados.", err);
+            }
+
+            $historyTableBody.empty();
+
+            if (completedUsers && completedUsers.length > 0) {
+                completedUsers.forEach(user => {
+                    $historyTableBody.append(`
+                        <tr class="tw-border-b tw-border-gray-800">
+                            <td class="col-student">
+                                <div class="alezux-student-info">
+                                    <div class="alezux-student-text">
+                                        <div class="student-name" style="color: #fff; font-weight: 500;">${user.display_name}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-status" style="color: #a0a0a0;">
+                                ${user.user_email}
+                            </td>
+                        </tr>
+                    `);
+                });
+            } else {
+                $historyTableBody.append(`<tr><td colspan="2" style="text-align: center; color: #a0a0a0; padding: 30px;">Esta tarea aún no ha sido completada por ningún usuario.</td></tr>`);
+            }
+
+            $historyModal.css('display', 'flex');
+            setTimeout(() => {
+                $historyModal.css('opacity', '1');
+            }, 10);
+        });
+
+        // Aseguramos desenlazar antes de enlazar de nuevo
+        $closeHistoryBtn.off('click').on('click', function () {
+            closeHistoryModal($historyModal);
+        });
+
+        $historyModal.off('click').on('click', function (e) {
+            if ($(e.target).is($historyModal)) {
+                closeHistoryModal($historyModal);
+            }
+        });
+    }
+
+    function closeHistoryModal($historyModal) {
+        $historyModal.css('opacity', '0');
+        setTimeout(() => {
+            $historyModal.css('display', 'none');
+        }, 300);
+    }
+
     // Inicializar todos los widgets en la página
     function initAllWidgets() {
         $('.alezux-listing-admin').each(function () {
             loadTasksForWidget($(this));
+            setupHistoryModal($(this));
         });
     }
 
@@ -154,6 +226,7 @@ jQuery(document).ready(function ($) {
                 const $widget = $scope.find('.alezux-listing-admin');
                 if ($widget.length > 0) {
                     loadTasksForWidget($widget);
+                    setupHistoryModal($widget);
                 }
             });
         }

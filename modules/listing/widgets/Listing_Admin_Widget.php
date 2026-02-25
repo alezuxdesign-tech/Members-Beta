@@ -101,6 +101,18 @@ class Listing_Admin_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'history_icon',
+			[
+				'label' => esc_html__( 'Ícono del Botón: Historial', 'alezux-members' ),
+				'type' => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-users',
+					'library' => 'fa-solid',
+				],
+			]
+		);
+
+		$this->add_control(
 			'preview_dummy_data',
 			[
 				'label' => esc_html__( 'Ver Datos de Prueba', 'alezux-members' ),
@@ -116,13 +128,26 @@ class Listing_Admin_Widget extends Widget_Base {
 		$this->add_control(
 			'preview_show_modal',
 			[
-				'label' => esc_html__( 'Forzar Modal Abierto', 'alezux-members' ),
+				'label' => esc_html__( 'Forzar Modal Editar Abierto', 'alezux-members' ),
 				'type' => Controls_Manager::SWITCHER,
 				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
 				'label_off' => esc_html__( 'No', 'alezux-members' ),
 				'return_value' => 'yes',
 				'default' => '',
 				'description' => esc_html__( 'Forza que el Modal de Edición siempre esté abierto dentro de Elementor para estilizar sus textos y botones.', 'alezux-members' ),
+			]
+		);
+
+		$this->add_control(
+			'preview_show_history_modal',
+			[
+				'label' => esc_html__( 'Forzar Modal Historial Abierto', 'alezux-members' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Sí', 'alezux-members' ),
+				'label_off' => esc_html__( 'No', 'alezux-members' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => esc_html__( 'Forza que el Modal de Historial siempre esté abierto dentro de Elementor para estilizar la tabla.', 'alezux-members' ),
 			]
 		);
 
@@ -322,6 +347,105 @@ class Listing_Admin_Widget extends Widget_Base {
 				'size_units' => [ 'px', '%' ],
 				'selectors' => [
 					'{{WRAPPER}} .btn-edit-task' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// === SECCIÓN BOTÓN HISTORIAL ===
+		$this->start_controls_section(
+			'history_button_section',
+			[
+				'label' => esc_html__( 'Botón Historial', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'history_icon_color',
+			[
+				'label' => esc_html__( 'Color de Ícono', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-history-task i' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'history_icon_color_hover',
+			[
+				'label' => esc_html__( 'Color Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task:hover svg' => 'fill: {{VALUE}};',
+					'{{WRAPPER}} .btn-history-task:hover i' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'history_btn_bg',
+			[
+				'label' => esc_html__( 'Color Fondo', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'history_btn_bg_hover',
+			[
+				'label' => esc_html__( 'Color Fondo Hover', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task:hover' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'history_icon_size',
+			[
+				'label' => esc_html__( 'Tamaño Ícono', 'alezux-members' ),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 10,
+						'max' => 60,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task i' => 'font-size: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .btn-history-task svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'history_btn_padding',
+			[
+				'label' => esc_html__( 'Padding', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', 'em', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'history_btn_border_radius',
+			[
+				'label' => esc_html__( 'Redondeo de Bordes', 'alezux-members' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%' ],
+				'selectors' => [
+					'{{WRAPPER}} .btn-history-task' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
@@ -593,8 +717,15 @@ class Listing_Admin_Widget extends Widget_Base {
 			$edit_close_icon_html = ob_get_clean();
 		}
 
+		$history_icon_html = '<i class="fas fa-users"></i>';
+		if ( ! empty( $settings['history_icon']['value'] ) ) {
+			ob_start();
+			\Elementor\Icons_Manager::render_icon( $settings['history_icon'], [ 'aria-hidden' => 'true' ] );
+			$history_icon_html = ob_get_clean();
+		}
+
 		?>
-		<div class="alezux-listing-admin" data-icon-edit="<?php echo esc_attr( $edit_icon_html ); ?>" data-icon-delete="<?php echo esc_attr( $delete_icon_html ); ?>">
+		<div class="alezux-listing-admin" data-icon-edit="<?php echo esc_attr( $edit_icon_html ); ?>" data-icon-delete="<?php echo esc_attr( $delete_icon_html ); ?>" data-icon-history="<?php echo esc_attr( $history_icon_html ); ?>">
 			<div class="alezux-listing-header">
 				<h2 class="alezux-listing-title"><?php echo esc_html( $settings['header_title'] ); ?></h2>
 				<p class="alezux-listing-desc"><?php echo esc_html( $settings['header_description'] ); ?></p>
@@ -647,30 +778,18 @@ class Listing_Admin_Widget extends Widget_Base {
 
 						foreach ( $dummy_tasks as $task ) {
 							$date_format = date_i18n( get_option('date_format'), strtotime($task['created_at']) );
-							
-							$completed_html = '';
-							if ( ! empty( $task['completed_by'] ) ) {
-								$completed_html .= '<div class="task-completed-users" style="margin-top: 10px; padding: 10px; background: rgba(46, 213, 115, 0.1); border-radius: 8px;">';
-								$completed_html .= '<strong style="font-size: 12px; display: block; margin-bottom: 5px; color: #2ed573;"><i class="fas fa-check-circle"></i> Completado por (' . count($task['completed_by']) . '):</strong>';
-								$completed_html .= '<ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #a0a0a0;">';
-								foreach ( $task['completed_by'] as $user ) {
-									$completed_html .= '<li>- ' . esc_html( $user['display_name'] ) . ' (' . esc_html( $user['user_email'] ) . ')</li>';
-								}
-								$completed_html .= '</ul></div>';
-							} else {
-								$completed_html .= '<div class="task-completed-users" style="margin-top: 10px; font-size: 12px; color: #a0a0a0;">Nadie ha completado esta tarea aún.</div>';
-							}
+							$completed_json = wp_json_encode( $task['completed_by'] );
 
-							echo '<div class="alezux-task-item" data-id="' . esc_attr($task['id']) . '">
+							echo '<div class="alezux-task-item" data-id="' . esc_attr($task['id']) . '" data-completed="' . esc_attr( $completed_json ) . '">
 								<div class="task-info">
 									<h4 class="task-title">' . esc_html($task['title']) . '</h4>
 									<p class="task-desc">' . esc_html($task['description']) . '</p>
 									<span class="task-meta"><i class="far fa-calendar-alt"></i> ' . esc_html($date_format) . '</span>
-									' . $completed_html . '
 								</div>
 								<div class="task-actions">
-									<span class="alezux-btn-icon btn-edit-task" role="button" tabindex="0">' . $edit_icon_html . '</span>
-									<span class="alezux-btn-icon btn-delete-task" role="button" tabindex="0" style="color: #ff4757;">' . $delete_icon_html . '</span>
+									<span class="alezux-btn-icon btn-history-task" role="button" tabindex="0" title="Historial">' . $history_icon_html . '</span>
+									<span class="alezux-btn-icon btn-edit-task" role="button" tabindex="0" title="Editar">' . $edit_icon_html . '</span>
+									<span class="alezux-btn-icon btn-delete-task" role="button" tabindex="0" style="color: #ff4757;" title="Eliminar">' . $delete_icon_html . '</span>
 								</div>
 							</div>';
 						}
@@ -717,6 +836,58 @@ class Listing_Admin_Widget extends Widget_Base {
 					</div>
 				</div>
 			</div>
+
+			<!-- Modal Historial de Usuarios (Semejante a Tablas Finanzas) -->
+			<?php
+			$history_modal_style = 'display: none;';
+			$history_modal_class = 'alezux-listing-modal-overlay alezux-history-task-modal';
+
+			if ( $is_elementor_editor && 'yes' === $settings['preview_show_history_modal'] ) {
+				$history_modal_style = 'display: flex; opacity: 1; position: relative !important; z-index: 10 !important; max-height: 600px; padding: 20px; background: transparent;';
+				$history_modal_class .= ' editor-preview-active'; 
+			}
+			?>
+			<div class="<?php echo esc_attr( $history_modal_class ); ?>" style="<?php echo esc_attr( $history_modal_style ); ?>">
+				<div class="alezux-listing-modal-content" style="max-width: 700px; width: 100%;">
+					<div class="alezux-listing-modal-header">
+						<h3>Historial de Finalización</h3>
+						<span class="alezux-listing-modal-close"><?php echo $edit_close_icon_html; ?></span>
+					</div>
+					<div class="alezux-listing-modal-body" style="padding: 0;">
+						<div class="history-task-title" style="padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #a0a0a0; font-size: 14px;">
+							Tarea: <strong style="color: #fff;" class="history-task-name">Cargando...</strong>
+						</div>
+						<!-- Estructura extraida del módulo finanzas -->
+						<div class="alezux-table-wrapper" style="margin: 0; border: none; overflow-x: auto;">
+							<table class="alezux-finanzas-table w-full text-sm text-left">
+								<thead>
+									<tr>
+										<th class="col-student">ESTUDIANTE / USUARIO</th>
+										<th class="col-status">CORREO ELECTRÓNICO</th>
+									</tr>
+								</thead>
+								<tbody class="history-table-body">
+									<?php 
+									if ( $is_elementor_editor && 'yes' === $settings['preview_show_history_modal'] ) {
+										echo '<tr>
+												<td class="col-student">Juan Pérez</td>
+												<td class="col-status">juan@prueba.com</td>
+											  </tr>
+											  <tr>
+												<td class="col-student">María Gómez</td>
+												<td class="col-status">maria@ejemplo.com</td>
+											  </tr>';
+									} else {
+										echo '<tr><td colspan="2" style="text-align: center; color: #a0a0a0;">No hay usuarios.</td></tr>';
+									}
+									?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</div>
 		<?php
 	}
