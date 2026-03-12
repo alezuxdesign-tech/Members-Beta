@@ -125,86 +125,105 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    // Helper para abrir modales clonándolos al body con los estilos de Elementor preservados
+    function openAlezuxModal($originalModal, $widget, setupCallback) {
+        if ($originalModal.length === 0) return;
+
+        // Limpiar clones previos del mismo tipo
+        const modalClass = $originalModal.attr('class').split(' ').filter(c => c.length > 0).join('.');
+        $(`body > .elementor .${modalClass}.moved-to-body-modal`).closest('.elementor').remove();
+        $(`body > .${modalClass}.moved-to-body-modal`).remove();
+
+        // Clonar el modal
+        const $modalClone = $originalModal.clone().addClass('moved-to-body-modal');
+        
+        // Extraer jerarquía de Elementor para el {{WRAPPER}}
+        const $elementorElement = $widget.closest('.elementor-element');
+        const elementorClasses = $elementorElement.attr('class') || '';
+        const elementorId = $elementorElement.attr('data-id') || '';
+        const $elementorRoot = $widget.closest('.elementor');
+        const rootClasses = $elementorRoot.attr('class') || '';
+
+        // Construir el envoltorio para preservar estilos
+        let $finalElementToAppend = $modalClone;
+        if (elementorClasses && elementorId) {
+            const $innerWrapper = $('<div>', {
+                'class': elementorClasses,
+                'data-id': elementorId,
+                'style': 'position: static; display: contents;'
+            }).append($modalClone);
+
+            if (rootClasses) {
+                $finalElementToAppend = $('<div>', {
+                    'class': rootClasses,
+                    'style': 'position: static; display: contents;'
+                }).append($innerWrapper);
+            } else {
+                $finalElementToAppend = $innerWrapper;
+            }
+        }
+
+        $('body').append($finalElementToAppend);
+
+        // Callback para popular datos
+        if (typeof setupCallback === 'function') {
+            setupCallback($modalClone);
+        }
+
+        // Mostrar con efecto
+        $modalClone.removeClass('alezux-hidden').css({
+            'display': 'flex',
+            'opacity': '1',
+            'visibility': 'visible',
+            'z-index': '999999'
+        }).hide().fadeIn(200);
+
+        return $modalClone;
+    }
+
     function setupHistoryModal($widget) {
+        // En el editor no movemos nada para que los cambios de estilo sean live
         if ($('body').hasClass('elementor-editor-active')) return;
 
         const $originalHistoryModal = $widget.find('.alezux-history-task-modal');
-        if (!$originalHistoryModal.length) return;
-
-        // Moverlo al body solo la primera vez para que no se duplique
-        if ($originalHistoryModal.parent().closest('.elementor-widget-alezux_listing_admin').length) {
-            $originalHistoryModal.appendTo('body');
-        }
-
-        const $historyModal = $originalHistoryModal;
-        const $closeHistoryBtn = $historyModal.find('.alezux-listing-modal-close');
-
-        const $taskNameDisplay = $historyModal.find('.history-task-name');
-        const $historyTableBody = $historyModal.find('.history-table-body');
-
-        // Eliminar listeners viejos si se re-renderiza
+        
         $widget.off('click', '.btn-history-task').on('click', '.btn-history-task', function (e) {
             e.preventDefault();
             const $item = $(this).closest('.alezux-task-item');
             const taskTitle = $item.find('.task-title').text();
 
-            $taskNameDisplay.text(taskTitle);
+            openAlezuxModal($originalHistoryModal, $widget, function($modal) {
+                $modal.find('.history-task-name').text(taskTitle);
+                const $historyTableBody = $modal.find('.history-table-body');
+                $historyTableBody.empty();
 
-            let completedUsers = [];
-            try {
-                let dataAttr = $item.attr('data-completed');
-                if (dataAttr) {
-                    completedUsers = JSON.parse(decodeURIComponent(dataAttr));
+                let completedUsers = [];
+                try {
+                    let dataAttr = $item.attr('data-completed');
+                    if (dataAttr) {
+                        completedUsers = JSON.parse(decodeURIComponent(dataAttr));
+                    }
+                } catch (err) {
+                    console.error("Error parseando usuarios.", err);
                 }
-            } catch (err) {
-                console.error("No se pudieron parsear los usuarios completados.", err);
-            }
 
-            $historyTableBody.empty();
-
-            if (completedUsers && completedUsers.length > 0) {
-                completedUsers.forEach(user => {
-                    $historyTableBody.append(`
-                        <tr>
-                            <td>
-                                <div class="student-name" style="font-weight: 600;">${user.display_name}</div>
-                            </td>
-                            <td style="color: var(--alezux-text-muted, #a0a0a0);">
-                                ${user.user_email}
-                            </td>
-                        </tr>
-                    `);
-                });
-            } else {
-                $historyTableBody.append(`<tr><td colspan="2" style="text-align: center; color: #a0a0a0; padding: 30px;">Esta tarea aún no ha sido completada por ningún usuario.</td></tr>`);
-            }
-
-            $historyModal.css('display', 'flex');
-            setTimeout(() => {
-                $historyModal.css('opacity', '1');
-            }, 10);
-        });
-
-        // Aseguramos desenlazar antes de enlazar de nuevo
-        $closeHistoryBtn.off('click').on('click', function () {
-            closeHistoryModal($historyModal);
-        });
-
-        $historyModal.off('click').on('click', function (e) {
-            if ($(e.target).is($historyModal)) {
-                closeHistoryModal($historyModal);
-            }
+                if (completedUsers && completedUsers.length > 0) {
+                    completedUsers.forEach(user => {
+                        $historyTableBody.append(`
+                            <tr>
+                                <td><div class="student-name" style="font-weight: 600;">${user.display_name}</div></td>
+                                <td style="color: var(--alezux-text-muted, #a0a0a0);">${user.user_email}</td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $historyTableBody.append(`<tr><td colspan="2" style="text-align: center; color: #a0a0a0; padding: 30px;">Esta tarea aún no ha sido completada por ningún usuario.</td></tr>`);
+                }
+            });
         });
     }
 
-    function closeHistoryModal($historyModal) {
-        $historyModal.css('opacity', '0');
-        setTimeout(() => {
-            $historyModal.css('display', 'none');
-        }, 300);
-    }
-
-    // Inicializar todos los widgets en la página
+    // Inicializar todos los widgets
     function initAllWidgets() {
         $('.alezux-listing-admin').each(function () {
             loadTasksForWidget($(this));
@@ -212,10 +231,8 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Inicializa la primera vez que carga script
     initAllWidgets();
 
-    // Compatibilidad con los re-renders del Editor de Elementor
     $(window).on('elementor/frontend/init', function () {
         if (elementorFrontend && elementorFrontend.hooks) {
             elementorFrontend.hooks.addAction('frontend/element_ready/alezux_listing_admin.default', function ($scope) {
@@ -228,25 +245,33 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // === DELEGACIÓN DE EVENTOS ===
-    // De esta manera no se "pierden" los botones cuando Elementor reinicializa el DOM
+    // Eventos globales
+    $(document.body).on('click', '.alezux-listing-modal-close', function () {
+        const $overlay = $(this).closest('.alezux-listing-modal-overlay');
+        $overlay.fadeOut(200, function () {
+            // Si está dentro de un wrapper de Elementor (clon), borramos todo el wrapper
+            const $wrapper = $overlay.closest('.elementor');
+            if ($wrapper.length && $wrapper.parent().is('body')) {
+                $wrapper.remove();
+            } else if ($overlay.hasClass('moved-to-body-modal')) {
+                $overlay.remove();
+            }
+        });
+    });
 
-    // ADD TASK
+    // SUBMIT ADD TASK
     $(document).on('submit', '#alezux-add-task-form', function (e) {
         e.preventDefault();
-
         const $form = $(this);
         const $widget = $form.closest('.alezux-listing-admin');
         const $submitBtn = $form.find('#alezux-submit-task-btn');
         const $msgDiv = $form.find('#alezux-task-form-msg');
-
         const title = $form.find('#task_title').val();
         const description = $form.find('#task_description').val();
 
         if (!title) return;
 
-        $submitBtn.prop('disabled', true);
-        $submitBtn.find('.btn-text').hide();
+        $submitBtn.prop('disabled', true).find('.btn-text').hide();
         $submitBtn.find('.btn-loading').show();
         $msgDiv.removeClass('success error').hide();
 
@@ -263,7 +288,7 @@ jQuery(document).ready(function ($) {
                 if (response.success) {
                     $msgDiv.addClass('success').text(response.data.message).fadeIn();
                     $form[0].reset();
-                    loadTasksForWidget($widget); // Recargar
+                    loadTasksForWidget($widget);
                 } else {
                     $msgDiv.addClass('error').text(response.data.message).fadeIn();
                 }
@@ -272,8 +297,7 @@ jQuery(document).ready(function ($) {
                 $msgDiv.addClass('error').text('Ocurrió un error en el servidor.').fadeIn();
             },
             complete: function () {
-                $submitBtn.prop('disabled', false);
-                $submitBtn.find('.btn-text').show();
+                $submitBtn.prop('disabled', false).find('.btn-text').show();
                 $submitBtn.find('.btn-loading').hide();
                 setTimeout(() => $msgDiv.fadeOut(), 4000);
             }
@@ -283,16 +307,13 @@ jQuery(document).ready(function ($) {
     // DELETE TASK
     $(document.body).on('click', '.btn-delete-task', function (e) {
         e.preventDefault();
-        e.stopPropagation();
-
         const $btn = $(this);
         const $taskItem = $btn.closest('.alezux-task-item');
         const taskId = $taskItem.attr('data-id');
         const originalHtml = $btn.html();
 
-        customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios que hayan marcado esta tarea.", function () {
+        customConfirm("Esto no se puede deshacer y borrará el progreso de los usuarios.", function () {
             $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-
             $.ajax({
                 url: alezux_listing_vars.ajax_url,
                 type: 'POST',
@@ -318,103 +339,35 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // CLOSE ANY MODAL
-    $(document.body).on('click', '.alezux-listing-modal-close', function () {
-        const $overlay = $(this).closest('.alezux-listing-modal-overlay');
-        $overlay.fadeOut(200, function () {
-            if ($overlay.hasClass('moved-to-body-modal')) {
-                $overlay.remove(); // Eliminamos clon fantasma del body
-            }
-        });
-    });
-
     // OPEN EDIT MODAL
     $(document.body).on('click', '.btn-edit-task', function (e) {
         e.preventDefault();
-        e.stopPropagation();
-
-        const $taskItem = $(this).closest('.alezux-task-item');
         const $widget = $(this).closest('.alezux-listing-admin');
-
-        // El modal base original de Elementor lo dejamos donde está (oculto en el DOM del widget)
+        const $taskItem = $(this).closest('.alezux-task-item');
         const $originalModal = $widget.find('.alezux-edit-task-modal').not('.moved-to-body-modal');
 
-        // Removemos de memoria cualquier clon activo "fantasma" que exista en body por intentos previos
-        $('body > .alezux-edit-task-modal.moved-to-body-modal').remove();
-
-        if ($originalModal.length === 0) {
-            console.error("No se encontró el modal primario en el Widget DOM. Recargue editor.");
-            return;
-        }
-
-        // Clonamos fresco para evitar duplicados de events
-        const $editModal = $originalModal.clone().addClass('moved-to-body-modal');
-
-        // Extraemos las clases y el ID de Elementor para que {{WRAPPER}} pueda afectar estilos
-        const $elementorElement = $widget.closest('.elementor-element');
-        const elementorClasses = $elementorElement.attr('class') || '';
-        const elementorId = $elementorElement.attr('data-id') || '';
-
-        // Obtenemos la estructura base global que Elementor inyecta en el frontend (ej. elementor-1234)
-        const $elementorRoot = $widget.closest('.elementor');
-        const rootClasses = $elementorRoot.attr('class') || '';
-
-        // Lo envolvemos en un doble contenedor falso transparente para imitar el árbol DOM de Elementor
-        if (elementorClasses && elementorId) {
-            const $innerWrapper = $('<div>', {
-                'class': elementorClasses,
-                'data-id': elementorId,
-                'style': 'position: static; display: contents;'
-            }).append($editModal);
-
-            if (rootClasses) {
-                const $outerWrapper = $('<div>', {
-                    'class': rootClasses,
-                    'style': 'position: static; display: contents;'
-                }).append($innerWrapper);
-                $('body').append($outerWrapper);
-            } else {
-                $('body').append($innerWrapper);
-            }
-        } else {
-            $('body').append($editModal);
-        }
-
-        // Popular datos en el clon
-        $editModal.find('.edit_task_id').val($taskItem.attr('data-id'));
-        $editModal.find('.edit_task_title').val($taskItem.find('.task-title').text());
-        $editModal.find('.edit_task_description').val($taskItem.find('.task-desc').text());
-
-        // Mostrar Modalidad forzando propiedades que puedan estar bloqueadas
-        $editModal.removeClass('alezux-hidden').css({
-            'display': 'flex',
-            'opacity': '1',
-            'visibility': 'visible',
-            'z-index': '999999'
-        }).hide().fadeIn(200);
-
-        // Referencia estricta para saber qué widget disparó original
-        $editModal.data('parent-widget', $widget);
+        openAlezuxModal($originalModal, $widget, function($modal) {
+            $modal.find('.edit_task_id').val($taskItem.attr('data-id'));
+            $modal.find('.edit_task_title').val($taskItem.find('.task-title').text());
+            $modal.find('.edit_task_description').val($taskItem.find('.task-desc').text());
+            $modal.data('parent-widget', $widget);
+        });
     });
 
     // SUBMIT EDIT FORM
     $(document.body).on('submit', '.alezux-edit-task-form', function (e) {
         e.preventDefault();
-
         const $form = $(this);
         const $modal = $form.closest('.alezux-edit-task-modal');
-        // Identificando botones Submit dentro de un form clonado
         const $btn = $form.find('button[type="submit"]');
         const $parentWidget = $modal.data('parent-widget');
-
         const id = $form.find('.edit_task_id').val();
         const title = $form.find('.edit_task_title').val();
         const description = $form.find('.edit_task_description').val();
 
         if (!title) return;
 
-        $btn.prop('disabled', true);
-        $btn.find('.btn-text').hide();
+        $btn.prop('disabled', true).find('.btn-text').hide();
         $btn.find('.btn-loading').show();
 
         $.ajax({
@@ -430,19 +383,16 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 if (response.success) {
                     showNotification(response.data.message, 'success');
-
                     $modal.fadeOut(200, function () {
-                        if ($modal.hasClass('moved-to-body-modal')) {
-                            $modal.remove(); // Eliminamos el clon despues de éxito
+                        const $wrapper = $modal.closest('.elementor');
+                        if ($wrapper.length && $wrapper.parent().is('body')) {
+                            $wrapper.remove();
+                        } else {
+                            $modal.remove();
                         }
                     });
-
-                    // Recargamos el listado correspondiente
-                    if ($parentWidget && $parentWidget.length > 0) {
-                        loadTasksForWidget($parentWidget);
-                    } else {
-                        initAllWidgets();
-                    }
+                    if ($parentWidget) loadTasksForWidget($parentWidget);
+                    else initAllWidgets();
                 } else {
                     showNotification(response.data.message, 'error');
                 }
@@ -451,9 +401,8 @@ jQuery(document).ready(function ($) {
                 showNotification('Ocurrió un error en el servidor.', 'error');
             },
             complete: function () {
-                $btn.prop('disabled', false);
-                $btn.find('.btn-text').show();
-                $btn.find('.btn-icon').hide();
+                $btn.prop('disabled', false).find('.btn-text').show();
+                $btn.find('.btn-loading').hide();
             }
         });
     });
