@@ -516,6 +516,145 @@ class Project_Manager_Admin_Widget extends Widget_Base {
 
         $this->end_controls_section();
 
+        // Section: Step Content & Stepper Style
+        $this->start_controls_section(
+			'step_style_section',
+			[
+				'label' => 'Estilo Contenido de Pasos',
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+        $this->add_control(
+			'step_content_bg',
+			[
+				'label' => 'Fondo del Contenedor de Pasos',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .step-content' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+        $this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name' => 'step_title_typography',
+				'label' => 'Tipografía Títulos (h4)',
+				'selector' => '{{WRAPPER}} .step-content h4',
+			]
+		);
+
+        $this->add_control(
+			'step_title_color',
+			[
+				'label' => 'Color Títulos (h4)',
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .step-content h4' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'stepper_bg',
+			[
+				'label' => 'Fondo del Stepper (Barra)',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#f8f9fa',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-stepper' => 'background-color: {{VALUE}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+        $this->start_controls_tabs( 'stepper_tabs_style' );
+
+        $this->start_controls_tab(
+            'step_item_normal',
+            [
+                'label' => 'Normal',
+            ]
+        );
+
+        $this->add_control(
+			'step_item_bg',
+			[
+				'label' => 'Fondo Pestaña',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#e9ecef',
+				'selectors' => [
+					'{{WRAPPER}} .step-item' => 'background-color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->add_control(
+			'step_item_color',
+			[
+				'label' => 'Color Texto',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#6c757d',
+				'selectors' => [
+					'{{WRAPPER}} .step-item' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'step_item_active',
+            [
+                'label' => 'Activa',
+            ]
+        );
+
+        $this->add_control(
+			'step_item_active_bg',
+			[
+				'label' => 'Fondo Activa',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#007bff',
+				'selectors' => [
+					'{{WRAPPER}} .step-item.active' => 'background-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+        $this->add_control(
+			'step_item_active_color',
+			[
+				'label' => 'Color Texto Activa',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .step-item.active' => 'color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
+
+        $this->add_control(
+			'dates_header_bg',
+			[
+				'label' => 'Fondo Franja de Fechas',
+				'type' => Controls_Manager::COLOR,
+				'default' => '#fdfdfd',
+				'selectors' => [
+					'{{WRAPPER}} .modal-project-dates' => 'background-color: {{VALUE}};',
+				],
+				'separator' => 'before',
+			]
+		);
+
+        $this->end_controls_section();
+
 	}
 
 	protected function render() {
