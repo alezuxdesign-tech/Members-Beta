@@ -25,8 +25,8 @@ class Config extends Module_Base {
 		\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::init();
 
 		// AJAX Auth Actions
-		// AJAX Auth Actions
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
+		add_action( 'wp_ajax_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
 		add_action( 'wp_ajax_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] ); // Fix 400 Bad Request for logged in users

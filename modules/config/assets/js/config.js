@@ -23,7 +23,8 @@ jQuery(document).ready(function ($) {
         var $text = $btn.find('.alezux-btn-text');
 
         $btn.prop('disabled', true);
-        $text.hide();
+        var originalText = $text.text();
+        $text.text('Iniciando...'); // Cambiar texto en lugar de ocultarlo
         $loader.show();
 
         var formData = $form.serialize();
@@ -35,19 +36,20 @@ jQuery(document).ready(function ($) {
             data: formData,
             success: function (response) {
                 if (response.success) {
+                    $text.text('¡Éxito!');
                     window.location.href = response.data.redirect;
                 } else {
                     $btn.prop('disabled', false);
-                    $text.show();
+                    $text.text(originalText); // Restaurar texto original
                     $loader.hide();
                     alezuxShowModal('Error', response.data.message, 'error');
                 }
             },
             error: function () {
                 $btn.prop('disabled', false);
-                $text.show();
+                $text.text(originalText); // Restaurar texto original
                 $loader.hide();
-                alezuxShowModal('Error', 'Hubo un problema técnico. Inténtalo más tarde.', 'error');
+                alezuxShowModal('Error', 'Hubo un problema técnico o la sesión expiró. Recarga la página.', 'error');
             }
         });
     });
