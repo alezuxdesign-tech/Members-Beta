@@ -519,53 +519,45 @@ jQuery(document).ready(function ($) {
                 btn.html('<i class="fas fa-spinner fa-spin"></i> Subiendo...');
                 btn.prop('disabled', true);
 
-                let uploadedUrls = [];
-                let uploadPromises = [];
-
-                Array.from(files).forEach(file => {
-                    let formData = new FormData();
-                    formData.append('action', 'alezux_agency_upload_file');
-                    formData.append('file', file);
-                    // alezux_agency_vars is globally available
-
-                    let p = $.ajax({
-                        url: alezux_agency_vars.ajax_url,
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.success) {
-                                uploadedUrls.push(response.data.url);
-                            } else {
-                                alert('Error subiendo ' + file.name + ': ' + (response.data || 'Unknown error'));
-                            }
-                        },
-                        error: function () {
-                            alert('Error de red al subir ' + file.name);
-                        }
-                    });
-                    uploadPromises.push(p);
+                let formData = new FormData();
+                formData.append('action', 'alezux_agency_upload_file');
+                
+                Array.from(files).forEach((file, index) => {
+                    formData.append('files[]', file);
                 });
 
-                Promise.all(uploadPromises).then(() => {
-                    const currentVal = $('#identity-files-input').val();
-                    let currentUrls = currentVal ? currentVal.split(',') : [];
-                    currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
+                $.ajax({
+                    url: alezux_agency_vars.ajax_url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            const newUrls = response.data.files.map(f => f.url);
+                            uploadedUrls = [...uploadedUrls, ...newUrls];
+                            
+                            const currentVal = $('#identity-files-input').val();
+                            let currentUrls = currentVal ? currentVal.split(',') : [];
+                            currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
 
-                    if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
-                    currentModalProject.data.identity.proposal_files = currentUrls;
+                            if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
+                            currentModalProject.data.identity.proposal_files = currentUrls;
 
-                    $('#identity-files-input').val(currentUrls.join(','));
-                    // Silent save to persist draft
-                    saveCurrentStepData(false, null, true);
-                }).catch(err => {
-                    console.error(err);
-                    alert('Error en la subida de archivos.');
-                }).always(() => {
-                    const btn = $('#btn-upload-identity');
-                    btn.html('<i class="fas fa-cloud-upload-alt"></i> Subir Archivos (PC)');
-                    btn.prop('disabled', false);
+                            $('#identity-files-input').val(currentUrls.join(','));
+                            saveCurrentStepData(false, null, true);
+                        } else {
+                            alert('Error al subir archivos: ' + (response.data || 'Unknown error'));
+                        }
+                    },
+                    error: function () {
+                        alert('Error de red al subir archivos.');
+                    },
+                    complete: function() {
+                        const btn = $('#btn-upload-identity');
+                        btn.html('<i class="fas fa-cloud-upload-alt"></i> Subir Archivos (PC)');
+                        btn.prop('disabled', false);
+                    }
                 });
             });
 
@@ -655,37 +647,42 @@ jQuery(document).ready(function ($) {
                 btn.html('<i class="fas fa-spinner fa-spin"></i> Subiendo...');
                 btn.prop('disabled', true);
 
-                let uploadedUrls = [];
-                let uploadPromises = [];
-
+                let formData = new FormData();
+                formData.append('action', 'alezux_agency_upload_file');
                 Array.from(files).forEach(file => {
-                    let formData = new FormData();
-                    formData.append('action', 'alezux_agency_upload_file');
-                    formData.append('file', file);
-
-                    let p = $.ajax({
-                        url: alezux_agency_vars.ajax_url,
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.success) uploadedUrls.push(response.data.url);
-                        }
-                    });
-                    uploadPromises.push(p);
+                    formData.append('files[]', file);
                 });
 
-                Promise.all(uploadPromises).then(() => {
-                    const currentVal = $('#logos-input').val();
-                    let currentUrls = currentVal ? currentVal.split(',') : [];
-                    currentUrls = [...currentUrls, ...uploadedUrls].filter(s => s);
+                $.ajax({
+                    url: alezux_agency_vars.ajax_url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            const newUrls = response.data.files.map(f => f.url);
+                            const currentVal = $('#logos-input').val();
+                            let currentUrls = currentVal ? currentVal.split(',') : [];
+                            currentUrls = [...currentUrls, ...newUrls].filter(s => s);
 
-                    $('#logos-input').val(currentUrls.join(','));
-                    saveCurrentStepData(false, null, true);
-                }).always(() => {
-                    btn.html('<i class="fas fa-cloud-upload-alt"></i> Subir Logos');
-                    btn.prop('disabled', false);
+                            if (!currentModalProject.data.delivery) currentModalProject.data.delivery = {};
+                            currentModalProject.data.delivery.logos = currentUrls; // Changed from final_files to logos to match input
+
+                            $('#logos-input').val(currentUrls.join(','));
+                            saveCurrentStepData(false, null, true);
+                        } else {
+                            alert('Error al subir archivos: ' + (response.data || 'Unknown error'));
+                        }
+                    },
+                    error: function() {
+                        alert('Error de red al subir archivos.');
+                    },
+                    complete: function() {
+                        const btn = $('#btn-upload-logos');
+                        btn.html('<i class="fas fa-box-open"></i> Subir Logos (PC)');
+                        btn.prop('disabled', false);
+                    }
                 });
             });
 

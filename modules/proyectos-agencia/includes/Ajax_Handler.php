@@ -328,7 +328,31 @@ class Ajax_Handler {
             wp_send_json_error( 'No autorizado' );
         }
 
-        if ( empty( $_FILES['file'] ) ) {
+        // We support both 'file' (single) and 'files' (multiple array)
+        $files_to_process = [];
+
+        if ( ! empty( $_FILES['file'] ) ) {
+            $files_to_process[] = 'file';
+        } elseif ( ! empty( $_FILES['files'] ) ) {
+            // Re-structure the $_FILES array for easy handling
+            $files = $_FILES['files'];
+            foreach ( $files['name'] as $key => $value ) {
+                if ( $files['name'][$key] ) {
+                    $file = array(
+                        'name'     => $files['name'][$key],
+                        'type'     => $files['type'][$key],
+                        'tmp_name' => $files['tmp_name'][$key],
+                        'error'    => $files['error'][$key],
+                        'size'     => $files['size'][$key]
+                    );
+
+                    $_FILES["file_$key"] = $file;
+                    $files_to_process[] = "file_$key";
+                }
+            }
+        }
+
+        if ( empty( $files_to_process ) ) {
             wp_send_json_error( 'No se recibió ningún archivo.' );
         }
 
@@ -336,13 +360,29 @@ class Ajax_Handler {
         require_once( ABSPATH . 'wp-admin/includes/file.php' );
         require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
-        $attachment_id = media_handle_upload( 'file', 0 ); // 0 = unattached
+        $results = [];
+        $errors = [];
 
-        if ( is_wp_error( $attachment_id ) ) {
-            wp_send_json_error( 'Error al subir archivo: ' . $attachment_id->get_error_message() );
+        foreach ( $files_to_process as $file_key ) {
+            $attachment_id = media_handle_upload( $file_key, 0 );
+
+            if ( is_wp_error( $attachment_id ) ) {
+                $errors[] = $_FILES[$file_key]['name'] . ': ' . $attachment_id->get_error_message();
+            } else {
+                $results[] = [
+                    'url' => wp_get_attachment_url( $attachment_id ),
+                    'id'  => $attachment_id
+                ];
+            }
+        }
+
+        if ( empty( $results ) && ! empty( $errors ) ) {
+            wp_send_json_error( implode( ', ', $errors ) );
         } else {
-            $url = wp_get_attachment_url( $attachment_id );
-            wp_send_json_success( [ 'url' => $url, 'id' => $attachment_id ] );
+            wp_send_json_success( [
+                'files' => $results,
+                'errors' => $errors
+            ] );
         }
     }
 }
