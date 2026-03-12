@@ -68,9 +68,9 @@ class Config extends Module_Base {
 	 * Configura los filtros y redirecciones solo si la página está seleccionada
 	 */
 	public function setup_custom_auth_logic() {
-        // Redirección de páginas restringidas (Admin Only)
-        // Esto siempre se debe verificar, independientemente del login personalizado
+        // Redirección de páginas restringidas (Admin Only) y Privadas (Solo Logueados)
         add_action( 'template_redirect', [ $this, 'check_restricted_pages' ] );
+        add_action( 'template_redirect', [ $this, 'check_private_pages' ] );
 
 		$login_page_id = get_option( 'alezux_login_page_id' );
 		
@@ -104,6 +104,25 @@ class Config extends Module_Base {
                 // Redirigir a Home o Login. Por seguridad y UX, mejor home o login.
                 // Si redirigimos a login, el usuario podría intentar loguearse y seguir sin permiso.
                 // Redirigir al inicio es más seguro/claro: "No tienes acceso".
+                wp_redirect( home_url() );
+                exit;
+            }
+        }
+    }
+
+    /**
+     * Verifica si la página actual requiere estar logueado
+     */
+    public function check_private_pages() {
+        $private_pages = get_option( 'alezux_private_pages', [] );
+        
+        if ( empty( $private_pages ) || ! is_array( $private_pages ) ) {
+            return;
+        }
+
+        if ( is_page( $private_pages ) ) {
+            if ( ! is_user_logged_in() ) {
+                // Redirigir a Home si intenta entrar a una página privada sin estar logueado
                 wp_redirect( home_url() );
                 exit;
             }

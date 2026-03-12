@@ -474,7 +474,7 @@ $shortcodes[] = [
 					<p class="alezux-text" style="font-size: 13px; margin-bottom: 15px;">Selecciona las páginas que solo podrán ser vistas por Administradores.</p>
                     
                     <!-- Search Input -->
-                    <input type="text" id="alezux-page-search" placeholder="🔍 Buscar página..." onkeyup="filterPages()" style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+                    <input type="text" id="alezux-page-search" placeholder="🔍 Buscar página..." onkeyup="filterPages('alezux-page-search', 'alezux-pages-list')" style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
 
                     <div id="alezux-pages-list" style="max-height: 400px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
                         <?php if ( ! empty( $all_pages ) ) : ?>
@@ -496,6 +496,44 @@ $shortcodes[] = [
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <div style="border-top: 1px solid #333; margin: 25px 0;"></div>
+
+                <!-- PÁGINAS PRIVADAS (NUEVO) -->
+                <div class="alezux-form-group">
+					<h3 class="alezux-title" style="font-size: 18px; margin-bottom: 20px; color: #6c5ce7;">🔐 Páginas Privadas (Solo Logueados)</h3>
+					<p class="alezux-text" style="font-size: 13px; margin-bottom: 15px;">Selecciona las páginas que requieren que el usuario haya iniciado sesión para verlas. Si no está logueado, será enviado al inicio.</p>
+                    
+                    <!-- Search Input -->
+                    <input type="text" id="alezux-private-search" placeholder="🔍 Buscar página..." onkeyup="filterPages('alezux-private-search', 'alezux-private-list')" style="background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+
+                    <div id="alezux-private-list" style="max-height: 400px; overflow-y: auto; background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
+                        <?php if ( ! empty( $all_pages ) ) : ?>
+                            <?php foreach ( $all_pages as $page ) : ?>
+                                <?php 
+                                    $is_private_checked = in_array( $page->ID, $private_pages ) ? 'checked' : ''; 
+                                    $page_title = ! empty( $page->post_title ) ? $page->post_title : '(Sin Título)';
+                                ?>
+                                <label class="alezux-page-item priv-item" style="display: flex; align-items: center; padding: 10px; background: #2a2a2a; border: 1px solid #333; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;">
+                                    <input type="checkbox" name="alezux_private_pages[]" value="<?php echo esc_attr( $page->ID ); ?>" <?php echo $is_private_checked; ?> style="margin-right: 12px; width: 18px; height: 18px; accent-color: #6c5ce7;">
+                                    <div style="flex-grow: 1;">
+                                        <span class="page-title" style="display: block; font-weight: 500; font-size: 14px; color: #eee;"><?php echo esc_html( $page_title ); ?></span>
+                                        <span style="display: block; color: #777; font-size: 11px;">ID: <?php echo $page->ID; ?> &bull; <?php echo $page->post_status; ?></span>
+                                    </div>
+                                </label>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <p style="color: #888;">No hay páginas creadas.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <style>
+                    .alezux-page-item.priv-item:has(input:checked) {
+                        border-color: #6c5ce7 !important;
+                        background: rgba(108, 92, 231, 0.1) !important;
+                    }
+                </style>
 
                 <style>
                     .alezux-page-item:hover {

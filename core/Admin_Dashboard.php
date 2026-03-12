@@ -95,8 +95,9 @@ class Admin_Dashboard {
 		$shortcodes = Module_Base::get_registered_shortcodes();
 
         // Obtener todas las páginas para el selector de permisos
-        $all_pages = get_pages();
+        $all_pages        = get_pages();
         $restricted_pages = get_option( 'alezux_restricted_pages', [] );
+        $private_pages    = get_option( 'alezux_private_pages', [] );
         $admin_only_css_classes = get_option( 'alezux_admin_only_css_classes', '' );
 
 		include ALEZUX_MEMBERS_PATH . 'views/admin/dashboard.php';
@@ -151,17 +152,15 @@ class Admin_Dashboard {
 			update_option( 'alezux_reset_page_id', intval( $_POST['alezux_reset_page_id'] ) );
 		}
 
-        // Restricted Pages
-        if ( isset( $_POST['alezux_restricted_pages'] ) ) {
-            $restricted = array_map( 'intval', $_POST['alezux_restricted_pages'] );
+        // Restricted & Private Pages
+        if ( isset( $_POST['alezux_saving_tab'] ) && 'permissions' === $_POST['alezux_saving_tab'] ) {
+            // Restricted
+            $restricted = isset( $_POST['alezux_restricted_pages'] ) ? array_map( 'intval', $_POST['alezux_restricted_pages'] ) : [];
             update_option( 'alezux_restricted_pages', $restricted );
-        } else {
-            // Si el campo no viene (pero se envió el formulario de permisos), significa que el usuario desmarcó todo
-            // OJO: Hay que detectar si venimos del tab de permisos para no borrarlo si guardamos desde "Global"
-            // Usaremos un campo hidden 'alezux_saving_tab' para saber qué form se envió.
-            if ( isset( $_POST['alezux_saving_tab'] ) && 'permissions' === $_POST['alezux_saving_tab'] ) {
-                 update_option( 'alezux_restricted_pages', [] );
-            }
+
+            // Private
+            $private = isset( $_POST['alezux_private_pages'] ) ? array_map( 'intval', $_POST['alezux_private_pages'] ) : [];
+            update_option( 'alezux_private_pages', $private );
         }
 
         // Admin Only CSS Classes
