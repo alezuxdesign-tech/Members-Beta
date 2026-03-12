@@ -53,17 +53,18 @@ jQuery(document).ready(function ($) {
         }
 
         tasks.forEach(task => {
+            const isCompleted = task.user_status === 'completed';
             const html = `
-                <div class="alezux-user-task-item" data-id="${task.id}">
+                <div class="alezux-user-task-item ${isCompleted ? 'is-completed' : ''}" data-id="${task.id}">
                     <div class="user-task-content">
                         <strong class="user-task-title">${task.title}</strong>
                         ${task.description ? `<p class="user-task-desc">${task.description}</p>` : ''}
                     </div>
                     <div class="user-task-action">
-                        <button class="alezux-btn alezux-btn-complete btn-complete-task">
-                            <i class="fas fa-check btn-icon-idle"></i>
+                        <button class="alezux-btn alezux-btn-complete btn-complete-task" ${isCompleted ? 'disabled' : ''}>
+                            <i class="fas ${isCompleted ? 'fa-check-double' : 'fa-check'} btn-icon-idle"></i>
                             <i class="fas fa-spinner fa-spin btn-icon-loading" style="display: none;"></i>
-                            <span class="btn-text">Completar</span>
+                            <span class="btn-text">${isCompleted ? 'Completado' : 'Completar'}</span>
                         </button>
                     </div>
                 </div>
@@ -98,19 +99,12 @@ jQuery(document).ready(function ($) {
             },
             success: function (response) {
                 if (response.success) {
-                    // Animación de salida bonita y remover elemento
-                    $taskItem.css('background-color', 'rgba(46, 213, 115, 0.1)')
-                        .css('border-color', '#2ed573');
-
-                    setTimeout(() => {
-                        $taskItem.slideUp(300, function () {
-                            $(this).remove();
-                            // Verificar si quedan hijos
-                            if ($tasksList.children('.alezux-user-task-item').length === 0) {
-                                loadUserTasks(); // Mostrar empty state
-                            }
-                        });
-                    }, 600);
+                    // Aplicar estado de completado en lugar de eliminar
+                    $taskItem.addClass('is-completed');
+                    $btn.find('.btn-icon-idle').removeClass('fa-check').addClass('fa-check-double').show();
+                    $btn.find('.btn-icon-loading').hide();
+                    $btn.find('.btn-text').text('Completado');
+                    $btn.prop('disabled', true);
 
                     showMsg(response.data.message, 'success');
                 } else {

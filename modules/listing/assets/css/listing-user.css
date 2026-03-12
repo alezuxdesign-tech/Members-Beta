@@ -162,3 +162,23 @@
         justify-content: center;
     }
 }
+
+/* Tareas Completadas (Estado Negativo) */
+.alezux-user-task-item.is-completed {
+    opacity: 0.6;
+    filter: grayscale(0.85);
+    background: rgba(255, 255, 255, 0.03);
+    border-style: dashed;
+    pointer-events: none;
+}
+
+.alezux-user-task-item.is-completed .user-task-title {
+    text-decoration: line-through;
+    color: var(--alezux-text-muted, #a0a0a0);
+}
+
+.alezux-user-task-item.is-completed .alezux-btn-complete {
+    border-color: #2ed573;
+    color: #2ed573;
+    background: rgba(46, 213, 115, 0.05);
+}

@@ -277,12 +277,12 @@ class Listing extends Module_Base {
 		$tasks_table = $wpdb->prefix . 'alezux_listing_tasks';
 		$user_tasks_table = $wpdb->prefix . 'alezux_listing_user_tasks';
 
-		// Obtener todas las tareas que el usuario current AUN NO ha completado.
+		// Obtener TODAS las tareas y marcar las que el usuario ya completó
 		$sql = $wpdb->prepare( "
-			SELECT t.* 
+			SELECT t.*, 
+                   CASE WHEN ut.id IS NOT NULL THEN 'completed' ELSE 'pending' END as user_status
 			FROM $tasks_table t
 			LEFT JOIN $user_tasks_table ut ON t.id = ut.task_id AND ut.user_id = %d
-			WHERE ut.id IS NULL
 			ORDER BY t.created_at DESC
 		", $user_id );
 
