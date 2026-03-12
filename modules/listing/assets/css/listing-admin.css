@@ -280,24 +280,40 @@ textarea.alezux-input {
     margin: 0;
     font-size: 22px;
     font-weight: 800;
+    line-height: 1.2;
+}
+
+.history-task-name {
+    display: block;
+    margin-top: 5px;
+    font-weight: 600;
 }
 
 .alezux-listing-modal-close {
     cursor: pointer;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff !important;
+    flex-shrink: 0;
+}
+
+.alezux-listing-modal-close i,
+.alezux-listing-modal-close svg {
+    font-size: 16px;
+    color: #fff !important;
+    fill: #fff !important;
 }
 
 .alezux-listing-modal-close:hover {
     background: #ff4757;
-    color: #fff;
+    color: #fff !important;
     border-color: #ff4757;
     transform: rotate(90deg);
 }

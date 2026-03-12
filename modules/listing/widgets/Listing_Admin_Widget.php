@@ -686,6 +686,57 @@ class Listing_Admin_Widget extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		// === SECCIÓN MODAL HISTORIAL STYLES ===
+		$this->start_controls_section(
+			'history_modal_styles',
+			[
+				'label' => esc_html__( 'Estilos Modal Historial', 'alezux-members' ),
+				'tab' => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'history_modal_title_color',
+			[
+				'label' => esc_html__( 'Color Título (Historial de Tarea)', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .alezux-history-task-modal h3' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'history_modal_title_typography',
+				'label' => esc_html__( 'Tipografía Título', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .alezux-history-task-modal h3',
+			]
+		);
+
+		$this->add_control(
+			'history_modal_taskname_color',
+			[
+				'label' => esc_html__( 'Color Nombre de Tarea', 'alezux-members' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .history-task-name' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name' => 'history_modal_taskname_typography',
+				'label' => esc_html__( 'Tipografía Nombre de Tarea', 'alezux-members' ),
+				'selector' => '{{WRAPPER}} .history-task-name',
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
@@ -852,7 +903,7 @@ class Listing_Admin_Widget extends Widget_Base {
 					<div class="alezux-listing-modal-header">
 						<div class="header-main">
 							<h3>Historial de Tarea</h3>
-							<small class="history-task-name" style="color: var(--alezux-primary, #6c5ce7); font-weight: 600; display: block; margin-top: 5px;">Cargando...</small>
+							<small class="history-task-name">Cargando...</small>
 						</div>
 						<span class="alezux-listing-modal-close"><?php echo $edit_close_icon_html; ?></span>
 					</div>
