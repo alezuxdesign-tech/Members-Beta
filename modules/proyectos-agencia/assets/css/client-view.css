@@ -220,20 +220,39 @@
     border-color: #007bff !important;
 }
 
-.file-preview-img {
+.file-preview-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     transition: transform 0.3s ease;
 }
 
-.file-delivery-card:hover .file-preview-img {
-    transform: scale(1.05);
+.file-delivery-card:hover .file-preview-link img {
+    transform: scale(1.1);
+}
+
+.file-actions {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.file-actions .alezux-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
 }
 
 .file-info .file-name {
     color: #333;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    font-weight: 600;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
 }
 
 .video-preview-icon i {
