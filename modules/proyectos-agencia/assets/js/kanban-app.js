@@ -315,9 +315,10 @@ jQuery(document).ready(function ($) {
                     <label>Archivos de Propuesta (Borrador Actual):</label>
                     <div id="identity-files-list" style="margin-bottom:10px;">${fileListHtml}</div>
                     
-                    <button type="button" class="alezux-btn alezux-btn-secondary btn-wp-media-upload" data-target="identity">
-                        <i class="fas fa-photo-video"></i> Gestionar Archivos (Librería WP)
+                    <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-identity">
+                        <i class="fas fa-desktop"></i> Seleccionar Archivos (PC)
                     </button>
+                    <input type="file" id="identity-native-upload" multiple style="display:none;" accept="image/*,application/pdf,.zip,.rar">
                     <input type="hidden" name="identity[proposal_files]" id="identity-files-input" value="${files.join(',')}">
                     
                     <div style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
@@ -413,12 +414,11 @@ jQuery(document).ready(function ($) {
                 <div class="step-content animate-fade-in">
                     <h4>Entrega Final</h4>
                     
-                    <div class="delivery-section">
-                        <h5>1. Logos del Proyecto</h5>
                         <div id="logos-list" style="margin-bottom:10px;">${logosHtml}</div>
-                        <button type="button" class="alezux-btn alezux-btn-secondary btn-wp-media-upload" data-target="logos">
-                            <i class="fas fa-images"></i> Seleccionar Logos (Librería WP)
+                        <button type="button" class="alezux-btn alezux-btn-secondary" id="btn-upload-logos">
+                            <i class="fas fa-desktop"></i> Seleccionar Logos (PC)
                         </button>
+                        <input type="file" id="logos-native-upload" multiple style="display:none;" accept="image/*">
                         <input type="hidden" id="logos-input" name="delivery[logos]" value="${logos.join(',')}">
                     </div>
 
@@ -563,46 +563,99 @@ jQuery(document).ready(function ($) {
             });
         }
 
-        // Handle WP Media Library Upload (Admin Only)
-        $('.btn-wp-media-upload').off('click').on('click', function (e) {
+        // --- NATIVE UPLOAD LOGIC ---
+        
+        // Identity Upload
+        $(document).off('click', '#btn-upload-identity').on('click', '#btn-upload-identity', function(e) {
             e.preventDefault();
-            const target = $(this).data('target');
-            const frame = wp.media({
-                title: 'Seleccionar Archivos',
-                button: { text: 'Insertar en Proyecto' },
-                multiple: true
-            });
-
-            frame.on('select', function () {
-                const attachments = frame.state().get('selection').toJSON();
-                const newUrls = attachments.map(a => a.url);
-
-                if (target === 'identity') {
-                    const currentVal = $('#identity-files-input').val();
-                    let currentUrls = currentVal ? currentVal.split(',') : [];
-                    currentUrls = [...currentUrls, ...newUrls].filter(s => s);
-                    
-                    if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
-                    currentModalProject.data.identity.proposal_files = currentUrls;
-                    $('#identity-files-input').val(currentUrls.join(','));
-                } else if (target === 'logos') {
-                    const currentVal = $('#logos-input').val();
-                    let currentUrls = currentVal ? currentVal.split(',') : [];
-                    currentUrls = [...currentUrls, ...newUrls].filter(s => s);
-                    
-                    if (!currentModalProject.data.delivery) currentModalProject.data.delivery = {};
-                    currentModalProject.data.delivery.logos = currentUrls;
-                    $('#logos-input').val(currentUrls.join(','));
-                }
-
-                renderModalContent(); // Refresh UI list
-                saveCurrentStepData(false, null, true); // Silent save
-            });
-
-            frame.open();
+            $('#identity-native-upload').click();
         });
 
-        // Remove File (Identity)
+        $(document).off('change', '#identity-native-upload').on('change', '#identity-native-upload', function() {
+            handleNativeBatchUpload(this, 'identity');
+        });
+
+        // Delivery Logos Upload
+        $(document).off('click', '#btn-upload-logos').on('click', '#btn-upload-logos', function(e) {
+            e.preventDefault();
+            $('#logos-native-upload').click();
+        });
+
+        $(document).off('change', '#logos-native-upload').on('change', '#logos-native-upload', function() {
+            handleNativeBatchUpload(this, 'logos');
+        });
+
+        function handleNativeBatchUpload(input, target) {
+            const files = input.files;
+            if (!files.length) return;
+
+            const listId = target === 'identity' ? '#identity-files-list' : '#logos-list';
+            const inputId = target === 'identity' ? '#identity-files-input' : '#logos-input';
+            const btnId = target === 'identity' ? '#btn-upload-identity' : '#btn-upload-logos';
+            const btnIcon = target === 'identity' ? 'fa-desktop' : 'fa-desktop';
+            const btnText = target === 'identity' ? 'Seleccionar Archivos (PC)' : 'Seleccionar Logos (PC)';
+
+            // 1. Show Optimistic UI (Loading indicators)
+            $(btnId).html('<i class="fas fa-spinner fa-spin"></i> Subiendo...').prop('disabled', true);
+            
+            for (let i = 0; i < files.length; i++) {
+                $(listId).append(`
+                    <div class="file-item-row uploading-ghost" style="opacity:0.6;">
+                        <span><i class="fas fa-sync fa-spin"></i> ${files[i].name}...</span>
+                    </div>
+                `);
+            }
+
+            // 2. Prepare Batch
+            let formData = new FormData();
+            formData.append('action', 'alezux_agency_upload_file');
+            Array.from(files).forEach(file => {
+                formData.append('files[]', file);
+            });
+
+            // 3. AJAX Request
+            $.ajax({
+                url: alezux_agency_vars.ajax_url,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        const newUrls = response.data.files.map(f => f.url);
+                        const currentVal = $(inputId).val();
+                        let currentUrls = currentVal ? currentVal.split(',') : [];
+                        currentUrls = [...currentUrls, ...newUrls].filter(s => s);
+
+                        // Update Model
+                        if (target === 'identity') {
+                            if (!currentModalProject.data.identity) currentModalProject.data.identity = {};
+                            currentModalProject.data.identity.proposal_files = currentUrls;
+                        } else {
+                            if (!currentModalProject.data.delivery) currentModalProject.data.delivery = {};
+                            currentModalProject.data.delivery.logos = currentUrls;
+                        }
+
+                        $(inputId).val(currentUrls.join(','));
+                        renderModalContent(); // Redraw with actual links
+                        saveCurrentStepData(false, null, true); // Silent background save
+                    } else {
+                        alert('Error al subir: ' + (response.data || 'Error desconocido'));
+                        renderModalContent(); // Cleanup ghosts
+                    }
+                },
+                error: function () {
+                    alert('Error de red al subir archivos.');
+                    renderModalContent(); // Cleanup ghosts
+                },
+                complete: function() {
+                    $(btnId).html(`<i class="fas ${btnIcon}"></i> ${btnText}`).prop('disabled', false);
+                    input.value = ''; // Reset input to allow same file again
+                }
+            });
+        }
+
+        // Close on outside click is handled above
         $(document).off('click', '.remove-file').on('click', '.remove-file', function () {
             const urlToRemove = $(this).parent().data('url');
             const currentVal = $('#identity-files-input').val();
@@ -619,7 +672,6 @@ jQuery(document).ready(function ($) {
             saveCurrentStepData(false, null, true);
         });
 
-        // Remove Logo (Delivery)
         $(document).off('click', '.remove-logo').on('click', '.remove-logo', function () {
             const urlToRemove = $(this).parent().data('url');
             const currentVal = $('#logos-input').val();

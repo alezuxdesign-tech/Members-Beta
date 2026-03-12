@@ -425,6 +425,17 @@
     color: #a00;
 }
 
+/* Uploading states */
+.file-item-row.uploading-ghost {
+    background: #fdfdfd;
+    border: 1px dashed #bbb;
+    color: #999;
+}
+
+.fa-spin {
+    margin-right: 5px;
+}
+
 /* Client View Delivery Step */
 .delivery-hero {
     text-align: center;
