@@ -490,7 +490,7 @@ jQuery(document).ready(function ($) {
                         // Remove from DOM
                         $(`.kanban-card[data-id="${currentModalProject.id}"]`).remove();
                         // Close Modal
-                        $('#project-details-modal').hide();
+                        $('#project-modal').hide();
                     } else {
                         alert('Error: ' + response.data);
                     }
