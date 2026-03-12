@@ -165,15 +165,11 @@ jQuery(document).ready(function ($) {
             if (completedUsers && completedUsers.length > 0) {
                 completedUsers.forEach(user => {
                     $historyTableBody.append(`
-                        <tr class="tw-border-b tw-border-gray-800">
-                            <td class="col-student">
-                                <div class="alezux-student-info">
-                                    <div class="alezux-student-text">
-                                        <div class="student-name" style="color: #fff; font-weight: 500;">${user.display_name}</div>
-                                    </div>
-                                </div>
+                        <tr>
+                            <td>
+                                <div class="student-name" style="font-weight: 600;">${user.display_name}</div>
                             </td>
-                            <td class="col-status" style="color: #a0a0a0;">
+                            <td style="color: var(--alezux-text-muted, #a0a0a0);">
                                 ${user.user_email}
                             </td>
                         </tr>

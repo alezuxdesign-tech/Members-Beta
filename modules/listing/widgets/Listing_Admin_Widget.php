@@ -848,37 +848,36 @@ class Listing_Admin_Widget extends Widget_Base {
 			}
 			?>
 			<div class="<?php echo esc_attr( $history_modal_class ); ?>" style="<?php echo esc_attr( $history_modal_style ); ?>">
-				<div class="alezux-listing-modal-content" style="max-width: 700px; width: 100%;">
+				<div class="alezux-listing-modal-content" style="max-width: 600px;">
 					<div class="alezux-listing-modal-header">
-						<h3>Historial de Finalización</h3>
+						<div class="header-main">
+							<h3>Historial de Tarea</h3>
+							<small class="history-task-name" style="color: var(--alezux-primary, #6c5ce7); font-weight: 600; display: block; margin-top: 5px;">Cargando...</small>
+						</div>
 						<span class="alezux-listing-modal-close"><?php echo $edit_close_icon_html; ?></span>
 					</div>
-					<div class="alezux-listing-modal-body" style="padding: 0;">
-						<div class="history-task-title" style="padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #a0a0a0; font-size: 14px;">
-							Tarea: <strong style="color: #fff;" class="history-task-name">Cargando...</strong>
-						</div>
-						<!-- Estructura extraida del módulo finanzas -->
-						<div class="alezux-table-wrapper" style="margin: 0; border: none; overflow-x: auto;">
-							<table class="alezux-finanzas-table w-full text-sm text-left">
+					<div class="alezux-listing-modal-body">
+						<div class="alezux-table-wrapper">
+							<table class="alezux-listing-table">
 								<thead>
 									<tr>
-										<th class="col-student">ESTUDIANTE / USUARIO</th>
-										<th class="col-status">CORREO ELECTRÓNICO</th>
+										<th>ESTUDIANTE / USUARIO</th>
+										<th>CORREO ELECTRÓNICO</th>
 									</tr>
 								</thead>
 								<tbody class="history-table-body">
 									<?php 
 									if ( $is_elementor_editor && 'yes' === $settings['preview_show_history_modal'] ) {
 										echo '<tr>
-												<td class="col-student">Juan Pérez</td>
-												<td class="col-status">juan@prueba.com</td>
+												<td>Juan Pérez</td>
+												<td>juan@prueba.com</td>
 											  </tr>
 											  <tr>
-												<td class="col-student">María Gómez</td>
-												<td class="col-status">maria@ejemplo.com</td>
+												<td>María Gómez</td>
+												<td>maria@ejemplo.com</td>
 											  </tr>';
 									} else {
-										echo '<tr><td colspan="2" style="text-align: center; color: #a0a0a0;">No hay usuarios.</td></tr>';
+										echo '<tr><td colspan="2" style="text-align: center; color: #a0a0a0; padding: 20px;">No hay usuarios.</td></tr>';
 									}
 									?>
 								</tbody>
