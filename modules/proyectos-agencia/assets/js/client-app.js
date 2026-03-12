@@ -4,11 +4,16 @@ jQuery(document).ready(function ($) {
 
     const projectId = appContainer.data('id');
 
-    // Navigation logic for timeline steps
-    $('.timeline-step').on('click', function () {
+    // Navigation logic for timeline steps (using delegation for robustness)
+    appContainer.on('click', '.timeline-step', function () {
         const targetId = $(this).data('step-target');
         if (!targetId) return;
 
+        // Visual feedback on timeline
+        $('.timeline-step').removeClass('active');
+        $(this).addClass('active');
+
+        // Content switch
         $('.step-content').hide().removeClass('active');
         $('#' + targetId).fadeIn().addClass('active');
     });

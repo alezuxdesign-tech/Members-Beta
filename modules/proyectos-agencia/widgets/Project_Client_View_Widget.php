@@ -1249,29 +1249,29 @@ class Project_Client_View_Widget extends Widget_Base {
                              <div class="alezux-alert-info">Por favor revisa las propuestas y danos tu feedback.</div>
                         <?php endif; ?>
 
-                        <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; margin: 20px 0;">
+                        <div class="files-grid">
                             <?php foreach($files as $index => $file): 
                                 $clean_url = strtok($file, '?');
                                 $ext = strtolower(pathinfo($clean_url, PATHINFO_EXTENSION));
                                 $is_img = in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif']);
                             ?>
-                                <div class="file-card" style="border:1px solid #ddd; padding:0; border-radius:8px; overflow:hidden; background:white; display:flex; flex-direction:column;">
-                                    <a href="<?php echo esc_url($file); ?>" target="_blank" class="file-preview-link" style="display:block; height:150px; background:#f8f9fa;">
+                                <div class="file-card file-delivery-card">
+                                    <a href="<?php echo esc_url($file); ?>" target="_blank" class="file-preview-link">
                                         <?php if($is_img): ?>
-                                            <img src="<?php echo esc_url($file); ?>" alt="Propuesta" style="width:100%; height:100%; object-fit: contain; padding:10px;">
+                                            <img src="<?php echo esc_url($file); ?>" alt="Propuesta">
                                         <?php else: ?>
-                                            <div style="height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; color:#adb5bd;">
+                                            <div class="file-preview-icon">
                                                 <i class="fas fa-file-pdf"></i>
                                             </div>
                                         <?php endif; ?>
                                     </a>
-                                    <div style="padding:15px; text-align:center; border-top:1px solid #eee;">
-                                        <span style="display:block; margin-bottom:10px; font-weight:600; font-size:14px;">Propuesta <?php echo $index + 1; ?></span>
-                                        <div class="file-actions" style="display:flex; gap:5px;">
-                                            <a href="<?php echo esc_url($file); ?>" target="_blank" class="alezux-btn alezux-btn-secondary" style="font-size:11px; padding:8px 5px; flex:1; justify-content:center;">
+                                    <div class="file-info">
+                                        <span class="file-name">Propuesta <?php echo $index + 1; ?></span>
+                                        <div class="file-actions">
+                                            <a href="<?php echo esc_url($file); ?>" target="_blank" class="alezux-btn alezux-btn-secondary">
                                                 <i class="fas fa-eye"></i> Ver
                                             </a>
-                                            <a href="<?php echo esc_url($file); ?>" class="alezux-btn alezux-btn-primary" style="font-size:11px; padding:8px 5px; flex:1; justify-content:center;" download>
+                                            <a href="<?php echo esc_url($file); ?>" class="alezux-btn alezux-btn-primary" download>
                                                 <i class="fas fa-download"></i> Bajar
                                             </a>
                                         </div>
@@ -1365,31 +1365,31 @@ class Project_Client_View_Widget extends Widget_Base {
                     foreach($categories as $key => $cat):
                         $assets = isset($data['delivery'][$key]) ? $data['delivery'][$key] : [];
                         if(!empty($assets)): ?>
-                            <div class="delivery-folder" style="margin-bottom: 30px;">
+                            <div class="delivery-folder">
                                 <h4><i class="fas <?php echo $cat['icon']; ?>"></i> <?php echo $cat['title']; ?></h4>
-                                <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:15px;">
+                                <div class="files-grid">
                                     <?php foreach($assets as $asset): 
                                         $clean_url = strtok($asset, '?');
                                         $ext = strtolower(pathinfo($clean_url, PATHINFO_EXTENSION));
                                         $is_img = in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif']);
                                         ?>
-                                        <div class="file-card file-delivery-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border: 1px solid #ddd; background: white; border-radius: 8px;">
-                                            <a href="<?php echo esc_url($asset); ?>" target="_blank" class="file-preview-link" style="display:block; text-decoration:none; height:120px; overflow:hidden; background:#f8f9fa; position:relative;">
+                                        <div class="file-card file-delivery-card">
+                                            <a href="<?php echo esc_url($asset); ?>" target="_blank" class="file-preview-link">
                                                 <?php if($is_img): ?>
-                                                    <img src="<?php echo esc_url($asset); ?>" alt="Preview" style="width:100%; height:100%; object-fit: contain; padding:10px;">
+                                                    <img src="<?php echo esc_url($asset); ?>" alt="Preview">
                                                 <?php else: ?>
-                                                    <div class="file-preview-icon" style="height:100%; display:flex; align-items:center; justify-content:center; font-size:35px; color:#adb5bd;">
+                                                    <div class="file-preview-icon">
                                                         <i class="fas <?php echo ($ext === 'zip' || $ext === 'rar') ? 'fa-file-archive' : 'fa-file-alt'; ?>"></i>
                                                     </div>
                                                 <?php endif; ?>
                                             </a>
-                                            <div class="file-info" style="padding:12px; text-align:center; display:flex; flex-direction:column; gap:8px; border-top:1px solid #eee;">
-                                                <span class="file-name" style="font-weight:600; font-size:12px; word-break:break-all; display:block; height:18px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><?php echo esc_html(basename($clean_url)); ?></span>
-                                                <div class="file-actions" style="display:flex; gap:5px;">
-                                                    <a href="<?php echo esc_url($asset); ?>" target="_blank" class="alezux-btn alezux-btn-secondary" style="font-size:10px; padding:6px 4px; flex:1; justify-content:center;">
+                                            <div class="file-info">
+                                                <span class="file-name"><?php echo esc_html(basename($clean_url)); ?></span>
+                                                <div class="file-actions">
+                                                    <a href="<?php echo esc_url($asset); ?>" target="_blank" class="alezux-btn alezux-btn-secondary">
                                                         <i class="fas fa-eye"></i> Ver
                                                     </a>
-                                                    <a href="<?php echo esc_url($asset); ?>" class="alezux-btn alezux-btn-primary" style="font-size:10px; padding:6px 4px; flex:1; justify-content:center;" download>
+                                                    <a href="<?php echo esc_url($asset); ?>" class="alezux-btn alezux-btn-primary" download>
                                                         <i class="fas fa-download"></i> Bajar
                                                     </a>
                                                 </div>
@@ -1398,8 +1398,8 @@ class Project_Client_View_Widget extends Widget_Base {
                                     <?php endforeach; ?>
                                 </div>
                             </div>
-                        <?php endif; 
-                    endforeach; ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
 
                     <div class="delivery-folder">
                         <h4><i class="fas fa-key"></i> Credenciales</h4>
@@ -1413,25 +1413,27 @@ class Project_Client_View_Widget extends Widget_Base {
 
                     <div class="delivery-folder">
                         <h4><i class="fas fa-video"></i> Video Tutoriales</h4>
-                        <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; margin-top:20px;">
+                        <div class="files-grid">
                             <?php 
                              $videos = isset($data['delivery']['video_links']) ? $data['delivery']['video_links'] : [];
                              if(!empty($videos)):
                                 foreach($videos as $video): ?>
-                                <div class="file-card video-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border: 1px solid #ddd; background: white; border-radius: 8px;">
-                                    <div class="video-preview-icon" style="height:120px; display:flex; align-items:center; justify-content:center; background:#ffebeb; border-bottom:1px solid #eee; font-size:40px; color:#dc3545;">
+                                <div class="file-card video-card">
+                                    <div class="video-preview-icon">
                                         <i class="fas fa-play-circle"></i>
                                     </div>
-                                    <div class="file-info" style="padding:15px; text-align:center; display:flex; flex-direction:column; gap:10px;">
-                                        <span class="file-name" style="font-weight:600; font-size:13px;">Video Tutorial</span>
-                                        <a href="<?php echo esc_url($video); ?>" target="_blank" class="alezux-btn alezux-btn-primary" style="font-size:12px; padding:6px 12px; width:100%;">
-                                            Ver Video
-                                        </a>
+                                    <div class="file-info">
+                                        <span class="file-name">Video Tutorial</span>
+                                        <div class="file-actions">
+                                            <a href="<?php echo esc_url($video); ?>" target="_blank" class="alezux-btn alezux-btn-primary">
+                                                <i class="fas fa-play"></i> Ver Video
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <?php endforeach; 
                              else: ?>
-                                <p style="grid-column: 1/-1;">No hay tutoriales disponibles aún.</p>
+                                <p>No hay tutoriales disponibles aún.</p>
                              <?php endif; ?>
                         </div>
                     </div>
