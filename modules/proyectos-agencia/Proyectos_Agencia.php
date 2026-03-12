@@ -68,7 +68,7 @@ class Proyectos_Agencia extends Module_Base {
 
         // CSS
         wp_register_style( 'alezux-kanban-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/kanban.css', [], '1.1.8' );
-        wp_register_style( 'alezux-client-view-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/client-view.css', [], '1.1.8' );
+        wp_register_style( 'alezux-client-view-css', ALEZUX_PROYECTOS_AGENCIA_URL . 'assets/css/client-view.css', [], '1.2.0' );
         // jQuery UI CSS for Datepicker
         wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css', [], '1.12.1' );
         
