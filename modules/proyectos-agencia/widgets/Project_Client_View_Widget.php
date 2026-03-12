@@ -1102,12 +1102,11 @@ class Project_Client_View_Widget extends Widget_Base {
                     if ($step_idx < $current_index) $status_class = 'completed';
                     elseif ($step_idx === $current_index) $status_class = 'active';
                 ?>
-                <div class="timeline-step <?php echo $status_class; ?>">
+                <div class="timeline-step <?php echo $status_class; ?>" data-step-target="step-<?php echo esc_attr(str_replace('_', '-', $key)); ?>" style="cursor: pointer;">
                     <div class="step-circle">
+                        <span><?php echo $step_idx + 1; ?></span>
                         <?php if($status_class == 'completed'): ?>
-                            <i class="fas fa-check"></i>
-                        <?php else: ?>
-                            <span><?php echo $step_idx + 1; ?></span>
+                            <div class="step-completed-badge" style="position: absolute; bottom: 0; right: 0; background: #28a745; color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 2px solid #fff;"><i class="fas fa-check"></i></div>
                         <?php endif; ?>
                     </div>
                     <div class="step-label"><?php echo $label; ?></div>
@@ -1120,8 +1119,7 @@ class Project_Client_View_Widget extends Widget_Base {
             <div class="project-content-area">
                 
                 <!-- STEP 1: BRIEFING -->
-                <?php if ($current_step === 'briefing'): ?>
-                <div class="step-content active" id="step-briefing">
+                <div class="step-content <?php echo ($current_step === 'briefing') ? 'active' : ''; ?>" id="step-briefing" style="<?php echo ($current_step !== 'briefing') ? 'display: none;' : ''; ?>">
                     <h3>Briefing Inicial</h3>
                     <p>Cuéntanos sobre tu visión para el sitio web y tu marca.</p>
                     
@@ -1228,11 +1226,9 @@ class Project_Client_View_Widget extends Widget_Base {
                         });
                     </script>
                 </div>
-                <?php endif; ?>
 
                 <!-- STEP 2: IDENTITY -->
-                 <?php if ($current_step === 'identity'): ?>
-                <div class="step-content active" id="step-identity">
+                <div class="step-content <?php echo ($current_step === 'identity') ? 'active' : ''; ?>" id="step-identity" style="<?php echo ($current_step !== 'identity') ? 'display: none;' : ''; ?>">
                     <h3>Propuesta de Identidad</h3>
                     
                     <?php 
@@ -1289,11 +1285,9 @@ class Project_Client_View_Widget extends Widget_Base {
 
                     <?php endif; ?>
                 </div>
-                <?php endif; ?>
                 
                 <!-- STEP 3: WEB DESIGN -->
-                <?php if ($current_step === 'web_design'): ?>
-                <div class="step-content active" id="step-web-design">
+                <div class="step-content <?php echo ($current_step === 'web_design') ? 'active' : ''; ?>" id="step-web-design" style="<?php echo ($current_step !== 'web_design') ? 'display: none;' : ''; ?>">
                     <h3>Diseño UI/UX (Figma)</h3>
                      <?php 
                     $url = isset($data['web_design']['figma_url']) ? $data['web_design']['figma_url'] : '';
@@ -1313,11 +1307,9 @@ class Project_Client_View_Widget extends Widget_Base {
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php endif; ?>
 
                  <!-- STEP 4: DEVELOPMENT -->
-                <?php if ($current_step === 'development'): ?>
-                <div class="step-content active" id="step-development">
+                <div class="step-content <?php echo ($current_step === 'development') ? 'active' : ''; ?>" id="step-development" style="<?php echo ($current_step !== 'development') ? 'display: none;' : ''; ?>">
                     <h3>Desarrollo & Montaje</h3>
                        <?php 
                     $url = isset($data['development']['staging_url']) ? $data['development']['staging_url'] : '';
@@ -1336,11 +1328,9 @@ class Project_Client_View_Widget extends Widget_Base {
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php endif; ?>
 
                 <!-- STEP 5: DELIVERY -->
-                <?php if ($current_step === 'delivery'): ?>
-                <div class="step-content active" id="step-delivery">
+                <div class="step-content <?php echo ($current_step === 'delivery') ? 'active' : ''; ?>" id="step-delivery" style="<?php echo ($current_step !== 'delivery') ? 'display: none;' : ''; ?>">
                     <div class="delivery-hero">
                         <i class="fas fa-gift" style="font-size: 50px; color:#28a745;"></i>
                         <h2>¡Tu Proyecto está Listo!</h2>
@@ -1349,17 +1339,34 @@ class Project_Client_View_Widget extends Widget_Base {
                     
                     <div class="delivery-folder">
                         <h4><i class="fas fa-folder-open"></i> Archivos Finales</h4>
-                        <ul>
+                        <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; margin-top:20px;">
                             <?php 
                              $assets = isset($data['delivery']['logos']) ? $data['delivery']['logos'] : [];
                              if(!empty($assets)):
-                                foreach($assets as $asset): ?>
-                                <li><a href="<?php echo esc_url($asset); ?>" target="_blank"><i class="fas fa-download"></i> Descargar Recurso</a></li>
+                                foreach($assets as $asset): 
+                                    $ext = strtolower(pathinfo($asset, PATHINFO_EXTENSION));
+                                    $is_img = in_array($ext, ['png', 'jpg', 'jpeg', 'svg', 'webp', 'gif']);
+                                    ?>
+                                    <div class="file-card file-delivery-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border: 1px solid #ddd; background: white; border-radius: 8px;">
+                                        <?php if($is_img): ?>
+                                            <div class="file-preview-img" style="height:120px; background-image: url('<?php echo esc_url($asset); ?>'); background-size: cover; background-position: center; border-bottom:1px solid #eee;"></div>
+                                        <?php else: ?>
+                                            <div class="file-preview-icon" style="height:120px; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border-bottom:1px solid #eee; font-size:35px; color:#adb5bd;">
+                                                <i class="fas <?php echo ($ext === 'zip' || $ext === 'rar') ? 'fa-file-archive' : 'fa-file-alt'; ?>"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="file-info" style="padding:15px; text-align:center; display:flex; flex-direction:column; gap:10px;">
+                                            <span class="file-name" style="font-weight:600; font-size:13px; word-break:break-all;"><?php echo esc_html(basename($asset)); ?></span>
+                                            <a href="<?php echo esc_url($asset); ?>" target="_blank" class="alezux-btn alezux-btn-secondary" style="font-size:12px; padding:6px 12px; width:100%;" download>
+                                                <i class="fas fa-download"></i> Descargar
+                                            </a>
+                                        </div>
+                                    </div>
                                 <?php endforeach; 
                              else: ?>
-                                <li>No hay archivos adjuntos.</li>
+                                <p style="grid-column: 1/-1;">No hay archivos adjuntos.</p>
                              <?php endif; ?>
-                        </ul>
+                        </div>
                     </div>
 
                     <div class="delivery-folder">
@@ -1374,20 +1381,29 @@ class Project_Client_View_Widget extends Widget_Base {
 
                     <div class="delivery-folder">
                         <h4><i class="fas fa-video"></i> Video Tutoriales</h4>
-                        <ul>
+                        <div class="files-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; margin-top:20px;">
                             <?php 
                              $videos = isset($data['delivery']['video_links']) ? $data['delivery']['video_links'] : [];
                              if(!empty($videos)):
                                 foreach($videos as $video): ?>
-                                <li><a href="<?php echo esc_url($video); ?>" target="_blank"><i class="fas fa-play-circle"></i> Ver Tutorial</a></li>
+                                <div class="file-card video-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border: 1px solid #ddd; background: white; border-radius: 8px;">
+                                    <div class="video-preview-icon" style="height:120px; display:flex; align-items:center; justify-content:center; background:#ffebeb; border-bottom:1px solid #eee; font-size:40px; color:#dc3545;">
+                                        <i class="fas fa-play-circle"></i>
+                                    </div>
+                                    <div class="file-info" style="padding:15px; text-align:center; display:flex; flex-direction:column; gap:10px;">
+                                        <span class="file-name" style="font-weight:600; font-size:13px;">Video Tutorial</span>
+                                        <a href="<?php echo esc_url($video); ?>" target="_blank" class="alezux-btn alezux-btn-primary" style="font-size:12px; padding:6px 12px; width:100%;">
+                                            Ver Video
+                                        </a>
+                                    </div>
+                                </div>
                                 <?php endforeach; 
                              else: ?>
-                                <li>No hay tutoriales disponibles aún.</li>
+                                <p style="grid-column: 1/-1;">No hay tutoriales disponibles aún.</p>
                              <?php endif; ?>
-                        </ul>
+                        </div>
                     </div>
                 </div>
-                <?php endif; ?>
 
             </div>
 		</div>

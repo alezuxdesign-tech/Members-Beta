@@ -4,6 +4,15 @@ jQuery(document).ready(function ($) {
 
     const projectId = appContainer.data('id');
 
+    // Navigation logic for timeline steps
+    $('.timeline-step').on('click', function () {
+        const targetId = $(this).data('step-target');
+        if (!targetId) return;
+
+        $('.step-content').hide().removeClass('active');
+        $('#' + targetId).fadeIn().addClass('active');
+    });
+
     // Handle Briefing Form
     $('#briefing-form').on('submit', function (e) {
         e.preventDefault();

@@ -37,6 +37,21 @@
     color: #6c757d;
     margin-bottom: 10px;
     transition: all 0.3s;
+    position: relative;
+}
+
+.timeline-step:hover .step-circle {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.step-completed-badge {
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
 }
 
 .timeline-step.active .step-circle {
@@ -191,4 +206,51 @@
     align-items: center;
     gap: 10px;
     background: white;
+}
+
+/* Updated File Cards for Delivery */
+.file-delivery-card, .video-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef !important;
+}
+
+.file-delivery-card:hover, .video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: #007bff !important;
+}
+
+.file-preview-img {
+    transition: transform 0.3s ease;
+}
+
+.file-delivery-card:hover .file-preview-img {
+    transform: scale(1.05);
+}
+
+.file-info .file-name {
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.video-preview-icon i {
+    transition: transform 0.3s ease;
+}
+
+.video-card:hover .video-preview-icon i {
+    transform: scale(1.2);
+}
+
+.alezux-btn-secondary {
+    background: #f1f3f5;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.alezux-btn-secondary:hover {
+    background: #e9ecef;
+    color: #212529;
 }
