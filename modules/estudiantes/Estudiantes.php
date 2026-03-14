@@ -584,18 +584,25 @@ class Estudiantes extends Module_Base {
 
 		// Enviar email (Delegado a Marketing)
 		if ( class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
-			\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
+			$sent = \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email(
 				'admin_reset_password',
 				$user->user_email,
 				[
 					'user' => $user,
-					'password' => $new_pass,
-					'login_url' => \wp_login_url()
+					'new_password' => $new_pass, // Variable oficial
+					'password'     => $new_pass, // Alias por compatibilidad
+					'login_url'    => \wp_login_url()
 				]
 			);
+
+			if ( ! $sent ) {
+				\wp_send_json_error( [ 'message' => 'Contraseña cambiada, pero falló el envío del correo electrónico. Por favor, verifica la configuración de correo.' ] );
+			}
+		} else {
+			\wp_send_json_error( [ 'message' => 'Módulo de Marketing no activo. La contraseña se cambió pero no se pudo enviar el correo.' ] );
 		}
 
-		\wp_send_json_success( [ 'message' => 'Contraseña restablecida y enviada por correo.' ] );
+		\wp_send_json_success( [ 'message' => 'Contraseña restablecida y enviada por correo correctamente.' ] );
 	}
 
 	/**

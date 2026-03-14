@@ -30,7 +30,7 @@ class Email_Engine {
 			'admin_reset_password' => [
 				'title'       => 'Seguridad - Reset por Admin',
 				'description' => 'Se envía cuando un administrador restablece manualmente la contraseña de un usuario.',
-				'variables'   => [ '{{user.name}}', '{{new_password}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
+				'variables'   => [ '{{user.name}}', '{{new_password}}', '{{password}}', '{{login_url}}', '{{site_name}}', '{{logo_url}}' ]
 			],
 			'payment_success' => [
 				'title'       => 'Finanzas - Pago Exitoso',

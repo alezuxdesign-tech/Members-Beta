@@ -79,7 +79,7 @@ class Default_Templates {
 						<p>Hola {{user.name}},</p>
 						<p>Un administrador ha actualizado tus credenciales de acceso.</p>
 						<div style="background: #f9f9f9; padding: 15px; margin: 20px 0;">
-							<p><strong>Nueva Contraseña:</strong> {{password}}</p>
+							<p><strong>Nueva Contraseña:</strong> {{new_password}}</p>
 						</div>
 						<p>Te recomendamos cambiarla después de iniciar sesión.</p>
 						<p style="text-align: center;">
