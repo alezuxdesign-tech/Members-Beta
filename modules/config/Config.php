@@ -17,7 +17,16 @@ class Config extends Module_Base {
 
 		// Encolar estilos específicos del módulo
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-		
+
+		// Forzar Barra de Administración para Administradores
+		add_filter( 'show_admin_bar', function( $show ) {
+			if ( current_user_can( 'administrator' ) ) {
+				return true;
+			}
+			return $show;
+		}, 999 );
+
+
 		// Registrar Widgets de Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 
@@ -92,7 +101,6 @@ class Config extends Module_Base {
 		// Sobrescribir URLs nativas de WordPress
 		add_filter( 'login_url', [ $this, 'custom_login_url' ], 10, 3 );
 		add_filter( 'lostpassword_url', [ $this, 'custom_lostpassword_url' ], 10, 2 );
-		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 		add_filter( 'retrieve_password_message', [ $this, 'custom_retrieve_password_message' ], 10, 4 );
 	}
 
