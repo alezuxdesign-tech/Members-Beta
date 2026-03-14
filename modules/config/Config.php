@@ -10,7 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Config extends Module_Base {
 
 	public function init() {
-        file_put_contents( ALEZUX_MEMBERS_PATH . 'debug_status.txt', "Config::init fired at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND );
+        $log_file = ALEZUX_MEMBERS_PATH . 'debug_status.txt';
+        file_put_contents( $log_file, "--- DEBUG START: " . date('Y-m-d H:i:s') . " ---\n", FILE_APPEND );
+        file_put_contents( $log_file, "Config::init fired.\n", FILE_APPEND );
+
 		// Encolar estilos específicos del módulo
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		
@@ -24,12 +27,13 @@ class Config extends Module_Base {
 		require_once __DIR__ . '/includes/Admin_Dashboard_Stats.php';
 		\Alezux_Members\Modules\Config\Includes\Admin_Dashboard_Stats::init();
 
-		// AJAX Auth Actions
+		// AJAX Auth Actions - REGISTRO CRÍTICO
+        file_put_contents( $log_file, "Registrando hooks AJAX...\n", FILE_APPEND );
 		add_action( 'wp_ajax_nopriv_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		add_action( 'wp_ajax_alezux_ajax_login', [ $this, 'handle_ajax_login' ] );
 		
 		add_action( 'wp_ajax_nopriv_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
-		add_action( 'wp_ajax_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] ); // Fix 400 Bad Request for logged in users
+		add_action( 'wp_ajax_alezux_ajax_recover', [ $this, 'handle_ajax_recover' ] );
 		
 		add_action( 'wp_ajax_nopriv_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
 		add_action( 'wp_ajax_alezux_reset_password', [ $this, 'handle_ajax_reset_password' ] );
@@ -37,6 +41,8 @@ class Config extends Module_Base {
 		// AJAX Profile & Password
 		add_action( 'wp_ajax_alezux_update_profile', [ $this, 'handle_update_profile' ] );
 		add_action( 'wp_ajax_alezux_change_password', [ $this, 'handle_change_password' ] );
+        file_put_contents( $log_file, "Hooks AJAX registrados correctamente.\n", FILE_APPEND );
+
 
 		// Shortcode de Alertas
 		$this->register_shortcode( 'alezux_login_alerts', [ $this, 'render_login_alerts' ], 'Muestra mensajes de error/éxito en el login.' );
