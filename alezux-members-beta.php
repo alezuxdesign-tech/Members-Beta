@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Definir constantes del plugin
-define( 'ALEZUX_MEMBERS_VERSION', '1.0.4' );
+define( 'ALEZUX_MEMBERS_VERSION', '1.0.8' );
 define( 'ALEZUX_MEMBERS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ALEZUX_MEMBERS_URL', plugin_dir_url( __FILE__ ) );
 define( 'ALEZUX_MEMBERS_MODULES_PATH', ALEZUX_MEMBERS_PATH . 'modules/' );
