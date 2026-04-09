@@ -8,11 +8,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Email_Engine {
 
 	public function __construct() {
-		// Hook into phpmailer_init or similar if we needed deep SMTP control, 
-		// but wp_mail filters are enough for From Name/Email.
-		// add_filter( 'wp_mail_from', [ $this, 'custom_mail_from' ] ); // DISABLED: Causes blocking on some hosts if domain mismatches
+		// Control de remitente y formato
+		add_filter( 'wp_mail_from', [ $this, 'custom_mail_from' ] );
 		add_filter( 'wp_mail_from_name', [ $this, 'custom_mail_from_name' ] );
 		add_filter( 'wp_mail_content_type', [ $this, 'set_html_content_type' ] );
+
+		// Captura de errores fatales de envío
+		add_action( 'wp_mail_failed', [ $this, 'log_mail_errors' ] );
+	}
+
+	/**
+	 * Log de errores detallado cuando wp_mail falla
+	 */
+	public function log_mail_errors( $wp_error ) {
+		$log_file = ALEZUX_MEMBERS_PATH . 'alezux-mail-errors.log';
+		$timestamp = date('Y-m-d H:i:s');
+		$error_msg = $wp_error->get_error_message();
+		$error_data = json_encode( $wp_error->get_error_data(), JSON_PRETTY_PRINT );
+
+		$log_entry = "[$timestamp] ERROR ENVÍO: $error_msg\nDATOS: $error_data\n" . str_repeat('-', 50) . "\n";
+		file_put_contents( $log_file, $log_entry, FILE_APPEND );
 	}
 
 	public function get_registered_types() {
@@ -156,12 +171,22 @@ class Email_Engine {
 		}
 
 		// 6. Send
-		$sent = wp_mail( $recipient_email, $subject, $content, $headers );
+		try {
+			$sent = wp_mail( $recipient_email, $subject, $content, $headers );
+		} catch ( \Exception $e ) {
+			$sent = false;
+			$this->log_mail_errors( new \WP_Error( 'mail_exception', $e->getMessage() ) );
+		}
 
 		// 7. Update Log Status
 		if ( ! $is_test && $log_id > 0 ) {
 			$status = $sent ? 'sent' : 'failed';
 			$this->update_log_status( $log_id, $status );
+			
+			if ( ! $sent ) {
+				// Log manual en caso de que wp_mail devuelva false sin disparar el hook (raro pero posible)
+				$this->log_mail_errors( new \WP_Error( 'mail_false', "wp_mail devolvió FALSE para: $recipient_email" ) );
+			}
 		}
 
 		return $sent;
