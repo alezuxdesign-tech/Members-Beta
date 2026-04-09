@@ -423,11 +423,19 @@ class Marketing extends Module_Base {
 			];
 
 			// Pass is_test = true to avoid logging test emails to DB
+			$log_file = ALEZUX_MEMBERS_PATH . 'debug_status.txt';
+			file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] MARKETING: Iniciando envío de prueba a $email (Tipo: $type)\n", FILE_APPEND );
+			
+			$start = microtime( true );
 			$sent = $this->email_engine->send_email( $type, $email, $dummy_data, true );
+			$end = microtime( true );
+			$diff = round( $end - $start, 4 );
 
 			if ( $sent ) {
-				wp_send_json_success( [ 'message' => 'Correo de prueba enviado a ' . $email ] );
+				file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] MARKETING: Éxito en envío de prueba ({$diff}s)\n", FILE_APPEND );
+				wp_send_json_success( [ 'message' => 'Correo de prueba enviado a ' . $email . " ({$diff}s)" ] );
 			} else {
+				file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] MARKETING: Fallo en envío de prueba ({$diff}s)\n", FILE_APPEND );
 				throw new \Exception( 'wp_mail devolvió false. Revisa logs del servidor.' );
 			}
 

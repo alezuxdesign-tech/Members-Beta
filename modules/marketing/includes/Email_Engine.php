@@ -88,13 +88,19 @@ class Email_Engine {
 	}
 
 	public function custom_mail_from( $original_email ) {
-		// Only override if coming from our system calls? Or global?
-		// User requested custom branding "style wordpress invalid", so let's do global override 
-		// but only if option is set.
 		$custom = get_option( 'alezux_marketing_from_email' );
+		
 		if ( ! empty( $custom ) && is_email( $custom ) ) {
 			return $custom;
 		}
+
+		// Si no hay configurado, forzar un correo del dominio actual para evitar bloqueos
+		$domain = parse_url( home_url(), PHP_URL_HOST );
+		if ( $domain ) {
+			// Muchos hostings requieren que el "From" sea del mismo dominio
+			return 'no-reply@' . str_replace('www.', '', $domain);
+		}
+
 		return $original_email;
 	}
 
@@ -172,7 +178,15 @@ class Email_Engine {
 
 		// 6. Send
 		try {
+			$start_time = microtime( true );
 			$sent = wp_mail( $recipient_email, $subject, $content, $headers );
+			$end_time = microtime( true );
+			$duration = round( $end_time - $start_time, 4 );
+
+			// Log de rendimiento si tarda más de lo esperado
+			if ( $duration > 2.0 ) {
+				$this->log_mail_errors( new \WP_Error( 'mail_slow', "AVISO LENTITUD: wp_mail tardó {$duration}s en responder para $recipient_email" ) );
+			}
 		} catch ( \Exception $e ) {
 			$sent = false;
 			$this->log_mail_errors( new \WP_Error( 'mail_exception', $e->getMessage() ) );
