@@ -140,6 +140,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				],
 				'default' => [ 'size' => 30 ],
 				'condition' => [ 'chart_style' => 'solid' ],
+				'selectors' => [
+					'{{WRAPPER}} .alezux-chart-bg' => 'stroke-width: {{SIZE}}px;',
+					'{{WRAPPER}} .alezux-chart-progress' => 'stroke-width: {{SIZE}}px;',
+				],
 			]
 		);
 
@@ -149,6 +153,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'label' => __( 'Color Fondo / Inactivos', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#ffffff',
+				'selectors' => [
+					'{{WRAPPER}} .alezux-chart-bg' => 'stroke: {{VALUE}};',
+					'{{WRAPPER}} .alezux-chart-tick-inactive' => 'stroke: {{VALUE}};',
+				],
 			]
 		);
 
@@ -158,7 +166,6 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'label' => __( 'Activar Glow (Barras)', 'alezux-members' ),
 				'type' => Controls_Manager::SWITCHER,
 				'default' => 'yes',
-				'condition' => [ 'chart_style' => 'segmented' ],
 			]
 		);
 
@@ -168,6 +175,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				'label' => __( 'Color Activos / Progreso', 'alezux-members' ),
 				'type' => Controls_Manager::COLOR,
 				'default' => '#FFB800', 
+				'selectors' => [
+					'{{WRAPPER}} .alezux-chart-progress' => 'stroke: {{VALUE}} !important;',
+					'{{WRAPPER}} .alezux-chart-tick-active' => 'stroke: {{VALUE}} !important;',
+				],
 			]
 		);
 
@@ -388,7 +399,6 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 				<div class="alezux-general-chart-container">
 					<svg class="alezux-general-chart-svg" viewBox="0 0 500 300" preserveAspectRatio="xMidYMax meet">
 						<defs>
-							<?php if ( 'segmented' === $chart_style ) : ?>
 							<filter id="glow-<?php echo esc_attr($unique_id); ?>" x="-150%" y="-150%" width="400%" height="400%">
 								<feGaussianBlur stdDeviation="6" result="coloredBlur"/>
 								<feMerge>
@@ -396,7 +406,6 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 									<feMergeNode in="SourceGraphic"/>
 								</feMerge>
 							</filter>
-							<?php endif; ?>
 						</defs>
 						
 						<?php if ( 'segmented' === $chart_style ) : 
@@ -425,11 +434,9 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 									$filter = ($is_active && 'yes' === $enable_glow_chart) ? "url(#glow-{$unique_id})" : "none";
 								?>
 									<line 
+										class="<?php echo $is_active ? 'alezux-chart-tick-active' : 'alezux-chart-tick-inactive'; ?>"
 										x1="<?php echo $x1; ?>" y1="<?php echo $y1; ?>" 
 										x2="<?php echo $x2; ?>" y2="<?php echo $y2; ?>" 
-										stroke="<?php echo esc_attr($color); ?>" 
-										stroke-width="12" 
-										stroke-linecap="round"
 										style="filter: <?php echo $filter; ?>;"
 									/>
 								<?php endfor; ?>
@@ -454,8 +461,10 @@ class Elementor_Widget_General_Progress extends Widget_Base {
 							$inner_r = $r - ($bar_width/2) - 25; 
 							$dotted_path = $describe_arc($cx, $cy, $inner_r, 180, 360);
 						?>
-							<path d="<?php echo $bg_path; ?>" fill="none" stroke="<?php echo esc_attr($inactive_color); ?>" stroke-width="<?php echo esc_attr($bar_width); ?>" stroke-linecap="round" />
-							<path d="<?php echo $progress_path; ?>" fill="none" stroke="<?php echo esc_attr($active_color); ?>" stroke-width="<?php echo esc_attr($bar_width); ?>" stroke-linecap="round" />
+							<path class="alezux-chart-bg" d="<?php echo $bg_path; ?>" fill="none" stroke-linecap="round" />
+							<?php if ( intval($average_progress) >= 1 ) : ?>
+								<path class="alezux-chart-progress" d="<?php echo $progress_path; ?>" fill="none" stroke-linecap="round" style="<?php echo ('yes' === $enable_glow_chart) ? "filter: url(#glow-{$unique_id});" : ""; ?>" />
+							<?php endif; ?>
 							<?php if ( $inner_r > 0 ): ?>
 								<path d="<?php echo $dotted_path; ?>" fill="none" stroke="<?php echo esc_attr($inactive_color); ?>" stroke-width="2" stroke-dasharray="1 8" stroke-linecap="round" opacity="0.5" />
 							<?php endif; ?>
