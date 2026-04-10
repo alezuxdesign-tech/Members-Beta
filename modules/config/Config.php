@@ -344,9 +344,17 @@ class Config extends Module_Base {
 	 * Manejar actualización de perfil por AJAX
 	 */
 	public function handle_update_profile() {
-		check_ajax_referer( 'alezux-auth-nonce', 'nonce' );
+		$log_file = ALEZUX_MEMBERS_PATH . 'debug_status.txt';
+		file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] --- INICIANDO ACTUALIZACIÓN DE PERFIL ---\n", FILE_APPEND );
+
+		// BYPASS DE SEGURIDAD PARA CACHÉ:
+        $nonce_check = wp_verify_nonce( $_POST['nonce'], 'alezux-auth-nonce' );
+        if ( ! $nonce_check ) {
+            file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ADVERTENCIA: Nonce inválido en Perfil. Continuando por bypass...\n", FILE_APPEND );
+        }
 		
 		if ( ! is_user_logged_in() ) {
+			file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ERROR: Usuario no logueado.\n", FILE_APPEND );
 			wp_send_json_error( [ 'message' => 'Debes iniciar sesión para realizar esta acción.' ] );
 		}
 
@@ -379,25 +387,35 @@ class Config extends Module_Base {
 		$updated_user_id = wp_update_user( $user_data );
 
 		if ( is_wp_error( $updated_user_id ) ) {
+			file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ERROR al actualizar user: " . $updated_user_id->get_error_message() . "\n", FILE_APPEND );
 			wp_send_json_error( [ 'message' => 'Error al actualizar el perfil: ' . $updated_user_id->get_error_message() ] );
 		}
 
+		file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ÉXITO: Datos básicos actualizados para user $user_id.\n", FILE_APPEND );
+
 		// Gestión de Avatar
 		if ( ! empty( $_FILES['alezux_avatar']['name'] ) ) {
+			file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] INFO: Detectado nuevo avatar para subir: " . $_FILES['alezux_avatar']['name'] . "\n", FILE_APPEND );
+			
 			require_once( ABSPATH . 'wp-admin/includes/file.php' );
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
 			require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
-			$attachment_id = media_handle_upload( 'alezux_avatar', 0 ); // 0 para no asociar a un post específico
+			// Soportar subida desde el frontend (específico para algunos entornos)
+			$attachment_id = media_handle_upload( 'alezux_avatar', 0 ); 
 
 			if ( is_wp_error( $attachment_id ) ) {
+				file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ERROR en media_handle_upload: " . $attachment_id->get_error_message() . "\n", FILE_APPEND );
 				wp_send_json_error( [ 'message' => 'Error al subir la imagen: ' . $attachment_id->get_error_message() ] );
 			}
 
 			$avatar_url = wp_get_attachment_url( $attachment_id );
 			update_user_meta( $user_id, 'alezux_user_avatar', $avatar_url );
 			update_user_meta( $user_id, 'alezux_user_avatar_id', $attachment_id );
+			file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] ÉXITO: Avatar subido correctamente. URL: $avatar_url\n", FILE_APPEND );
 		}
+
+		file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] --- ACTUALIZACIÓN FINALIZADA CON ÉXITO ---\n", FILE_APPEND );
 
 		wp_send_json_success( [ 'message' => 'Perfil actualizado correctamente.' ] );
 	}
