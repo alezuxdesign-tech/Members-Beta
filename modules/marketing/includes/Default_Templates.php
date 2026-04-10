@@ -134,8 +134,42 @@ class Default_Templates {
 						</p>
 					' . $footer
 				];
-			
-			// ... Add others as needed
+
+			case 'course_available':
+				return [
+					'subject' => '¡Nuevo Curso Lanzado: {{course_name}}!',
+					'content' => $header . '
+						<h2>¡Tenemos novedades para ti!</h2>
+						<p>Hola {{user.name}},</p>
+						<p>Estamos muy emocionados de presentarte el nuevo contenido disponible en la plataforma:</p>
+						<div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+							{{courses_list}}
+						</div>
+						<p>Esperamos que este contenido te ayude a seguir creciendo profesionalmente.</p>
+						<p style="text-align: center;">
+							<a href="{{home_url}}" class="btn">Explorar Contenido</a>
+						</p>
+					' . $footer
+				];
+
+			case 'lesson_available':
+				return [
+					'subject' => 'Novedades en tu curso: {{course_name}}',
+					'content' => $header . '
+						<h2>¡Hay nuevas lecciones disponibles!</h2>
+						<p>Hola {{user.name}},</p>
+						<p>Se ha añadido nuevo contenido al curso <strong>{{course_name}}</strong> en el que estás inscrito:</p>
+						<div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+							<ul style="margin: 0; padding-left: 20px;">
+								{{lessons_list}}
+							</ul>
+						</div>
+						<p>¡No pierdas el ritmo y continúa con tu formación!</p>
+						<p style="text-align: center;">
+							<a href="{{home_url}}" class="btn">Ir al Curso</a>
+						</p>
+					' . $footer
+				];
 			
 			default:
 				return [

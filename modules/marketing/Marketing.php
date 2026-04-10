@@ -33,6 +33,10 @@ class Marketing extends Module_Base {
 		require_once __DIR__ . '/includes/Cron_Handler.php';
 		new Cron_Handler();
 
+		// Inicializar Automatizaciones (Nuevos cursos/lecciones)
+		require_once __DIR__ . '/includes/Automation_Handlers.php';
+		new \Alezux_Members\Modules\Marketing\Includes\Automation_Handlers();
+
 		// Registrar Widgets Elementor
 		add_action( 'elementor/widgets/register', [ $this, 'register_elementor_widgets' ] );
 

@@ -74,8 +74,13 @@ class Email_Engine {
 			],
 			'course_available' => [
 				'title'       => 'Cursos - Nuevo Curso Disponible',
-				'description' => 'Notificación a los estudiantes cuando se publica o asigna un nuevo curso.',
-				'variables'   => [ '{{user.name}}', '{{course_name}}', '{{course_url}}', '{{site_name}}', '{{logo_url}}' ]
+				'description' => 'Notificación a todos los usuarios cuando se publica un nuevo curso.',
+				'variables'   => [ '{{user.name}}', '{{course_name}}', '{{courses_list}}', '{{site_name}}', '{{logo_url}}' ]
+			],
+			'lesson_available' => [
+				'title'       => 'Cursos - Nuevas Lecciones Disponibles',
+				'description' => 'Notificación a los alumnos inscritos cuando se añaden lecciones a un curso.',
+				'variables'   => [ '{{user.name}}', '{{course_name}}', '{{lessons_list}}', '{{site_name}}', '{{logo_url}}' ]
 			],
 			'inactivity_alert' => [
 				'title'       => 'Retención - Alerta de Inactividad',
