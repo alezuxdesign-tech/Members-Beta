@@ -109,6 +109,14 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                         </select>
                     </div>
 
+                    <div class="alezux-form-group" style="background: rgba(108, 92, 231, 0.1); padding: 15px; border-radius: 8px; border: 1px solid #6c5ce7;">
+                        <label style="display: flex; align-items: center; cursor: pointer; margin-bottom: 0;">
+                            <input type="checkbox" name="is_internal" id="is_internal" value="1" style="width: auto; margin-right: 10px; cursor: pointer;">
+                            <strong>Plan Interno (Sin Stripe)</strong>
+                        </label>
+                        <small style="display: block; margin-top: 5px; color: #aaa; margin-left: 25px;">Marca esta opción si gestionarás los pagos de forma manual. El plan se creará localmente sin conectarse a la API de Stripe.</small>
+                    </div>
+
                     <button type="button" class="alezux-btn alezux-btn-primary" id="btn-goto-step-2">Siguiente: Configurar Reglas &rarr;</button>
                 </div>
 
@@ -287,7 +295,11 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
             $('#alezux-create-plan-form').on('submit', function(e) {
                 e.preventDefault();
                 var btn = $(this).find('button[type="submit"]');
-                btn.text('Procesando con Stripe...').prop('disabled', true);
+                var isInternal = $('#is_internal').is(':checked');
+                var btnText = isInternal ? 'Procesando Plan Interno...' : 'Procesando con Stripe...';
+                var defaultBtnText = isInternal ? 'Guardar y Crear Plan Interno' : 'Guardar y Crear Plan en Stripe';
+                
+                btn.text(btnText).prop('disabled', true);
                 
                 var formData = $(this).serialize();
 
@@ -301,10 +313,20 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                             // Redirigir o limpiar
                         } else {
                             $('#alezux-plan-message').html('<div class="alezux-error-msg">❌ Error: ' + response.data + '</div>');
-                            btn.text('Guardar y Crear').prop('disabled', false);
+                            btn.text(defaultBtnText).prop('disabled', false);
                         }
                     }
                 });
+            });
+
+            // Update button text when internal checkbox changes
+            $('#is_internal').on('change', function() {
+                var btn = $('#alezux-create-plan-form').find('button[type="submit"]');
+                if($(this).is(':checked')) {
+                    btn.text('Guardar y Crear Plan Interno');
+                } else {
+                    btn.text('Guardar y Crear Plan en Stripe');
+                }
             });
         });
         </script>

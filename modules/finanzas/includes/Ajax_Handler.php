@@ -79,23 +79,33 @@ class Ajax_Handler {
         $total_quotas = \intval( $_POST['total_quotas'] );
         $rules = isset($_POST['rules']) ? $_POST['rules'] : [];
 
-        // Integración con Stripe
-        $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
-        
         // Determinar intervalo
         $interval = $_POST['frequency'] ?? 'month';
         if ( $total_quotas == 1 ) {
             $interval = 'contado'; // Lógica especial para pago único
         }
 
-        $stripe_result = $stripe->create_plan( $plan_name, $quota_amount, $interval );
+        $is_internal = isset($_POST['is_internal']) && $_POST['is_internal'] == '1';
+        $stripe_prod_id = null;
+        $stripe_price_id = null;
 
-        if ( \is_wp_error( $stripe_result ) ) {
-             \wp_send_json_error( 'Error de Stripe: ' . $stripe_result->get_error_message() );
+        if ( ! $is_internal ) {
+            // Integración con Stripe
+            $stripe = \Alezux_Members\Modules\Finanzas\Includes\Stripe_API::get_instance();
+            
+            $stripe_result = $stripe->create_plan( $plan_name, $quota_amount, $interval );
+
+            if ( \is_wp_error( $stripe_result ) ) {
+                 \wp_send_json_error( 'Error de Stripe: ' . $stripe_result->get_error_message() );
+            }
+
+            $stripe_prod_id = $stripe_result['product_id'];
+            $stripe_price_id = $stripe_result['price_id'];
+        } else {
+            // Plan interno: generar IDs falsos para que el resto del sistema no se rompa si requiere un string
+            $stripe_prod_id = 'internal_prod_' . uniqid();
+            $stripe_price_id = 'internal_price_' . uniqid();
         }
-
-        $stripe_prod_id = $stripe_result['product_id'];
-        $stripe_price_id = $stripe_result['price_id'];
 
         // Guardar en DB
         global $wpdb;
@@ -122,7 +132,8 @@ class Ajax_Handler {
         $plan_id = $wpdb->insert_id;
 
         if ( $plan_id ) {
-            \wp_send_json_success( [ 'plan_id' => $plan_id, 'message' => 'Plan creado correctamene en Stripe y WordPress.' ] );
+            $msg = $is_internal ? 'Plan interno creado correctamente en WordPress.' : 'Plan creado correctamente en Stripe y WordPress.';
+            \wp_send_json_success( [ 'plan_id' => $plan_id, 'message' => $msg ] );
         } else {
             \wp_send_json_error( 'Error al guardar en base de datos local.' );
         }
