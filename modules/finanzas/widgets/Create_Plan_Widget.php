@@ -106,6 +106,7 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                         <select name="frequency">
                             <option value="month">Mensual (Cada mes)</option>
                             <option value="week">Semanal (Cada semana)</option>
+                            <option value="year">Anual (Cada año)</option>
                         </select>
                     </div>
 
