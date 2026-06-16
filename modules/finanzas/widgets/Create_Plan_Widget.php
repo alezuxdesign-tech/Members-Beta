@@ -309,8 +309,11 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                     data: formData + '&action=alezux_create_stripe_plan&nonce=<?php echo wp_create_nonce("alezux_finanzas_nonce"); ?>',
                     success: function(response) {
                         if(response.success) {
-                            $('#alezux-plan-message').html('<div class="alezux-success-msg">✅ Plan creado exitosamente. ID: ' + response.data.plan_id + '</div>');
-                            // Redirigir o limpiar
+                            var msg = response.data.message ? response.data.message : 'Plan creado exitosamente.';
+                            $('#alezux-plan-message').html('<div class="alezux-success-msg">✅ ' + msg + ' Actualizando página...</div>');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
                         } else {
                             $('#alezux-plan-message').html('<div class="alezux-error-msg">❌ Error: ' + response.data + '</div>');
                             btn.text(defaultBtnText).prop('disabled', false);
