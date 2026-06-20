@@ -366,6 +366,37 @@ jQuery(document).ready(function ($) {
             $('#alezux-message-modal').hide();
         });
 
+        // SMTP Fields Toggle Logic
+        wrapper.find('#set-smtp-enabled').off('change').on('change', function () {
+            var isEnabled = $(this).is(':checked');
+            if (isEnabled) {
+                wrapper.find('#smtp-fields-wrapper').show();
+            } else {
+                wrapper.find('#smtp-fields-wrapper').hide();
+            }
+        });
+
+        wrapper.find('#set-smtp-auth').off('change').on('change', function () {
+            var isAuth = $(this).is(':checked');
+            if (isAuth) {
+                wrapper.find('#smtp-auth-fields').show();
+            } else {
+                wrapper.find('#smtp-auth-fields').hide();
+            }
+        });
+
+        wrapper.find('#toggle-smtp-pass').off('click').on('click', function () {
+            var passInput = wrapper.find('#set-smtp-password');
+            var icon = $(this).find('i');
+            if (passInput.attr('type') === 'password') {
+                passInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+
         // 3. Open Settings Modal
         wrapper.find('#btn-marketing-settings').on('click', function (e) {
             e.preventDefault();
@@ -387,9 +418,19 @@ jQuery(document).ready(function ($) {
                 success: function (res) {
                     if (res.success) {
                         var s = res.data;
-                        $('#set-from-name').val(s.from_name);
-                        $('#set-from-email').val(s.from_email);
-                        $('#set-logo-url').val(s.logo_url);
+                        wrapper.find('#set-from-name').val(s.from_name);
+                        wrapper.find('#set-from-email').val(s.from_email);
+                        wrapper.find('#set-logo-url').val(s.logo_url);
+
+                        // SMTP options
+                        wrapper.find('#set-smtp-enabled').prop('checked', s.smtp_enabled === '1').trigger('change');
+                        wrapper.find('#set-smtp-host').val(s.smtp_host);
+                        wrapper.find('#set-smtp-port').val(s.smtp_port);
+                        wrapper.find('#set-smtp-secure').val(s.smtp_secure);
+                        wrapper.find('#set-smtp-auth').prop('checked', s.smtp_auth === '1').trigger('change');
+                        wrapper.find('#set-smtp-username').val(s.smtp_username);
+                        wrapper.find('#set-smtp-password').val(s.smtp_password);
+                        wrapper.find('#set-smtp-skip-ssl').prop('checked', s.smtp_skip_ssl === '1');
 
                         // Update Logo Preview
                         updateLogoPreview(s.logo_url);

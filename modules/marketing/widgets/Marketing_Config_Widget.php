@@ -832,6 +832,75 @@ class Marketing_Config_Widget extends Widget_Base {
                         </p>
 					</div>
 
+					<!-- Configuración SMTP -->
+					<div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+						<h4 style="margin-top: 0; margin-bottom: 15px; color: inherit;">Configuración SMTP (Opcional)</h4>
+						
+						<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+							<label style="margin-bottom: 0;">Habilitar SMTP:</label>
+							<label class="switch">
+								<input type="checkbox" id="set-smtp-enabled" name="smtp_enabled">
+								<span class="slider round"></span>
+							</label>
+						</div>
+
+						<div id="smtp-fields-wrapper" style="display: none;">
+							<div class="form-group">
+								<label>Servidor SMTP (Host):</label>
+								<input type="text" id="set-smtp-host" name="smtp_host" class="alezux-input" placeholder="smtp.ejemplo.com">
+							</div>
+
+							<div style="display: flex; gap: 15px; margin-bottom: 15px;">
+								<div class="form-group" style="flex: 1; margin-bottom: 0;">
+									<label>Puerto SMTP:</label>
+									<input type="number" id="set-smtp-port" name="smtp_port" class="alezux-input" placeholder="587" value="587">
+								</div>
+
+								<div class="form-group" style="flex: 1; margin-bottom: 0;">
+									<label>Seguridad de conexión:</label>
+									<select id="set-smtp-secure" name="smtp_secure" class="alezux-input" style="height: 38px; padding: 8px;">
+										<option value="tls">TLS</option>
+										<option value="ssl">SSL</option>
+										<option value="none">Ninguno</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+								<label style="margin-bottom: 0;">¿Requiere Autenticación?:</label>
+								<label class="switch">
+									<input type="checkbox" id="set-smtp-auth" name="smtp_auth" checked>
+									<span class="slider round"></span>
+								</label>
+							</div>
+
+							<div id="smtp-auth-fields">
+								<div class="form-group">
+									<label>Usuario SMTP (Username):</label>
+									<input type="text" id="set-smtp-username" name="smtp_username" class="alezux-input" placeholder="correo@ejemplo.com">
+								</div>
+
+								<div class="form-group">
+									<label>Contraseña SMTP (Password):</label>
+									<div style="position: relative; display: flex; align-items: center;">
+										<input type="password" id="set-smtp-password" name="smtp_password" class="alezux-input" style="padding-right: 40px;">
+										<span id="toggle-smtp-pass" style="position: absolute; right: 12px; cursor: pointer; color: #888;">
+											<i class="fa fa-eye"></i>
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+								<label style="margin-bottom: 0;">Omitir verificación SSL (Desarrollo/Local):</label>
+								<label class="switch">
+									<input type="checkbox" id="set-smtp-skip-ssl" name="smtp_skip_ssl">
+									<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+
 					<div class="form-actions" style="margin-top: 20px; text-align: right;">
 						<button type="submit" class="alezux-marketing-btn primary">Guardar Configuración</button>
 					</div>

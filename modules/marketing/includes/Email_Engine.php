@@ -15,6 +15,9 @@ class Email_Engine {
 
 		// Captura de errores fatales de envío
 		add_action( 'wp_mail_failed', [ $this, 'log_mail_errors' ] );
+
+		// Configurar SMTP si está habilitado
+		add_action( 'phpmailer_init', [ $this, 'configure_smtp' ] );
 	}
 
 	/**
@@ -119,6 +122,67 @@ class Email_Engine {
 	
 	public function set_html_content_type() {
 		return 'text/html';
+	}
+
+	/**
+	 * Configura PHPMailer para usar SMTP si está habilitado en los ajustes.
+	 * 
+	 * Si la opción 'smtp_enabled' no está activa, no hace nada y WordPress usa
+	 * su envío por defecto (nativa de PHP u otro plugin de SMTP).
+	 * 
+	 * @param \PHPMailer\PHPMailer\PHPMailer $phpmailer Instancia de PHPMailer
+	 */
+	public function configure_smtp( $phpmailer ) {
+		$enabled = get_option( 'alezux_marketing_smtp_enabled', '0' );
+		
+		// Si no está habilitado, retornar de inmediato para usar el envío por defecto de WordPress
+		if ( '1' !== $enabled ) {
+			return;
+		}
+
+		$host = get_option( 'alezux_marketing_smtp_host' );
+		if ( empty( $host ) ) {
+			return; // Si no hay Host configurado, no hacer nada
+		}
+
+		// Configurar PHPMailer para usar SMTP
+		$phpmailer->isSMTP();
+		$phpmailer->Host = $host;
+		$phpmailer->Port = (int) get_option( 'alezux_marketing_smtp_port', 587 );
+
+		// Autenticación
+		$auth = get_option( 'alezux_marketing_smtp_auth', '1' );
+		if ( '1' === $auth ) {
+			$phpmailer->SMTPAuth = true;
+			$phpmailer->Username = get_option( 'alezux_marketing_smtp_username', '' );
+			$phpmailer->Password = get_option( 'alezux_marketing_smtp_password', '' );
+		} else {
+			$phpmailer->SMTPAuth = false;
+		}
+
+		// Tipo de cifrado (Seguridad)
+		$secure = get_option( 'alezux_marketing_smtp_secure', 'tls' );
+		if ( 'ssl' === $secure ) {
+			$phpmailer->SMTPSecure = 'ssl';
+		} elseif ( 'tls' === $secure ) {
+			$phpmailer->SMTPSecure = 'tls';
+		} else {
+			$phpmailer->SMTPSecure = '';
+			// Si no hay seguridad, desactivar el AutoTLS por si acaso
+			$phpmailer->SMTPAutoTLS = false;
+		}
+
+		// Omitir verificación de certificado SSL (útil en desarrollo local o servidores autofirmados)
+		$skip_ssl = get_option( 'alezux_marketing_smtp_skip_ssl', '0' );
+		if ( '1' === $skip_ssl ) {
+			$phpmailer->SMTPOptions = [
+				'ssl' => [
+					'verify_peer'       => false,
+					'verify_peer_name'  => false,
+					'allow_self_signed' => true
+				]
+			];
+		}
 	}
 
 	/**

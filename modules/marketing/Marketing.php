@@ -342,6 +342,16 @@ class Marketing extends Module_Base {
 		update_option( 'alezux_marketing_from_email', sanitize_email( $_POST['from_email'] ) );
 		update_option( 'alezux_marketing_logo_url', sanitize_url( $_POST['logo_url'] ) );
 
+		// Nuevas opciones SMTP
+		update_option( 'alezux_marketing_smtp_enabled', isset( $_POST['smtp_enabled'] ) ? '1' : '0' );
+		update_option( 'alezux_marketing_smtp_host', sanitize_text_field( $_POST['smtp_host'] ) );
+		update_option( 'alezux_marketing_smtp_port', intval( $_POST['smtp_port'] ) );
+		update_option( 'alezux_marketing_smtp_secure', sanitize_text_field( $_POST['smtp_secure'] ) );
+		update_option( 'alezux_marketing_smtp_auth', isset( $_POST['smtp_auth'] ) ? '1' : '0' );
+		update_option( 'alezux_marketing_smtp_username', sanitize_text_field( $_POST['smtp_username'] ) );
+		update_option( 'alezux_marketing_smtp_password', sanitize_text_field( wp_unslash( $_POST['smtp_password'] ) ) );
+		update_option( 'alezux_marketing_smtp_skip_ssl', isset( $_POST['smtp_skip_ssl'] ) ? '1' : '0' );
+
 		wp_send_json_success( [ 'message' => 'Configuración guardada.' ] );
 	}
 
@@ -353,6 +363,16 @@ class Marketing extends Module_Base {
 			'from_name'  => get_option( 'alezux_marketing_from_name', get_bloginfo( 'name' ) ),
 			'from_email' => get_option( 'alezux_marketing_from_email', get_bloginfo( 'admin_email' ) ),
 			'logo_url'   => get_option( 'alezux_marketing_logo_url', '' ),
+			
+			// Nuevas opciones SMTP
+			'smtp_enabled'  => get_option( 'alezux_marketing_smtp_enabled', '0' ),
+			'smtp_host'     => get_option( 'alezux_marketing_smtp_host', '' ),
+			'smtp_port'     => get_option( 'alezux_marketing_smtp_port', '587' ),
+			'smtp_secure'   => get_option( 'alezux_marketing_smtp_secure', 'tls' ),
+			'smtp_auth'     => get_option( 'alezux_marketing_smtp_auth', '1' ),
+			'smtp_username' => get_option( 'alezux_marketing_smtp_username', '' ),
+			'smtp_password' => get_option( 'alezux_marketing_smtp_password', '' ),
+			'smtp_skip_ssl' => get_option( 'alezux_marketing_smtp_skip_ssl', '0' ),
 		];
 
 		wp_send_json_success( $data );
