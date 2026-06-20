@@ -7,6 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Email_Engine {
 
+	private $last_error = null;
+
 	public function __construct() {
 		// Control de remitente y formato
 		add_filter( 'wp_mail_from', [ $this, 'custom_mail_from' ] );
@@ -24,6 +26,8 @@ class Email_Engine {
 	 * Log de errores detallado cuando wp_mail falla
 	 */
 	public function log_mail_errors( $wp_error ) {
+		$this->last_error = $wp_error;
+
 		$log_file = ALEZUX_MEMBERS_PATH . 'alezux-mail-errors.log';
 		$timestamp = date('Y-m-d H:i:s');
 		$error_msg = $wp_error->get_error_message();
@@ -31,6 +35,18 @@ class Email_Engine {
 
 		$log_entry = "[$timestamp] ERROR ENVÍO: $error_msg\nDATOS: $error_data\n" . str_repeat('-', 50) . "\n";
 		file_put_contents( $log_file, $log_entry, FILE_APPEND );
+	}
+
+	/**
+	 * Retorna el último mensaje de error capturado.
+	 * 
+	 * @return string
+	 */
+	public function get_last_error_message() {
+		if ( is_wp_error( $this->last_error ) ) {
+			return $this->last_error->get_error_message();
+		}
+		return '';
 	}
 
 	public function get_registered_types() {

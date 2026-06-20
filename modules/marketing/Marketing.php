@@ -460,7 +460,15 @@ class Marketing extends Module_Base {
 				wp_send_json_success( [ 'message' => 'Correo de prueba enviado a ' . $email . " ({$diff}s)" ] );
 			} else {
 				file_put_contents( $log_file, "[" . date('Y-m-d H:i:s') . "] MARKETING: Fallo en envío de prueba ({$diff}s)\n", FILE_APPEND );
-				throw new \Exception( 'wp_mail devolvió false. Revisa logs del servidor.' );
+				
+				$detailed_error = $this->email_engine->get_last_error_message();
+				$error_msg = 'wp_mail devolvió false.';
+				if ( ! empty( $detailed_error ) ) {
+					$error_msg .= ' Detalle: ' . $detailed_error;
+				} else {
+					$error_msg .= ' Revisa logs del servidor o prueba activando "Omitir verificación SSL".';
+				}
+				throw new \Exception( $error_msg );
 			}
 
 		} catch ( \Exception $e ) {
