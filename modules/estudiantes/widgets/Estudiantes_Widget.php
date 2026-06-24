@@ -1483,32 +1483,37 @@ class Estudiantes_Widget extends Widget_Base {
                                 </div>
                             </div>
 
-                            <!-- 3. Cursos -->
+                            <!-- 3. Activos -->
                             <div class="alezux-section-title"><?php \esc_html_e( 'Cursos Activos', 'alezux-members' ); ?></div>
                             <ul id="list-enrolled-courses" class="alezux-course-list">
                                 <!-- Populated via JS -->
                             </ul>
                             <div id="no-enrolled-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php \esc_html_e( 'No tiene cursos activos.', 'alezux-members' ); ?></div>
 
-                            <div class="alezux-section-title"><?php \esc_html_e( 'Cursos Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
-                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px; margin-bottom: 20px;">
-                                <ul id="list-available-courses" class="alezux-course-list">
-                                    <!-- Populated via JS -->
-                                </ul>
-                            </div>
-
-                            <!-- 4. Planes -->
                             <div class="alezux-section-title"><?php \esc_html_e( 'Planes Activos (Acceso a Módulos)', 'alezux-members' ); ?></div>
-                            <ul id="list-enrolled-plans" class="alezux-course-list">
+                            <ul id="list-enrolled-plans" class="alezux-course-list" style="margin-bottom: 20px;">
                                 <!-- Populated via JS -->
                             </ul>
-                            <div id="no-enrolled-plans-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php \esc_html_e( 'No tiene planes activos.', 'alezux-members' ); ?></div>
+                            <div id="no-enrolled-plans-msg" style="color:#666; font-size:13px; font-style:italic; display:none; margin-bottom: 20px;"><?php \esc_html_e( 'No tiene planes activos.', 'alezux-members' ); ?></div>
 
-                            <div class="alezux-section-title"><?php \esc_html_e( 'Planes Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
-                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px;">
-                                <ul id="list-available-plans" class="alezux-course-list">
-                                    <!-- Populated via JS -->
-                                </ul>
+                            <!-- 4. Conceder Acceso -->
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Conceder Nuevo Acceso', 'alezux-members' ); ?></div>
+                            <div class="alezux-grant-access-form" style="display:flex; flex-direction:column; gap:15px; padding:15px; border:1px solid #333; border-radius:6px; background: rgba(0,0,0,0.2);">
+                                <div>
+                                    <label class="alezux-form-label" style="margin-bottom: 5px; display:block;"><?php \esc_html_e( 'Seleccionar Curso', 'alezux-members' ); ?></label>
+                                    <select id="select-grant-course" class="alezux-form-control">
+                                        <option value=""><?php \esc_html_e( 'Seleccione un curso...', 'alezux-members' ); ?></option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="alezux-form-label" style="margin-bottom: 5px; display:block;"><?php \esc_html_e( 'Seleccionar Plan (Local/Stripe)', 'alezux-members' ); ?></label>
+                                    <select id="select-grant-plan" class="alezux-form-control" disabled>
+                                        <option value=""><?php \esc_html_e( 'Primero seleccione un curso...', 'alezux-members' ); ?></option>
+                                    </select>
+                                </div>
+                                <button class="alezux-btn alezux-btn-primary" id="btn-grant-course-plan" style="margin-top: 5px;" disabled>
+                                    <i class="fas fa-plus-circle"></i> <?php \esc_html_e( 'Conceder Acceso al Estudiante', 'alezux-members' ); ?>
+                                </button>
                             </div>
 
                         </div>

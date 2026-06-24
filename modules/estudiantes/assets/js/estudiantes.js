@@ -245,8 +245,9 @@ jQuery(document).ready(function ($) {
                     $('#manage-last-name').val(data.last_name);
                     $('#manage-email').val(data.email);
                     updateBlockButton(data.is_blocked);
-                    renderCoursesLists(data.enrolled_courses, data.available_courses, iconUrl);
-                    renderPlansLists(data.enrolled_plans, data.available_plans, iconUrl);
+                    renderCoursesLists(data.enrolled_courses, iconUrl);
+                    renderPlansLists(data.enrolled_plans, iconUrl);
+                    renderGrantForm(data.available_courses, data.available_plans);
 
                     $('#alezux-modal-loading').hide();
                     $('#alezux-modal-content').fadeIn();
@@ -414,6 +415,44 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    $(document).on('click', '#btn-grant-course-plan', function (e) {
+        e.preventDefault();
+        var planId = $('#select-grant-plan').val();
+        var userId = $('#alezux-manage-user-id').val();
+
+        if (!planId) {
+            showAlezuxAlert('Atención', 'Debes seleccionar un plan válido.', 'warning');
+            return;
+        }
+
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+
+        $.ajax({
+            url: alezux_estudiantes_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'alezux_update_plan_access',
+                nonce: alezux_estudiantes_vars.nonce,
+                user_id: userId,
+                plan_id: planId,
+                access_action: 'add'
+            },
+            success: function (response) {
+                if (response.success) {
+                    var iconUrl = $('#alezux-management-modal-overlay').data('current-icon');
+                    loadStudentInfo(userId, iconUrl);
+                    showAlezuxAlert('Éxito', 'Acceso concedido correctamente.', 'success');
+                } else {
+                    showAlezuxAlert('Error', response.data ? response.data.message : 'Error desconocido', 'error');
+                }
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html('<i class="fas fa-plus-circle"></i> Conceder Acceso al Estudiante');
+            }
+        });
+    });
+
     function updateBlockButton(isBlocked) {
         var $btn = $('#btn-block-user');
         $btn.data('is-blocked', isBlocked);
@@ -424,10 +463,9 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    function renderCoursesLists(enrolled, available, iconUrl) {
+    function renderCoursesLists(enrolled, iconUrl) {
         var $enrolledList = $('#list-enrolled-courses');
-        var $availableList = $('#list-available-courses');
-        $enrolledList.empty(); $availableList.empty();
+        $enrolledList.empty();
 
         if (enrolled.length === 0) { $('#no-enrolled-msg').show(); } else { $('#no-enrolled-msg').hide(); }
 
@@ -442,23 +480,11 @@ jQuery(document).ready(function ($) {
                 </li>`;
             $enrolledList.append(item);
         });
-
-        available.forEach(function (c) {
-            var item = `
-                <li class="alezux-course-item">
-                    <span>${c.title}</span>
-                    <div class="alezux-course-actions">
-                        <button class="btn-grant-access" data-course-id="${c.id}">Conceder</button>
-                    </div>
-                </li>`;
-            $availableList.append(item);
-        });
     }
 
-    function renderPlansLists(enrolled, available, iconUrl) {
+    function renderPlansLists(enrolled, iconUrl) {
         var $enrolledList = $('#list-enrolled-plans');
-        var $availableList = $('#list-available-plans');
-        $enrolledList.empty(); $availableList.empty();
+        $enrolledList.empty();
 
         if (!enrolled || enrolled.length === 0) { $('#no-enrolled-plans-msg').show(); } else { $('#no-enrolled-plans-msg').hide(); }
 
@@ -474,18 +500,59 @@ jQuery(document).ready(function ($) {
                 $enrolledList.append(item);
             });
         }
+    }
 
-        if (available) {
-            available.forEach(function (p) {
-                var item = `
-                    <li class="alezux-course-item">
-                        <span>${p.title}</span>
-                        <div class="alezux-course-actions">
-                            <button class="btn-grant-plan" data-plan-id="${p.id}">Conceder</button>
-                        </div>
-                    </li>`;
-                $availableList.append(item);
+    function renderGrantForm(availableCourses, availablePlans) {
+        var $selectCourse = $('#select-grant-course');
+        var $selectPlan = $('#select-grant-plan');
+        var $btnGrant = $('#btn-grant-course-plan');
+
+        $selectCourse.empty().append('<option value="">Seleccione un curso...</option>');
+        $selectPlan.empty().append('<option value="">Primero seleccione un curso...</option>').prop('disabled', true);
+        $btnGrant.prop('disabled', true);
+
+        if (availableCourses) {
+            availableCourses.forEach(function (c) {
+                $selectCourse.append(`<option value="${c.id}">${c.title}</option>`);
             });
         }
+
+        // Handle course change
+        $selectCourse.off('change').on('change', function () {
+            var courseId = $(this).val();
+            $selectPlan.empty().prop('disabled', true);
+            $btnGrant.prop('disabled', true);
+
+            if (!courseId) {
+                $selectPlan.append('<option value="">Primero seleccione un curso...</option>');
+                return;
+            }
+
+            var matchingPlans = [];
+            if (availablePlans) {
+                matchingPlans = availablePlans.filter(function(p) {
+                    return p.course_id == courseId;
+                });
+            }
+
+            if (matchingPlans.length > 0) {
+                $selectPlan.append('<option value="">Seleccione un plan...</option>');
+                matchingPlans.forEach(function(p) {
+                    $selectPlan.append(`<option value="${p.id}">${p.title}</option>`);
+                });
+                $selectPlan.prop('disabled', false);
+            } else {
+                $selectPlan.append('<option value="">No hay planes configurados para este curso.</option>');
+            }
+        });
+
+        // Handle plan change
+        $selectPlan.off('change').on('change', function () {
+            if ($(this).val()) {
+                $btnGrant.prop('disabled', false);
+            } else {
+                $btnGrant.prop('disabled', true);
+            }
+        });
     }
 });

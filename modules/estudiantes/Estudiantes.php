@@ -533,35 +533,38 @@ class Estudiantes extends Module_Base {
         $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
         $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
 
-        if ( $wpdb->get_var( "SHOW TABLES LIKE '$plans_table'" ) == $plans_table ) {
-            // Get all plans
-            $all_plans = $wpdb->get_results( "SELECT id, name FROM $plans_table ORDER BY name ASC" );
-            
-            // Get user subscriptions
-            $user_subs = $wpdb->get_results( $wpdb->prepare( 
-                "SELECT plan_id FROM $subs_table WHERE user_id = %d AND status IN ('active', 'completed', 'trialing')", 
-                $user->ID 
-            ) );
-            
-            $active_plan_ids = [];
-            if ( $user_subs ) {
-                foreach ( $user_subs as $sub ) {
-                    $active_plan_ids[] = intval( $sub->plan_id );
-                }
+        $wpdb->suppress_errors(true);
+        
+        // Get all plans
+        $all_plans = $wpdb->get_results( "SELECT id, name, course_id FROM $plans_table ORDER BY name ASC" );
+        
+        // Get user subscriptions
+        $user_subs = $wpdb->get_results( $wpdb->prepare( 
+            "SELECT plan_id FROM $subs_table WHERE user_id = %d AND status IN ('active', 'completed', 'trialing')", 
+            $user->ID 
+        ) );
+
+        $wpdb->suppress_errors(false);
+        
+        $active_plan_ids = [];
+        if ( $user_subs ) {
+            foreach ( $user_subs as $sub ) {
+                $active_plan_ids[] = intval( $sub->plan_id );
             }
-            
-            if ( $all_plans ) {
-                foreach ( $all_plans as $plan ) {
-                    $plan_info = [
-                        'id' => $plan->id,
-                        'title' => $plan->name
-                    ];
-                    
-                    if ( in_array( intval( $plan->id ), $active_plan_ids ) ) {
-                        $enrolled_plans[] = $plan_info;
-                    } else {
-                        $available_plans[] = $plan_info;
-                    }
+        }
+        
+        if ( $all_plans ) {
+            foreach ( $all_plans as $plan ) {
+                $plan_info = [
+                    'id' => $plan->id,
+                    'title' => $plan->name,
+                    'course_id' => intval( $plan->course_id )
+                ];
+                
+                if ( in_array( intval( $plan->id ), $active_plan_ids ) ) {
+                    $enrolled_plans[] = $plan_info;
+                } else {
+                    $available_plans[] = $plan_info;
                 }
             }
         }
