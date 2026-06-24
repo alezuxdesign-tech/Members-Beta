@@ -1491,8 +1491,22 @@ class Estudiantes_Widget extends Widget_Base {
                             <div id="no-enrolled-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php \esc_html_e( 'No tiene cursos activos.', 'alezux-members' ); ?></div>
 
                             <div class="alezux-section-title"><?php \esc_html_e( 'Cursos Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
-                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px;">
+                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px; margin-bottom: 20px;">
                                 <ul id="list-available-courses" class="alezux-course-list">
+                                    <!-- Populated via JS -->
+                                </ul>
+                            </div>
+
+                            <!-- 4. Planes -->
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Planes Activos (Acceso a Módulos)', 'alezux-members' ); ?></div>
+                            <ul id="list-enrolled-plans" class="alezux-course-list">
+                                <!-- Populated via JS -->
+                            </ul>
+                            <div id="no-enrolled-plans-msg" style="color:#666; font-size:13px; font-style:italic; display:none;"><?php \esc_html_e( 'No tiene planes activos.', 'alezux-members' ); ?></div>
+
+                            <div class="alezux-section-title"><?php \esc_html_e( 'Planes Disponibles (Conceder Acceso)', 'alezux-members' ); ?></div>
+                            <div style="max-height: 150px; overflow-y:auto; border:1px solid #333; padding:5px; border-radius:6px;">
+                                <ul id="list-available-plans" class="alezux-course-list">
                                     <!-- Populated via JS -->
                                 </ul>
                             </div>

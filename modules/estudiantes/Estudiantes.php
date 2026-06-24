@@ -32,6 +32,7 @@ class Estudiantes extends Module_Base {
 		\add_action( 'wp_ajax_alezux_update_student', [ $this, 'ajax_update_student' ] );
 		\add_action( 'wp_ajax_alezux_reset_password', [ $this, 'ajax_reset_password' ] );
 		\add_action( 'wp_ajax_alezux_update_course_access', [ $this, 'ajax_update_course_access' ] );
+		\add_action( 'wp_ajax_alezux_update_plan_access', [ $this, 'ajax_update_plan_access' ] );
 		\add_action( 'wp_ajax_alezux_toggle_block_user', [ $this, 'ajax_toggle_block_user' ] );
 	}
 
@@ -524,6 +525,50 @@ class Estudiantes extends Module_Base {
 		$data['enrolled_courses']  = $enrolled;
 		$data['available_courses'] = $available;
 
+		// 3. Planes (Alezux Finanzas)
+		$enrolled_plans = [];
+		$available_plans = [];
+        
+        global $wpdb;
+        $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+
+        if ( $wpdb->get_var( "SHOW TABLES LIKE '$plans_table'" ) == $plans_table ) {
+            // Get all plans
+            $all_plans = $wpdb->get_results( "SELECT id, name FROM $plans_table ORDER BY name ASC" );
+            
+            // Get user subscriptions
+            $user_subs = $wpdb->get_results( $wpdb->prepare( 
+                "SELECT plan_id FROM $subs_table WHERE user_id = %d AND status IN ('active', 'completed', 'trialing')", 
+                $user->ID 
+            ) );
+            
+            $active_plan_ids = [];
+            if ( $user_subs ) {
+                foreach ( $user_subs as $sub ) {
+                    $active_plan_ids[] = intval( $sub->plan_id );
+                }
+            }
+            
+            if ( $all_plans ) {
+                foreach ( $all_plans as $plan ) {
+                    $plan_info = [
+                        'id' => $plan->id,
+                        'title' => $plan->name
+                    ];
+                    
+                    if ( in_array( intval( $plan->id ), $active_plan_ids ) ) {
+                        $enrolled_plans[] = $plan_info;
+                    } else {
+                        $available_plans[] = $plan_info;
+                    }
+                }
+            }
+        }
+        
+        $data['enrolled_plans'] = $enrolled_plans;
+        $data['available_plans'] = $available_plans;
+
 		\wp_send_json_success( $data );
 	}
 
@@ -648,6 +693,75 @@ class Estudiantes extends Module_Base {
 		} else {
 			\ld_update_course_access( $user_id, $course_id, true ); // true = remove
 			\wp_send_json_success( [ 'message' => 'Acceso revocado.' ] );
+		}
+	}
+
+	/**
+	 * AJAX Handler: Actualizar acceso a planes
+	 */
+	public function ajax_update_plan_access() {
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		if ( ! \current_user_can( 'edit_users' ) ) \wp_send_json_error( [ 'message' => 'No autorizado' ] );
+
+		$user_id = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$plan_id = isset( $_POST['plan_id'] ) ? \intval( $_POST['plan_id'] ) : 0;
+		$action  = isset( $_POST['access_action'] ) ? \sanitize_text_field( $_POST['access_action'] ) : ''; // 'add' or 'remove'
+
+        if ( ! $user_id || ! $plan_id ) {
+            \wp_send_json_error( [ 'message' => 'Datos inválidos' ] );
+        }
+
+        global $wpdb;
+        $subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+
+        if ( $wpdb->get_var( "SHOW TABLES LIKE '$subs_table'" ) != $subs_table ) {
+            \wp_send_json_error( [ 'message' => 'Módulo de finanzas no activo' ] );
+        }
+
+		if ( $action === 'add' ) {
+            // Check if exists
+            $existing_sub = $wpdb->get_row( $wpdb->prepare( 
+                "SELECT id, status FROM $subs_table WHERE user_id = %d AND plan_id = %d", 
+                $user_id, $plan_id 
+            ) );
+
+            if ( $existing_sub ) {
+                if ( $existing_sub->status !== 'active' && $existing_sub->status !== 'completed' ) {
+                    $wpdb->update( $subs_table, [ 'status' => 'active' ], [ 'id' => $existing_sub->id ] );
+                }
+            } else {
+                $wpdb->insert( $subs_table, [
+                    'user_id' => $user_id,
+                    'plan_id' => $plan_id,
+                    'status' => 'active',
+                    'quotas_paid' => 1,
+                    'last_payment_date' => current_time( 'mysql' )
+                ] );
+            }
+            
+            // Give LearnDash course access if plan has course
+            $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+            $plan_course_id = $wpdb->get_var( $wpdb->prepare( "SELECT course_id FROM $plans_table WHERE id = %d", $plan_id ) );
+            if ( $plan_course_id && $plan_course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
+                \ld_update_course_access( $user_id, $plan_course_id, false ); // Add access
+            }
+
+			\wp_send_json_success( [ 'message' => 'Plan concedido correctamente.' ] );
+		} else {
+            // Remove
+            $wpdb->query( $wpdb->prepare( 
+                "UPDATE $subs_table SET status = 'cancelled' WHERE user_id = %d AND plan_id = %d", 
+                $user_id, $plan_id 
+            ) );
+            
+            // Optional: remove course access
+            $plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+            $plan_course_id = $wpdb->get_var( $wpdb->prepare( "SELECT course_id FROM $plans_table WHERE id = %d", $plan_id ) );
+            if ( $plan_course_id && $plan_course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
+                \ld_update_course_access( $user_id, $plan_course_id, true ); // Remove access
+            }
+
+			\wp_send_json_success( [ 'message' => 'Plan revocado correctamente.' ] );
 		}
 	}
 

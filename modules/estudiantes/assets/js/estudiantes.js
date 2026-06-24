@@ -246,6 +246,7 @@ jQuery(document).ready(function ($) {
                     $('#manage-email').val(data.email);
                     updateBlockButton(data.is_blocked);
                     renderCoursesLists(data.enrolled_courses, data.available_courses, iconUrl);
+                    renderPlansLists(data.enrolled_plans, data.available_plans, iconUrl);
 
                     $('#alezux-modal-loading').hide();
                     $('#alezux-modal-content').fadeIn();
@@ -383,6 +384,36 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    $(document).on('click', '.btn-remove-plan, .btn-grant-plan', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var planId = $btn.data('plan-id');
+        var isGranting = $btn.hasClass('btn-grant-plan');
+        var userId = $('#alezux-manage-user-id').val();
+
+        showAlezuxConfirm(isGranting ? 'Conceder Plan' : 'Quitar Plan', '¿Confirmas esta acción?', function () {
+            $.ajax({
+                url: alezux_estudiantes_vars.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'alezux_update_plan_access',
+                    nonce: alezux_estudiantes_vars.nonce,
+                    user_id: userId,
+                    plan_id: planId,
+                    access_action: isGranting ? 'add' : 'remove'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var iconUrl = $('#alezux-management-modal-overlay').data('current-icon');
+                        loadStudentInfo(userId, iconUrl);
+                    } else {
+                        showAlezuxAlert('Error', response.data ? response.data.message : 'Error desconocido', 'error');
+                    }
+                }
+            });
+        });
+    });
+
     function updateBlockButton(isBlocked) {
         var $btn = $('#btn-block-user');
         $btn.data('is-blocked', isBlocked);
@@ -422,5 +453,39 @@ jQuery(document).ready(function ($) {
                 </li>`;
             $availableList.append(item);
         });
+    }
+
+    function renderPlansLists(enrolled, available, iconUrl) {
+        var $enrolledList = $('#list-enrolled-plans');
+        var $availableList = $('#list-available-plans');
+        $enrolledList.empty(); $availableList.empty();
+
+        if (!enrolled || enrolled.length === 0) { $('#no-enrolled-plans-msg').show(); } else { $('#no-enrolled-plans-msg').hide(); }
+
+        if (enrolled) {
+            enrolled.forEach(function (p) {
+                var item = `
+                    <li class="alezux-course-item">
+                        <span>${p.title}</span>
+                        <div class="alezux-course-actions">
+                            <button class="btn-remove-plan" data-plan-id="${p.id}">Quitar</button>
+                        </div>
+                    </li>`;
+                $enrolledList.append(item);
+            });
+        }
+
+        if (available) {
+            available.forEach(function (p) {
+                var item = `
+                    <li class="alezux-course-item">
+                        <span>${p.title}</span>
+                        <div class="alezux-course-actions">
+                            <button class="btn-grant-plan" data-plan-id="${p.id}">Conceder</button>
+                        </div>
+                    </li>`;
+                $availableList.append(item);
+            });
+        }
     }
 });
