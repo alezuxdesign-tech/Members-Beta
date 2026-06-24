@@ -998,7 +998,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
                         $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token, stripe_price_id, whatsapp_number FROM $table_plans WHERE course_id = %d ORDER BY id ASC LIMIT 1", $post_id ) );
                         
-                        if ( $plan && !empty($plan->stripe_price_id) ) {
+                        if ( $plan && !empty($plan->stripe_price_id) && strpos($plan->stripe_price_id, 'internal_price_') !== 0 ) {
                              // Si hay plan CON Stripe, generar URL de checkout directo
                              $identifier = !empty($plan->token) ? 'token=' . $plan->token : 'plan_id=' . $plan->id;
                              $button_link = home_url( '/?alezux_action=checkout&' . $identifier );
