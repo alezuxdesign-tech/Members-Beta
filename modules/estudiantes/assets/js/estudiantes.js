@@ -311,6 +311,9 @@ jQuery(document).ready(function ($) {
                 $btn.prop('disabled', false);
                 $spinner.hide();
             }
+        });
+    });
+
     $('#btn-reset-password').on('click', function (e) {
         e.preventDefault();
         var userId = $('#alezux-manage-user-id').val();
