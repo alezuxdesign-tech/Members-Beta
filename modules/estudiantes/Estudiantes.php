@@ -589,6 +589,7 @@ class Estudiantes extends Module_Base {
 		$first_name = isset( $_POST['first_name'] ) ? \sanitize_text_field( $_POST['first_name'] ) : '';
 		$last_name  = isset( $_POST['last_name'] ) ? \sanitize_text_field( $_POST['last_name'] ) : '';
 		$email      = isset( $_POST['email'] ) ? \sanitize_email( $_POST['email'] ) : '';
+		$password   = isset( $_POST['password'] ) ? \sanitize_text_field( $_POST['password'] ) : '';
 
 		if ( ! \get_user_by( 'id', $user_id ) ) {
 			\wp_send_json_error( [ 'message' => 'Usuario inválido' ] );
@@ -600,12 +601,18 @@ class Estudiantes extends Module_Base {
 			\wp_send_json_error( [ 'message' => 'El correo ya está en uso por otro usuario.' ] );
 		}
 
-		$updated = \wp_update_user( [
+		$user_data = [
 			'ID'         => $user_id,
 			'first_name' => $first_name,
 			'last_name'  => $last_name,
 			'user_email' => $email,
-		] );
+		];
+
+		if ( ! empty( $password ) ) {
+			$user_data['user_pass'] = $password;
+		}
+
+		$updated = \wp_update_user( $user_data );
 
 		if ( \is_wp_error( $updated ) ) {
 			\wp_send_json_error( [ 'message' => $updated->get_error_message() ] );

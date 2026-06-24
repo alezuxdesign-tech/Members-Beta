@@ -1467,16 +1467,19 @@ class Estudiantes_Widget extends Widget_Base {
 
                             <!-- 2. Seguridad (Password & Block) -->
                             <div class="alezux-section-title"><?php \esc_html_e( 'Seguridad y Acceso', 'alezux-members' ); ?></div>
-                            <div class="alezux-manage-form-grid">
-                                <div>
-                                    <button class="alezux-btn alezux-btn-warning alezux-btn-block" id="btn-reset-password">
-                                        <i class="fas fa-key"></i> <?php \esc_html_e( 'Restablecer Contraseña', 'alezux-members' ); ?>
-                                    </button>
-                                    <small style="display:block; margin-top:5px; color:#888; font-size:11px;">
-                                        Genera una nueva y la envía por correo.
-                                    </small>
+                            <div class="alezux-manage-form-grid" style="align-items:end;">
+                                <div class="alezux-full-width" style="display:flex; gap:10px; align-items:flex-end;">
+                                    <div style="flex:1;">
+                                        <label class="alezux-form-label"><?php \esc_html_e( 'Cambiar Contraseña Manual', 'alezux-members' ); ?></label>
+                                        <input type="text" id="manage-password" class="alezux-form-control" placeholder="Dejar en blanco para no cambiar">
+                                    </div>
                                 </div>
-                                <div>
+                                <div style="margin-top:5px;">
+                                    <button class="alezux-btn alezux-btn-warning alezux-btn-block" id="btn-reset-password">
+                                        <i class="fas fa-envelope"></i> <?php \esc_html_e( 'Generar y Enviar por Correo', 'alezux-members' ); ?>
+                                    </button>
+                                </div>
+                                <div style="margin-top:5px;">
                                     <button class="alezux-btn alezux-btn-danger alezux-btn-block" id="btn-block-user">
                                         <i class="fas fa-ban"></i> <span id="lbl-block-user"><?php \esc_html_e( 'Bloquear Acceso Academia', 'alezux-members' ); ?></span>
                                     </button>
