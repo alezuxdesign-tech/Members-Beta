@@ -996,7 +996,7 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                     $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
                     // Check if table exists to prevent errors if module not installed
                     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
-                        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token, stripe_price_id, whatsapp_number FROM $table_plans WHERE course_id = %d AND total_quotas = 1 LIMIT 1", $post_id ) );
+                        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token, stripe_price_id, whatsapp_number FROM $table_plans WHERE course_id = %d ORDER BY id ASC LIMIT 1", $post_id ) );
                         
                         if ( $plan && !empty($plan->stripe_price_id) ) {
                              // Si hay plan CON Stripe, generar URL de checkout directo
