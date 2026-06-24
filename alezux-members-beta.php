@@ -197,4 +197,12 @@ add_action( 'elementor/elements/categories_registered', function( $elements_mana
 	}
 } );
 
-
+/**
+ * Ocultar la barra de administración de WordPress para estudiantes / no administradores
+ */
+add_filter( 'show_admin_bar', function( $show ) {
+    if ( ! current_user_can( 'edit_posts' ) ) {
+        return false;
+    }
+    return $show;
+} );
