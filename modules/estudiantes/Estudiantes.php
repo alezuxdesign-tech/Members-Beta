@@ -253,6 +253,7 @@ class Estudiantes extends Module_Base {
         $plan_id           = isset( $_POST['plan_id'] ) ? \intval( $_POST['plan_id'] ) : 0;
         $payment_method    = isset( $_POST['payment_method'] ) ? \sanitize_text_field( $_POST['payment_method'] ) : 'manual';
         $payment_reference = isset( $_POST['payment_reference'] ) ? \sanitize_text_field( $_POST['payment_reference'] ) : 'Manual-' . time();
+        $password          = isset( $_POST['password'] ) ? \sanitize_text_field( $_POST['password'] ) : '';
         
         // Si viene course_id legacy, lo ignoramos o tratamos de mapear (pero el widget nuevo manda plan_id)
 
@@ -299,7 +300,8 @@ class Estudiantes extends Module_Base {
             $payment_reference, // Ref transacción
             $currency,
             $full_name,
-            $payment_method // Nuevo param: manual_cash, manual_transfer, etc
+            $payment_method, // Nuevo param: manual_cash, manual_transfer, etc
+            $password
         );
 
 		if ( ! $user_id ) {

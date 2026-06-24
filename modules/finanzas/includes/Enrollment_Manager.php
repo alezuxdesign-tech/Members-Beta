@@ -17,7 +17,7 @@ class Enrollment_Manager {
      * @param string $transaction_ref ID de referencia (PaymentIntent o Session ID)
      * @return int|false ID del usuario o false si falla
      */
-    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD', $full_name = '', $payment_method = 'stripe' ) {
+    public static function enroll_user( $email, $plan_id, $stripe_sub_id = null, $amount = 0.0, $transaction_ref = '', $currency = 'USD', $full_name = '', $payment_method = 'stripe', $manual_password = '' ) {
         global $wpdb;
         
         error_log( "Alezux Enrollment: Iniciando para $email - Plan $plan_id - Ref $transaction_ref - Method $payment_method" );
@@ -32,7 +32,7 @@ class Enrollment_Manager {
             if ( username_exists( $username ) ) {
                 $username .= '_' . rand( 100, 999 );
             }
-            $password = wp_generate_password();
+            $password = ! empty( $manual_password ) ? $manual_password : wp_generate_password();
             $user_id = wp_create_user( $username, $password, $email );
             
             if ( is_wp_error( $user_id ) ) {
