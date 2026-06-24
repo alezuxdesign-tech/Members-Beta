@@ -301,7 +301,8 @@ jQuery(document).ready(function ($) {
                 user_id: $('#alezux-manage-user-id').val(),
                 first_name: $('#manage-first-name').val(),
                 last_name: $('#manage-last-name').val(),
-                email: $('#manage-email').val()
+                email: $('#manage-email').val(),
+                password: $('#manage-password').val().trim()
             },
             success: function (response) {
                 showAlezuxAlert(response.success ? 'Éxito' : 'Error', response.data.message, response.success ? 'success' : 'error');
@@ -310,48 +311,6 @@ jQuery(document).ready(function ($) {
                 $btn.prop('disabled', false);
                 $spinner.hide();
             }
-        });
-    });
-
-    $('#btn-save-password').on('click', function (e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var password = $('#manage-password').val().trim();
-        var userId = $('#alezux-manage-user-id').val();
-
-        if (!password) {
-            showAlezuxAlert('Atención', 'Debes escribir una contraseña.', 'warning');
-            return;
-        }
-
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
-
-        $.ajax({
-            url: alezux_estudiantes_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'alezux_update_student',
-                nonce: alezux_estudiantes_vars.nonce,
-                user_id: userId,
-                first_name: $('#manage-first-name').val(),
-                last_name: $('#manage-last-name').val(),
-                email: $('#manage-email').val(),
-                password: password
-            },
-            success: function (response) {
-                if (response.success) {
-                    showAlezuxAlert('Éxito', 'Contraseña actualizada correctamente.', 'success');
-                    $('#manage-password').val('');
-                } else {
-                    showAlezuxAlert('Error', response.data.message, 'error');
-                }
-            },
-            complete: function () {
-                $btn.prop('disabled', false).html('<i class="fas fa-save"></i> Guardar Clave');
-            }
-        });
-    });
-
     $('#btn-reset-password').on('click', function (e) {
         e.preventDefault();
         var userId = $('#alezux-manage-user-id').val();
