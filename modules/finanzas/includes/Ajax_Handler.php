@@ -78,6 +78,7 @@ class Ajax_Handler {
         $quota_amount = \floatval( $_POST['quota_amount'] );
         $total_quotas = \intval( $_POST['total_quotas'] );
         $rules = isset($_POST['rules']) ? $_POST['rules'] : [];
+        $whatsapp_number = isset($_POST['whatsapp_number']) ? \sanitize_text_field($_POST['whatsapp_number']) : '';
 
         // Determinar intervalo
         $interval = $_POST['frequency'] ?? 'month';
@@ -125,6 +126,7 @@ class Ajax_Handler {
                 'quota_amount' => $quota_amount,
                 'frequency'    => $interval,
                 'token'        => $token,
+                'whatsapp_number' => $whatsapp_number,
                 'access_rules' => \json_encode( $rules ),
             ] 
         );
@@ -614,6 +616,7 @@ class Ajax_Handler {
         $plan_id = isset($_POST['plan_id']) ? \intval($_POST['plan_id']) : 0;
         $plan_name = isset($_POST['plan_name']) ? \sanitize_text_field($_POST['plan_name']) : '';
         $rules = isset($_POST['rules']) ? $_POST['rules'] : [];
+        $whatsapp_number = isset($_POST['whatsapp_number']) ? \sanitize_text_field($_POST['whatsapp_number']) : '';
 
         if ( ! $plan_id || empty($plan_name) ) {
             \wp_send_json_error( 'Datos incompletos.' );
@@ -626,6 +629,7 @@ class Ajax_Handler {
             $table_plans, 
             [ 
                 'name' => $plan_name, 
+                'whatsapp_number' => $whatsapp_number,
                 'access_rules' => \json_encode( $rules )
             ], 
             [ 'id' => $plan_id ] 

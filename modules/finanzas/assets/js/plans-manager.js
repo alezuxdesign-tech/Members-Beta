@@ -207,6 +207,7 @@ jQuery(window).on('elementor/frontend/init', function () {
                     const plan = response.data;
                     $editModal.find('#edit-plan-name').val(plan.name);
                     $editModal.find('#edit-plan-course').val(plan.course_name);
+                    $editModal.find('#edit-plan-whatsapp').val(plan.whatsapp_number || '');
                     $editModal.find('#edit-plan-price').val(plan.quota_amount + ' USD');
                     $editModal.find('#edit-plan-quotas').val(plan.total_quotas);
 

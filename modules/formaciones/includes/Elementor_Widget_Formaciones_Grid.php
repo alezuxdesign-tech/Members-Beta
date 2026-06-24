@@ -996,12 +996,20 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                     $table_plans = $wpdb->prefix . 'alezux_finanzas_plans';
                     // Check if table exists to prevent errors if module not installed
                     if ( $wpdb->get_var("SHOW TABLES LIKE '$table_plans'") == $table_plans ) {
-                        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token FROM $table_plans WHERE course_id = %d AND total_quotas = 1 LIMIT 1", $post_id ) );
+                        $plan = $wpdb->get_row( $wpdb->prepare( "SELECT id, token, stripe_price_id, whatsapp_number FROM $table_plans WHERE course_id = %d AND total_quotas = 1 LIMIT 1", $post_id ) );
                         
-                        if ( $plan ) {
-                             // Si hay plan, generar URL de checkout directo con Token (Más seguro) o ID si no hay token
+                        if ( $plan && !empty($plan->stripe_price_id) ) {
+                             // Si hay plan CON Stripe, generar URL de checkout directo
                              $identifier = !empty($plan->token) ? 'token=' . $plan->token : 'plan_id=' . $plan->id;
                              $button_link = home_url( '/?alezux_action=checkout&' . $identifier );
+                        } else if ( $plan ) {
+                             // Si NO hay Stripe, enviar a WhatsApp si está configurado en el plan
+                             $wa_number = !empty($plan->whatsapp_number) ? preg_replace('/[^0-9]/', '', $plan->whatsapp_number) : '';
+                             if ( !empty($wa_number) ) {
+                                 $course_title = rawurlencode( get_the_title( $post_id ) );
+                                 $message = rawurlencode( "Hola, me gustaría adquirir el curso: " . get_the_title( $post_id ) . ". ¿Cuáles son los métodos de pago?" );
+                                 $button_link = "https://wa.me/{$wa_number}?text={$message}";
+                             }
                         }
                     }
                     

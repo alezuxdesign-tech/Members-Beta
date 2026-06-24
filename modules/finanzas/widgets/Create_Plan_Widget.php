@@ -118,7 +118,13 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                         <small style="display: block; margin-top: 5px; color: #aaa; margin-left: 25px;">Marca esta opción si gestionarás los pagos de forma manual. El plan se creará localmente sin conectarse a la API de Stripe.</small>
                     </div>
 
-                    <button type="button" class="alezux-btn alezux-btn-primary" id="btn-goto-step-2">Siguiente: Configurar Reglas &rarr;</button>
+                    <div class="alezux-form-group" id="wa_number_group" style="display: none; background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 8px; border: 1px solid #25D366; margin-top: 15px;">
+                        <label>Número de WhatsApp (Ventas)</label>
+                        <input type="text" name="whatsapp_number" id="whatsapp_number" placeholder="Ej: +1234567890">
+                        <small style="color: #aaa;">Obligatorio u opcional. Si se deja, los estudiantes sin acceso serán redirigidos aquí.</small>
+                    </div>
+
+                    <button type="button" class="alezux-btn alezux-btn-primary" id="btn-goto-step-2" style="margin-top: 20px;">Siguiente: Configurar Reglas &rarr;</button>
                 </div>
 
                 <!-- PASO 2: Reglas de Desbloqueo -->
@@ -328,8 +334,10 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                 var btn = $('#alezux-create-plan-form').find('button[type="submit"]');
                 if($(this).is(':checked')) {
                     btn.text('Guardar y Crear Plan Interno');
+                    $('#wa_number_group').slideDown();
                 } else {
                     btn.text('Guardar y Crear Plan en Stripe');
+                    $('#wa_number_group').slideUp();
                 }
             });
         });
