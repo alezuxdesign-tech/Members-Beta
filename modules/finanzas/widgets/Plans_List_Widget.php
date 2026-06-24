@@ -604,8 +604,8 @@ class Plans_List_Widget extends Widget_Base {
 
                         <div class="alezux-modal-row">
                              <div class="alezux-form-group">
-                                <label>Número de WhatsApp (Opcional)</label>
-                                <input type="text" name="whatsapp_number" id="edit-plan-whatsapp" placeholder="Ej: +1234567890">
+                                <label>Enlace de Venta Manual / WhatsApp (Opcional)</label>
+                                <input type="url" name="whatsapp_number" id="edit-plan-whatsapp" placeholder="Ej: https://wa.link/abcd">
                             </div>
                         </div>
 

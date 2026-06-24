@@ -1003,12 +1003,10 @@ class Elementor_Widget_Formaciones_Grid extends Elementor_Widget_Base {
                              $identifier = !empty($plan->token) ? 'token=' . $plan->token : 'plan_id=' . $plan->id;
                              $button_link = home_url( '/?alezux_action=checkout&' . $identifier );
                         } else if ( $plan ) {
-                             // Si NO hay Stripe, enviar a WhatsApp si está configurado en el plan
-                             $wa_number = !empty($plan->whatsapp_number) ? preg_replace('/[^0-9]/', '', $plan->whatsapp_number) : '';
-                             if ( !empty($wa_number) ) {
-                                 $course_title = rawurlencode( get_the_title( $post_id ) );
-                                 $message = rawurlencode( "Hola, me gustaría adquirir el curso: " . get_the_title( $post_id ) . ". ¿Cuáles son los métodos de pago?" );
-                                 $button_link = "https://wa.me/{$wa_number}?text={$message}";
+                             // Si NO hay Stripe, enviar a WhatsApp/Enlace Manual si está configurado en el plan
+                             if ( !empty($plan->whatsapp_number) ) {
+                                 // Usar el enlace tal cual (el usuario pondrá su enlace de bit.ly, wa.link, etc)
+                                 $button_link = esc_url($plan->whatsapp_number);
                              }
                         }
                     }

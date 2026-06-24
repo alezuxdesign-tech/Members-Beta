@@ -29,7 +29,7 @@ class Database_Installer {
 			quota_amount DECIMAL(10,2),
 			frequency VARCHAR(50) DEFAULT 'month',
             token VARCHAR(64),
-			whatsapp_number VARCHAR(50),
+			whatsapp_number VARCHAR(255),
 			access_rules LONGTEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		) $charset_collate;";
@@ -43,7 +43,10 @@ class Database_Installer {
         // Update 1.3: Add whatsapp_number column if not exists
         $row_check_wa = $wpdb->get_results( "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '" . DB_NAME . "' AND TABLE_NAME = '$table_plans' AND COLUMN_NAME = 'whatsapp_number'" );
         if ( empty( $row_check_wa ) ) {
-            $wpdb->query( "ALTER TABLE $table_plans ADD COLUMN whatsapp_number VARCHAR(50)" );
+            $wpdb->query( "ALTER TABLE $table_plans ADD COLUMN whatsapp_number VARCHAR(255)" );
+        } else {
+            // Modify to 255 if it was 50
+            $wpdb->query( "ALTER TABLE $table_plans MODIFY COLUMN whatsapp_number VARCHAR(255)" );
         }
 
         // Backfill tokens for existing plans

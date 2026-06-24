@@ -119,9 +119,9 @@ class Create_Plan_Widget extends Elementor_Widget_Base {
                     </div>
 
                     <div class="alezux-form-group" id="wa_number_group" style="display: none; background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 8px; border: 1px solid #25D366; margin-top: 15px;">
-                        <label>Número de WhatsApp (Ventas)</label>
-                        <input type="text" name="whatsapp_number" id="whatsapp_number" placeholder="Ej: +1234567890">
-                        <small style="color: #aaa;">Obligatorio u opcional. Si se deja, los estudiantes sin acceso serán redirigidos aquí.</small>
+                        <label>Enlace de Venta Manual / WhatsApp (Opcional)</label>
+                        <input type="url" name="whatsapp_number" id="whatsapp_number" placeholder="Ej: https://wa.link/abcd o https://tu-sitio.com/pago">
+                        <small style="color: #aaa;">Si el curso no tiene Stripe, el botón "Comprar Curso" redirigirá a este enlace.</small>
                     </div>
 
                     <button type="button" class="alezux-btn alezux-btn-primary" id="btn-goto-step-2" style="margin-top: 20px;">Siguiente: Configurar Reglas &rarr;</button>
