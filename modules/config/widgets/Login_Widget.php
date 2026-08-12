@@ -829,10 +829,13 @@ class Login_Widget extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 		?>
-		<div class="alezux-auth-form-card">
-			<?php if ( ! empty( $settings['title'] ) ) : ?>
-				<h2 class="alezux-auth-title"><?php echo esc_html( $settings['title'] ); ?></h2>
-			<?php endif; ?>
+		<div class="alezux-auth-form-card" id="alezux-auth-card-<?php echo esc_attr( $this->get_id() ); ?>">
+			
+			<!-- VISTA DE LOGIN -->
+			<div class="alezux-login-view">
+				<?php if ( ! empty( $settings['title'] ) ) : ?>
+					<h2 class="alezux-auth-title"><?php echo esc_html( $settings['title'] ); ?></h2>
+				<?php endif; ?>
 
 			<form id="alezux-login-form" class="alezux-auth-form">
 				<div class="alezux-auth-field">
@@ -870,7 +873,7 @@ class Login_Widget extends Widget_Base {
 
 				<?php if ( 'yes' === $settings['show_recover'] ) : ?>
 					<div class="alezux-auth-footer">
-						<a href="<?php echo esc_url( $settings['recover_url']['url'] ); ?>" class="alezux-auth-link">
+						<a href="#" class="alezux-auth-link alezux-show-recover">
 							<?php esc_html_e( '¿Olvidaste tu contraseña?', 'alezux-members' ); ?>
 						</a>
 					</div>
@@ -885,6 +888,30 @@ class Login_Widget extends Widget_Base {
 					<input type="hidden" name="redirect_student" value="<?php echo esc_url( $settings['redirect_student_url']['url'] ); ?>">
 				<?php endif; ?>
 			</form>
+			</div> <!-- Fin .alezux-login-view -->
+
+			<!-- VISTA DE RECUPERAR CONTRASEÑA (Oculta por defecto) -->
+			<div class="alezux-recover-view" style="display: none;">
+				<h2 class="alezux-auth-title"><?php esc_html_e( 'Recuperar Contraseña', 'alezux-members' ); ?></h2>
+				<p style="text-align:center; color:#a1a1aa; font-size:14px; margin-bottom:20px; line-height: 1.5;">
+					<?php esc_html_e( 'Ingresa tu usuario o correo para recibir el enlace de restablecimiento.', 'alezux-members' ); ?>
+				</p>
+				<form id="alezux-recover-form" class="alezux-auth-form">
+					<div class="alezux-auth-field">
+						<input type="text" name="user_login" placeholder="<?php echo esc_attr( $settings['user_placeholder'] ); ?>" required>
+					</div>
+					<button type="submit" class="alezux-auth-submit" style="margin-top: 10px;">
+						<span class="alezux-btn-text"><?php esc_html_e( 'Enviar Enlace', 'alezux-members' ); ?></span>
+						<span class="alezux-loader" style="display: none;"></span>
+					</button>
+					<div class="alezux-auth-footer">
+						<a href="#" class="alezux-auth-link alezux-show-login">
+							<?php esc_html_e( 'Volver a Iniciar Sesión', 'alezux-members' ); ?>
+						</a>
+					</div>
+				</form>
+			</div> <!-- Fin .alezux-recover-view -->
+
 		</div>
 		<?php
 	}

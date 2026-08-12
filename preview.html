@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Preview GD PHP - Módulo 1</title>
+    <style>
+        body { background-color: #111; color: white; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; padding: 20px; }
+        canvas { box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 8px; }
+        h1 { font-size: 1.2rem; margin-bottom: 20px; font-weight: normal; }
+    </style>
+</head>
+<body>
+    <h1>Así se verá la primera imagen generada (Matemática de Píxeles replicada)</h1>
+    <canvas id="previewCanvas" width="600" height="900"></canvas>
+
+    <script>
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Paleta 1: Amarillo
+        const bg1 = [234, 179, 8];
+        const bg2 = [161, 98, 7];
+
+        const imageData = ctx.createImageData(width, height);
+        const data = imageData.data;
+
+        // Degradado + Brillo integrado (Igual que en PHP)
+        const center_x = 0;
+        const center_y = 0;
+        const max_radius = 700;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                let factor = (y / height) * 0.8 + (x / width) * 0.2;
+                
+                let dist = Math.sqrt(Math.pow(x - center_x, 2) + Math.pow(y - center_y, 2));
+                let glow_factor = 0;
+                if (dist < max_radius) {
+                    glow_factor = 1 - (dist / max_radius);
+                    glow_factor = Math.pow(glow_factor, 3) * 0.18;
+                }
+
+                let r = bg1[0] + (bg2[0] - bg1[0]) * factor;
+                let g = bg1[1] + (bg2[1] - bg1[1]) * factor;
+                let b = bg1[2] + (bg2[2] - bg1[2]) * factor;
+
+                if (glow_factor > 0) {
+                    r = r + (255 - r) * glow_factor;
+                    g = g + (255 - g) * glow_factor;
+                    b = b + (255 - b) * glow_factor;
+                }
+
+                const index = (y * width + x) * 4;
+                data[index] = r;
+                data[index + 1] = g;
+                data[index + 2] = b;
+                data[index + 3] = 255;
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+
+        // Borde
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.35)"; // 90/255 en alpha PHP es ~35%
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, width, height);
+
+        // Pastilla translúcida
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; // ~95 alpha en GD es bastante opaco, dejemos 60%
+        ctx.beginPath();
+        ctx.roundRect(40, 40, 140, 40, 20);
+        ctx.fill();
+
+        // Texto Badge
+        ctx.fillStyle = "black";
+        ctx.font = "bold 16px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Modulo 1", 40 + 70, 40 + 20);
+
+        // Textos inferiores
+        ctx.fillStyle = "white";
+        ctx.textAlign = "left";
+        
+        const sep_title = "PLATAFORMA ATAS BASICO";
+        const lesson_title = "ATAS Indicadores y herramientas de análisis.";
+
+        // Cálculo de posición
+        ctx.font = "bold 38px Arial";
+        const lines = ["ATAS Indicadores y", "herramientas de", "análisis."];
+        const line_height = 55;
+        const total_title_height = lines.length * line_height;
+        const margin_bottom = 60;
+
+        let current_y = height - margin_bottom - total_title_height + 40;
+        lines.forEach(line => {
+            ctx.fillText(line, 40, current_y);
+            current_y += line_height;
+        });
+
+        // Título del separador
+        ctx.font = "bold 16px Arial";
+        const sep_y = height - margin_bottom - total_title_height - 10;
+        ctx.fillText(sep_title, 40, sep_y);
+
+    </script>
+</body>
+</html>

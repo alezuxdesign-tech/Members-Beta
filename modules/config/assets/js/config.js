@@ -54,6 +54,21 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // --- TOGGLE LOGIN / RECOVER VIEWS ---
+    $(document).on('click', '.alezux-show-recover', function (e) {
+        e.preventDefault();
+        var $card = $(this).closest('.alezux-auth-form-card');
+        $card.find('.alezux-login-view').hide();
+        $card.find('.alezux-recover-view').fadeIn();
+    });
+
+    $(document).on('click', '.alezux-show-login', function (e) {
+        e.preventDefault();
+        var $card = $(this).closest('.alezux-auth-form-card');
+        $card.find('.alezux-recover-view').hide();
+        $card.find('.alezux-login-view').fadeIn();
+    });
+
     // --- AJAX RECOVER PASSWORD ---
     $(document).on('submit', '#alezux-recover-form', function (e) {
         e.preventDefault();

@@ -405,6 +405,91 @@ $shortcodes[] = [
 				</div>
 			</form>
 		</div>
+
+		<!-- IMPORTADOR DE CURSOS (NUEVO) -->
+		<div class="alezux-card">
+			<h2 class="alezux-title">📥 Importador de Cursos (LearnDash)</h2>
+			<p class="alezux-text">Este botón leerá automáticamente el archivo <code>JSON CURSO LEARDASH.json</code> que se encuentra dentro de la carpeta principal del plugin y creará los Cursos, Lecciones y Temas con sus respectivos videos en tu base de datos de WordPress.</p>
+			
+			<?php if ( isset( $_GET['status'] ) && 'import_success' === $_GET['status'] ) : ?>
+				<div style="background: #27ae60; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
+					✅ <strong>¡Éxito!</strong> Todos los cursos se han importado correctamente. Verifica en la sección de LearnDash LMS.
+				</div>
+			<?php endif; ?>
+
+			<?php if ( isset( $_GET['status'] ) && 'cleanup_success' === $_GET['status'] ) : ?>
+				<div style="background: #c0392b; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
+					🗑️ <strong>Limpieza Completada:</strong> Se han borrado todos los cursos, lecciones y temas creados anteriormente.
+				</div>
+			<?php endif; ?>
+
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST" style="display:inline-block; margin-right: 15px; vertical-align: top;">
+				<input type="hidden" name="action" value="alezux_import_json">
+				<?php wp_nonce_field( 'alezux_import_json_action', 'alezux_import_nonce' ); ?>
+				
+				<div style="margin-top: 10px;">
+					<button type="submit" class="button button-primary" onclick="return confirm('¿Estás seguro de querer importar el JSON ahora? Esto creará cursos reales en tu sitio.');"
+							style="background: #e67e22; border-color: #d35400; padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						🚀 Importar Cursos ahora
+					</button>
+				</div>
+			</form>
+
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST" style="display:inline-block; vertical-align: top;">
+				<input type="hidden" name="action" value="alezux_cleanup_ld">
+				<?php wp_nonce_field( 'alezux_cleanup_action', 'alezux_cleanup_nonce' ); ?>
+				
+				<div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+					<select name="cleanup_course_id" style="background: #252525; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 6px; height: 42px;">
+						<option value="all">Eliminar TODOS los cursos</option>
+						<?php 
+						$ld_courses = get_posts(['post_type' => 'sfwd-courses', 'posts_per_page' => -1]);
+						foreach ($ld_courses as $ldc) {
+							echo '<option value="' . esc_attr($ldc->ID) . '">' . esc_html($ldc->post_title) . '</option>';
+						}
+						?>
+					</select>
+
+					<button type="submit" class="button button-primary" onclick="return confirm('⚠️ ADVERTENCIA: Esta acción es irreversible. ¿Estás seguro de continuar?');"
+							style="background: #c0392b; border-color: #a93226; padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						🗑️ Borrar Curso(s)
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- GENERADOR DE IMÁGENES (NUEVO) -->
+		<div class="alezux-card">
+			<h2 class="alezux-title">🎨 Generador de Imágenes de Módulos</h2>
+			<p class="alezux-text">Esto leerá todas tus lecciones y les generará y asignará automáticamente una imagen destacada profesional con el diseño "Módulo X", basándose en los separadores.</p>
+			
+			<?php if ( isset( $_GET['status'] ) && 'images_success' === $_GET['status'] ) : ?>
+				<div style="background: #0984e3; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px; display: inline-block;">
+					🖼️ <strong>¡Generación Exitosa!</strong> Todas las lecciones que no tenían imagen ahora tienen su diseño generado y asignado.
+				</div>
+			<?php endif; ?>
+
+			<form action="<?php echo admin_url( 'admin-post.php' ); ?>" method="POST">
+				<input type="hidden" name="action" value="alezux_generate_images">
+				<?php wp_nonce_field( 'alezux_generate_images_action', 'alezux_generate_images_nonce' ); ?>
+				
+				<div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+					<select name="image_course_id" style="background: #252525; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 6px; height: 42px;">
+						<option value="all">Todos los cursos</option>
+						<?php 
+						foreach ($ld_courses as $ldc) {
+							echo '<option value="' . esc_attr($ldc->ID) . '">' . esc_html($ldc->post_title) . '</option>';
+						}
+						?>
+					</select>
+
+					<button type="submit" class="button button-primary" onclick="return confirm('Este proceso puede tardar unos minutos si son muchas lecciones. Si se corta, puedes volver a presionarlo y continuará donde se quedó. ¿Generar imágenes?');"
+							style="background: #0984e3; border-color: #74b9ff; padding: 5px 30px; font-size: 16px; font-weight: 600; height: auto; line-height: 2;">
+						🖌️ Generar Imágenes Faltantes
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 
 	<!-- TAB PERMISSIONS (NUEVO) -->

@@ -1,0 +1,1049 @@
+[
+  {
+    "curso": "Curso Completo",
+    "lessons": [
+      {
+        "lesson_name": "Separador (Titulo: Plataforma Atas Basico)",
+        "topics": []
+      },
+      {
+        "lesson_name": "ATAS Indicadores y herramientas de análisis.",
+        "topics": [
+          {
+            "topic_name": "ATAS Indicadores y herramientas de análisis.",
+            "video_id": "11818dbe46204f4c9967aec9c79d83ac"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS configuración inicial.",
+        "topics": [
+          {
+            "topic_name": "ATAS configuración inicial.",
+            "video_id": "e454c1648129413aba6fe254c101e1f7"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Plantillas de gráficos.",
+        "topics": [
+          {
+            "topic_name": "ATAS Plantillas de gráficos.",
+            "video_id": "714906518bb34d33b3ee380915bc2952"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Más histórico en gráfico.",
+        "topics": [
+          {
+            "topic_name": "ATAS Más histórico en gráfico.",
+            "video_id": "6e98bd8f254144179f05bb764ae01f91"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Vela Orden Flow configuración.",
+        "topics": [
+          {
+            "topic_name": "ATAS Vela Orden Flow configuración.",
+            "video_id": "09b4f48ed9024d439407cf753a909352"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Indicadores y herramientas de análisis.",
+        "topics": [
+          {
+            "topic_name": "ATAS Indicadores y herramientas de análisis.",
+            "video_id": "11818dbe46204f4c9967aec9c79d83ac"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Indicador de porcentaje y tiempo de vela.",
+        "topics": [
+          {
+            "topic_name": "ATAS Indicador de porcentaje y tiempo de vela.",
+            "video_id": "53e4e4152a614e91808253188858efdb"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Smart Tapes.",
+        "topics": [
+          {
+            "topic_name": "ATAS Smart Tapes.",
+            "video_id": "67b682884c674548bd8d3b37cfcff9c2"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Indicador Volume profile.",
+        "topics": [
+          {
+            "topic_name": "ATAS Indicador Volume profile.",
+            "video_id": "125c9c3329a84b1782aa4796b8a72778"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Libro de Órdenes.",
+        "topics": [
+          {
+            "topic_name": "ATAS Libro de Órdenes.",
+            "video_id": "a0a5c140264541c0ad3f0c9330dd9584"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Conexión de datos.",
+        "topics": [
+          {
+            "topic_name": "ATAS Conexión de datos.",
+            "video_id": "08cd53dfa63b4636a7bb4c5719601cde"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS espacio de trabajo.",
+        "topics": [
+          {
+            "topic_name": "ATAS espacio de trabajo.",
+            "video_id": "c1dceb2624ba4aad950cf175f833b015"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Indicador de V Wap.",
+        "topics": [
+          {
+            "topic_name": "ATAS Indicador de V Wap.",
+            "video_id": "a3895e43b4f94f74b8d4d2ac3299dd3c"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Configuración Volume Profile estático.",
+        "topics": [
+          {
+            "topic_name": "ATAS Configuración Volume Profile estático.",
+            "video_id": "fa919966a9474bbf809e2449db97081d"
+          }
+        ]
+      },
+      {
+        "lesson_name": "ATAS Medir distancias para niveles de salidas y entradas.",
+        "topics": [
+          {
+            "topic_name": "ATAS Medir distancias para niveles de salidas y entradas.",
+            "video_id": "b67ceb036b3d41b68fd16e941029ea42"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Separador (Titulo: Curso Elite-Trader)",
+        "topics": []
+      },
+      {
+        "lesson_name": "Ordenes del Mercado.",
+        "topics": [
+          {
+            "topic_name": "Ordenes del Mercado.",
+            "video_id": "7dbf99bea38140c287d13db03e812e93"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Tipos de Órdenes.",
+        "topics": [
+          {
+            "topic_name": "Tipos de Órdenes.",
+            "video_id": "6ed9a15ac75c47a785424e0cdf443422"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Cómo se forma la vela de orden flow.",
+        "topics": [
+          {
+            "topic_name": "Cómo se forma la vela de orden flow.",
+            "video_id": "4bd0bdbc8a574aca86343f101aefe054"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Pauta de una vela de Orden Flow.",
+        "topics": [
+          {
+            "topic_name": "Pauta de una vela de Orden Flow.",
+            "video_id": "d4600224f8374946b17892bccb078d12"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Cómo mover el Stop en operativa a tu favor.",
+        "topics": [
+          {
+            "topic_name": "Cómo mover el Stop en operativa a tu favor.",
+            "video_id": "2e0944cdd7e64bee8d3eaa7a58303204"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Tipo de configuración de velas.",
+        "topics": [
+          {
+            "topic_name": "Tipo de configuración de velas.",
+            "video_id": "2587cc4bdd5c47a19944ba063fbba461"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Indicadores de volumen",
+        "topics": [
+          {
+            "topic_name": "Indicadores de volumen.",
+            "video_id": "d99c0ae945bc47ba94074f8f5635fd35"
+          },
+          {
+            "topic_name": "Indicador de Delta en Práctica.",
+            "video_id": "cb911cf3eeb74347981ad3c7914af51a"
+          },
+          {
+            "topic_name": "Indicador Big Trade.",
+            "video_id": "50155f8c70e146e2a6a76ef61b406a45"
+          },
+          {
+            "topic_name": "Indicador Big Trade en Práctica.",
+            "video_id": "fe46b6809f624a51b80ebc6d278afb55"
+          },
+          {
+            "topic_name": "Indicador de VWAP.",
+            "video_id": "32f17648a2bd4275b069716bcfc25903"
+          },
+          {
+            "topic_name": "Order Book - Libro de Órdenes.",
+            "video_id": "5ad76943c0494dd0989180b37f6c4fab"
+          },
+          {
+            "topic_name": "Ordenes de operativas introducir en gráfico.",
+            "video_id": "c191b9a2e7f9458cb86779d43e5c1865"
+          },
+          {
+            "topic_name": "Libro de Ordenes y Ordenes en el mercado.",
+            "video_id": "92ab16fc979344eca5d2c05de9e10ac5"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Donde operar",
+        "topics": [
+          {
+            "topic_name": "REPASO.Pauta de una vela de Orden Flow.",
+            "video_id": "d4600224f8374946b17892bccb078d12"
+          },
+          {
+            "topic_name": "Zonas Operativas.",
+            "video_id": "52abb27a6d9b457b8c7e752da649b2b9"
+          },
+          {
+            "topic_name": "Máximos y Mínimos Relevantes.",
+            "video_id": "603e583eb4784a9e83a9bbd15990681f"
+          },
+          {
+            "topic_name": "Market Profile.",
+            "video_id": "4186f3921a4c46a9882d85fb93acbf7a"
+          },
+          {
+            "topic_name": "Volume Profile Campana de GAUSS.",
+            "video_id": "a654e72162cd482582d23fb08e9373ef"
+          },
+          {
+            "topic_name": "Partes del Volumen Profile.",
+            "video_id": "b61b9e8c42254c3e83eb0b46cfdbf99d"
+          },
+          {
+            "topic_name": "Partes dentro del Volumen Profile.",
+            "video_id": "69fc8f84d5f545539c88e36f5b997e3a"
+          },
+          {
+            "topic_name": "Cómo utilizamos el Volume Profile.",
+            "video_id": "9e33e325909544b2b9b7e7356ce11c62"
+          },
+          {
+            "topic_name": "Volume Profile Explicación de Zonas en gráfico.",
+            "video_id": "6e2f7e5b903942a286f199a03fa54e7e"
+          },
+          {
+            "topic_name": "Volume Profile Perfil Composite.",
+            "video_id": "73a41a458dd04c77a4a61ddabe0f32c2"
+          },
+          {
+            "topic_name": "Volume Profile y Zonas - perfil de rango.",
+            "video_id": "76f3811e0ac14f7a83879f0f6315af47"
+          },
+          {
+            "topic_name": "Volume Profile en Operativa.",
+            "video_id": "b68df1a4ae93403593c17c1cdfc40c77"
+          },
+          {
+            "topic_name": "Volume Profile dinámico.",
+            "video_id": "2701c4bbbb0c445cb09895ffa2b109a5"
+          },
+          {
+            "topic_name": "Perfil de Rango en diferentes dias.",
+            "video_id": "a75a7798c4a94e93a8c6cc8f6e85b59f"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Estrategias con Volume Profile - Clase 1.",
+        "topics": [
+          {
+            "topic_name": "Estrategias con Volume Profile - Clase 1.",
+            "video_id": "6507721087a4448eb6eef7e281f5945e"
+          },
+          {
+            "topic_name": "Estrategias con Volume Porfile - Clase 2.",
+            "video_id": "7d5188ad9a1d4788a965fa96d69c5b55"
+          },
+          {
+            "topic_name": "Estrategias con Volume Profile - Clase 3.",
+            "video_id": "b14ec9f109cc4dedadfe0084dd589e5e"
+          },
+          {
+            "topic_name": "Estrategias con Volume Profile - Clase 4.",
+            "video_id": "16ca8920b3484883aad2924a1e43716c"
+          },
+          {
+            "topic_name": "Estrategias de Volume Profile - Clase 5.",
+            "video_id": "991f0a1760e74d5193397a1c0992f6d1"
+          },
+          {
+            "topic_name": "Estrategias con Volume Profile - Clase 6.",
+            "video_id": "26ef76e68f3240b88ab1b11af4e949a6"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrones de order flow",
+        "topics": [
+          {
+            "topic_name": "Patrones de Orden Flow intro.",
+            "video_id": "aba9be2fc60b4979931c276eda4d1897"
+          },
+          {
+            "topic_name": "Módulo de Arranque Mercado Alzista.",
+            "video_id": "ea325cfed54b43f4ac2e8b334bf103ed"
+          },
+          {
+            "topic_name": "Módulo de Arranque Alzista.",
+            "video_id": "aa59661cef96425e8d2d19070ad0062c"
+          },
+          {
+            "topic_name": "Modulo de Arranque Mercado Bajista.",
+            "video_id": "b44f3584abf14bdb863131f9582fa835"
+          },
+          {
+            "topic_name": "Módulo de Arranque Bajista.",
+            "video_id": "1c65fd314d82493da4b1a8f490eff023"
+          },
+          {
+            "topic_name": "Módulo de Arranque en gráfico.",
+            "video_id": "a7e2c62cb66242159b6f8e7aa726307c"
+          },
+          {
+            "topic_name": "Cómo entrar en una tendencia.",
+            "video_id": "0e32a98e37774f248dbf3f10e4d23df6"
+          },
+          {
+            "topic_name": "vela reversal compra.",
+            "video_id": "51b466f6b067412eb6f2b0b16495181b"
+          },
+          {
+            "topic_name": "vela reversal venta.",
+            "video_id": "29e17ac11adc47b2984287160e8bdd09"
+          },
+          {
+            "topic_name": "vela reversal bajista en práctica.",
+            "video_id": "9b2ac49c1c9d49c58ac8598e77d9d73f"
+          },
+          {
+            "topic_name": "ATAS Vela reversal.",
+            "video_id": "85c8ac99e1f44859b60b343ef74cbc60"
+          },
+          {
+            "topic_name": "Gráfico Vela Reversal.",
+            "video_id": "3b47c00ebbca4ac48431b9674920ac91"
+          },
+          {
+            "topic_name": "Patrón de contexto.",
+            "video_id": "d366d40c722541b481c433e5afdac871"
+          },
+          {
+            "topic_name": "Patrón de contexto ejemplo.",
+            "video_id": "baea918b77cd4c87b2ff39a907e7ca53"
+          },
+          {
+            "topic_name": "Análisis de Patrón de Contexto.",
+            "video_id": "31f4240eb4834bc08385409d0c733b2e"
+          },
+          {
+            "topic_name": "REPASO. Mover el Stop en operativa a tu favor.",
+            "video_id": "2e0944cdd7e64bee8d3eaa7a58303204"
+          },
+          {
+            "topic_name": "Esquema patrón de Esfuerzo Sin Resultado.",
+            "video_id": "2d26e5dbccab4e81b519927613f2bd53"
+          },
+          {
+            "topic_name": "REPASO.Indicador Big Trade en Práctica.",
+            "video_id": "fe46b6809f624a51b80ebc6d278afb55"
+          },
+          {
+            "topic_name": "Concepto Esfuerzo sin Resultado.",
+            "video_id": "5317844ef8ce41b3982206323f0cd3ac"
+          },
+          {
+            "topic_name": "Patrón de Absorción.",
+            "video_id": "f1a30e2797284d19b0273833d8631f5c"
+          },
+          {
+            "topic_name": "Módulo de Inbalances.",
+            "video_id": "2002e1f1d4d5453f93f18569fbb3a29b"
+          },
+          {
+            "topic_name": "ATAS Indicador de Imbalances.",
+            "video_id": "821add6390c44f0a99a0f8ac0bee1f46"
+          },
+          {
+            "topic_name": "Imbalance de compra y venta en ejemplos_1.",
+            "video_id": "0fb8d0246c5c4a9a85bab7a134fb4ec0"
+          },
+          {
+            "topic_name": "Patrón de reversión por Inbalances.",
+            "video_id": "5efc50413c1f447eb640e4d2dc6d0de9"
+          },
+          {
+            "topic_name": "Patrón de reversión por Inbalances-2.",
+            "video_id": "5efc50413c1f447eb640e4d2dc6d0de9"
+          },
+          {
+            "topic_name": "Patrón de reversión alzista.",
+            "video_id": "82a0aac033564869a4e10ee194aa6595"
+          },
+          {
+            "topic_name": "Patrón de Entrada por reversión por inbalance alzista.",
+            "video_id": "d51bcd5cc7624355970930d352c46188"
+          },
+          {
+            "topic_name": "Patrón de Reversión entrada bajista por inbalance en practica.",
+            "video_id": "510238b132a84191a6072e1759ac4f71"
+          },
+          {
+            "topic_name": "Vela Delta Entrada_1.",
+            "video_id": "81fbc07b83124a2092322e6d404d2d3e"
+          },
+          {
+            "topic_name": "Ejemplo práctico de la Cinta.",
+            "video_id": "da42d4d7233d44b7aef04883370530f3"
+          },
+          {
+            "topic_name": "Sesión de operativa, inicialización.",
+            "video_id": "bcd1d3755a2643b381b2b98d33dafcd6"
+          }
+        ]
+      },
+      {
+        "lesson_name": "FOOT PRINT",
+        "topics": [
+          {
+            "topic_name": "Añadir Indicador Foot Print al gráfico.",
+            "video_id": "15435cfb5980490098e5d38423f8c61f"
+          },
+          {
+            "topic_name": "Patrón de Footprint.",
+            "video_id": "9192d4510d8e487a93b376af355c4df3"
+          },
+          {
+            "topic_name": "Patrón de Footprint_1.",
+            "video_id": "c9da110b77774417b1271c661456d9e2"
+          },
+          {
+            "topic_name": "Patron de Trampa por Footprint.",
+            "video_id": "4d5a619512c14caab3297420018e5667"
+          },
+          {
+            "topic_name": "Patron de Trampa por Footprint_1.",
+            "video_id": "b335c0f468ac4d53b456788183e159e6"
+          },
+          {
+            "topic_name": "Trampa por Footprint en práctica.",
+            "video_id": "c3f2d4916190430fb14b7436f57de9ed"
+          },
+          {
+            "topic_name": "Patrón de Giro por Footprint.",
+            "video_id": "d1dc677fe4034cb28450379b763e5794"
+          },
+          {
+            "topic_name": "Patrón Footprint Giro de Mercado.",
+            "video_id": "c7e43e14eef34f58aac21e6adbdbe7c3"
+          },
+          {
+            "topic_name": "Plan de Trading.",
+            "video_id": "6bc9eb276f5c47068168c3b58ad35e23"
+          },
+          {
+            "topic_name": "Plan de Trading_1.",
+            "video_id": "bebaa9849d994068941d6a40edfc3ed4"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Separador (Titulo: Curso Trader pro)",
+        "topics": []
+      },
+      {
+        "lesson_name": "Visionado del curso.",
+        "topics": [
+          {
+            "topic_name": "Visionado del curso.",
+            "video_id": "b7755b5b8b9b4b599996995e97414af9"
+          }
+        ]
+      },
+      {
+        "lesson_name": "cómo estudiar correctamente.",
+        "topics": [
+          {
+            "topic_name": "cómo estudiar correctamente.",
+            "video_id": "fb5d8a4098ea48c1bde448f1e2db5cac"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Uso de plataforma de trading.",
+        "topics": [
+          {
+            "topic_name": "Uso de plataforma de trading.",
+            "video_id": "987dec2095764dca981cbce7719b9aea"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Unidades de medidas dentro del gráfico.",
+        "topics": [
+          {
+            "topic_name": "Unidades de medidas dentro del gráfico.",
+            "video_id": "b573404c49584c11938b9647ade6aaff"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Funcionamiento correcto de bolsa de valores.",
+        "topics": [
+          {
+            "topic_name": "Funcionamiento correcto de bolsa de valores.",
+            "video_id": "e761c525d8fa42da9e5185e21854eb85"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Timing a la hora de operar.",
+        "topics": [
+          {
+            "topic_name": "Timing a la hora de operar.",
+            "video_id": "d59271fab01d402cbbfcc1dff3888b1a"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Tipos de Formas de Entrar a Mercado.",
+        "topics": [
+          {
+            "topic_name": "Tipos de Formas de Entrar a Mercado.",
+            "video_id": "621b305572354780a7c3509f1bf39dac"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Vencimiento de los Contratos de Futuro.​​",
+        "topics": [
+          {
+            "topic_name": "Vencimiento de los Contratos de Futuro.​​",
+            "video_id": "ef85febd9c934c2a809047171d09e0f4"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Oferta y Demanda.",
+        "topics": [
+          {
+            "topic_name": "Oferta y Demanda.",
+            "video_id": "a5cbe6299b754d11ac35f63154813a4f"
+          }
+        ]
+      },
+      {
+        "lesson_name": "La liquidez.",
+        "topics": [
+          {
+            "topic_name": "La liquidez.",
+            "video_id": "6e60fc59911c4a0e9ec6bafb0df67e57"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Mercado de Futuro.",
+        "topics": [
+          {
+            "topic_name": "Mercado de Futuro.",
+            "video_id": "4dc1b36ebebe4743a65d3ab3245ed8a2"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Concepto- La Mano Fuerte.",
+        "topics": [
+          {
+            "topic_name": "Concepto- La Mano Fuerte.",
+            "video_id": "a5634f7381d84e3eaf0da8d7a8a99e23"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Compra y Venta Institucional.",
+        "topics": [
+          {
+            "topic_name": "Compra y Venta Institucional.",
+            "video_id": "2e32b4445f5640f1abbbc0351938a1bc"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Espejo de Mercado en un gráfico.",
+        "topics": [
+          {
+            "topic_name": "Espejo de Mercado en un gráfico.",
+            "video_id": "07e2cd6f342f497ba24ed44f4869d929"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Facilidades y Dificultades dentro del gráfico.",
+        "topics": [
+          {
+            "topic_name": "Facilidades y Dificultades dentro del gráfico.",
+            "video_id": "204aa31f430644d3935c0d5676c4c743"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Divergencia Delta ¿para qué se utiliza.",
+        "topics": [
+          {
+            "topic_name": "Divergencia Delta ¿para qué se utiliza.",
+            "video_id": "bf1feb2f65884d9d8e0195ceb7b5b1f1"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Venta en corto",
+        "topics": [
+          {
+            "topic_name": "Venta en corto.",
+            "video_id": "fc9c907de5c34733bb64d8e0b1a6499d"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Ejemplos de TH.",
+        "topics": [
+          {
+            "topic_name": "Ejemplos de TH.",
+            "video_id": "95b47d84a4214ba98d1e50fb464b930b"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Tipos de Trading.",
+        "topics": [
+          {
+            "topic_name": "Tipos de Trading.",
+            "video_id": "4b0ae499201e49a797f69a64bd4dc676"
+          }
+        ]
+      },
+      {
+        "lesson_name": "La Manipulación.",
+        "topics": [
+          {
+            "topic_name": "La Manipulación.",
+            "video_id": "738931c1c8b1492396b60187473acefc"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Tipos de gráficos.",
+        "topics": [
+          {
+            "topic_name": "Tipos de gráficos.",
+            "video_id": "525776528826439693239b6c295603a7"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Cómo nos enfrentamos al gráfico.",
+        "topics": [
+          {
+            "topic_name": "Cómo nos enfrentamos al gráfico.",
+            "video_id": "3b76a8df92424ebda6b5db8284198554"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Composición de una vela.",
+        "topics": [
+          {
+            "topic_name": "Composición de una vela.",
+            "video_id": "afc8d743d01148b99c82f715a7b24e1e"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Definición SP y TH.",
+        "topics": [
+          {
+            "topic_name": "Definición SP y TH.",
+            "video_id": "42e1d487512840208eaf573f5a926be9"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Ordenes del Mercado.",
+        "topics": [
+          {
+            "topic_name": "Ordenes del Mercado.",
+            "video_id": "1794ed3b0b45495686d6f9428cdc8255"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Balizas en gráfico.",
+        "topics": [
+          {
+            "topic_name": "Balizas en gráfico.",
+            "video_id": "081555cdbe0845bba4e020dfc99adb81"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Plantilla Operativa.",
+        "topics": [
+          {
+            "topic_name": "Plantilla Operativa.",
+            "video_id": "1280fc8579734d87bd9a14950604c357"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Cambios de sesiones en plantillas.",
+        "topics": [
+          {
+            "topic_name": "Cambios de sesiones en plantillas.",
+            "video_id": "2f9a0de9c9d443b59c846c08ccef43f1"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Soportes y Resistencia.",
+        "topics": [
+          {
+            "topic_name": "Soportes y Resistencia.",
+            "video_id": "a945b1d8290540d08b2a3c44e94ec45e"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Volume Profile Campana de GAUSS.",
+        "topics": [
+          {
+            "topic_name": "Volume Profile Campana de GAUSS.",
+            "video_id": "a654e72162cd482582d23fb08e9373ef"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Volume Profile PARTE 1.",
+        "topics": [
+          {
+            "topic_name": "Volume Profile PARTE 1.",
+            "video_id": "2088aef0d13c427f8371b140aadd33e1"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Partes del Volumen Profile.",
+        "topics": [
+          {
+            "topic_name": "Partes del Volumen Profile.",
+            "video_id": "b61b9e8c42254c3e83eb0b46cfdbf99d"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Partes dentro del Volumen Profile.",
+        "topics": [
+          {
+            "topic_name": "Partes dentro del Volumen Profile.",
+            "video_id": "69fc8f84d5f545539c88e36f5b997e3a"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Como se usa el Volume Profile.",
+        "topics": [
+          {
+            "topic_name": "Como se usa el Volume Profile.",
+            "video_id": "1c27eb44162446308c11e4a03adac385"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Usos del Volume Profile.",
+        "topics": [
+          {
+            "topic_name": "Usos del Volume Profile.",
+            "video_id": "0499919f65e74ebd9739f0c9c724ba48"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Volume Profile en Gráficos.",
+        "topics": [
+          {
+            "topic_name": "Volume Profile en Gráficos.",
+            "video_id": "a16c8dea5574457e80e8dce3a2bae0c7"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Compra venta encubierta.",
+        "topics": [
+          {
+            "topic_name": "Compra venta encubierta.",
+            "video_id": "6cb6b2e420e049cc9622c6da0ae82a47"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Compra y Venta Encubierta.",
+        "topics": [
+          {
+            "topic_name": "Compra y Venta Encubierta.",
+            "video_id": "f8356aa48e86425481c308d78acfb6ef"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Ejemplo Compra Encubierta.",
+        "topics": [
+          {
+            "topic_name": "Ejemplo Compra Encubierta.",
+            "video_id": "dde4bdcc307f432189104d05fe679b86"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Venta Encubierta en Ejemplo.",
+        "topics": [
+          {
+            "topic_name": "Venta Encubierta en Ejemplo.",
+            "video_id": "d91f4922e3334cf6a6fe493ec8ca1614"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Movimientos de la Compra y Venta encubierta.",
+        "topics": [
+          {
+            "topic_name": "Movimientos de la Compra y Venta encubierta.",
+            "video_id": "f9f4d43770cc4245934e35e2db46933f"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Compras y Ventas en encubierto en institucional en gráfico",
+        "topics": [
+          {
+            "topic_name": "Compras y Ventas en encubierto en institucional en gráfico",
+            "video_id": "a1e7a5de064e4269b9661f483811d6d2"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Zona de Alta Probabilidad en gráfico.",
+        "topics": [
+          {
+            "topic_name": "Zona de Alta Probabilidad en gráfico.",
+            "video_id": "4dfc7402931246eda9b9761bd2163de9"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Como determinamos la zona ZAP.",
+        "topics": [
+          {
+            "topic_name": "Como determinamos la zona ZAP.",
+            "video_id": "578e0824f19e47af9aaea28de85b9995"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Módulos de Balizas.",
+        "topics": [
+          {
+            "topic_name": "Módulos de Balizas.",
+            "video_id": "ab3e16f9b0524ebfabc67f0320c853d0"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Balizas y su funcionamiento en gráfico.",
+        "topics": [
+          {
+            "topic_name": "Balizas y su funcionamiento en gráfico.",
+            "video_id": "7a7a5723f8224d98a0ed048784abcd6e"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Definición- Vela Caliente.",
+        "topics": [
+          {
+            "topic_name": "Definición- Vela Caliente.",
+            "video_id": "6a0baf13a39a4db0a6cdbf58f68a9d69"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Indicador dde Vela Caliente en práctica.",
+        "topics": [
+          {
+            "topic_name": "Indicador dde Vela Caliente en práctica.",
+            "video_id": "a0116b5a0790449599e08a42f5d2be60"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Definición- Módulo mínimo.",
+        "topics": [
+          {
+            "topic_name": "Definición- Módulo mínimo.",
+            "video_id": "ab139e518b944e3ba44d9767f411c82a"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Ejemplo Módulo por Trampa.",
+        "topics": [
+          {
+            "topic_name": "Ejemplo Módulo por Trampa.",
+            "video_id": "1892fc0bc44348a0b464dc572087d496"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrón por Trampa variantes en ejemplos.",
+        "topics": [
+          {
+            "topic_name": "Patrón por Trampa variantes en ejemplos.",
+            "video_id": "0c534f497e174afa9527cf99bedb55f1"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Compra y Venta Institucional.",
+        "topics": [
+          {
+            "topic_name": "Compra y Venta Institucional.",
+            "video_id": "2e32b4445f5640f1abbbc0351938a1bc"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrón por fallo en práctica.",
+        "topics": [
+          {
+            "topic_name": "Patrón por fallo en práctica.",
+            "video_id": "14990afac5e8455790f8f7d5d1965571"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrones de cambios de ciclo de mercado.",
+        "topics": [
+          {
+            "topic_name": "Patrones de cambios de ciclo de mercado.",
+            "video_id": "895af16f71a54e41bdd06daa9e87e6a8"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrón por cambio de ciclos_1.",
+        "topics": [
+          {
+            "topic_name": "Patrón por cambio de ciclos_1.",
+            "video_id": "26ce93abbb8b4e16bba9a93f77905a74"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrón de Cambio de Ciclo Directo.",
+        "topics": [
+          {
+            "topic_name": "Patrón de Cambio de Ciclo Directo.",
+            "video_id": "70a57ba84b6d4cc4a233539781b5ac47"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Patrones de entrada por SP ejemplos.",
+        "topics": [
+          {
+            "topic_name": "Patrones de entrada por SP ejemplos.",
+            "video_id": "e8db939630c94d42b57116c6d7ecd6a4"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Distinguir perfiles dentro de una vela.",
+        "topics": [
+          {
+            "topic_name": "Distinguir perfiles dentro de una vela.",
+            "video_id": "ea24f160b96f445d86ef8dab9131a6e7"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Apunte extra- estructurar una secuencia manipulativa.",
+        "topics": [
+          {
+            "topic_name": "Apunte extra- estructurar una secuencia manipulativa.",
+            "video_id": "6650dabbd1034ad18a18beaf3d1003d0"
+          }
+        ]
+      },
+      {
+        "lesson_name": "Ejemplo Ciclo de cambio de dirección por doble llegada.",
+        "topics": [
+          {
+            "topic_name": "Ejemplo Ciclo de cambio de dirección por doble llegada.",
+            "video_id": "0e7f30300f9e4496860393d7fb4c5351"
+          }
+        ]
+      }
+    ]
+  }
+]
