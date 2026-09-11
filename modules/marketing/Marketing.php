@@ -54,6 +54,7 @@ class Marketing extends Module_Base {
 		add_action( 'wp_ajax_alezux_marketing_upload_logo', [ $this, 'ajax_upload_logo' ] ); 
 		add_action( 'wp_ajax_alezux_marketing_send_test_email', [ $this, 'ajax_send_test_email' ] );
 		add_action( 'wp_ajax_alezux_marketing_get_logs', [ $this, 'ajax_get_email_logs' ] );
+		add_action( 'wp_ajax_alezux_marketing_resend_log', [ $this, 'ajax_resend_log' ] );
 		
 		// Tracking Pixel Listener
 		add_action( 'init', [ $this, 'handle_tracking_pixel' ] );
@@ -485,9 +486,9 @@ class Marketing extends Module_Base {
 			global $wpdb;
 			$table_logs = $wpdb->prefix . 'alezux_marketing_logs';
 			
-			// Get last 50 logs for this type
+			// Get last 2000 logs for this type
 			$logs = $wpdb->get_results( $wpdb->prepare( 
-				"SELECT * FROM $table_logs WHERE type = %s ORDER BY sent_at DESC LIMIT 50", 
+				"SELECT * FROM $table_logs WHERE type = %s ORDER BY sent_at DESC LIMIT 2000", 
 				$type 
 			) );
 
@@ -505,9 +506,11 @@ class Marketing extends Module_Base {
 				}
 
 				$formatted[] = [
+					'id' => $log->id,
 					'recipient' => $log->recipient_email,
 					'date' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $log->sent_at ) ),
-					'status' => $status_display
+					'status' => $status_display,
+					'raw_status' => strtolower( $log->status )
 				];
 			}
 
@@ -515,6 +518,57 @@ class Marketing extends Module_Base {
 
 		} catch ( \Exception $e ) {
 			wp_send_json_error( $e->getMessage() );
+		}
+	}
+
+	public function ajax_resend_log() {
+		try {
+			check_ajax_referer( 'alezux_marketing_nonce', 'nonce' );
+			if ( ! current_user_can( 'administrator' ) ) throw new \Exception( 'Forbidden' );
+
+			$log_id = intval( $_POST['log_id'] );
+			global $wpdb;
+			$table_logs = $wpdb->prefix . 'alezux_marketing_logs';
+
+			$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_logs WHERE id = %d", $log_id ) );
+			if ( ! $log ) throw new \Exception( 'Registro no encontrado.' );
+
+			if ( ! $this->email_engine ) {
+				require_once __DIR__ . '/includes/Email_Engine.php';
+				$this->email_engine = new Email_Engine();
+			}
+
+			$user = get_user_by( 'email', $log->recipient_email );
+			if ( ! $user ) throw new \Exception( 'Usuario no encontrado.' );
+
+			// Variables for the template
+			$data = [
+				'user' => $user
+			];
+
+			// Especial case for student_welcome (we must generate a new password)
+			if ( $log->type === 'student_welcome' ) {
+				$password = wp_generate_password( 12, true );
+				wp_set_password( $password, $user->ID );
+				$data['new_password'] = $password;
+			}
+
+			// Intentar reenvío
+			$sent = $this->email_engine->send_email( $log->type, $log->recipient_email, $data, false );
+
+			if ( $sent ) {
+				// Actualizar log a 'sent'
+				$wpdb->update( $table_logs, [ 'status' => 'sent' ], [ 'id' => $log_id ] );
+				wp_send_json_success( [ 'message' => 'Correo reenviado correctamente.' ] );
+			} else {
+				$error_msg = $this->email_engine->get_last_error_message();
+				// Actualizar log con el nuevo error
+				$wpdb->update( $table_logs, [ 'status' => 'fail: ' . mb_substr( $error_msg, 0, 150 ) ], [ 'id' => $log_id ] );
+				throw new \Exception( 'Error al enviar: ' . $error_msg );
+			}
+
+		} catch ( \Exception $e ) {
+			wp_send_json_error( [ 'message' => $e->getMessage() ] );
 		}
 	}
 }

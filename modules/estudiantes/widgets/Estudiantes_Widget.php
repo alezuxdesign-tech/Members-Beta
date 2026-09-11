@@ -1316,11 +1316,47 @@ class Estudiantes_Widget extends Widget_Base {
                 </div>
 			</div>
 
+			<!-- Barra de Acciones Masivas (Oculta por defecto) -->
+			<div class="alezux-bulk-actions-bar" style="display: none; background: var(--alezux-bg-card, #1a1a1a); padding: 15px 20px; border-bottom: 1px solid var(--alezux-border-color, #333); display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+				<div class="alezux-bulk-left" style="display: flex; align-items: center; gap: 15px;">
+					<span class="alezux-bulk-count" style="font-weight: bold; color: var(--alezux-primary, #6c5ce7);"><span id="bulk-selected-count">0</span> seleccionados</span>
+					<?php 
+					global $wpdb;
+					$plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+					$plans = [];
+					if ( $wpdb->get_var( "SHOW TABLES LIKE '$plans_table'" ) == $plans_table ) {
+						$plans = $wpdb->get_results( "SELECT id, name FROM $plans_table ORDER BY name ASC" );
+					}
+					?>
+					<select id="bulk-plan-select" class="alezux-form-control" style="width: 200px;">
+						<option value=""><?php esc_html_e( 'Ningún plan (Sólo re-enviar)', 'alezux-members' ); ?></option>
+						<?php if ( ! empty( $plans ) ) : foreach ( $plans as $plan ) : ?>
+							<option value="<?php echo esc_attr( $plan->id ); ?>"><?php echo esc_html( $plan->name ); ?></option>
+						<?php endforeach; endif; ?>
+					</select>
+					<button id="btn-bulk-process" class="alezux-action-btn" style="background: var(--alezux-primary, #6c5ce7);">
+						<i class="fas fa-paper-plane"></i> Procesar y Enviar
+					</button>
+				</div>
+				<div class="alezux-bulk-right" style="flex: 1; max-width: 300px; display: none;" id="bulk-progress-container">
+					<div class="alezux-progress-wrapper" style="margin: 0;">
+						<div class="progress-Label" style="font-size: 11px; margin-bottom: 5px; display: flex; justify-content: space-between;">
+							<span id="bulk-progress-text">Procesando...</span>
+							<span id="bulk-progress-percent">0%</span>
+						</div>
+						<div class="alezux-progress-bar-bg" style="height: 6px;">
+							<div id="bulk-progress-fill" class="alezux-progress-bar-fill" style="width: 0%;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<!-- Table -->
 			<div class="alezux-table-wrapper">
 				<table class="alezux-finanzas-table alezux-estudiantes-table">
 					<thead>
 						<tr>
+							<th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllStudents"></th>
 							<th style="width: 280px;"><?php \esc_html_e( 'ESTUDIANTE', 'alezux-members' ); ?></th>
 							<th><?php \esc_html_e( 'CORREO', 'alezux-members' ); ?></th>
 							<th style="width: 180px;"><?php \esc_html_e( 'PROGRESO academico', 'alezux-members' ); ?></th>
@@ -1360,6 +1396,9 @@ class Estudiantes_Widget extends Widget_Base {
 								}
 							?>
 							<tr>
+								<td style="text-align: center;">
+									<input type="checkbox" class="student-checkbox" value="<?php echo \esc_attr( $student->ID ); ?>">
+								</td>
 								<td>
 									<div class="alezux-student-info">
 										<img src="<?php echo \esc_url( $avatar_url ); ?>" alt="<?php echo \esc_attr( $name ); ?>" class="alezux-student-avatar">
@@ -1422,6 +1461,7 @@ class Estudiantes_Widget extends Widget_Base {
 						<option value="20" <?php \selected( $limit, 20 ); ?>>20</option>
 						<option value="50" <?php \selected( $limit, 50 ); ?>>50</option>
 						<option value="100" <?php \selected( $limit, 100 ); ?>>100</option>
+						<option value="200" <?php \selected( $limit, 200 ); ?>>200</option>
 					</select>
 				</div>
 			</div>

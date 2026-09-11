@@ -207,6 +207,24 @@ class Estudiantes_CSV_Widget extends Widget_Base {
 				</select>
 			</div>
 
+			<div class="alezux-form-group">
+				<label class="alezux-form-label"><?php esc_html_e( 'Asignar Plan a Todos', 'alezux-members' ); ?></label>
+				<select id="alezux-csv-plan-select" class="alezux-form-control">
+					<option value=""><?php esc_html_e( '-- Seleccionar Plan (Opcional) --', 'alezux-members' ); ?></option>
+					<?php 
+					global $wpdb;
+					$plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+					$wpdb->suppress_errors(true);
+					$plans = $wpdb->get_results("SELECT id, name FROM $plans_table ORDER BY name ASC");
+					$wpdb->suppress_errors(false);
+					if ( $plans ) :
+						foreach ( $plans as $plan ) : ?>
+							<option value="<?php echo esc_attr( $plan->id ); ?>"><?php echo esc_html( $plan->name ); ?></option>
+						<?php endforeach;
+					endif; ?>
+				</select>
+			</div>
+
 			<div class="alezux-csv-upload-box" id="alezux-csv-dropzone">
 				<input type="file" id="alezux-csv-file-input" accept=".csv" style="display:none;">
 				<div class="alezux-upload-content">

@@ -112,9 +112,9 @@ jQuery(document).ready(function ($) {
     $(document).on('submit', '#alezux-reset-password-form', function (e) {
         e.preventDefault();
         var $form = $(this);
-        var $btn = $form.find('.alezux-submit-btn'); // Note: Class is different in Reset Widget usually? Checked PHP: alezux-submit-btn
-        var $loader = $btn.find('.btn-loader');
-        var $text = $btn.find('.btn-text');
+        var $btn = $form.find('.alezux-submit-btn, .alezux-auth-submit');
+        var $loader = $btn.find('.btn-loader, .alezux-loader');
+        var $text = $btn.find('.btn-text, .alezux-btn-text');
 
         $btn.prop('disabled', true);
         $text.hide();

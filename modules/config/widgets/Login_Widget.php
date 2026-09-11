@@ -828,11 +828,80 @@ class Login_Widget extends Widget_Base {
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
+		
+		$key = isset( $_GET['key'] ) ? sanitize_text_field( $_GET['key'] ) : '';
+		$login = isset( $_GET['login'] ) ? sanitize_user( $_GET['login'] ) : '';
+		$is_reset = ( ! empty( $key ) && ! empty( $login ) );
 		?>
 		<div class="alezux-auth-form-card" id="alezux-auth-card-<?php echo esc_attr( $this->get_id() ); ?>">
 			
+			<!-- VISTA DE RESET PASSWORD -->
+			<?php if ( $is_reset ) : 
+				$error_message = false;
+				$user = check_password_reset_key( $key, $login );
+				if ( is_wp_error( $user ) ) {
+					$error_message = 'El enlace ha expirado o no es válido.';
+				}
+			?>
+				<div class="alezux-reset-view">
+					<h2 class="alezux-auth-title"><?php esc_html_e( 'Nueva Contraseña', 'alezux-members' ); ?></h2>
+					<?php if ( $error_message ) : ?>
+						<p style="text-align:center; color:#ff4d4f; font-size:14px; margin-bottom:20px;"><?php echo esc_html( $error_message ); ?></p>
+						<div class="alezux-auth-footer">
+							<a href="#" class="alezux-auth-link alezux-show-login"><?php esc_html_e( 'Volver a Iniciar Sesión', 'alezux-members' ); ?></a>
+						</div>
+					<?php else : ?>
+						<p style="text-align:center; color:#a1a1aa; font-size:14px; margin-bottom:20px;">
+							<?php esc_html_e( 'Crea una nueva contraseña para tu cuenta.', 'alezux-members' ); ?>
+						</p>
+						<form id="alezux-reset-password-form" class="alezux-auth-form">
+							<div class="alezux-auth-field">
+								<div class="alezux-input-wrapper">
+									<input type="password" name="pass1" id="pass1" placeholder="Nueva Contraseña" required>
+									<span class="alezux-toggle-password" role="button">
+										<!-- Eye Open -->
+										<svg class="alezux-eye-icon eye-open" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+											<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+										</svg>
+										<!-- Eye Closed -->
+										<svg class="alezux-eye-icon eye-closed" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none;">
+											<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.81l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.73-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+										</svg>
+									</span>
+								</div>
+							</div>
+							<div class="alezux-auth-field" style="margin-top: 15px;">
+								<div class="alezux-input-wrapper">
+									<input type="password" name="pass2" id="pass2" placeholder="Confirmar Contraseña" required>
+									<span class="alezux-toggle-password" role="button">
+										<!-- Eye Open -->
+										<svg class="alezux-eye-icon eye-open" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+											<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+										</svg>
+										<!-- Eye Closed -->
+										<svg class="alezux-eye-icon eye-closed" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none;">
+											<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.81l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.73-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+										</svg>
+									</span>
+								</div>
+							</div>
+
+							<input type="hidden" name="action" value="alezux_reset_password">
+							<input type="hidden" name="key" value="<?php echo esc_attr( $key ); ?>">
+							<input type="hidden" name="login" value="<?php echo esc_attr( $login ); ?>">
+							<input type="hidden" name="nonce" value="<?php echo wp_create_nonce( 'alezux-auth-nonce' ); ?>">
+							
+							<button type="submit" class="alezux-auth-submit" style="margin-top: 15px;">
+								<span class="alezux-btn-text"><?php esc_html_e( 'Guardar Contraseña', 'alezux-members' ); ?></span>
+								<span class="alezux-loader" style="display: none;"></span>
+							</button>
+						</form>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+
 			<!-- VISTA DE LOGIN -->
-			<div class="alezux-login-view">
+			<div class="alezux-login-view" <?php if ( $is_reset ) echo 'style="display: none;"'; ?>>
 				<?php if ( ! empty( $settings['title'] ) ) : ?>
 					<h2 class="alezux-auth-title"><?php echo esc_html( $settings['title'] ); ?></h2>
 				<?php endif; ?>

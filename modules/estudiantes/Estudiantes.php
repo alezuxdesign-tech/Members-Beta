@@ -34,6 +34,7 @@ class Estudiantes extends Module_Base {
 		\add_action( 'wp_ajax_alezux_update_course_access', [ $this, 'ajax_update_course_access' ] );
 		\add_action( 'wp_ajax_alezux_update_plan_access', [ $this, 'ajax_update_plan_access' ] );
 		\add_action( 'wp_ajax_alezux_toggle_block_user', [ $this, 'ajax_toggle_block_user' ] );
+		\add_action( 'wp_ajax_alezux_bulk_student_process', [ $this, 'ajax_bulk_student_process' ] );
 	}
 
 	public function register_assets() {
@@ -44,7 +45,7 @@ class Estudiantes extends Module_Base {
 		\wp_register_style( 'alezux-estudiantes-csv-css', \plugin_dir_url( __FILE__ ) . 'assets/css/estudiantes-csv.css', [], '1.1.0' ); // Se registra pero no se encola globalmente
 
 		// Scripts
-		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.3.9', true );
+		\wp_enqueue_script( 'alezux-estudiantes-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes.js', [ 'jquery' ], '1.4.0', true );
 		\wp_register_script( 'alezux-estudiantes-register-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-register.js', [ 'jquery' ], '1.1.6', true );
 		\wp_register_script( 'alezux-estudiantes-csv-js', \plugin_dir_url( __FILE__ ) . 'assets/js/estudiantes-csv.js', [ 'jquery' ], '1.1.0', true );
 
@@ -323,6 +324,7 @@ class Estudiantes extends Module_Base {
 
 		$students  = isset( $_POST['students'] ) ? $_POST['students'] : []; // Array de {name, email, ...}
 		$course_id = isset( $_POST['course_id'] ) ? \intval( $_POST['course_id'] ) : 0;
+		$plan_id   = isset( $_POST['plan_id'] ) ? \intval( $_POST['plan_id'] ) : 0;
 
 		if ( empty( $students ) || ! \is_array( $students ) ) {
 			\wp_send_json_error( [ 'message' => 'No hay datos para procesar.' ] );
@@ -338,6 +340,7 @@ class Estudiantes extends Module_Base {
 				'last_name'  => isset( $student_data['last_name'] ) ? \sanitize_text_field( $student_data['last_name'] ) : '',
 				'email'      => isset( $student_data['email'] ) ? \sanitize_email( $student_data['email'] ) : '',
 				'course_id'  => $course_id,
+				'plan_id'    => $plan_id,
 			];
 
 			if ( empty( $data['email'] ) ) continue;
@@ -365,6 +368,7 @@ class Estudiantes extends Module_Base {
 		$first_name = $data['first_name'];
 		$last_name  = $data['last_name'];
 		$course_id  = $data['course_id'];
+		$plan_id    = isset( $data['plan_id'] ) ? $data['plan_id'] : 0;
 
 		$user = \get_user_by( 'email', $email );
 		$is_new_user = false;
@@ -389,32 +393,76 @@ class Estudiantes extends Module_Base {
 				return $user_id;
 			}
 
-			// Actualizar meta
-			\wp_update_user( [
-				'ID' => $user_id,
-				'first_name' => $first_name,
-				'last_name'  => $last_name,
-				'role'       => 'subscriber' // O 'student' si se prefiere
-			] );
-
 			$is_new_user = true;
 			$user = \get_user_by( 'id', $user_id );
 		} else {
-			// Usuario existe, solo matricularemos
+			// Usuario existe, le regeneramos contraseña para enviársela y asegurar acceso
 			$user_id = $user->ID;
+			$password = \wp_generate_password( 12, true );
+			\wp_set_password( $password, $user_id );
 		}
 
-		// Asignar Curso LearnDash
+		// Actualizar datos del usuario (completar al 100%)
+		$update_data = [ 'ID' => $user_id ];
+		if ( ! empty( $first_name ) ) {
+			$update_data['first_name'] = $first_name;
+		}
+		if ( ! empty( $last_name ) ) {
+			$update_data['last_name'] = $last_name;
+		}
+		
+		// Aseguramos que tenga el rol
+		if ( $is_new_user ) {
+			$update_data['role'] = 'subscriber';
+		}
+		
+		\wp_update_user( $update_data );
+
+		// Asignar Curso LearnDash directo
 		if ( $course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
 			\ld_update_course_access( $user_id, $course_id, false ); // false = add access
 		}
 
-		// Enviar Email
-		if ( $is_new_user ) {
-			$this->send_new_user_email( $user, $password, $course_id );
-		} else {
-			// Opcional: Notificar nueva matriculación a usuario existente?
-			// Por ahora solo credenciales a nuevos según requerimiento.
+		// Asignar Plan Financiero (que a su vez puede dar acceso a otro curso)
+		if ( $plan_id > 0 ) {
+			global $wpdb;
+			$subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$subs_table'" ) == $subs_table ) {
+				$existing_sub = $wpdb->get_row( $wpdb->prepare( 
+					"SELECT id, status FROM $subs_table WHERE user_id = %d AND plan_id = %d", 
+					$user_id, $plan_id 
+				) );
+
+				if ( $existing_sub ) {
+					if ( $existing_sub->status !== 'active' && $existing_sub->status !== 'completed' ) {
+						$wpdb->update( $subs_table, [ 'status' => 'active' ], [ 'id' => $existing_sub->id ] );
+					}
+				} else {
+					$wpdb->insert( $subs_table, [
+						'user_id' => $user_id,
+						'plan_id' => $plan_id,
+						'status' => 'active',
+						'quotas_paid' => 1,
+						'last_payment_date' => current_time( 'mysql' )
+					] );
+				}
+				
+				// Dar acceso al curso asociado al plan, si lo hay
+				$plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+				$plan_course_id = $wpdb->get_var( $wpdb->prepare( "SELECT course_id FROM $plans_table WHERE id = %d", $plan_id ) );
+				if ( $plan_course_id && $plan_course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
+					\ld_update_course_access( $user_id, $plan_course_id, false );
+				}
+			}
+		}
+
+		// Enviar Email de credenciales siempre (para asegurar la entrega a todos)
+		$email_sent = $this->send_new_user_email( $user, $password, $course_id, $plan_id );
+		
+		if ( ! $email_sent ) {
+			$engine = \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine();
+			$err_msg = $engine->get_last_error_message();
+			return new \WP_Error( 'email_failed', 'Usuario registrado, pero el correo falló: ' . $err_msg );
 		}
 
 		return true;
@@ -423,18 +471,30 @@ class Estudiantes extends Module_Base {
 	/**
 	 * Enviar Correo con Credenciales (Delegado a Marketing)
 	 */
-	private function send_new_user_email( $user, $password, $course_id ) {
+	private function send_new_user_email( $user, $password, $course_id, $plan_id = 0 ) {
 		if ( ! class_exists( '\Alezux_Members\Modules\Marketing\Marketing' ) ) {
-			return; // Fallback o error log
+			return false; // Fallback o error log
 		}
 
 		$course_title = '';
 		if ( $course_id ) {
 			$course = \get_post( $course_id );
 			if ( $course ) $course_title = $course->post_title;
+		} elseif ( $plan_id ) {
+			global $wpdb;
+			$p_table = $wpdb->prefix . 'alezux_finanzas_plans';
+			$p_data = $wpdb->get_row( $wpdb->prepare( "SELECT name, course_id FROM $p_table WHERE id = %d", $plan_id ) );
+			if ( $p_data ) {
+				if ( ! empty( $p_data->course_id ) ) {
+					$c_title = \get_the_title( $p_data->course_id );
+					$course_title = $c_title ? $c_title : $p_data->name;
+				} else {
+					$course_title = $p_data->name;
+				}
+			}
 		}
 
-		\Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email( 
+		return \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine()->send_email( 
 			'student_welcome', 
 			$user->user_email, 
 			[
@@ -775,6 +835,71 @@ class Estudiantes extends Module_Base {
 
 			\wp_send_json_success( [ 'message' => 'Plan revocado correctamente.' ] );
 		}
+	}
+
+	/**
+	 * AJAX Handler: Bulk process students (Assign Plan and Resend Credentials)
+	 */
+	public function ajax_bulk_student_process() {
+		\check_ajax_referer( 'alezux_estudiantes_nonce', 'nonce' );
+		if ( ! \current_user_can( 'edit_users' ) ) \wp_send_json_error( [ 'message' => 'No autorizado' ] );
+
+		$user_id = isset( $_POST['user_id'] ) ? \intval( $_POST['user_id'] ) : 0;
+		$plan_id = isset( $_POST['plan_id'] ) ? \intval( $_POST['plan_id'] ) : 0;
+
+		$user = \get_user_by( 'id', $user_id );
+		if ( ! $user ) {
+			\wp_send_json_error( [ 'message' => 'Estudiante no encontrado.' ] );
+		}
+
+		global $wpdb;
+		$course_id = 0;
+
+		// Asignar Plan si se especificó
+		if ( $plan_id > 0 ) {
+			$subs_table = $wpdb->prefix . 'alezux_finanzas_subscriptions';
+			
+			if ( $wpdb->get_var( "SHOW TABLES LIKE '$subs_table'" ) == $subs_table ) {
+				$existing_sub = $wpdb->get_row( $wpdb->prepare( 
+					"SELECT id, status FROM $subs_table WHERE user_id = %d AND plan_id = %d", 
+					$user_id, $plan_id 
+				) );
+
+				if ( $existing_sub ) {
+					if ( $existing_sub->status !== 'active' && $existing_sub->status !== 'completed' ) {
+						$wpdb->update( $subs_table, [ 'status' => 'active' ], [ 'id' => $existing_sub->id ] );
+					}
+				} else {
+					$wpdb->insert( $subs_table, [
+						'user_id' => $user_id,
+						'plan_id' => $plan_id,
+						'status' => 'active',
+						'quotas_paid' => 1,
+						'last_payment_date' => current_time( 'mysql' )
+					] );
+				}
+				
+				$plans_table = $wpdb->prefix . 'alezux_finanzas_plans';
+				$course_id = $wpdb->get_var( $wpdb->prepare( "SELECT course_id FROM $plans_table WHERE id = %d", $plan_id ) );
+				if ( $course_id && $course_id > 0 && function_exists( 'ld_update_course_access' ) ) {
+					\ld_update_course_access( $user_id, $course_id, false );
+				}
+			}
+		}
+
+		// Generar nueva contraseña y enviar credenciales
+		$password = \wp_generate_password( 12, true );
+		\wp_set_password( $password, $user_id );
+
+		$email_sent = $this->send_new_user_email( $user, $password, $course_id, $plan_id );
+
+		if ( ! $email_sent ) {
+			$engine = \Alezux_Members\Modules\Marketing\Marketing::get_instance()->get_engine();
+			$err_msg = $engine->get_last_error_message();
+			\wp_send_json_error( [ 'message' => 'Contraseña actualizada, pero falló el correo: ' . $err_msg ] );
+		}
+
+		\wp_send_json_success( [ 'message' => 'Procesado correctamente.' ] );
 	}
 
 	public function shortcode_study_momentum() {

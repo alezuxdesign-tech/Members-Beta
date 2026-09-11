@@ -142,13 +142,16 @@ jQuery(document).ready(function ($) {
         $tableBody.empty();
 
         if (students.length === 0) {
-            $tableBody.html('<tr><td colspan="5" style="text-align:center; padding: 40px;">No se encontraron estudiantes.</td></tr>');
+            $tableBody.html('<tr><td colspan="6" style="text-align:center; padding: 40px;">No se encontraron estudiantes.</td></tr>');
             return;
         }
 
         students.forEach(function (student) {
             var row = `
                 <tr>
+                    <td style="text-align: center;">
+                        <input type="checkbox" class="student-checkbox" value="${student.id}">
+                    </td>
                     <td>
                         <div class="alezux-student-info">
                             <img src="${student.avatar_url}" alt="${student.name}" class="alezux-student-avatar">
@@ -556,4 +559,109 @@ jQuery(document).ready(function ($) {
             }
         });
     }
+
+    // ==========================================================
+    // SELECCIÓN Y PROCESAMIENTO MASIVO
+    // ==========================================================
+    function updateBulkActionsBar() {
+        var selectedCount = $('.student-checkbox:checked').length;
+        $('#bulk-selected-count').text(selectedCount);
+        
+        if (selectedCount > 0) {
+            $('.alezux-bulk-actions-bar').slideDown(200);
+        } else {
+            $('.alezux-bulk-actions-bar').slideUp(200);
+            $('#selectAllStudents').prop('checked', false);
+        }
+    }
+
+    $(document).on('change', '.student-checkbox', function() {
+        var allChecked = $('.student-checkbox').length === $('.student-checkbox:checked').length;
+        $('#selectAllStudents').prop('checked', allChecked);
+        updateBulkActionsBar();
+    });
+
+    $(document).on('change', '#selectAllStudents', function() {
+        var isChecked = $(this).prop('checked');
+        $('.student-checkbox').prop('checked', isChecked);
+        updateBulkActionsBar();
+    });
+
+    $('#btn-bulk-process').on('click', function(e) {
+        e.preventDefault();
+        
+        var selectedIds = [];
+        $('.student-checkbox:checked').each(function() {
+            selectedIds.push($(this).val());
+        });
+
+        if (selectedIds.length === 0) return;
+
+        var planId = $('#bulk-plan-select').val();
+
+        showAlezuxConfirm('Procesar Masivamente', `Vas a enviar credenciales a ${selectedIds.length} estudiantes. Toma aproximadamente ${selectedIds.length * 3} segundos. ¿Continuar?`, function() {
+            
+            // UI State
+            $('.alezux-bulk-left').hide();
+            $('#bulk-progress-container').show();
+            
+            var total = selectedIds.length;
+            var processed = 0;
+            var errors = [];
+
+            function processNextStudent() {
+                if (selectedIds.length === 0) {
+                    // Terminado
+                    var msg = `Proceso completado. ${processed} enviados.`;
+                    if (errors.length > 0) {
+                        msg += `<br><br><b>Errores:</b><br><ul style="text-align:left; font-size:12px;"><li>${errors.join('</li><li>')}</li></ul>`;
+                        showAlezuxAlert('Completado con errores', msg, 'warning');
+                    } else {
+                        showAlezuxAlert('¡Éxito!', msg, 'success');
+                    }
+                    
+                    // Reset UI
+                    $('.student-checkbox').prop('checked', false);
+                    updateBulkActionsBar();
+                    $('.alezux-bulk-left').show();
+                    $('#bulk-progress-container').hide();
+                    return;
+                }
+
+                var currentId = selectedIds.shift();
+                
+                $.ajax({
+                    url: alezux_estudiantes_vars.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'alezux_bulk_student_process',
+                        nonce: alezux_estudiantes_vars.nonce,
+                        user_id: currentId,
+                        plan_id: planId
+                    },
+                    success: function(response) {
+                        if (!response.success) {
+                            errors.push(`Estudiante #${currentId}: ${response.data.message || 'Error desconocido'}`);
+                        }
+                    },
+                    error: function() {
+                        errors.push(`Estudiante #${currentId}: Error de red o servidor.`);
+                    },
+                    complete: function() {
+                        processed++;
+                        var percent = Math.round((processed / total) * 100);
+                        $('#bulk-progress-percent').text(percent + '%');
+                        $('#bulk-progress-fill').css('width', percent + '%');
+                        $('#bulk-progress-text').text(`Enviados: ${processed} de ${total}`);
+
+                        // Retraso de 3 segundos
+                        setTimeout(processNextStudent, 3000);
+                    }
+                });
+            }
+
+            processNextStudent();
+        });
+    });
+
 });

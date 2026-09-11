@@ -193,7 +193,7 @@ jQuery(document).ready(function ($) {
             if (!type) return;
 
             historyModal.find('#history-modal-title').text('Historial: ' + title);
-            tbody.html('<tr><td colspan="3" style="text-align:center;">Cargando historial...</td></tr>');
+            tbody.html('<tr><td colspan="4" style="text-align:center;">Cargando historial...</td></tr>');
             historyModal.css('display', 'flex');
 
             $.ajax({
@@ -209,12 +209,16 @@ jQuery(document).ready(function ($) {
                     if (res.success && res.data.length > 0) {
                         res.data.forEach(function (log) {
                             var statusBadged = log.status;
-                            var s = log.status.toLowerCase();
+                            var s = log.raw_status;
+                            var actionBtn = '-';
 
                             if (s === 'sent' || s === 'enviado') {
                                 statusBadged = '<span style="color:green;">Enviado</span>';
                             } else if (s === 'leído' || s === 'leido') {
                                 statusBadged = '<span style="color:#2271b1; font-weight:bold;">Leído</span>';
+                            } else if (s.indexOf('fail') !== -1 || s.indexOf('error') !== -1) {
+                                statusBadged = '<span style="color:#d63638; font-weight:bold;" title="' + s + '">Fallido</span>';
+                                actionBtn = `<button class="alezux-marketing-btn btn-resend-log" data-log-id="${log.id}" style="padding: 2px 8px; font-size: 11px; background: #6c5ce7;">Reenviar</button>`;
                             }
 
                             tbody.append(`
@@ -222,15 +226,51 @@ jQuery(document).ready(function ($) {
                                     <td>${log.date}</td>
                                     <td>${log.recipient}</td>
                                     <td>${statusBadged}</td>
+                                    <td>${actionBtn}</td>
                                 </tr>
                             `);
                         });
                     } else {
-                        tbody.html('<tr><td colspan="3" style="text-align:center;">No hay envíos registrados aún.</td></tr>');
+                        tbody.html('<tr><td colspan="4" style="text-align:center;">No hay envíos registrados aún.</td></tr>');
                     }
                 },
                 error: function () {
-                    tbody.html('<tr><td colspan="3" style="text-align:center;">Error al cargar historial.</td></tr>');
+                    tbody.html('<tr><td colspan="4" style="text-align:center;">Error al cargar historial.</td></tr>');
+                }
+            });
+        });
+
+        // Resend Handler
+        $(document).on('click', '.btn-resend-log', function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            var logId = btn.data('log-id');
+            var tdAction = btn.closest('td');
+            var tdStatus = btn.closest('tr').find('td:eq(2)');
+
+            var originalText = btn.html();
+            btn.html('<i class="fa fa-spinner fa-spin"></i>').prop('disabled', true);
+
+            $.ajax({
+                url: alezux_marketing_vars.ajax_url,
+                method: 'POST',
+                data: {
+                    action: 'alezux_marketing_resend_log',
+                    log_id: logId,
+                    nonce: alezux_marketing_vars.nonce
+                },
+                success: function(res) {
+                    if (res.success) {
+                        tdStatus.html('<span style="color:green;">Enviado</span>');
+                        tdAction.html('<i class="fa fa-check" style="color:green;"></i>');
+                    } else {
+                        btn.html(originalText).prop('disabled', false);
+                        showModalMessage('Error de reenvío', res.data.message || 'Error desconocido', true);
+                    }
+                },
+                error: function() {
+                    btn.html(originalText).prop('disabled', false);
+                    showModalMessage('Error de red', 'No se pudo comunicar con el servidor.', true);
                 }
             });
         });

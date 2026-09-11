@@ -920,6 +920,7 @@ class Marketing_Config_Widget extends Widget_Base {
                                     <th>Fecha</th>
                                     <th>Destinatario</th>
                                     <th>Estado</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>

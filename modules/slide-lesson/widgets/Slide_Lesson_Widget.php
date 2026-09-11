@@ -833,21 +833,38 @@ class Slide_Lesson_Widget extends Widget_Base {
 		// Obtener ID del curso actual
 		$course_id = learndash_get_course_id();
 		
-		$args = [
-			'post_type'      => 'sfwd-lessons',
-			'posts_per_page' => intval( $limit ),
-			'post_status'    => 'publish',
-            'orderby'        => 'menu_order',
-			'order'          => 'ASC',
-		];
-
-		// Si estamos en un contexto de curso, filtrar por ese curso
-		if ( ! empty( $course_id ) ) {
-			$args['meta_key']   = 'course_id';
-			$args['meta_value'] = $course_id;
+		// Obtener las lecciones en el orden exacto del Course Builder
+		if ( ! empty( $course_id ) && function_exists( 'learndash_course_get_steps_by_type' ) ) {
+			$lesson_ids = learndash_course_get_steps_by_type( $course_id, 'sfwd-lessons' );
+			
+			if ( ! empty( $lesson_ids ) ) {
+				$args = [
+					'post_type'      => 'sfwd-lessons',
+					'post__in'       => $lesson_ids,
+					'orderby'        => 'post__in', // Mantener el orden del Builder
+					'posts_per_page' => intval( $limit ),
+					'post_status'    => 'publish',
+				];
+				$query = new \WP_Query( $args );
+			} else {
+				// No hay lecciones
+				$query = new \WP_Query( [ 'post__in' => [0] ] ); 
+			}
+		} else {
+			// Fallback si no hay course_id (ej. vista previa en Elementor general)
+			$args = [
+				'post_type'      => 'sfwd-lessons',
+				'posts_per_page' => intval( $limit ),
+				'post_status'    => 'publish',
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+			];
+			if ( ! empty( $course_id ) ) {
+				$args['meta_key']   = 'course_id';
+				$args['meta_value'] = $course_id;
+			}
+			$query = new \WP_Query( $args );
 		}
-
-		$query = new \WP_Query( $args );
 		$lessons = [];
 
 		if ( $query->have_posts() ) {

@@ -100,7 +100,8 @@ jQuery(document).ready(function ($) {
     // Batch Queue System
     function startBatchProcess(students) {
         var courseId = $('#alezux-csv-course-select').val();
-        var batchSize = 5; // 5 correos por lote
+        var planId = $('#alezux-csv-plan-select').val();
+        var batchSize = 1; // 1 correo por lote para evitar bloqueos
         var total = students.length;
         var processed = 0;
         var successCount = 0;
@@ -129,7 +130,8 @@ jQuery(document).ready(function ($) {
                     action: 'alezux_register_batch_csv',
                     nonce: nonce,
                     students: batch,
-                    course_id: courseId
+                    course_id: courseId,
+                    plan_id: planId
                 },
                 success: function (response) {
                     if (response.success) {
@@ -148,13 +150,13 @@ jQuery(document).ready(function ($) {
                     $progressBarFill.css('width', percent + '%');
                     updateStatus("Procesando...", processed, total);
 
-                    // Esperar 500ms antes del siguiente lote para no saturar
-                    setTimeout(processNextBatch, 500);
+                    // Esperar 3000ms antes del siguiente lote para no saturar SMTP
+                    setTimeout(processNextBatch, 3000);
                 },
                 error: function () {
                     processed += batch.length;
                     errors.push("Error de conexión en lote.");
-                    setTimeout(processNextBatch, 1000);
+                    setTimeout(processNextBatch, 3000);
                 }
             });
         }
